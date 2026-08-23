@@ -16,8 +16,32 @@ env:
   PHP_VERSION: '8.5'
 
 jobs:
+  # The gates every repo in the org shares, defined once in the spec repo and
+  # pinned by commit. Those needing a pull request are guarded, because this
+  # workflow also runs on pushes to main.
   dco:
     uses: lemonfiber/spec/.github/workflows/dco.yml@76ed8252bc5a9fc090dfa486039d4e164ce8ae0c # main
+
+  spec-check:
+    if: github.event_name == 'pull_request'
+    uses: lemonfiber/spec/.github/workflows/spec-check.yml@76ed8252bc5a9fc090dfa486039d4e164ce8ae0c # main
+
+  commitlint:
+    if: github.event_name == 'pull_request'
+    uses: lemonfiber/spec/.github/workflows/commitlint.yml@76ed8252bc5a9fc090dfa486039d4e164ce8ae0c # main
+
+  hygiene:
+    uses: lemonfiber/spec/.github/workflows/hygiene.yml@76ed8252bc5a9fc090dfa486039d4e164ce8ae0c # main
+
+  security:
+    uses: lemonfiber/spec/.github/workflows/security.yml@76ed8252bc5a9fc090dfa486039d4e164ce8ae0c # main
+
+  labeler:
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: lemonfiber/spec/.github/workflows/labeler.yml@76ed8252bc5a9fc090dfa486039d4e164ce8ae0c # main
 
   lint:
     name: format
