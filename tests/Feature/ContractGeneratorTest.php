@@ -11,6 +11,8 @@ declare(strict_types=1);
  */
 $root = dirname(__DIR__, 2);
 
+const GENERATOR = '/scripts/contract-generate.php';
+
 /**
  * A contract with one kind, so only the version is ever what is wrong.
  *
@@ -43,7 +45,7 @@ function treeWith(string $root, string $contract): string
 
     mkdir($tree . '/scripts', 0o755, true);
     mkdir($tree . '/contract', 0o755, true);
-    copy($root . '/scripts/contract-generate.php', $tree . '/scripts/contract-generate.php');
+    copy($root . GENERATOR, $tree . GENERATOR);
     copy($root . '/scripts/SchemaTypes.php', $tree . '/scripts/SchemaTypes.php');
     file_put_contents($tree . '/contract/web-api.contract.json', $contract);
     file_put_contents($tree . '/contract/VERSION', "v9.9.9\n");
@@ -58,13 +60,13 @@ function generateIn(string $tree): array
 {
     $pipes = [];
     $process = proc_open(
-        [PHP_BINARY, $tree . '/scripts/contract-generate.php'],
+        [PHP_BINARY, $tree . GENERATOR],
         [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
         $pipes,
     );
 
     if ($process === false) {
-        throw new RuntimeException('The generator could not be started.');
+        return ['status' => -1, 'stderr' => 'The generator could not be started.'];
     }
 
     $stderr = stream_get_contents($pipes[2]);
