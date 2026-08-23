@@ -14,12 +14,12 @@ namespace Lemonfiber\Sdk\Generated;
 final class Contract
 {
     /**
-     * The wire version these types were generated from (ARCH-R46).
+     * The wire version these types were generated from.
      */
     public const int API_VERSION = 1;
 
     /**
-     * The lemonfiber release the artefact was vendored from (ARCH-R65).
+     * The lemonfiber release the artefact was vendored from.
      */
     public const string SOURCE = 'd2bf74b950a9f6fb73f2bcd60e2d8adf85337cd6';
 }

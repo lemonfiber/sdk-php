@@ -9,7 +9,7 @@ use RuntimeException;
 use function sprintf;
 
 /**
- * The answer speaks a different version of the API than this client (ARCH-R55).
+ * The answer speaks a different version of the API than this client.
  */
 final class ApiVersionMismatch extends RuntimeException implements Problem
 {

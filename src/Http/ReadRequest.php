@@ -9,7 +9,7 @@ use Saloon\Enums\Method;
 use Saloon\Http\Request;
 
 /**
- * A request that reads, mirroring a command's machine-readable output (ARCH-R47).
+ * A request that reads, mirroring a command's machine-readable output.
  */
 final class ReadRequest extends Request
 {

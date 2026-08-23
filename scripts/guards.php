@@ -15,6 +15,7 @@ use function in_array;
 use function is_array;
 use function is_dir;
 use function ltrim;
+use function preg_match;
 use function preg_match_all;
 use function preg_replace;
 use function scandir;
@@ -66,6 +67,18 @@ final class Guards
         'note that',
         'arguably',
     ];
+
+    /**
+     * A requirement identifier. It belongs in a commit trailer and a pull
+     * request body, not beside the code it once explained.
+     */
+    private const string IDENTIFIER = '/\\b[A-Z][A-Z0-9]*-R\\d+\\b/';
+
+    /**
+     * A line that reads as a comment, including one this repository writes
+     * into a file it generates.
+     */
+    private const string COMMENT_LINE = '~^\\s*(?://|\\*|/\\*|\\#)~';
 
     /**
      * @var list<string>
@@ -147,6 +160,12 @@ final class Guards
                 $this->checkComment($file, $token[2], $token[1]);
             }
 
+            // A generator keeps the comments it writes in a string, where the
+            // tokeniser sees no comment at all.
+            if ($token[0] === T_ENCAPSED_AND_WHITESPACE || $token[0] === T_CONSTANT_ENCAPSED_STRING) {
+                $this->checkIdentifiers($file, $token[2], $token[1], true);
+            }
+
             if ($loopbackOnly) {
                 $this->checkForRemoteHost($file, $token[2], $token[1]);
             }
@@ -170,6 +189,8 @@ final class Guards
             }
         }
 
+        $this->checkIdentifiers($file, $line, $comment, false);
+
         $offset = 0;
 
         foreach (explode("\n", $comment) as $text) {
@@ -179,6 +200,24 @@ final class Guards
                 if (str_starts_with($opener, $reasoning)) {
                     $this->fail($file, $line + $offset, 'opens a comment with "' . $reasoning . '"');
                 }
+            }
+
+            $offset++;
+        }
+    }
+
+    /**
+     * @param bool $commentLinesOnly Read only the lines that look like comments.
+     */
+    private function checkIdentifiers(string $file, int $line, string $text, bool $commentLinesOnly): void
+    {
+        $offset = 0;
+
+        foreach (explode("\n", $text) as $candidate) {
+            $isComment = ! $commentLinesOnly || preg_match(self::COMMENT_LINE, $candidate) === 1;
+
+            if ($isComment && preg_match(self::IDENTIFIER, $candidate) === 1) {
+                $this->fail($file, $line + $offset, 'cites a requirement identifier in a comment');
             }
 
             $offset++;

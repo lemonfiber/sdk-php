@@ -8,7 +8,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 use Lemonfiber\Sdk\Generated\Kind;
 
 /**
- * What an envelope holds, reached through the kind that shapes it (ARCH-R63).
+ * What an envelope holds, reached through the kind that shapes it.
  *
  * The generated envelope classes are the callers: each names its own kind and
  * declares the type the contract gives that kind's payload. This is where the

@@ -12,15 +12,15 @@ use Lemonfiber\Sdk\Generated\Contract;
 final class Api
 {
     /**
-     * The `api_version` integer this client speaks (ARCH-R9, ARCH-R54).
+     * The `api_version` integer this client speaks.
      *
      * Taken from the contract the types were generated from, so the wire
-     * version is stated once (ARCH-R58).
+     * version is stated once.
      */
     public const int VERSION = Contract::API_VERSION;
 
     /**
-     * The header every request carries the per-run token in (ARCH-R52).
+     * The header every request carries the per-run token in.
      */
     public const string TOKEN_HEADER = 'X-Lemonfiber-Token';
 

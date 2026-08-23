@@ -25,7 +25,7 @@ final class WordEnvelope
     public const Kind KIND = Kind::Word;
 
     /**
-     * The same envelope with its payload typed by its kind (ARCH-R63).
+     * The same envelope with its payload typed by its kind.
      *
      * @param  Envelope<mixed>  $envelope
      * @return Envelope<Data>
