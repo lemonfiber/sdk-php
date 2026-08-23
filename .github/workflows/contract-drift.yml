@@ -32,7 +32,9 @@ jobs:
           SERVED: https://raw.githubusercontent.com/lemonfiber/lemonfiber/main/contract/web-api.contract.json
         run: |
           set -euo pipefail
-          curl -fsSL --retry 3 -o served.json "$SERVED"
+          # `-L` follows redirects, and a redirect may point anywhere. These refuse
+          # any hop that is not HTTPS, so what is fetched cannot be downgraded.
+          curl -fsSL --proto "=https" --proto-redir "=https" --retry 3 -o served.json "$SERVED"
           python3 - <<'PY'
           import json
           import pathlib
