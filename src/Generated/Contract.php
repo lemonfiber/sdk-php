@@ -19,7 +19,7 @@ final class Contract
     public const int API_VERSION = 1;
 
     /**
-     * The lemonfiber release the artefact was vendored from.
+     * The lemonfiber revision the artefact was vendored from.
      */
     public const string SOURCE = '5911b3a5523129f9c5d09e04d1c60e5adc32edd2';
 }

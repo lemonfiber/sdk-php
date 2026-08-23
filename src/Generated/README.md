@@ -10,7 +10,7 @@ something that already has one.
 
 | File | What it holds |
 |---|---|
-| `Contract.php` | The `api_version` these types were generated from, and the release they came from |
+| `Contract.php` | The `api_version` these types were generated from, and the revision they came from |
 | `Kind.php` | Every kind the contract describes |
 | `<Kind>Envelope.php` | One class per kind: the kind it reads, and the payload type the contract gives it |
 

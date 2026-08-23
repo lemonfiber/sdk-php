@@ -8,6 +8,9 @@ reference** — where this client disagrees with the contract, this client is wr
 
 ## Install
 
+> **Status: unreleased.** The package is not on Packagist and this repository has
+> no tags, so the command below does not resolve yet.
+
 ```sh
 composer require lemonfiber/sdk-php
 ```
@@ -30,8 +33,12 @@ $status = $client->read('/api/status');
 $status->kind;        // 'status'
 $status->data;        // the payload, shaped by kind
 
-$client->act('/api/actions/retry-import', ['service' => 'sonarr']);
+$client->act('/api/actions/restart', ['forms' => ['tv'], 'services' => ['sonarr']]);
 ```
+
+An action's name and its arguments are the command line's own. A name this surface does not
+offer is refused rather than invented, and a field no action takes is refused rather than
+ignored.
 
 What an envelope holds is shaped by its `kind`, so it is reached through the kind rather than
 as an open value (ARCH-R63). There is one generated class per kind, and it is the way through:
@@ -71,7 +78,7 @@ Shapes are generated. `src/Generated/` holds types produced from `web-api.contra
 artefact lemonfiber builds from the `serde` types it serialises with (ADR-0014, ARCH-R56,
 ARCH-R58). Nothing in that directory is edited by hand.
 
-A copy of the artefact is vendored here, beside the release tag it came from, so generation
+A copy of the artefact is vendored here, beside the revision it came from, so generation
 needs no network and a contract change arrives as a diff somebody reads (ARCH-R65). Three
 commands, and only the first touches the network:
 
@@ -81,7 +88,7 @@ commands, and only the first touches the network:
 | `composer contract:generate` | no | Writes `src/Generated/` from the vendored copy. Deterministic; its output is committed |
 | `composer contract:check` | no | Regenerates and fails on any diff. Part of `composer ci`, so CI fails on a stale `src/Generated` (ARCH-R66) |
 
-`contract/VERSION` names the release the vendored copy came from.
+`contract/VERSION` names the revision the vendored copy came from.
 
 Generation refuses an artefact whose `api_version` this package does not implement, naming both
 versions and writing nothing (ARCH-R67). Types that compile and lie are worse than a build that
@@ -107,7 +114,9 @@ The package carries semver. `api_version` is a separate integer describing the w
 
 ## Quality bar
 
-Every gate below is a merge gate. `composer ci` runs all of them.
+Every gate below is a merge gate. `composer ci` runs all of them but the last. Backward
+compatibility is its own script and its own CI job: it needs a checker installed separately
+(`composer bin bc install`) and a released tag to compare against.
 
 | Gate | Command | Threshold |
 |---|---|---|
@@ -119,7 +128,7 @@ Every gate below is a merge gate. `composer ci` runs all of them.
 | Contract types | `composer contract:check` | Regeneration produces no diff |
 | Tests | `composer test:coverage` | 100% line coverage |
 | Mutation testing | `composer test:mutation` | 100% mutation score |
-| Backward compatibility | `composer bc` | Roave, against the last released tag |
+| Backward compatibility | `composer bc` | Roave, against the newest `v*` tag. There are none yet, so the CI job skips both its steps and passes having compared nothing |
 
 `src/Generated/` is skipped by Pint, PHPStan, Rector, the guards and both test gates. Generated
 code is proved by regeneration producing no diff, not by passing a linter; everything that uses

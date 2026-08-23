@@ -50,12 +50,17 @@ and the error model's wording. That is the part worth reviewing.
 ## Checks
 
 ```
-composer ci       # every gate, in the order CI runs them
+composer ci       # every gate but one, in the order CI runs them
+composer bc       # the one it leaves out: backward compatibility
 composer test     # the suite alone
 ```
 
 Every gate in `composer ci` is a merge gate, including 100% line coverage **and**
 a 100% mutation score — coverage that kills no mutants proves only that lines ran.
+Backward compatibility is a merge gate too, and sits outside `composer ci`: it
+needs a released tag to compare against and a checker installed on its own
+(`composer bin bc install`). There are no tags yet, so its CI job skips its steps
+and passes having compared nothing.
 
 ## Before you open a PR
 
