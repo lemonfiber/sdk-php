@@ -95,15 +95,15 @@ Everything else in `src/` is behaviour no schema expresses:
 | Written by hand | What it holds to |
 |---|---|
 | `Http\RunToken` | The per-run token travels in a header, never in an address (ARCH-R52) |
-| `Http\BaseUrl` | Loopback only; any other host is refused before anything is sent (C6-R1, C6-R14) |
+| `Http\BaseUrl` | Loopback only; any other host is refused before anything is sent, and a loopback address is not refused for being named rather than numeric (ARCH-R60) |
 | `Envelope\EnvelopeReader` | A version mismatch is refused plainly, naming both versions, rather than rendering part of an answer (ARCH-R55) |
 | `Envelope\Payload` | An envelope is read as the kind it carries, or not at all (ARCH-R63) |
-| `Events\EventStream` | A stream that goes quiet longer than the agreed heartbeat is reported as broken, not as calm (ARCH-R50) |
+| `Events\EventStream` | A stream quiet for twice the agreed heartbeat is reported as broken, not as calm; one missed beat is not (ARCH-R61) |
 | `Events\HeldValues` | Values gathered before a reconnection gap are marked out of date (ARCH-R51) |
 | `Exception\*` | The error model, in plain language (G2, G4) |
 
-The package carries semver. `api_version` is a separate monotonic integer describing the wire
-(ARCH-R2). Many package versions may speak one wire version.
+The package carries semver. `api_version` is a separate integer describing the wire
+(ARCH-R46). Many package versions may speak one wire version.
 
 ## Quality bar
 

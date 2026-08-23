@@ -9,6 +9,9 @@ use Lemonfiber\Sdk\Tests\Support\FakeClock;
 use Lemonfiber\Sdk\Tests\Support\FakeEventSource;
 use Lemonfiber\Sdk\Time\Duration;
 
+/** One event, framed as it arrives on the wire. */
+const ONE = "data: one\n\n";
+
 /**
  * @param  list<list<string>>  $connections
  * @param  list<float>  $readings
@@ -59,14 +62,25 @@ it('reports a connection that runs dry', function (): void {
 });
 
 it('waits out a silence no longer than the agreed sign of life', function (): void {
-    [$seen, $thrown] = drain(streamOver([['', "data: one\n\n"]], [1.0, 2.0, 2.5]));
+    [$seen, $thrown] = drain(streamOver([['', ONE]], [1.0, 2.0, 2.5]));
 
     expect($seen)->toHaveCount(1)
         ->and($thrown?->getMessage())->toContain('The connection closed');
 });
 
-it('reports a silence longer than the agreed sign of life', function (): void {
-    [$seen, $thrown] = drain(streamOver([['']], [1.0, 2.001]));
+it('carries on through a single missed beat', function (): void {
+    // Quiet for exactly two beats, which is the edge itself: a stream that misses
+    // one is far more often having a slow moment than lying dead, and ending it
+    // on the first miss is what the agreed doubling exists to prevent. Sitting on
+    // the boundary rather than inside it is what holds `>` apart from `>=`.
+    [$seen, $thrown] = drain(streamOver([['', ONE]], [1.0, 3.0, 3.5]));
+
+    expect($seen)->toHaveCount(1)
+        ->and($thrown?->getMessage())->toContain('The connection closed');
+});
+
+it('reports a silence longer than twice the agreed sign of life', function (): void {
+    [$seen, $thrown] = drain(streamOver([['']], [1.0, 3.001]));
 
     expect($seen)->toBe([])
         ->and($thrown?->getMessage())->toContain('Live updates stopped arriving');
@@ -79,7 +93,7 @@ it('names the agreed sign of life when it reports a silence', function (): void 
 });
 
 it('counts a silence from the last thing that arrived, not from the start', function (): void {
-    [$seen, $thrown] = drain(streamOver([["data: one\n\n", '', "data: two\n\n"]], [0.0, 5.0, 5.5, 6.0]));
+    [$seen, $thrown] = drain(streamOver([[ONE, '', "data: two\n\n"]], [0.0, 5.0, 5.5, 6.0]));
 
     expect($seen)->toHaveCount(2)
         ->and($thrown?->getMessage())->toContain('The connection closed');
