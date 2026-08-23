@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `error` envelope, shaped as the contract describes it.
+ * The `household` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{cause?: mixed, code: string, detail?: string|null, meaning: string, remedies: list<array{action: string, detail?: string|null}>, severity: 'advisory'|'warning'|'error'|'critical', state: 'actionable'|'guided'|'remediable'|'unknown'|'suppressed', summary: string}
+ * @phpstan-type Data array{available: bool, findings: list<string>, members: list<array{name: string, requests: list<array{media?: string|null, state?: 'waiting-for-approval'|'declined'|'failed'|'getting'|'partly-here'|'here'|'gone'|null, title?: string|null}>}>}
  */
-final class ErrorEnvelope
+final class HouseholdEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Error;
+    public const Kind KIND = Kind::Household;
 
     /**
      * The same envelope with its payload typed by its kind.

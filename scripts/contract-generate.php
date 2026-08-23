@@ -40,7 +40,7 @@ use function unlink;
  *
  * Each kind's schema is the whole envelope and carries the title `Envelope`,
  * which is the Rust type's name. The class is named from the kind instead, so
- * six kinds are six classes rather than six collisions.
+ * every kind is a class of its own rather than one more collision.
  *
  * Spec: 20-architecture/contracts/web-api.md
  */
