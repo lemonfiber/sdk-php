@@ -57,7 +57,7 @@ it('names every kind the contract describes, and one class each', function (): v
     expect(Kind::cases())->not->toBeEmpty();
 });
 
-it('generates from the vendored artefact, and from the release it came from', function (): void {
+it('generates from the vendored artefact, and from the revision it came from', function (): void {
     $root = dirname(__DIR__, 2);
     $decoded = json_decode((string) file_get_contents($root . '/contract/web-api.contract.json'), true, 64, JSON_THROW_ON_ERROR);
     $artefact = is_array($decoded) ? $decoded : [];

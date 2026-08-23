@@ -82,7 +82,7 @@ final readonly class ContractGenerator
 
         if ($version !== self::SPOKEN_VERSION) {
             return $this->refuse(sprintf(
-                'The vendored contract is api_version %d and this package implements %d. Nothing was generated. Sync a release this package speaks, or implement %d first.',
+                'The vendored contract is api_version %d and this package implements %d. Nothing was generated. Sync a revision this package speaks, or implement %d first.',
                 $version,
                 self::SPOKEN_VERSION,
                 $version,
@@ -193,13 +193,13 @@ final readonly class ContractGenerator
     }
 
     /**
-     * The release the vendored artefact was taken from.
+     * The revision the vendored artefact was taken from.
      */
     private function stamp(): string
     {
         $text = file_get_contents($this->root . '/' . self::STAMP);
 
-        return $text === false ? 'an unrecorded release' : trim($text);
+        return $text === false ? 'an unrecorded revision' : trim($text);
     }
 
     /**
@@ -313,7 +313,7 @@ final readonly class ContractGenerator
                     public const int API_VERSION = %d;
 
                     /**
-                     * The lemonfiber release the artefact was vendored from.
+                     * The lemonfiber revision the artefact was vendored from.
                      */
                     public const string SOURCE = %s;
                 }
