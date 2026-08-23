@@ -65,8 +65,19 @@ it('waits out a silence no longer than the agreed sign of life', function (): vo
         ->and($thrown?->getMessage())->toContain('The connection closed');
 });
 
-it('reports a silence longer than the agreed sign of life', function (): void {
-    [$seen, $thrown] = drain(streamOver([['']], [1.0, 2.001]));
+it('carries on through a single missed beat', function (): void {
+    // Quiet for exactly two beats, which is the edge itself: a stream that misses
+    // one is far more often having a slow moment than lying dead, and ending it
+    // on the first miss is what the agreed doubling exists to prevent. Sitting on
+    // the boundary rather than inside it is what holds `>` apart from `>=`.
+    [$seen, $thrown] = drain(streamOver([['', "data: one\n\n"]], [1.0, 3.0, 3.5]));
+
+    expect($seen)->toHaveCount(1)
+        ->and($thrown?->getMessage())->toContain('The connection closed');
+});
+
+it('reports a silence longer than twice the agreed sign of life', function (): void {
+    [$seen, $thrown] = drain(streamOver([['']], [1.0, 3.001]));
 
     expect($seen)->toBe([])
         ->and($thrown?->getMessage())->toContain('Live updates stopped arriving');
