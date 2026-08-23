@@ -14,6 +14,7 @@ use function file_put_contents;
 use function fwrite;
 use function glob;
 use function is_array;
+use function is_dir;
 use function is_file;
 use function is_int;
 use function is_string;
@@ -22,6 +23,7 @@ use function json_decode;
 use JsonException;
 
 use function ksort;
+use function mkdir;
 use function preg_match;
 use function preg_split;
 use function sprintf;
@@ -171,10 +173,18 @@ final readonly class ContractGenerator
         $files[self::OUTPUT . '/Kind.php'] = $this->kindEnum($named, $stamp, $version);
         $files[self::OUTPUT . '/Contract.php'] = $this->contractClass($stamp, $version);
 
+        $directory = $this->root . '/' . self::OUTPUT;
+
+        if (! is_dir($directory) && ! mkdir($directory, 0o755, true) && ! is_dir($directory)) {
+            return $this->refuse(sprintf('%s could not be made, so nothing was generated.', self::OUTPUT));
+        }
+
         $this->clear();
 
         foreach ($files as $path => $contents) {
-            file_put_contents($this->root . '/' . $path, $contents);
+            if (file_put_contents($this->root . '/' . $path, $contents) === false) {
+                return $this->refuse(sprintf('%s could not be written, so what is on disk is now incomplete.', $path));
+            }
         }
 
         echo sprintf("contract: %d kinds generated from %s into %s\n", count($named), $stamp, self::OUTPUT);
