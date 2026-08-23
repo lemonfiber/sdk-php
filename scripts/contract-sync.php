@@ -31,18 +31,28 @@ use function sprintf;
 use function str_ends_with;
 
 /**
- * Fetches a release's contract artefact and vendors it beside its tag.
+ * Fetches the contract artefact at one revision of lemonfiber and vendors it
+ * beside the revision it came from.
  *
  * The only step in this package that reaches the network. Generation reads the
- * vendored copy, so a build never does (ARCH-R64, ARCH-R65).
+ * vendored copy, so a build never does.
  *
- * Usage: `composer contract:sync -- v0.9.0`
+ * A revision is a release tag or a full commit hash. Both name one artefact,
+ * so the vendored bytes can be checked against what that revision served.
+ *
+ * Usage: `composer contract:sync -- v1.0.0`
+ *        `composer contract:sync -- d2bf74b950a9f6fb73f2bcd60e2d8adf85337cd6`
  */
 final readonly class ContractSync
 {
     private const string ASSET = 'https://raw.githubusercontent.com/lemonfiber/lemonfiber/%s/contract/web-api.contract.json';
 
-    private const string TAG = '/^v\d+\.\d+\.\d+$/';
+    private const string RELEASE_TAG = '/^v\d+\.\d+\.\d+$/';
+
+    /**
+     * An abbreviated hash is refused: it names one artefact today and may not later.
+     */
+    private const string COMMIT = '/^[0-9a-f]{40}$/';
 
     private const string ARTEFACT = 'contract/web-api.contract.json';
 
@@ -51,7 +61,7 @@ final readonly class ContractSync
     private const int TIMEOUT_SECONDS = 30;
 
     /**
-     * The answer a release with an artefact comes back with.
+     * The answer a revision with an artefact comes back with.
      */
     private const int SERVED = 200;
 
@@ -64,36 +74,36 @@ final readonly class ContractSync
      */
     public function run(array $arguments): int
     {
-        $tag = $arguments[0] ?? '';
+        $revision = $arguments[0] ?? '';
 
-        if (preg_match(self::TAG, $tag) !== 1) {
-            return $this->refuse('contract:sync needs a release tag, as in `composer contract:sync -- v0.9.0`.');
+        if (preg_match(self::RELEASE_TAG, $revision) !== 1 && preg_match(self::COMMIT, $revision) !== 1) {
+            return $this->refuse('contract:sync needs a release tag or a full 40-character commit hash, as in `composer contract:sync -- v1.0.0`.');
         }
 
-        $served = $this->fetch($tag);
+        $served = $this->fetch($revision);
 
         if ($served === null) {
             return 1;
         }
 
-        $described = $this->described($served, $tag);
+        $described = $this->described($served, $revision);
 
         if ($described === null) {
             return 1;
         }
 
-        return $this->vendor($tag, $served, $described);
+        return $this->vendor($revision, $served, $described);
     }
 
     /**
-     * What the release served, or nothing when it served no artefact.
+     * What the revision served, or nothing when it served no artefact.
      */
-    private function fetch(string $tag): ?string
+    private function fetch(string $revision): ?string
     {
         $handle = curl_init();
 
         curl_setopt_array($handle, [
-            CURLOPT_URL => sprintf(self::ASSET, $tag),
+            CURLOPT_URL => sprintf(self::ASSET, $revision),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_TIMEOUT => self::TIMEOUT_SECONDS,
@@ -105,13 +115,13 @@ final readonly class ContractSync
         $failure = curl_errno($handle) === 0 ? '' : curl_error($handle);
 
         if ($failure !== '' || ! is_string($body)) {
-            $this->refuse(sprintf('The contract artefact for %s could not be fetched. %s', $tag, $failure));
+            $this->refuse(sprintf('The contract artefact for %s could not be fetched. %s', $revision, $failure));
 
             return null;
         }
 
         if ($status !== self::SERVED) {
-            $this->refuse(sprintf('lemonfiber %s serves no contract artefact (the answer came back %d).', $tag, $status));
+            $this->refuse(sprintf('lemonfiber %s serves no contract artefact (the answer came back %d).', $revision, $status));
 
             return null;
         }
@@ -124,12 +134,12 @@ final readonly class ContractSync
      *
      * @return array{version: int, kinds: list<string>}|null
      */
-    private function described(string $served, string $tag): ?array
+    private function described(string $served, string $revision): ?array
     {
         try {
             $decoded = json_decode($served, true, self::MAX_DEPTH, JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
-            $this->refuse(sprintf('What %s served is not JSON: %s', $tag, $exception->getMessage()));
+            $this->refuse(sprintf('What %s served is not JSON: %s', $revision, $exception->getMessage()));
 
             return null;
         }
@@ -138,13 +148,13 @@ final readonly class ContractSync
         $kinds = is_array($decoded) ? $decoded['kinds'] ?? null : null;
 
         if (! is_int($version) || ! is_array($kinds)) {
-            $this->refuse(sprintf('What %s served is not a contract artefact.', $tag));
+            $this->refuse(sprintf('What %s served is not a contract artefact.', $revision));
 
             return null;
         }
 
         if ($kinds === []) {
-            $this->refuse(sprintf('The contract %s served describes no kinds.', $tag));
+            $this->refuse(sprintf('The contract %s served describes no kinds.', $revision));
 
             return null;
         }
@@ -153,7 +163,7 @@ final readonly class ContractSync
 
         foreach (array_keys($kinds) as $kind) {
             if (! is_string($kind)) {
-                $this->refuse(sprintf('The contract %s served names a kind that is not a word.', $tag));
+                $this->refuse(sprintf('The contract %s served names a kind that is not a word.', $revision));
 
                 return null;
             }
@@ -167,7 +177,7 @@ final readonly class ContractSync
     /**
      * @param  array{version: int, kinds: list<string>}  $described
      */
-    private function vendor(string $tag, string $served, array $described): int
+    private function vendor(string $revision, string $served, array $described): int
     {
         $directory = dirname($this->root . '/' . self::ARTEFACT);
 
@@ -176,11 +186,11 @@ final readonly class ContractSync
         }
 
         file_put_contents($this->root . '/' . self::ARTEFACT, str_ends_with($served, "\n") ? $served : $served . "\n");
-        file_put_contents($this->root . '/' . self::STAMP, $tag . "\n");
+        file_put_contents($this->root . '/' . self::STAMP, $revision . "\n");
 
         echo sprintf(
             "contract: vendored %s, api_version %d, %d kinds\n  %s\nNow run `composer contract:generate` and commit both.\n",
-            $tag,
+            $revision,
             $described['version'],
             count($described['kinds']),
             implode(', ', $described['kinds']),

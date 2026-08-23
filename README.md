@@ -77,7 +77,7 @@ commands, and only the first touches the network:
 
 | Command | Network | What it does |
 |---|---|---|
-| `composer contract:sync -- v0.9.0` | yes | Fetches that release's artefact, checks it is one, and vendors it into `contract/` with its tag |
+| `composer contract:sync -- v1.0.0` | yes | Fetches the artefact at that revision — a release tag or a full commit hash — checks it is one, and vendors it into `contract/` beside the revision it came from |
 | `composer contract:generate` | no | Writes `src/Generated/` from the vendored copy. Deterministic; its output is committed |
 | `composer contract:check` | no | Regenerates and fails on any diff. Part of `composer ci`, so CI fails on a stale `src/Generated` (ARCH-R66) |
 
