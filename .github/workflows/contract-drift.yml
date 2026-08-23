@@ -1,0 +1,69 @@
+# The vendored contract is a copy, and a copy goes stale in silence.
+#
+# `contract:check` regenerates the types from the *vendored* artefact and diffs
+# the result, so it proves this package agrees with itself and says nothing about
+# what it agrees with. It stayed green while the server's contract moved nineteen
+# kinds ahead, and would have stayed green indefinitely.
+#
+# Nothing else was looking. There is no dependency on lemonfiber to bump, and
+# nothing on the wire changes: `api_version` describes the shape of the envelope,
+# not the set of kinds inside it. So a client generated from a stale artefact
+# parses every reply it still understands and simply has no type for the rest.
+name: contract-drift
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly. The contract moves with releases rather than with commits, so a
+    # daily run would mostly report the same thing twice; a week is still short
+    # enough that catching up is a sync rather than an excavation.
+    - cron: "20 7 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  look:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Compare the vendored contract with the one the server describes
+        env:
+          SERVED: https://raw.githubusercontent.com/lemonfiber/lemonfiber/main/contract/web-api.contract.json
+        run: |
+          set -euo pipefail
+          # `-L` follows redirects, and a redirect may point anywhere. These refuse
+          # any hop that is not HTTPS, so what is fetched cannot be downgraded.
+          curl -fsSL --proto "=https" --proto-redir "=https" --retry 3 -o served.json "$SERVED"
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          vendored = json.loads(pathlib.Path("contract/web-api.contract.json").read_text())
+          served = json.loads(pathlib.Path("served.json").read_text())
+          stamp = pathlib.Path("contract/VERSION").read_text().strip()
+
+          ours = set(vendored.get("kinds", {}))
+          theirs = set(served.get("kinds", {}))
+
+          if vendored == served:
+              print(f"the vendored contract matches the server's, at {stamp}.")
+              sys.exit(0)
+
+          missing = sorted(theirs - ours)
+          extra = sorted(ours - theirs)
+
+          print(f"vendored at {stamp}: api_version {vendored.get('api_version')}, {len(ours)} kinds")
+          print(f"served on main:      api_version {served.get('api_version')}, {len(theirs)} kinds")
+          if missing:
+              print(f"described by the server and not here: {', '.join(missing)}")
+          if extra:
+              print(f"described here and not by the server: {', '.join(extra)}")
+          if not missing and not extra:
+              print("the same kinds, described differently — a shape changed inside one of them.")
+
+          print("::error::the vendored contract no longer matches the one the server describes")
+          print("run `composer contract:sync -- <revision>` then `composer contract:generate`")
+          sys.exit(1)
+          PY
