@@ -1,0 +1,40 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "local>lemonfiber/.github:renovate-config",
+        "config:recommended",
+        ":semanticCommits"
+    ],
+    "labels": [
+        "dependencies"
+    ],
+    "packageRules": [
+        {
+            "description": "PHP itself tracks the newest stable release, and a bump is a platform decision.",
+            "matchManagers": [
+                "composer"
+            ],
+            "matchDepNames": [
+                "php"
+            ],
+            "enabled": false
+        },
+        {
+            "description": "Quality tooling lands together.",
+            "matchManagers": [
+                "composer"
+            ],
+            "matchDepTypes": [
+                "require-dev"
+            ],
+            "groupName": "quality tooling"
+        },
+        {
+            "description": "Actions stay pinned to a commit.",
+            "matchManagers": [
+                "github-actions"
+            ],
+            "pinDigests": true
+        }
+    ]
+}

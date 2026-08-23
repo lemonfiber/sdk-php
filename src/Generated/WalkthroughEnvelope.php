@@ -1,0 +1,42 @@
+<?php
+
+// Generated from contract/web-api.contract.json. Do not edit.
+// Source: v0.9.0-unreleased, api_version 1.
+// Regenerate with `composer contract:generate`.
+
+declare(strict_types=1);
+
+namespace Lemonfiber\Sdk\Generated;
+
+use Lemonfiber\Sdk\Envelope\Envelope;
+use Lemonfiber\Sdk\Envelope\Payload;
+use Lemonfiber\Sdk\Exception\UnexpectedKind;
+
+/**
+ * The `walkthrough` envelope, shaped as the contract describes it.
+ *
+ * @phpstan-type Data array{already_here: bool, handover?: array{next: list<'more-content'|'household'|'client-apps'>}|null, in_background: bool, item?: string|null, lines: list<array{detail: string, said: string, step: 'choosing'|'searching'|'grabbing'|'downloading'|'importing'|'scanning'|'available'}>, link?: 'hardlinked'|'copied'|null, proves: string, shape: 'pipeline'|'library-only', state: 'offered'|'skipped'|'searching'|'grabbing'|'downloading'|'importing'|'complete'|'failed'|'abandoned', stopped?: array{logs: list<string>, reason: 'no-indexers'|'indexers-failed'|'nothing-matched'|'none-met-the-preset'|'tunnel-down'|'not-grabbed'|'stalled'|'import-failed'|'no-media-server'|'not-visible', remedy: string, step: 'choosing'|'searching'|'grabbing'|'downloading'|'importing'|'scanning'|'available'}|null, suggestions: list<string>}
+ */
+final class WalkthroughEnvelope
+{
+    /**
+     * The kind an envelope must carry to be read as this one.
+     */
+    public const Kind KIND = Kind::Walkthrough;
+
+    /**
+     * The same envelope with its payload typed by its kind (ARCH-R63).
+     *
+     * @param  Envelope<mixed>  $envelope
+     * @return Envelope<Data>
+     *
+     * @throws UnexpectedKind
+     */
+    public static function in(Envelope $envelope): Envelope
+    {
+        /** @var Data $data */
+        $data = Payload::under(self::KIND, $envelope);
+
+        return new Envelope($envelope->apiVersion, $envelope->kind, $data);
+    }
+}

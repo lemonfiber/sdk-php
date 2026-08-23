@@ -1,0 +1,110 @@
+{
+    "name": "lemonfiber/sdk-php",
+    "description": "PHP client for lemonfiber's local HTTP API: envelope reading, loopback-only transport, and a live event stream that never presents stale values as current.",
+    "license": "LicenseRef-Hippocratic-3.0",
+    "type": "library",
+    "keywords": [
+        "lemonfiber",
+        "sdk",
+        "api-client",
+        "sse",
+        "self-hosted"
+    ],
+    "authors": [
+        {
+            "name": "NightWorks.io"
+        }
+    ],
+    "require": {
+        "php": "^8.5",
+        "ext-filter": "*",
+        "ext-json": "*",
+        "psr/http-message": "^2.0",
+        "saloonphp/saloon": "^4.0"
+    },
+    "require-dev": {
+        "ext-curl": "*",
+        "ext-tokenizer": "*",
+        "bamarni/composer-bin-plugin": "^1.9",
+        "captainhook/captainhook": "^5.29",
+        "ergebnis/composer-normalize": "^2.52",
+        "ergebnis/phpstan-rules": "^2.13",
+        "guzzlehttp/psr7": "^2.13",
+        "laravel/pint": "^1.30",
+        "pestphp/pest": "^5.1",
+        "pestphp/pest-plugin-arch": "^5.0",
+        "phpstan/phpstan": "^2.2",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "rector/rector": "^2.6",
+        "shipmonk/composer-dependency-analyser": "^1.8",
+        "tomasvotruba/type-coverage": "^2.3"
+    },
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Lemonfiber\\Sdk\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lemonfiber\\Sdk\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true,
+            "ergebnis/composer-normalize": true,
+            "pestphp/pest-plugin": true
+        },
+        "platform": {
+            "php": "8.5.0"
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "bamarni-bin": {
+            "bin-links": false,
+            "forward-command": false
+        }
+    },
+    "scripts": {
+        "analyse": "phpstan analyse",
+        "bc": "vendor-bin/bc/vendor/bin/roave-backward-compatibility-check",
+        "ci": [
+            "@composer validate --strict",
+            "@composer normalize --dry-run",
+            "@composer audit",
+            "@lint",
+            "@analyse",
+            "@refactor",
+            "@guards",
+            "@deps",
+            "@contract:check",
+            "@test:coverage",
+            "@test:mutation"
+        ],
+        "contract:check": [
+            "@contract:generate",
+            "git diff --exit-code -- src/Generated contract"
+        ],
+        "contract:generate": "@php scripts/contract-generate.php",
+        "contract:sync": "@php scripts/contract-sync.php",
+        "deps": "composer-dependency-analyser",
+        "guards": "@php scripts/guards.php",
+        "lint": "pint --test",
+        "lint:fix": "pint",
+        "refactor": "rector process --dry-run",
+        "refactor:fix": "rector process",
+        "test": "pest",
+        "test:coverage": "pest --coverage --min=100",
+        "test:mutation": "pest --mutate --everything --covered-only --min=100 --ignore=src/Generated"
+    },
+    "scripts-descriptions": {
+        "ci": "Every gate CI runs, in order.",
+        "contract:check": "Regenerate src/Generated and fail on any difference (ARCH-R66).",
+        "contract:generate": "Regenerate src/Generated from the vendored contract artefact, offline.",
+        "contract:sync": "Vendor a lemonfiber release's contract artefact: composer contract:sync -- v0.9.0.",
+        "guards": "Fail on suppressions, oversized files, remote addresses and reasoning in comments."
+    }
+}

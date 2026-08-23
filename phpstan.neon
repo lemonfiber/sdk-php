@@ -1,0 +1,49 @@
+includes:
+    - vendor/pestphp/pest/extension.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/ergebnis/phpstan-rules/rules.neon
+    - vendor/tomasvotruba/type-coverage/config/extension.neon
+
+parameters:
+    level: max
+    # Named so actions/cache can carry the result cache between runs.
+    tmpDir: .phpstan-cache
+    paths:
+        - src
+        - tests
+        - scripts
+    excludePaths:
+        analyse:
+            # Pest's arch() builder returns a type its own signatures do not
+            # describe, so level max cannot follow the chain.
+            - tests/Arch
+            # Written by `composer contract:generate`. Its correctness is proved
+            # by regeneration producing no diff, not by analysis. The symbols
+            # stay visible to everything that uses them.
+            - src/Generated
+    type_coverage:
+        declare: 100
+        return_type: 100
+        param_type: 100
+        property_type: 100
+        constant_type: 100
+    ergebnis:
+        allRules: true
+        noExtends:
+            classesAllowedToBeExtended:
+                - InvalidArgumentException
+                - RuntimeException
+                - Saloon\Http\Connector
+                - Saloon\Http\Request
+        # Optional arguments are part of this package's public surface.
+        noConstructorParameterWithDefaultValue:
+            enabled: false
+        noParameterWithNullDefaultValue:
+            enabled: false
+        # A nullable event id is the difference between resuming and starting fresh.
+        noParameterWithNullableTypeDeclaration:
+            enabled: false
+        # A nullable return is the difference between a held value and none.
+        noNullableReturnTypeDeclaration:
+            enabled: false

@@ -1,0 +1,10 @@
+/vendor/
+/vendor-bin/*/vendor/
+/.phpunit.cache/
+/.phpstan-cache/
+/.rector-cache/
+/.pest/
+/coverage/
+/clover.xml
+/.php-cs-fixer.cache
+/.DS_Store
