@@ -4,6 +4,9 @@
 /.gitattributes     export-ignore
 /.github            export-ignore
 /.gitignore         export-ignore
+/.markdownlint.jsonc export-ignore
+/AGENTS.md          export-ignore
+/CLAUDE.md          export-ignore
 /captainhook.json   export-ignore
 /cliff.toml         export-ignore
 /composer-dependency-analyser.php export-ignore
@@ -15,4 +18,5 @@
 /renovate.json      export-ignore
 /scripts            export-ignore
 /tests              export-ignore
+/typos.toml         export-ignore
 /vendor-bin         export-ignore
