@@ -15,7 +15,7 @@ use Saloon\Http\PendingRequest;
 use function trim;
 
 /**
- * The per-run token lemonfiber prints at start, travelling as a header (ARCH-R52).
+ * The per-run token lemonfiber prints at start, travelling as a header.
  */
 final readonly class RunToken implements Authenticator
 {

@@ -9,7 +9,7 @@ use RuntimeException;
 use function sprintf;
 
 /**
- * An envelope was read as a kind it does not carry (ARCH-R63).
+ * An envelope was read as a kind it does not carry.
  */
 final class UnexpectedKind extends RuntimeException implements Problem
 {

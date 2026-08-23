@@ -11,7 +11,7 @@ use Saloon\Http\Request;
 use Saloon\Traits\Body\HasJsonBody;
 
 /**
- * A request that acts, mirroring a command (ARCH-R48).
+ * A request that acts, mirroring a command.
  */
 final class ActionRequest extends Request implements HasBody
 {

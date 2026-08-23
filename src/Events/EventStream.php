@@ -10,7 +10,7 @@ use Lemonfiber\Sdk\Time\Clock;
 use Lemonfiber\Sdk\Time\Duration;
 
 /**
- * One connection's worth of updates, ending as soon as the signs of life stop (ARCH-R50).
+ * One connection's worth of updates, ending as soon as the signs of life stop.
  */
 final readonly class EventStream
 {

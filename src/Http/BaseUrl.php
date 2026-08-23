@@ -18,7 +18,7 @@ use function str_starts_with;
 use function trim;
 
 /**
- * An address on the machine lemonfiber runs on, and nowhere else (C6-R1, C6-R14).
+ * An address on the machine lemonfiber runs on, and nowhere else.
  */
 final readonly class BaseUrl
 {

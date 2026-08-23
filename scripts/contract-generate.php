@@ -34,13 +34,13 @@ use function unlink;
  * Writes this package's contract types from the vendored artefact.
  *
  * Offline and deterministic: the same artefact in, the same files out, so CI
- * regenerates and fails on any difference (ARCH-R58, ARCH-R65, ARCH-R66).
+ * regenerates and fails on any difference.
  *
  * Each kind's schema is the whole envelope and carries the title `Envelope`,
  * which is the Rust type's name. The class is named from the kind instead, so
  * six kinds are six classes rather than six collisions.
  *
- * Spec: ARCH-R58, ARCH-R63, ARCH-R65, ARCH-R66, ARCH-R67.
+ * Spec: 20-architecture/contracts/web-api.md
  */
 final readonly class ContractGenerator
 {
@@ -237,7 +237,7 @@ final readonly class ContractGenerator
                     public const Kind KIND = Kind::%s;
 
                     /**
-                     * The same envelope with its payload typed by its kind (ARCH-R63).
+                     * The same envelope with its payload typed by its kind.
                      *
                      * @param  Envelope<mixed>  $envelope
                      * @return Envelope<Data>
@@ -298,12 +298,12 @@ final readonly class ContractGenerator
                 final class Contract
                 {
                     /**
-                     * The wire version these types were generated from (ARCH-R46).
+                     * The wire version these types were generated from.
                      */
                     public const int API_VERSION = %d;
 
                     /**
-                     * The lemonfiber release the artefact was vendored from (ARCH-R65).
+                     * The lemonfiber release the artefact was vendored from.
                      */
                     public const string SOURCE = %s;
                 }

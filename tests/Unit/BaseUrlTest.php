@@ -84,8 +84,8 @@ it('refuses an address carrying anything beyond a host, a port and a path', func
     'a fragment' => ['http://127.0.0.1:9000#secret'],
 ]);
 
-// ARCH-R60: a name that resolves to loopback is a loopback address. Refusing the
-// word rejects what an operator types; resolving before connecting is the guard.
+// A name that resolves to loopback is a loopback address. Refusing the word
+// rejects what an operator types; resolving before connecting is the guard.
 
 /**
  * @param list<string> $addresses

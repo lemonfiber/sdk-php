@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Lemonfiber\Sdk\Envelope;
 
 /**
- * The wrapper every lemonfiber answer arrives in (ARCH-R46).
+ * The wrapper every lemonfiber answer arrives in.
  *
- * `data` is typed by `kind` rather than left open (ARCH-R63). The generated
+ * `data` is typed by `kind` rather than left open. The generated
  * contract types supply `TData`; an `Envelope<mixed>` on a public surface means
  * the generation was not used.
  *

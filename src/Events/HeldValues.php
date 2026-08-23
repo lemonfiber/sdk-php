@@ -7,7 +7,7 @@ namespace Lemonfiber\Sdk\Events;
 use Lemonfiber\Sdk\Envelope\Envelope;
 
 /**
- * The last envelope seen for each kind, marked out of date across a break (ARCH-R51).
+ * The last envelope seen for each kind, marked out of date across a break.
  */
 final class HeldValues
 {

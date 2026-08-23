@@ -13,7 +13,7 @@ use Lemonfiber\Sdk\Exception\StreamInterrupted;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
 
 /**
- * Updates across reconnections, marking everything held before a break as out of date (ARCH-R51).
+ * Updates across reconnections, marking everything held before a break as out of date.
  */
 final readonly class EventFeed
 {
