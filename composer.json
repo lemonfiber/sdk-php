@@ -104,7 +104,7 @@
         "ci": "Every gate CI runs, in order.",
         "contract:check": "Regenerate src/Generated and fail on any difference (ARCH-R66).",
         "contract:generate": "Regenerate src/Generated from the vendored contract artefact, offline.",
-        "contract:sync": "Vendor a lemonfiber release's contract artefact: composer contract:sync -- v0.9.0.",
+        "contract:sync": "Vendor lemonfiber's contract artefact at one revision: composer contract:sync -- v1.0.0.",
         "guards": "Fail on suppressions, oversized files, remote addresses and reasoning in comments."
     }
 }
