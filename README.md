@@ -143,8 +143,8 @@ configuration that PHPUnit 13 rejects, so it cannot run on this toolchain.
 
 Comments state what a thing is or does. Reasoning, history and justification belong in an ADR in
 the spec repository, not in source. `scripts/guards.php` fails any comment line opening with
-`because`, `we `, `the reason`, `this is why`, `originally`, `it turns out`, `note that` or
-`arguably`.
+`because`, `the reason`, `this is why`, `originally`, `it turns out`, `note that`, `arguably`,
+or `we` as a word.
 
 ## Licence
 
