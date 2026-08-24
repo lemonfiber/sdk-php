@@ -38,7 +38,7 @@ it('accepts a written out loopback address', function (string $given, string $ex
 ]);
 
 it('refuses an address on another machine', function (string $given, string $host): void {
-    expect(fn(): BaseUrl => BaseUrl::fromString($given, resolvingTo(['93.184.216.34'])))
+    expect(fn(): BaseUrl => BaseUrl::fromString($given, resolvingTo(['198.51.100.34'])))
         ->toThrow(ConfigurationProblem::class, 'The address "' . $host . '" points somewhere else');
 })->with([
     'a public name' => ['http://example.com:9000', 'example.com'],
@@ -123,8 +123,8 @@ it('refuses a name that resolves anywhere but loopback', function (array $to): v
     expect(fn(): BaseUrl => BaseUrl::fromString('http://elsewhere.test:7777', resolvingTo($to)))
         ->toThrow(ConfigurationProblem::class);
 })->with([
-    'off the machine' => [['93.184.216.34']],
-    'one of several is off the machine' => [['127.0.0.1', '93.184.216.34']],
+    'off the machine' => [['198.51.100.34']],
+    'one of several is off the machine' => [['127.0.0.1', '198.51.100.34']],
 ]);
 
 it('refuses a name that resolves to nothing', function (): void {
@@ -133,7 +133,7 @@ it('refuses a name that resolves to nothing', function (): void {
 });
 
 it('refuses a literal address that is not loopback without resolving it', function (): void {
-    expect(fn(): BaseUrl => BaseUrl::fromString('http://93.184.216.34:7777', resolvingTo(['127.0.0.1'])))
+    expect(fn(): BaseUrl => BaseUrl::fromString('http://198.51.100.34:7777', resolvingTo(['127.0.0.1'])))
         ->toThrow(ConfigurationProblem::class);
 });
 
