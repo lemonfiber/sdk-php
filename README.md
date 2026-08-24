@@ -118,6 +118,12 @@ Every gate below is a merge gate. `composer ci` runs all of them but the last. B
 compatibility is its own script and its own CI job: it needs a checker installed separately
 (`composer bin bc install`) and a released tag to compare against.
 
+`composer install` also turns on this repository's pre-push hook, which refuses a push that
+would leave a branch carrying no commit `origin/main` does not — what pushing the trunk over a
+feature branch looks like. `composer update` does it too. A clone nobody has installed into has
+no hook: it is `git config core.hooksPath .githooks`, per clone, and git cannot read
+`.githooks/` on its own.
+
 | Gate | Command | Threshold |
 |---|---|---|
 | Formatting | `composer lint` | Pint, `per` preset plus strict rules, zero diffs |
