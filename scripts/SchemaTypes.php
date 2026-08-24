@@ -47,39 +47,40 @@ final class SchemaTypes
     public function typeOf(array $schema, array $defs, array $seen = []): string
     {
         $reference = $schema['$ref'] ?? null;
-
-        if (is_string($reference)) {
-            return $this->typeOfReference($reference, $defs, $seen);
-        }
-
-        if (array_key_exists('const', $schema)) {
-            return $this->literal($schema['const']);
-        }
-
         $enum = $schema['enum'] ?? null;
+        $combined = $this->combined($schema);
 
-        if (is_array($enum) && $enum !== []) {
-            return $this->union(array_map($this->literal(...), array_values($enum)));
-        }
-
-        $branches = $schema['oneOf'] ?? $schema['anyOf'] ?? null;
-
-        if (is_array($branches) && $branches !== []) {
-            return $this->union($this->typesOf($branches, $defs, $seen));
-        }
-
-        $all = $schema['allOf'] ?? null;
-
-        if (is_array($all) && count($all) === 1) {
-            return $this->union($this->typesOf($all, $defs, $seen));
-        }
-
-        return $this->typeOfNamed($schema['type'] ?? null, $schema, $defs, $seen);
+        return match (true) {
+            is_string($reference) => $this->typeOfReference($reference, $defs, $seen),
+            array_key_exists('const', $schema) => $this->literal($schema['const']),
+            is_array($enum) && $enum !== [] => $this->union(array_map($this->literal(...), array_values($enum))),
+            $combined !== null => $this->union($this->typesOf($combined, $defs, $seen)),
+            default => $this->typeOfNamed($schema['type'] ?? null, $schema, $defs, $seen),
+        };
     }
 
     public function quoted(string $value): string
     {
         return "'" . str_replace(['\\', "'"], ['\\\\', "\\'"], $value) . "'";
+    }
+
+    /**
+     * The sub-schemas a combining keyword holds, or nothing where a schema combines none.
+     *
+     * @param  array<mixed, mixed>  $schema
+     * @return array<mixed, mixed>|null
+     */
+    private function combined(array $schema): ?array
+    {
+        $branches = $schema['oneOf'] ?? $schema['anyOf'] ?? null;
+
+        if (is_array($branches) && $branches !== []) {
+            return $branches;
+        }
+
+        $all = $schema['allOf'] ?? null;
+
+        return is_array($all) && count($all) === 1 ? $all : null;
     }
 
     /**
@@ -264,6 +265,6 @@ final class SchemaTypes
 
     private function key(string $name): string
     {
-        return preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $name) === 1 ? $name : $this->quoted($name);
+        return preg_match('/^[A-Za-z_]\w*$/', $name) === 1 ? $name : $this->quoted($name);
     }
 }

@@ -80,19 +80,32 @@ final readonly class ContractSync
             return $this->refuse('contract:sync needs a release tag or a full 40-character commit hash, as in `composer contract:sync -- v1.0.0`.');
         }
 
+        $artefact = $this->artefact($revision);
+
+        return $artefact === null ? 1 : $this->vendor($revision, $artefact);
+    }
+
+    /**
+     * What a revision serves together with what it describes, or nothing when
+     * the revision serves no artefact.
+     *
+     * @return array{served: string, version: int, kinds: list<string>}|null
+     */
+    private function artefact(string $revision): ?array
+    {
         $served = $this->fetch($revision);
 
         if ($served === null) {
-            return 1;
+            return null;
         }
 
         $described = $this->described($served, $revision);
 
-        if ($described === null) {
-            return 1;
-        }
-
-        return $this->vendor($revision, $served, $described);
+        return $described === null ? null : [
+            'served' => $served,
+            'version' => $described['version'],
+            'kinds' => $described['kinds'],
+        ];
     }
 
     /**
@@ -175,9 +188,9 @@ final readonly class ContractSync
     }
 
     /**
-     * @param  array{version: int, kinds: list<string>}  $described
+     * @param  array{served: string, version: int, kinds: list<string>}  $artefact
      */
-    private function vendor(string $revision, string $served, array $described): int
+    private function vendor(string $revision, array $artefact): int
     {
         $directory = dirname($this->root . '/' . self::ARTEFACT);
 
@@ -185,15 +198,17 @@ final readonly class ContractSync
             mkdir($directory, 0o755, true);
         }
 
+        $served = $artefact['served'];
+
         file_put_contents($this->root . '/' . self::ARTEFACT, str_ends_with($served, "\n") ? $served : $served . "\n");
         file_put_contents($this->root . '/' . self::STAMP, $revision . "\n");
 
         echo sprintf(
             "contract: vendored %s, api_version %d, %d kinds\n  %s\nNow run `composer contract:generate` and commit both.\n",
             $revision,
-            $described['version'],
-            count($described['kinds']),
-            implode(', ', $described['kinds']),
+            $artefact['version'],
+            count($artefact['kinds']),
+            implode(', ', $artefact['kinds']),
         );
 
         return 0;
