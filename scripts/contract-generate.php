@@ -70,7 +70,7 @@ final readonly class ContractGenerator
     {
         $artefact = $this->vendored();
 
-        if (! is_array($artefact)) {
+        if ($artefact === null) {
             return 1;
         }
 
@@ -106,8 +106,20 @@ final readonly class ContractGenerator
 
     /**
      * The vendored artefact, or nothing when it cannot be read.
+     *
+     * @return array<mixed, mixed>|null
      */
-    private function vendored(): mixed
+    private function vendored(): ?array
+    {
+        $text = $this->read();
+
+        return $text === null ? null : $this->decoded($text);
+    }
+
+    /**
+     * The vendored file's text, or nothing when there is none to read.
+     */
+    private function read(): ?string
     {
         $path = $this->root . '/' . self::ARTEFACT;
 
@@ -125,6 +137,16 @@ final readonly class ContractGenerator
             return null;
         }
 
+        return $text;
+    }
+
+    /**
+     * What the vendored text describes, or nothing when it is not an artefact.
+     *
+     * @return array<mixed, mixed>|null
+     */
+    private function decoded(string $text): ?array
+    {
         try {
             $decoded = json_decode($text, true, self::MAX_DEPTH, JSON_THROW_ON_ERROR);
         } catch (JsonException $exception) {
@@ -222,9 +244,10 @@ final readonly class ContractGenerator
         $properties = $schema['properties'] ?? null;
         $payload = is_array($properties) ? $properties['data'] ?? null : null;
         $defs = $schema['$defs'] ?? null;
+        $named = is_array($defs) ? $defs : [];
 
         $type = is_array($payload)
-            ? $this->types->typeOf($payload, is_array($defs) ? $defs : [])
+            ? $this->types->typeOf($payload, $named)
             : SchemaTypes::UNKNOWN;
 
         return $this->header($stamp, $version) . sprintf(
