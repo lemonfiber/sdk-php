@@ -72,6 +72,9 @@
         "post-install-cmd": [
             "git config core.hooksPath .githooks"
         ],
+        "post-update-cmd": [
+            "git config core.hooksPath .githooks"
+        ],
         "analyse": "phpstan analyse",
         "bc": "vendor-bin/bc/vendor/bin/roave-backward-compatibility-check",
         "ci": [
