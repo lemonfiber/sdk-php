@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Scripts;
 
+require_once __DIR__ . '/GeneratedSource.php';
 require_once __DIR__ . '/SchemaTypes.php';
 
 use function array_filter;
@@ -64,8 +65,6 @@ final readonly class ContractGenerator
 
     private const string OUTPUT = 'src/Generated';
 
-    private const string NAMESPACE = 'Lemonfiber\\Sdk\\Generated';
-
     private const int MAX_DEPTH = 64;
 
     /**
@@ -75,10 +74,7 @@ final readonly class ContractGenerator
      */
     private const array ANNOTATIONS = ['description', 'title', 'default', 'examples'];
 
-    public function __construct(
-        private string $root,
-        private SchemaTypes $types = new SchemaTypes(),
-    ) {}
+    public function __construct(private string $root) {}
 
     public function run(): int
     {
@@ -88,43 +84,93 @@ final readonly class ContractGenerator
             return 1;
         }
 
+        $version = $this->spokenVersion($artefact);
+
+        if ($version === null) {
+            return 1;
+        }
+
+        $kinds = $this->generable($artefact);
+
+        return $kinds === null ? 1 : $this->emit($kinds, $version);
+    }
+
+    /**
+     * The `api_version` the artefact names, or nothing when it names none this package generates from.
+     *
+     * @param  array<mixed, mixed>  $artefact
+     */
+    private function spokenVersion(array $artefact): ?int
+    {
         $version = $artefact['api_version'] ?? null;
 
         if (! is_int($version)) {
-            return $this->refuse('The vendored contract names no whole-number api_version, so it is not a contract artefact.');
+            $this->refuse('The vendored contract names no whole-number api_version, so it is not a contract artefact.');
+
+            return null;
         }
 
         if ($version !== self::SPOKEN_VERSION) {
-            return $this->refuse(sprintf(
+            $this->refuse(sprintf(
                 'The vendored contract is api_version %d and this package implements %d. Nothing was generated. Sync a revision this package speaks, or implement %d first.',
                 $version,
                 self::SPOKEN_VERSION,
                 $version,
             ));
+
+            return null;
         }
 
+        return $version;
+    }
+
+    /**
+     * The kinds the artefact describes, or nothing when it describes none that can be generated from.
+     *
+     * @param  array<mixed, mixed>  $artefact
+     * @return array<mixed, mixed>|null
+     */
+    private function generable(array $artefact): ?array
+    {
         $kinds = $artefact['kinds'] ?? null;
 
         if (! is_array($kinds)) {
-            return $this->refuse('The vendored contract names no kinds at all, so it is not a contract artefact.');
+            $this->refuse('The vendored contract names no kinds at all, so it is not a contract artefact.');
+
+            return null;
         }
 
         if ($kinds === []) {
-            return $this->refuse('The vendored contract describes no kinds.');
+            $this->refuse('The vendored contract describes no kinds.');
+
+            return null;
         }
 
+        return $this->ordered($kinds);
+    }
+
+    /**
+     * The same kinds in generation order, or nothing when one puts a constraint beside a reference.
+     *
+     * @param  array<mixed, mixed>  $kinds
+     * @return array<mixed, mixed>|null
+     */
+    private function ordered(array $kinds): ?array
+    {
         $ambiguous = $this->besideAReference($kinds, '');
 
         if ($ambiguous !== []) {
-            return $this->refuse(
+            $this->refuse(
                 'The vendored contract puts a constraint beside a reference, and generating would drop one of the two: '
                 . implode(', ', $ambiguous),
             );
+
+            return null;
         }
 
         ksort($kinds);
 
-        return $this->emit($kinds, $version);
+        return $kinds;
     }
 
     /**
@@ -224,31 +270,75 @@ final readonly class ContractGenerator
     private function emit(array $kinds, int $version): int
     {
         $stamp = $this->stamp();
+        $planned = $this->planned($kinds, new GeneratedSource(self::ARTEFACT, $stamp, $version));
+
+        return $planned === null ? 1 : $this->write($planned, $stamp);
+    }
+
+    /**
+     * Every file the kinds are written as and the kind each class name came
+     * from, or nothing when a kind cannot be written at all.
+     *
+     * @param  array<mixed, mixed>  $kinds
+     * @return array{named: array<string, string>, files: array<string, string>}|null
+     */
+    private function planned(array $kinds, GeneratedSource $source): ?array
+    {
         $named = [];
         $files = [];
 
         foreach ($kinds as $kind => $schema) {
             if (! is_string($kind) || ! is_array($schema)) {
-                return $this->refuse('The vendored contract holds a kind that is not a named schema.');
+                $this->refuse('The vendored contract holds a kind that is not a named schema.');
+
+                return null;
             }
 
-            $name = $this->pascal($kind);
+            $name = $this->className($kind, $named);
 
             if ($name === null) {
-                return $this->refuse(sprintf('The kind `%s` cannot be named as a PHP class.', $kind));
-            }
-
-            if (array_key_exists($name, $named)) {
-                return $this->refuse(sprintf('The kinds `%s` and `%s` would both be named %s.', $named[$name], $kind, $name));
+                return null;
             }
 
             $named[$name] = $kind;
-            $files[self::OUTPUT . '/' . $name . 'Envelope.php'] = $this->envelopeClass($kind, $name, $schema, $stamp, $version);
+            $files[self::OUTPUT . '/' . $name . 'Envelope.php'] = $source->envelopeClass($kind, $name, $schema);
         }
 
-        $files[self::OUTPUT . '/Kind.php'] = $this->kindEnum($named, $stamp, $version);
-        $files[self::OUTPUT . '/Contract.php'] = $this->contractClass($stamp, $version);
+        $files[self::OUTPUT . '/Kind.php'] = $source->kindEnum($named);
+        $files[self::OUTPUT . '/Contract.php'] = $source->contractClass();
 
+        return ['named' => $named, 'files' => $files];
+    }
+
+    /**
+     * The class name a kind is written under, or nothing when it has none this generation can take.
+     *
+     * @param  array<string, string>  $named  class name to the kind it came from
+     */
+    private function className(string $kind, array $named): ?string
+    {
+        $name = $this->pascal($kind);
+
+        if ($name === null) {
+            $this->refuse(sprintf('The kind `%s` cannot be named as a PHP class.', $kind));
+
+            return null;
+        }
+
+        if (array_key_exists($name, $named)) {
+            $this->refuse(sprintf('The kinds `%s` and `%s` would both be named %s.', $named[$name], $kind, $name));
+
+            return null;
+        }
+
+        return $name;
+    }
+
+    /**
+     * @param  array{named: array<string, string>, files: array<string, string>}  $planned
+     */
+    private function write(array $planned, string $stamp): int
+    {
         $directory = $this->root . '/' . self::OUTPUT;
 
         if (! is_dir($directory) && ! mkdir($directory, 0o755, true) && ! is_dir($directory)) {
@@ -257,13 +347,13 @@ final readonly class ContractGenerator
 
         $this->clear();
 
-        foreach ($files as $path => $contents) {
+        foreach ($planned['files'] as $path => $contents) {
             if (file_put_contents($this->root . '/' . $path, $contents) === false) {
                 return $this->refuse(sprintf('%s could not be written, so what is on disk is now incomplete.', $path));
             }
         }
 
-        echo sprintf("contract: %d kinds generated from %s into %s\n", count($named), $stamp, self::OUTPUT);
+        echo sprintf("contract: %d kinds generated from %s into %s\n", count($planned['named']), $stamp, self::OUTPUT);
 
         return 0;
     }
@@ -289,140 +379,6 @@ final readonly class ContractGenerator
             unlink($path);
         }
     }
-
-    /**
-     * @param  array<mixed, mixed>  $schema
-     */
-    private function envelopeClass(string $kind, string $name, array $schema, string $stamp, int $version): string
-    {
-        $properties = $schema['properties'] ?? null;
-        $payload = is_array($properties) ? $properties['data'] ?? null : null;
-        $defs = $schema['$defs'] ?? null;
-        $named = is_array($defs) ? $defs : [];
-
-        $type = is_array($payload)
-            ? $this->types->typeOf($payload, $named)
-            : SchemaTypes::UNKNOWN;
-
-        return $this->header($stamp, $version) . sprintf(
-            <<<'PHP'
-
-                use Lemonfiber\Sdk\Envelope\Envelope;
-                use Lemonfiber\Sdk\Envelope\Payload;
-                use Lemonfiber\Sdk\Exception\UnexpectedKind;
-
-                /**
-                 * The `%s` envelope, shaped as the contract describes it.
-                 *
-                 * @phpstan-type Data %s
-                 */
-                final class %sEnvelope
-                {
-                    /**
-                     * The kind an envelope must carry to be read as this one.
-                     */
-                    public const Kind KIND = Kind::%s;
-
-                    /**
-                     * The same envelope with its payload typed by its kind.
-                     *
-                     * @param  Envelope<mixed>  $envelope
-                     * @return Envelope<Data>
-                     *
-                     * @throws UnexpectedKind
-                     */
-                    public static function in(Envelope $envelope): Envelope
-                    {
-                        /** @var Data $data */
-                        $data = Payload::under(self::KIND, $envelope);
-
-                        return new Envelope($envelope->apiVersion, $envelope->kind, $data);
-                    }
-                }
-
-                PHP,
-            $kind,
-            $type,
-            $name,
-            $name,
-        );
-    }
-
-    /**
-     * @param  array<string, string>  $named  class name to the kind it came from
-     */
-    private function kindEnum(array $named, string $stamp, int $version): string
-    {
-        $cases = '';
-
-        foreach ($named as $name => $kind) {
-            $cases .= sprintf("    case %s = %s;\n", $name, $this->types->quoted($kind));
-        }
-
-        return $this->header($stamp, $version) . sprintf(
-            <<<'PHP'
-
-                /**
-                 * Every kind the contract describes, and the only ones this package reads.
-                 */
-                enum Kind: string
-                {
-                %s}
-
-                PHP,
-            $cases,
-        );
-    }
-
-    private function contractClass(string $stamp, int $version): string
-    {
-        return $this->header($stamp, $version) . sprintf(
-            <<<'PHP'
-
-                /**
-                 * What the vendored contract artefact states about itself.
-                 */
-                final class Contract
-                {
-                    /**
-                     * The wire version these types were generated from.
-                     */
-                    public const int API_VERSION = %d;
-
-                    /**
-                     * The lemonfiber revision the artefact was vendored from.
-                     */
-                    public const string SOURCE = %s;
-                }
-
-                PHP,
-            $version,
-            $this->types->quoted($stamp),
-        );
-    }
-
-    private function header(string $stamp, int $version): string
-    {
-        return sprintf(
-            <<<'PHP'
-                <?php
-
-                // Generated from %s. Do not edit.
-                // Source: %s, api_version %d.
-                // Regenerate with `composer contract:generate`.
-
-                declare(strict_types=1);
-
-                namespace %s;
-
-                PHP,
-            self::ARTEFACT,
-            $stamp,
-            $version,
-            self::NAMESPACE,
-        );
-    }
-
 
     /**
      * The class name a kind is written under, or nothing when it has none.
