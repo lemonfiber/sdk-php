@@ -6,13 +6,19 @@ namespace Lemonfiber\Sdk\Scripts;
 
 require_once __DIR__ . '/SchemaTypes.php';
 
+use function array_filter;
 use function array_key_exists;
+use function array_keys;
+use function array_map;
+use function array_values;
 use function count;
 use function dirname;
 use function file_get_contents;
 use function file_put_contents;
 use function fwrite;
 use function glob;
+use function implode;
+use function in_array;
 use function is_array;
 use function is_dir;
 use function is_file;
@@ -28,6 +34,7 @@ use function preg_match;
 use function preg_split;
 use function sprintf;
 use function strtolower;
+use function strval;
 use function trim;
 use function ucfirst;
 use function unlink;
@@ -60,6 +67,13 @@ final readonly class ContractGenerator
     private const string NAMESPACE = 'Lemonfiber\\Sdk\\Generated';
 
     private const int MAX_DEPTH = 64;
+
+    /**
+     * Keywords that describe a schema without constraining what it matches.
+     *
+     * @var list<string>
+     */
+    private const array ANNOTATIONS = ['description', 'title', 'default', 'examples'];
 
     public function __construct(
         private string $root,
@@ -99,9 +113,49 @@ final readonly class ContractGenerator
             return $this->refuse('The vendored contract describes no kinds.');
         }
 
+        $ambiguous = $this->besideAReference($kinds, '');
+
+        if ($ambiguous !== []) {
+            return $this->refuse(
+                'The vendored contract puts a constraint beside a reference, and generating would drop one of the two: '
+                . implode(', ', $ambiguous),
+            );
+        }
+
         ksort($kinds);
 
         return $this->emit($kinds, $version);
+    }
+
+    /**
+     * Every reference in a schema with a constraint sitting beside it.
+     *
+     * Draft-07 readers discard whatever accompanies a `$ref` and 2020-12 readers
+     * apply both, so the shape means two different things to two readers. This
+     * generator is one of them: it takes the reference and drops the constraint,
+     * which loses the tag telling two variants of one payload apart.
+     *
+     * @param  array<mixed, mixed>  $node
+     * @return list<string>
+     */
+    private function besideAReference(array $node, string $path): array
+    {
+        $constraints = array_values(array_filter(
+            array_map(strval(...), array_keys($node)),
+            static fn(string $key): bool => $key !== '$ref' && ! in_array($key, self::ANNOTATIONS, true),
+        ));
+
+        $found = array_key_exists('$ref', $node) && $constraints !== []
+            ? [sprintf('%s (%s)', $path, implode(', ', $constraints))]
+            : [];
+
+        foreach ($node as $key => $value) {
+            if (is_array($value)) {
+                $found = [...$found, ...$this->besideAReference($value, $path . '/' . strval($key))];
+            }
+        }
+
+        return $found;
     }
 
     /**

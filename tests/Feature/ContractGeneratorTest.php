@@ -114,6 +114,59 @@ it('writes when the version is the one it implements', function () use ($root): 
     removeTree($tree);
 });
 
+/**
+ * A contract whose one kind describes its payload by reference.
+ *
+ * @param  array<string, mixed>  $beside  what sits beside the reference
+ * @return array<string, mixed>
+ */
+function contractPointingAt(array $beside): array
+{
+    return [
+        'api_version' => 1,
+        'kinds' => [
+            'word' => [
+                'type' => 'object',
+                '$defs' => ['Word' => ['type' => 'object']],
+                'properties' => [
+                    'api_version' => ['type' => 'integer'],
+                    'kind' => ['type' => 'string'],
+                    'data' => ['$ref' => '#/$defs/Word'] + $beside,
+                ],
+                'required' => ['api_version', 'kind', 'data'],
+            ],
+        ],
+    ];
+}
+
+it('refuses a reference with a constraint beside it, and names where', function () use ($root): void {
+    $constrained = contractPointingAt([
+        'type' => 'object',
+        'properties' => ['kind' => ['const' => 'word']],
+    ]);
+    $tree = treeWith($root, json_encode($constrained, JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+
+    expect($result['status'])->toBe(1)
+        ->and($result['stderr'])->toContain('/word/properties/data')
+        ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
+
+    removeTree($tree);
+});
+
+it('accepts a reference described but not constrained', function () use ($root): void {
+    $described = contractPointingAt(['description' => 'The payload.']);
+    $tree = treeWith($root, json_encode($described, JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+
+    expect($result['status'])->toBe(0)
+        ->and(is_file($tree . '/src/Generated/Contract.php'))->toBeTrue();
+
+    removeTree($tree);
+});
+
 it('refuses a contract describing no kinds', function () use ($root): void {
     $tree = treeWith($root, json_encode(['api_version' => 1, 'kinds' => []], JSON_THROW_ON_ERROR));
 
