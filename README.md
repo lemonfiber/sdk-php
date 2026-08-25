@@ -107,6 +107,7 @@ Everything else in `src/` is behaviour no schema expresses:
 | `Envelope\Payload` | An envelope is read as the kind it carries, or not at all (ARCH-R63) |
 | `Events\EventStream` | A stream quiet for twice the agreed heartbeat is reported as broken, not as calm; one missed beat is not (ARCH-R61) |
 | `Events\HeldValues` | Values gathered before a reconnection gap are marked out of date (ARCH-R51) |
+| `Exception\RequestFailed` | A refusal carries the sentence lemonfiber answered with, read back through `said()`; an answer carrying none names the endpoint and the status instead (G4-R1) |
 | `Exception\*` | The error model, in plain language (G2, G4) |
 
 The package carries semver. `api_version` is a separate integer describing the wire

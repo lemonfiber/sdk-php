@@ -128,7 +128,7 @@ final readonly class Client
         $response = $this->connector->send($request);
 
         if ($response->failed()) {
-            throw RequestFailed::from($endpoint, $response->status());
+            throw RequestFailed::from($endpoint, $response->status(), $response->body());
         }
 
         return $this->reader->read($response->body());

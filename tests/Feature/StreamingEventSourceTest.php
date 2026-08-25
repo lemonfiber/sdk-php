@@ -61,3 +61,21 @@ it('reports a stream that was turned down', function (): void {
     expect(fn(): Iterator => $source->open(null))
         ->toThrow(RequestFailed::class, 'turned down the request for /api/events and answered 403');
 });
+
+it('hands the caller the sentence a stream was refused with', function (): void {
+    $said = 'This request carried no token, or not this run\'s.';
+
+    [$source] = sourceAnswering(MockResponse::make($said, 403));
+
+    $problem = null;
+
+    try {
+        $source->open(null);
+    } catch (RequestFailed $refusal) {
+        $problem = $refusal;
+    }
+
+    expect($problem?->getMessage())->toBe($said)
+        ->and($problem?->said())->toBe($said)
+        ->and($problem?->status())->toBe(403);
+});

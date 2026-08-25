@@ -99,6 +99,27 @@ it('reports an action that was turned down', function (): void {
         ->toThrow(RequestFailed::class, 'answered 500');
 });
 
+it('hands the caller the sentence a read was refused with', function (): void {
+    $said = 'That is not a group of checks lemonfiber knows.';
+
+    [$client] = clientAnswering([
+        ReadRequest::class => MockResponse::make($said, 400),
+    ]);
+
+    $problem = null;
+
+    try {
+        $client->read('/api/doctor', ['only' => 'nope']);
+    } catch (RequestFailed $refusal) {
+        $problem = $refusal;
+    }
+
+    expect($problem?->getMessage())->toBe($said)
+        ->and($problem?->said())->toBe($said)
+        ->and($problem?->status())->toBe(400)
+        ->and($problem?->endpoint())->toBe('/api/doctor');
+});
+
 it('is built from a written out address', function (): void {
     $client = Client::at('http://127.0.0.1:9000', A_RUN_TOKEN);
 
