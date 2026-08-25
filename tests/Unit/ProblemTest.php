@@ -21,7 +21,7 @@ it('names both versions when they disagree', function (): void {
 });
 
 it('says which endpoint was turned down and how', function (): void {
-    $problem = RequestFailed::from('/api/status', 401);
+    $problem = RequestFailed::from('/api/status', 401, '');
 
     expect($problem->endpoint())->toBe('/api/status')
         ->and($problem->status())->toBe(401)
@@ -69,7 +69,7 @@ it('describes every way a setting can be wrong', function (): void {
 
 it('gathers every failure under one type', function (): void {
     expect(ApiVersionMismatch::between(1, 2))->toBeInstanceOf(Problem::class)
-        ->and(RequestFailed::from('/api/status', 500))->toBeInstanceOf(Problem::class)
+        ->and(RequestFailed::from('/api/status', 500, ''))->toBeInstanceOf(Problem::class)
         ->and(StreamInterrupted::ended())->toBeInstanceOf(Problem::class)
         ->and(UnreadableResponse::notAnEnvelope())->toBeInstanceOf(Problem::class)
         ->and(UnexpectedKind::between('word', 'log'))->toBeInstanceOf(Problem::class)
@@ -84,7 +84,7 @@ it('says nothing technical about what went wrong', function (Throwable $problem)
     }
 })->with([
     'versions disagree' => [ApiVersionMismatch::between(1, 2)],
-    'the request was turned down' => [RequestFailed::from('/api/status', 500)],
+    'the request was turned down' => [RequestFailed::from('/api/status', 500, '')],
     'the stream ended' => [StreamInterrupted::ended()],
     'the stream went quiet' => [StreamInterrupted::wentQuiet(15_000)],
     'the stream never opened' => [StreamInterrupted::neverOpened()],

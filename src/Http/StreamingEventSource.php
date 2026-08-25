@@ -40,7 +40,7 @@ final readonly class StreamingEventSource implements EventSource
         $response = $this->connector->send($request);
 
         if ($response->failed()) {
-            throw RequestFailed::from(Api::EVENTS_ENDPOINT, $response->status());
+            throw RequestFailed::from(Api::EVENTS_ENDPOINT, $response->status(), $response->body());
         }
 
         return ChunkedReader::from(StreamHandle::beneath($response->stream()), $this->wait);
