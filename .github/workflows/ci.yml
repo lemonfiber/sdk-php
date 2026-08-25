@@ -180,6 +180,14 @@ jobs:
         run: |
           latest="$(git tag --list --sort=-v:refname 'v*' | head -n 1)"
           echo "tag=${latest}" >> "$GITHUB_OUTPUT"
+          # A job that skips its only two steps still reports success, and a green
+          # check that compared nothing reads exactly like one that compared and
+          # found nothing wrong. Say which this was.
+          if [ -z "${latest}" ]; then
+            echo "::notice::No released version to compare against, so backward compatibility is not being enforced on this run."
+          else
+            echo "Comparing against ${latest}."
+          fi
       - name: Install the checker
         if: steps.released.outputs.tag != ''
         run: composer bin bc install --no-interaction
