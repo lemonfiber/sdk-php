@@ -37,7 +37,7 @@ function contractOf(int $apiVersion): array
 }
 
 /**
- * A tree holding the generator, its helper, and the contract given to it.
+ * A tree holding the generator, its helpers, and the contract given to it.
  */
 function treeWith(string $root, string $contract): string
 {
@@ -46,6 +46,7 @@ function treeWith(string $root, string $contract): string
     mkdir($tree . '/scripts', 0o755, true);
     mkdir($tree . '/contract', 0o755, true);
     copy($root . GENERATOR, $tree . GENERATOR);
+    copy($root . '/scripts/GeneratedSource.php', $tree . '/scripts/GeneratedSource.php');
     copy($root . '/scripts/SchemaTypes.php', $tree . '/scripts/SchemaTypes.php');
     file_put_contents($tree . '/contract/web-api.contract.json', $contract);
     file_put_contents($tree . '/contract/VERSION', "v9.9.9\n");

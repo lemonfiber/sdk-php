@@ -166,6 +166,20 @@ final readonly class ContractSync
             return null;
         }
 
+        $named = $this->named($kinds, $revision);
+
+        return $named === null ? null : ['version' => $version, 'kinds' => $named];
+    }
+
+    /**
+     * The kinds the served contract names, or nothing when it names none this
+     * package can vendor.
+     *
+     * @param  array<mixed, mixed>  $kinds
+     * @return list<string>|null
+     */
+    private function named(array $kinds, string $revision): ?array
+    {
         if ($kinds === []) {
             $this->refuse(sprintf('The contract %s served describes no kinds.', $revision));
 
@@ -184,7 +198,7 @@ final readonly class ContractSync
             $named[] = $kind;
         }
 
-        return ['version' => $version, 'kinds' => $named];
+        return $named;
     }
 
     /**
