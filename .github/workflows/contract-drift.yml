@@ -9,6 +9,17 @@
 # nothing on the wire changes: `api_version` describes the shape of the envelope,
 # not the set of kinds inside it. So a client generated from a stale artefact
 # parses every reply it still understands and simply has no type for the rest.
+#
+# This reports rather than gates, which is what `Q-R68` asks of it. Taking a
+# contract change is a deliberate act that arrives as a diff somebody reads, so
+# running this on pull requests would refuse every unrelated change for the whole
+# stretch between the server moving and this package catching up — and the pin is
+# meant to lag. A red run here is news about lemonfiber, not a fault in whichever
+# commit happened to be last.
+#
+# So the run says which of those it is. A check nobody is required to pass, that
+# has been red for days, is otherwise indistinguishable from a check that is
+# broken, and the only reader who can tell them apart is one who already knew.
 name: contract-drift
 on:
   workflow_dispatch:
@@ -37,8 +48,28 @@ jobs:
           curl -fsSL --proto "=https" --proto-redir "=https" --retry 3 -o served.json "$SERVED"
           python3 - <<'PY'
           import json
+          import os
           import pathlib
           import sys
+
+          # What the run page shows above the log. The verdict is written here as
+          # well as printed, so what this check found and what it is for are read
+          # together — the reader who has to be told it reports rather than gates
+          # is the one who did not go looking for the workflow file.
+          summary = os.environ.get("GITHUB_STEP_SUMMARY")
+          said = []
+
+
+          def say(line=""):
+              print(line)
+              said.append(line)
+
+
+          def leave(code):
+              if summary is not None:
+                  pathlib.Path(summary).write_text("\n".join(said) + "\n")
+              sys.exit(code)
+
 
           vendored = json.loads(pathlib.Path("contract/web-api.contract.json").read_text())
           served = json.loads(pathlib.Path("served.json").read_text())
@@ -48,22 +79,35 @@ jobs:
           theirs = set(served.get("kinds", {}))
 
           if vendored == served:
-              print(f"the vendored contract matches the server's, at {stamp}.")
-              sys.exit(0)
+              say("## The vendored contract is current")
+              say()
+              say(f"It matches the one the server describes, at `{stamp}`.")
+              leave(0)
 
           missing = sorted(theirs - ours)
           extra = sorted(ours - theirs)
 
-          print(f"vendored at {stamp}: api_version {vendored.get('api_version')}, {len(ours)} kinds")
-          print(f"served on main:      api_version {served.get('api_version')}, {len(theirs)} kinds")
+          say("## The vendored contract is behind")
+          say()
+          say("**This check reports; it gates nothing.** A red run means lemonfiber's")
+          say("contract has moved on, which is expected between catch-ups — it does not")
+          say("mean this check is broken, and it is not failing any pull request.")
+          say()
+          say(f"- vendored at `{stamp}`: api_version {vendored.get('api_version')}, {len(ours)} kinds")
+          say(f"- served on main: api_version {served.get('api_version')}, {len(theirs)} kinds")
           if missing:
-              print(f"described by the server and not here: {', '.join(missing)}")
+              say(f"- described by the server and not here: {', '.join(missing)}")
           if extra:
-              print(f"described here and not by the server: {', '.join(extra)}")
+              say(f"- described here and not by the server: {', '.join(extra)}")
           if not missing and not extra:
-              print("the same kinds, described differently — a shape changed inside one of them.")
+              say("- the same kinds, described differently — a shape changed inside one of them.")
+          say()
+          say("To catch up: `composer contract:sync -- <revision>`, then")
+          say("`composer contract:generate`, and commit both.")
 
-          print("::error::the vendored contract no longer matches the one the server describes")
-          print("run `composer contract:sync -- <revision>` then `composer contract:generate`")
-          sys.exit(1)
+          print(
+              "::error::the vendored contract no longer matches the one the server "
+              "describes — this check reports it and gates nothing"
+          )
+          leave(1)
           PY
