@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace Lemonfiber\Sdk\Guards;
 
 use function array_any;
+use function array_filter;
 use function array_merge;
 use function count;
 use function dirname;
 use function explode;
 use function file_get_contents;
 use function filter_var;
+use function implode;
 use function in_array;
 use function is_array;
 use function is_dir;
 use function is_file;
+use function json_decode;
 use function ltrim;
 use function preg_match;
 use function preg_match_all;
@@ -106,6 +109,37 @@ final class Guards
     private const string GENERATING = 'scripts/contract-generate.php';
 
     /**
+     * The one place an address is made, and the checks that must run to hold it.
+     *
+     * A client refuses an address that is not on this machine, and that holds only
+     * while there is one way to make one. `BaseUrl`'s constructor is private, so
+     * every address goes through a named factory that checks it — a public
+     * constructor, or a third factory that skipped the check, would be a client
+     * talking wherever it was pointed.
+     */
+    private const string ADDRESS = 'src/Http/BaseUrl.php';
+
+    /**
+     * How many times an address may be constructed, which is once per factory.
+     */
+    private const int FACTORIES = 2;
+
+    /**
+     * The composer scripts that hold something, and what each holds.
+     *
+     * A check the pipeline stopped calling is a rule nobody is held to, and the
+     * failure is silence: every run goes green and the artefact it guarded drifts.
+     *
+     * @var array<string, string>
+     */
+    private const array WIRED = [
+        'contract:check' => 'regenerating the contract types produces no diff',
+        'guards' => 'these checks run at all',
+        'test:coverage' => 'every line is exercised',
+        'analyse' => 'the analyser sees what the types claim',
+    ];
+
+    /**
      * How a script reaches somewhere else.
      */
     private const string REACHES = '~\\b(?:curl_[a-z_]+|fsockopen|stream_socket_client|file_get_contents)\\s*\\(\\s*[\'"]https?://|https?://~i';
@@ -140,6 +174,8 @@ final class Guards
         }
 
         $this->checkGenerationStaysHere();
+        $this->checkTheGateIsWiredIn();
+        $this->checkAnAddressIsMadeOneWay();
 
         if ($this->failures === []) {
             echo "guards: every check passed\n";
@@ -285,6 +321,74 @@ final class Guards
             }
         }
 
+    }
+
+    /**
+     * Every check that holds something is part of what CI runs.
+     */
+    private function checkTheGateIsWiredIn(): void
+    {
+        $manifest = $this->root . '/composer.json';
+        $read = file_get_contents($manifest);
+
+        if ($read === false) {
+            $this->fail($manifest, 0, 'could not be read, so what CI runs is unknown');
+
+            return;
+        }
+
+        $declared = json_decode($read, true);
+        // Narrowed a step at a time rather than cast in one: a manifest is somebody
+        // else's JSON, and every one of these could be something other than what is
+        // expected without the file being wrong in any way this check is about.
+        $scripts = is_array($declared) ? ($declared['scripts'] ?? null) : null;
+        $ci = is_array($scripts) ? ($scripts['ci'] ?? null) : null;
+        $steps = array_filter(is_array($ci) ? $ci : [$ci], is_string(...));
+        $pipeline = implode(' ', $steps);
+
+        if ($pipeline === '') {
+            $this->fail($manifest, 0, 'declares no `ci` script to read');
+
+            return;
+        }
+
+        foreach (self::WIRED as $script => $holds) {
+            if (! str_contains($pipeline, $script)) {
+                $this->fail($manifest, 0, '`ci` no longer runs `' . $script . '`, which is what holds that ' . $holds);
+            }
+        }
+    }
+
+    /**
+     * An address is made in one place, by factories that check it.
+     */
+    private function checkAnAddressIsMadeOneWay(): void
+    {
+        $path = $this->root . '/' . self::ADDRESS;
+
+        if (! is_file($path)) {
+            $this->fail($path, 0, 'is named by this check and is not there');
+
+            return;
+        }
+
+        $source = file_get_contents($path);
+
+        if ($source === false) {
+            $this->fail($path, 0, 'could not be read');
+
+            return;
+        }
+
+        if (preg_match('~^\s*+private function __construct\(~m', $source) !== 1) {
+            $this->fail($path, 0, 'the constructor is not private, so an address can be made without being checked');
+        }
+
+        $made = preg_match_all('~new self\(~', $source);
+
+        if ($made !== self::FACTORIES) {
+            $this->fail($path, 0, 'an address is made in ' . $made . ' places and there are ' . self::FACTORIES . ' factories, so one of them does not check it');
+        }
     }
 
     private function checkForRemoteHost(string $file, int $line, string $text): void
