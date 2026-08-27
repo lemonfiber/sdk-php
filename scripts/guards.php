@@ -117,6 +117,15 @@ final class Guards
      * constructor, or a third factory that skipped the check, would be a client
      * talking wherever it was pointed.
      */
+    /**
+     * What is said of a file this cannot open.
+     *
+     * One sentence rather than four, because a check that cannot read what it is
+     * about has failed in the same way wherever it happens, and four wordings of
+     * that would read as four different problems.
+     */
+    private const string UNREADABLE = 'could not be read';
+
     private const string ADDRESS = 'src/Http/BaseUrl.php';
 
     /**
@@ -202,7 +211,7 @@ final class Guards
         $source = file_get_contents($file);
 
         if ($source === false) {
-            $this->fail($file, 0, 'could not be read');
+            $this->fail($file, 0, self::UNREADABLE);
 
             return;
         }
@@ -306,7 +315,7 @@ final class Guards
         $source = file_get_contents($generator);
 
         if ($source === false) {
-            $this->fail($generator, 0, 'could not be read');
+            $this->fail($generator, 0, self::UNREADABLE);
 
             return;
         }
@@ -332,7 +341,7 @@ final class Guards
         $read = file_get_contents($manifest);
 
         if ($read === false) {
-            $this->fail($manifest, 0, 'could not be read, so what CI runs is unknown');
+            $this->fail($manifest, 0, self::UNREADABLE . ', so what CI runs is unknown');
 
             return;
         }
@@ -375,7 +384,7 @@ final class Guards
         $source = file_get_contents($path);
 
         if ($source === false) {
-            $this->fail($path, 0, 'could not be read');
+            $this->fail($path, 0, self::UNREADABLE);
 
             return;
         }
