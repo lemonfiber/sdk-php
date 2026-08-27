@@ -14,6 +14,7 @@ use function filter_var;
 use function in_array;
 use function is_array;
 use function is_dir;
+use function is_file;
 use function ltrim;
 use function preg_match;
 use function preg_match_all;
@@ -91,6 +92,25 @@ final class Guards
     private const array LOOPBACK_ONLY = ['src'];
 
     /**
+     * The one file that may reach the network, and the one that may not.
+     *
+     * Vendoring is the act of fetching: it takes the artefact from an exact
+     * revision and writes it down beside the copy, which is why there is a copy.
+     * Generating reads what vendoring left. A generator that fetched would build
+     * types from whatever the server serves now rather than from the revision
+     * this package was built against, and whoever installed it would have been
+     * told one and handed the other.
+     */
+    private const string VENDORING = 'scripts/contract-sync.php';
+
+    private const string GENERATING = 'scripts/contract-generate.php';
+
+    /**
+     * How a script reaches somewhere else.
+     */
+    private const string REACHES = '~\\b(?:curl_[a-z_]+|fsockopen|stream_socket_client|file_get_contents)\\s*\\(\\s*[\'"]https?://|https?://~i';
+
+    /**
      * Written by `composer contract:generate`, and proved by regeneration
      * producing no diff rather than by these checks.
      *
@@ -118,6 +138,8 @@ final class Guards
                 $this->inspect($file, $loopbackOnly);
             }
         }
+
+        $this->checkGenerationStaysHere();
 
         if ($this->failures === []) {
             echo "guards: every check passed\n";
@@ -222,6 +244,47 @@ final class Guards
 
             $offset++;
         }
+    }
+
+    /**
+     * Only vendoring reaches the network; generating reads what it left.
+     *
+     * What this reads is asserted before what it finds. A generator renamed out
+     * from under the rule leaves it matching nothing, and that failure is
+     * silence: the check goes on passing about a file it can no longer see.
+     */
+    private function checkGenerationStaysHere(): void
+    {
+        $generator = $this->root . '/' . self::GENERATING;
+
+        foreach ([self::GENERATING, self::VENDORING] as $expected) {
+            if (! is_file($this->root . '/' . $expected)) {
+                $this->fail($this->root . '/' . $expected, 0, 'is named by this check and is not there');
+            }
+        }
+
+        if (! is_file($generator)) {
+            return;
+        }
+
+        $source = file_get_contents($generator);
+
+        if ($source === false) {
+            $this->fail($generator, 0, 'could not be read');
+
+            return;
+        }
+
+        foreach (explode("\n", $source) as $offset => $line) {
+            if (preg_match(self::COMMENT_LINE, $line) === 1) {
+                continue;
+            }
+
+            if (preg_match(self::REACHES, $line) === 1) {
+                $this->fail($generator, $offset + 1, 'reaches the network; only ' . self::VENDORING . ' may');
+            }
+        }
+
     }
 
     private function checkForRemoteHost(string $file, int $line, string $text): void
