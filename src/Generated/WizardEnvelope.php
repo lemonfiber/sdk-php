@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: e6a1eaaf81d0327e072a65b24d9db9591dbe28b6, api_version 1.
+// Source: v0.11.0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `wizard` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{asks: bool, at: 'welcome'|'preflight'|'prerequisites'|'protocols'|'vpn'|'data-location'|'credentials'|'provider'|'service-user'|'library'|'household'|'notifications'|'autostart'|'review', offered: bool, phase: 'in-progress'|'reviewing'|'applying'|'applied', plan: list<array{key: string, secret: bool, value: string}>, ready_for_review: bool, unanswered: list<'welcome'|'preflight'|'prerequisites'|'protocols'|'vpn'|'data-location'|'credentials'|'provider'|'service-user'|'library'|'household'|'notifications'|'autostart'|'review'>}
+ * @phpstan-type Data array{asks: bool, at: 'welcome'|'preflight'|'prerequisites'|'protocols'|'vpn'|'data-location'|'credentials'|'provider'|'service-user'|'library'|'household'|'notifications'|'autostart'|'review', offered: bool, phase: 'in-progress'|'reviewing'|'applying'|'applied', plan: list<array{key: string, secret: bool, value: string}>, proof?: array{observed: string, outcome: 'valid'}|array{detail: string, outcome: 'rejected'}|array{detail: string, outcome: 'unreachable'}|array{detail: string, outcome: 'degraded'}|null, ready_for_review: bool, unanswered: list<'welcome'|'preflight'|'prerequisites'|'protocols'|'vpn'|'data-location'|'credentials'|'provider'|'service-user'|'library'|'household'|'notifications'|'autostart'|'review'>, written: list<string>}
  */
 final class WizardEnvelope
 {

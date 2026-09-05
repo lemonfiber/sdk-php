@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `stuck` envelope, shaped as the contract describes it.
+ * The `bundle` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{incomplete: bool, items: list<array{service: string, stage: 'not-monitored'|'monitored'|'searching'|'found'|'grabbed'|'downloading'|'downloaded'|'importing'|'imported'|'available', title: string}>}
+ * @phpstan-type Data array{bytes: int, contents: array{missing: list<string>, pieces: list<array{body: string, name: string}>, taken: array{at: string, lemonfiber: string, stack: string}, terms: array{filenames: bool, revealed: list<string>, window: string}}, path?: string|null}
  */
-final class StuckEnvelope
+final class BundleEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Stuck;
+    public const Kind KIND = Kind::Bundle;
 
     /**
      * The same envelope with its payload typed by its kind.
