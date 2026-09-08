@@ -48,6 +48,89 @@
         }
       }
     },
+    "alerts": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Envelope",
+      "description": "The wrapper every machine-readable payload arrives in.",
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "description": "The output contract's version.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "data": {
+          "description": "The payload.",
+          "$ref": "#/$defs/AlertReport"
+        },
+        "kind": {
+          "description": "Which payload this is, so a consumer can branch before parsing `data`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ],
+      "$defs": {
+        "AlertReport": {
+          "description": "What the operator will be told about, and what changing it came to.",
+          "type": "object",
+          "properties": {
+            "changed": {
+              "description": "Whether this call changed the answer.",
+              "type": "boolean"
+            },
+            "exceptions": {
+              "description": "Events set apart from the preset, quietest name first.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ExceptionReport"
+              }
+            },
+            "means": {
+              "description": "What that preset means, in the operator's terms.",
+              "type": "string"
+            },
+            "preset": {
+              "description": "The preset in force for events with no exception of their own.",
+              "type": "string"
+            },
+            "rehearsed": {
+              "description": "Whether it only reported what it would have written.",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "preset",
+            "means",
+            "exceptions",
+            "changed",
+            "rehearsed"
+          ]
+        },
+        "ExceptionReport": {
+          "description": "One event kind the operator set apart from the preset.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "description": "The kind of event, by the name a finding gives it.",
+              "type": "string"
+            },
+            "wanted": {
+              "description": "Whether it is heard about, whatever the preset would say.",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "wanted"
+          ]
+        }
+      }
+    },
     "archives": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "title": "Envelope",
@@ -184,6 +267,764 @@
                 "scope",
                 "name"
               ]
+            }
+          ]
+        }
+      }
+    },
+    "bandwidth": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Envelope",
+      "description": "The wrapper every machine-readable payload arrives in.",
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "description": "The output contract's version.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "data": {
+          "description": "The payload.",
+          "$ref": "#/$defs/Sharing"
+        },
+        "kind": {
+          "description": "Which payload this is, so a consumer can branch before parsing `data`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ],
+      "$defs": {
+        "Answer": {
+          "description": "How one download client answered about the limits on it.",
+          "oneOf": [
+            {
+              "description": "It answered, in both directions.",
+              "type": "object",
+              "properties": {
+                "answered": {
+                  "type": "string",
+                  "const": "held"
+                },
+                "down": {
+                  "description": "What became of the download limit.",
+                  "$ref": "#/$defs/Held"
+                },
+                "period": {
+                  "description": "Which side of the household's day it says it is on, where it keeps the\nhours itself.",
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Period"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "up": {
+                  "description": "And of the upload one.",
+                  "$ref": "#/$defs/Held"
+                }
+              },
+              "required": [
+                "answered",
+                "down",
+                "up"
+              ]
+            },
+            {
+              "description": "It did not answer, and this is what it said.\n\nIts own line rather than an absence, because a client nobody could reach is\na client whose limits are unknown, and an unknown limit rendered as no\nlimit is the report reading better than the stack is.",
+              "type": "object",
+              "properties": {
+                "answered": {
+                  "type": "string",
+                  "const": "silent"
+                },
+                "said": {
+                  "description": "What went wrong, in the words of whatever refused.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "answered",
+                "said"
+              ]
+            }
+          ]
+        },
+        "Cap": {
+          "description": "A monthly allowance, and what to do at the end of it.",
+          "type": "object",
+          "properties": {
+            "exceeded": {
+              "description": "What happens when it is reached, chosen when the cap was declared.",
+              "$ref": "#/$defs/WhenExceeded"
+            },
+            "monthly": {
+              "description": "The allowance, in bytes.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "monthly",
+            "exceeded"
+          ]
+        },
+        "Capacity": {
+          "description": "What the line was measured to carry.",
+          "type": "object",
+          "properties": {
+            "down": {
+              "description": "Bytes a second down.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "source": {
+              "description": "Where the figure came from.",
+              "$ref": "#/$defs/Source"
+            },
+            "taken": {
+              "description": "When it was taken, in seconds since the epoch.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "through_tunnel": {
+              "description": "Whether the path it was measured over goes through the VPN tunnel.",
+              "type": "boolean"
+            },
+            "up": {
+              "description": "Bytes a second up.\n\nMeasured apart from the download, because a home connection is asymmetric\nand a single figure for both would make every upload share far larger than\nthe operator meant.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "down",
+            "up",
+            "source",
+            "taken",
+            "through_tunnel"
+          ]
+        },
+        "Held": {
+          "description": "One direction on one client: what it was asked for, took, and is doing.",
+          "type": "object",
+          "properties": {
+            "accepted": {
+              "description": "What it reports as in force.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0
+            },
+            "asked": {
+              "description": "What it was asked to hold to, in bytes a second, where anything was.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0
+            },
+            "moving": {
+              "description": "What it is moving right now, where it reported a figure.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0
+            },
+            "verdict": {
+              "description": "What that adds up to.",
+              "$ref": "#/$defs/Verdict"
+            }
+          },
+          "required": [
+            "verdict"
+          ]
+        },
+        "Holding": {
+          "description": "One download client, and what became of the limits it was given.",
+          "type": "object",
+          "properties": {
+            "answer": {
+              "description": "What it said.",
+              "$ref": "#/$defs/Answer"
+            },
+            "client": {
+              "description": "The client, by the name the stack knows it under.",
+              "type": "string"
+            },
+            "pulling": {
+              "description": "Whether it is fetching at all, where a declared cap made that a question.\n\nAbsent on a stack with no cap rather than assumed to be fetching: asking\nevery client whether it has stopped, on a stack where nothing would ever\nstop it, is traffic spent on a figure nothing would act on.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Pulling"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "client",
+            "answer"
+          ]
+        },
+        "Limit": {
+          "description": "How much of the line something may take.",
+          "oneOf": [
+            {
+              "description": "Nothing holds it back.",
+              "type": "object",
+              "properties": {
+                "as": {
+                  "type": "string",
+                  "const": "unlimited"
+                }
+              },
+              "required": [
+                "as"
+              ]
+            },
+            {
+              "description": "A proportion of what the line was measured to carry, in whole per cent.",
+              "type": "object",
+              "properties": {
+                "as": {
+                  "type": "string",
+                  "const": "share"
+                },
+                "at": {
+                  "type": "integer",
+                  "format": "uint8",
+                  "maximum": 255,
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "as",
+                "at"
+              ]
+            },
+            {
+              "description": "A figure in bytes a second, as it was given.",
+              "type": "object",
+              "properties": {
+                "as": {
+                  "type": "string",
+                  "const": "absolute"
+                },
+                "at": {
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "as",
+                "at"
+              ]
+            }
+          ]
+        },
+        "Metered": {
+          "description": "What the stack itself moved in a calendar month, and what that leaves out.",
+          "type": "object",
+          "properties": {
+            "down": {
+              "description": "Bytes pulled down, as far as the clients count them.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "excludes": {
+              "description": "What this count does not include, always said.",
+              "type": "string"
+            },
+            "incomplete": {
+              "description": "What is known to be missing from the count itself, where anything is.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "month": {
+              "description": "The month, as the client that dated the figures dates them.",
+              "type": "string"
+            },
+            "up": {
+              "description": "Bytes given back.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "month",
+            "down",
+            "up",
+            "excludes",
+            "incomplete"
+          ]
+        },
+        "Period": {
+          "description": "Which side of the household's day a moment falls on.",
+          "oneOf": [
+            {
+              "description": "People are up and using the line, so the stack is held back.",
+              "type": "string",
+              "const": "active"
+            },
+            {
+              "description": "The house is asleep and the line is the stack's.",
+              "type": "string",
+              "const": "quiet"
+            }
+          ]
+        },
+        "Pulling": {
+          "description": "Whether a client is fetching at all, where a cap made it a question.\n\nApart from the limits above rather than folded in with them, because it answers\na different question and a client held to a crawl is not a client that stopped.\nA word that named both would be the vocabulary this whole path exists to avoid.",
+          "oneOf": [
+            {
+              "description": "It is fetching, or would start on the next thing handed to it.",
+              "type": "string",
+              "const": "fetching"
+            },
+            {
+              "description": "Nothing is moving and nothing new would start.",
+              "type": "string",
+              "const": "stopped"
+            }
+          ]
+        },
+        "Reached": {
+          "description": "Where a month stands against a declared cap.",
+          "oneOf": [
+            {
+              "description": "Comfortably inside it.",
+              "type": "string",
+              "const": "within"
+            },
+            {
+              "description": "Close enough that there is still time to do something.",
+              "type": "string",
+              "const": "warning"
+            },
+            {
+              "description": "Reached, and the declared behaviour applies.",
+              "type": "string",
+              "const": "exceeded"
+            }
+          ]
+        },
+        "Reading": {
+          "description": "One direction's limit, as declared and as it comes to.",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "description": "The limit as it was expressed.",
+              "$ref": "#/$defs/Limit"
+            },
+            "resolved": {
+              "description": "What it comes to against the measured line.",
+              "$ref": "#/$defs/Resolved"
+            },
+            "says": {
+              "description": "The limit and the line it was measured against, in one sentence.\n\nCarried rather than left to each surface, so the rule that a share is never\nshown without the figure it is a share of is kept in one place instead of\nthree.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "limit",
+            "resolved",
+            "says"
+          ]
+        },
+        "Resolved": {
+          "description": "What a limit comes to once it is weighed against a measured line.",
+          "oneOf": [
+            {
+              "description": "Nothing holds it back.",
+              "type": "object",
+              "properties": {
+                "is": {
+                  "type": "string",
+                  "const": "unlimited"
+                }
+              },
+              "required": [
+                "is"
+              ]
+            },
+            {
+              "description": "This many bytes a second.",
+              "type": "object",
+              "properties": {
+                "bytes_per_second": {
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0
+                },
+                "is": {
+                  "type": "string",
+                  "const": "at"
+                }
+              },
+              "required": [
+                "is",
+                "bytes_per_second"
+              ]
+            },
+            {
+              "description": "A proportion was asked for and nothing has measured the line.\n\nDeliberately not folded into [`Self::Unlimited`]. \"Half of an unknown\nnumber\" resolving to \"no limit at all\" is the shape of a setting an\noperator believes is in force while the stack takes the whole line.",
+              "type": "object",
+              "properties": {
+                "is": {
+                  "type": "string",
+                  "const": "unmeasured"
+                }
+              },
+              "required": [
+                "is"
+              ]
+            }
+          ]
+        },
+        "Restraint": {
+          "description": "Where the line stands.",
+          "oneOf": [
+            {
+              "description": "Nothing is configured.",
+              "type": "string",
+              "const": "unlimited"
+            },
+            {
+              "description": "Limits are in force, with no schedule to switch them.",
+              "type": "string",
+              "const": "limited"
+            },
+            {
+              "description": "Inside the household's active hours, so the limits apply.",
+              "type": "string",
+              "const": "scheduled-active"
+            },
+            {
+              "description": "Outside them, so the line is the stack's.",
+              "type": "string",
+              "const": "scheduled-quiet"
+            },
+            {
+              "description": "A temporary override is lifting the limits, and will expire.",
+              "type": "string",
+              "const": "overridden"
+            },
+            {
+              "description": "The month is close enough to a declared cap to say so.",
+              "type": "string",
+              "const": "cap-warning"
+            },
+            {
+              "description": "The cap has been reached and the declared behaviour applies.",
+              "type": "string",
+              "const": "cap-exceeded"
+            }
+          ]
+        },
+        "Rhythm": {
+          "description": "The hours the household is awake, declared once for every download client.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "When the household's day starts.",
+              "type": "string"
+            },
+            "to": {
+              "description": "When it ends, which may be the next morning.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ]
+        },
+        "Sharing": {
+          "description": "How the line is shared, and what that costs.",
+          "type": "object",
+          "properties": {
+            "acting": {
+              "description": "What a spent cap is doing to the figures above, where one is spent.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "applied": {
+              "description": "Whether this run wrote the limits to the clients or only read them.",
+              "type": "boolean"
+            },
+            "cap": {
+              "description": "The monthly cap, where one was declared.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Cap"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "capacity": {
+              "description": "What the line was measured to carry.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Capacity"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cautions": {
+              "description": "What is worth knowing about that reading before trusting it.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "clients": {
+              "description": "What each download client was asked and what it is doing about it.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Holding"
+              }
+            },
+            "down": {
+              "description": "The download limit.",
+              "$ref": "#/$defs/Reading"
+            },
+            "means": {
+              "description": "What that means for the household.",
+              "type": "string"
+            },
+            "metered": {
+              "description": "What the stack itself moved this month.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Metered"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "ratio": {
+              "description": "What throttling the upload costs, where an upload limit is in force.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reached": {
+              "description": "Where the month stands against it.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Reached"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "respite": {
+              "description": "The override, where one is running or has just run out.",
+              "$ref": "#/$defs/Standing"
+            },
+            "respite_says": {
+              "description": "What the override amounts to, in words.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "restraint": {
+              "description": "Where the line stands.",
+              "$ref": "#/$defs/Restraint"
+            },
+            "rhythm": {
+              "description": "The household's hours, where any were declared.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Rhythm"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "untouched": {
+              "description": "What is outside every limit here.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "up": {
+              "description": "The upload limit, which is declared apart and defaults lower.",
+              "$ref": "#/$defs/Reading"
+            },
+            "zone": {
+              "description": "The zone the clients read those hours in, where the stack says.",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "restraint",
+            "means",
+            "cautions",
+            "down",
+            "up",
+            "respite",
+            "clients",
+            "untouched",
+            "applied"
+          ]
+        },
+        "Source": {
+          "description": "Where a figure for the line came from.",
+          "oneOf": [
+            {
+              "description": "The operator gave it, presumably off the plan they pay for.",
+              "type": "string",
+              "const": "declared"
+            },
+            {
+              "description": "The fastest the stack has been seen to move, which is what it achieved\nrather than what the line is sold as.",
+              "type": "string",
+              "const": "observed"
+            }
+          ]
+        },
+        "Standing": {
+          "description": "Where a respite stands against the clock.",
+          "oneOf": [
+            {
+              "description": "None was asked for.",
+              "type": "object",
+              "properties": {
+                "standing": {
+                  "type": "string",
+                  "const": "none"
+                }
+              },
+              "required": [
+                "standing"
+              ]
+            },
+            {
+              "description": "In force, with this long left.",
+              "type": "object",
+              "properties": {
+                "seconds": {
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0
+                },
+                "standing": {
+                  "type": "string",
+                  "const": "in-force"
+                }
+              },
+              "required": [
+                "standing",
+                "seconds"
+              ]
+            },
+            {
+              "description": "It ran out, this long ago. Said once, then cleared.",
+              "type": "object",
+              "properties": {
+                "seconds": {
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0
+                },
+                "standing": {
+                  "type": "string",
+                  "const": "expired"
+                }
+              },
+              "required": [
+                "standing",
+                "seconds"
+              ]
+            }
+          ]
+        },
+        "Verdict": {
+          "description": "What became of one limit, in one direction, on one client.",
+          "oneOf": [
+            {
+              "description": "Nothing was asked for, so there is nothing to hold to.",
+              "type": "string",
+              "const": "unasked"
+            },
+            {
+              "description": "This client has no such direction to limit at all.\n\nApart from a limit that was ignored, and deliberately: a Usenet client does\nnot upload, so an upload limit on one is not a setting it refused.",
+              "type": "string",
+              "const": "nothing-to-limit"
+            },
+            {
+              "description": "It took the limit and is inside it.",
+              "type": "string",
+              "const": "holding"
+            },
+            {
+              "description": "It reports a figure other than the one it was given.",
+              "type": "string",
+              "const": "ignored"
+            },
+            {
+              "description": "It reports the right figure and is moving faster than it.",
+              "type": "string",
+              "const": "overrunning"
+            }
+          ]
+        },
+        "WhenExceeded": {
+          "description": "What to do when a declared cap is reached.",
+          "oneOf": [
+            {
+              "description": "Stop fetching until the month turns over.",
+              "type": "string",
+              "const": "pause"
+            },
+            {
+              "description": "Keep going, slowly, so what is half-finished can finish.",
+              "type": "string",
+              "const": "throttle"
+            },
+            {
+              "description": "Carry on. Some caps cost money and some only cost speed.",
+              "type": "string",
+              "const": "continue"
             }
           ]
         }
@@ -638,6 +1479,438 @@
         }
       }
     },
+    "credentials": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Envelope",
+      "description": "The wrapper every machine-readable payload arrives in.",
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "description": "The output contract's version.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "data": {
+          "description": "The payload.",
+          "$ref": "#/$defs/Inventory"
+        },
+        "kind": {
+          "description": "Which payload this is, so a consumer can branch before parsing `data`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ],
+      "$defs": {
+        "Held": {
+          "description": "One credential, described without being disclosed.\n\nThere is deliberately no value here, and no field a value could be put in later\nwithout the change being visible in review.",
+          "type": "object",
+          "properties": {
+            "advisory": {
+              "description": "What is worth saying about this one, where anything is.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "consumers": {
+              "description": "Everything that authenticates with it. Named individually, because a\nconsumer left off this list is a consumer a rotation would silently strand.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "fingerprint": {
+              "description": "A short likeness of the value, for telling two copies apart in a report.\n\nAbsent where there is no value to take one of. Never reversible and never a\nproof — see [`fingerprint`].",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "location": {
+              "description": "Where the value lives, as a path or a description of one.",
+              "type": "string"
+            },
+            "name": {
+              "description": "What it is, in the operator's words — `qBittorrent web UI password`.",
+              "type": "string"
+            },
+            "origin": {
+              "description": "Who produced it.",
+              "$ref": "#/$defs/Origin"
+            },
+            "setting": {
+              "description": "The setting it is recorded under, which is a name and never a value.",
+              "type": "string"
+            },
+            "state": {
+              "description": "Where it stands.",
+              "$ref": "#/$defs/State"
+            }
+          },
+          "required": [
+            "name",
+            "setting",
+            "consumers",
+            "location",
+            "origin",
+            "state"
+          ]
+        },
+        "Inventory": {
+          "description": "The whole answer to a question about credentials.\n\nEvery ask answers with the inventory as it now stands, and adds what became of\nwhatever else was asked for. An operator who has just rotated something wants to\nsee the inventory that rotation produced, not a receipt they have to go and check\nagainst one.",
+          "type": "object",
+          "properties": {
+            "held": {
+              "description": "Every credential, whether or not it is present.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Held"
+              }
+            },
+            "protection": {
+              "description": "What keeping them in files does and does not protect against.",
+              "$ref": "#/$defs/Protection"
+            },
+            "revealed": {
+              "description": "One value, where one was asked for.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Revealed"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "rotated": {
+              "description": "What became of a rotation, where one was asked for.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Rotation"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "held",
+            "protection"
+          ]
+        },
+        "Origin": {
+          "description": "Who produced a credential, which decides what can be done about it.",
+          "oneOf": [
+            {
+              "description": "The operator supplied it, from an account they hold somewhere else.",
+              "type": "string",
+              "const": "operator"
+            },
+            {
+              "description": "The service minted it for itself and wrote it into its own configuration.",
+              "type": "string",
+              "const": "service"
+            },
+            {
+              "description": "lemonfiber minted it, because the service offers nothing durable to read.",
+              "type": "string",
+              "const": "lemonfiber"
+            }
+          ]
+        },
+        "Propagation": {
+          "description": "One consumer, and how far the rotation reached it.",
+          "type": "object",
+          "properties": {
+            "consumer": {
+              "description": "What authenticates with the credential.",
+              "type": "string"
+            },
+            "reach": {
+              "description": "How far the rotation reached it.",
+              "$ref": "#/$defs/Reach"
+            }
+          },
+          "required": [
+            "consumer",
+            "reach"
+          ]
+        },
+        "Protection": {
+          "description": "The honest account of what the credential store protects against.\n\nTwo lists and a sentence, carried as data rather than printed here, so the API\nserves the same words the terminal prints and neither can drift into a claim the\nother does not make.",
+          "type": "object",
+          "properties": {
+            "against": {
+              "description": "What it protects against.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "not_against": {
+              "description": "What it does not protect against.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "summary": {
+              "description": "What the storage is, before any claim about it.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "summary",
+            "against",
+            "not_against"
+          ]
+        },
+        "Reach": {
+          "description": "How far a rotation reached one consumer.",
+          "oneOf": [
+            {
+              "description": "It now holds the replacement.",
+              "type": "object",
+              "properties": {
+                "reach": {
+                  "type": "string",
+                  "const": "updated"
+                }
+              },
+              "required": [
+                "reach"
+              ]
+            },
+            {
+              "description": "It will hold the replacement once one more thing happens, and that thing is\nnamed. A consumer reading the value out of a container's environment has it\nfixed at the moment the container was created, so recording a new one is\nonly half of reaching it.",
+              "type": "object",
+              "properties": {
+                "detail": {
+                  "description": "What still has to happen, written as the command that does it.",
+                  "type": "string"
+                },
+                "reach": {
+                  "type": "string",
+                  "const": "pending"
+                }
+              },
+              "required": [
+                "reach",
+                "detail"
+              ]
+            },
+            {
+              "description": "It could not be updated. Named rather than dropped, because a consumer left\nholding the old value is the failure this list exists to surface.",
+              "type": "object",
+              "properties": {
+                "detail": {
+                  "description": "Why it could not be.",
+                  "type": "string"
+                },
+                "reach": {
+                  "type": "string",
+                  "const": "failed"
+                }
+              },
+              "required": [
+                "reach",
+                "detail"
+              ]
+            }
+          ]
+        },
+        "Revealed": {
+          "description": "One stored value, handed back because the operator asked for it and said so.\n\nSeparate from [`Held`] rather than a field on it, so that the inventory cannot\ncarry a value by accident: a surface that renders the inventory has nothing to\nrender, whatever it does.",
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "Which credential this is.",
+              "type": "string"
+            },
+            "value": {
+              "description": "The value, present only where the ask was confirmed.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "warning": {
+              "description": "What the operator is told before it appears, whether or not it appears.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "warning"
+          ]
+        },
+        "Rotation": {
+          "description": "What one rotation came to.",
+          "type": "object",
+          "properties": {
+            "consumers": {
+              "description": "Every consumer, and how far the rotation reached it.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Propagation"
+              }
+            },
+            "credential": {
+              "description": "Which credential was to be replaced.",
+              "type": "string"
+            },
+            "settled": {
+              "description": "What became of the replacement.",
+              "$ref": "#/$defs/Settled"
+            }
+          },
+          "required": [
+            "credential",
+            "settled",
+            "consumers"
+          ]
+        },
+        "Settled": {
+          "description": "What became of a rotation.",
+          "oneOf": [
+            {
+              "description": "The replacement was proven and is now the value in force.",
+              "type": "object",
+              "properties": {
+                "observed": {
+                  "description": "What the service did while proving it — an observation, never the value.",
+                  "type": "string"
+                },
+                "settled": {
+                  "type": "string",
+                  "const": "replaced"
+                }
+              },
+              "required": [
+                "settled",
+                "observed"
+              ]
+            },
+            {
+              "description": "The service answered and refused the replacement. Nothing was changed.",
+              "type": "object",
+              "properties": {
+                "detail": {
+                  "description": "What the service said, with any credential in it withheld.",
+                  "type": "string"
+                },
+                "settled": {
+                  "type": "string",
+                  "const": "refused"
+                }
+              },
+              "required": [
+                "settled",
+                "detail"
+              ]
+            },
+            {
+              "description": "Nothing usable answered, so the replacement could not be proven. Nothing\nwas changed, because an unproven replacement is not a better one.",
+              "type": "object",
+              "properties": {
+                "detail": {
+                  "description": "Why nothing could be concluded.",
+                  "type": "string"
+                },
+                "settled": {
+                  "type": "string",
+                  "const": "unproven"
+                }
+              },
+              "required": [
+                "settled",
+                "detail"
+              ]
+            },
+            {
+              "description": "Nothing in this stack holds a credential by that name.",
+              "type": "object",
+              "properties": {
+                "known": {
+                  "description": "The names that would have been accepted.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "settled": {
+                  "type": "string",
+                  "const": "unknown"
+                }
+              },
+              "required": [
+                "settled",
+                "known"
+              ]
+            },
+            {
+              "description": "A replacement for this one does not come from here.\n\nEither the operator's provider issued it, in which case inventing one would\nproduce a credential no service has ever heard of; or the service that holds\nit offers no way to change it in place. Either way what is owed is a\nsentence saying where a replacement does come from, not an attempt.",
+              "type": "object",
+              "properties": {
+                "detail": {
+                  "description": "Where a replacement comes from, and what to do once it exists.",
+                  "type": "string"
+                },
+                "settled": {
+                  "type": "string",
+                  "const": "elsewhere"
+                }
+              },
+              "required": [
+                "settled",
+                "detail"
+              ]
+            }
+          ]
+        },
+        "State": {
+          "description": "Where a credential stands, as far as lemonfiber can tell without spending it.\n\nSix states rather than a boolean because the operator's next move differs for\neach: an absent credential is one to supply, a stale one is one to prove, an\ninvalid one is one to replace, and the two rotation states exist so a run\ninterrupted half-way through a replacement is legible rather than mysterious.",
+          "oneOf": [
+            {
+              "description": "Required by what this stack runs, and not supplied.",
+              "type": "string",
+              "const": "absent"
+            },
+            {
+              "description": "Present, and proven against the service it authenticates to.",
+              "type": "string",
+              "const": "active"
+            },
+            {
+              "description": "Present, and never proven — or not proven since it was last written.",
+              "type": "string",
+              "const": "stale"
+            },
+            {
+              "description": "Present, and refused by the service the last time it was offered.",
+              "type": "string",
+              "const": "invalid"
+            },
+            {
+              "description": "A replacement is being proven; the existing value is still the one in force.",
+              "type": "string",
+              "const": "rotating"
+            },
+            {
+              "description": "Replaced. What is left is the old value, waiting to be destroyed.",
+              "type": "string",
+              "const": "superseded"
+            }
+          ]
+        }
+      }
+    },
     "dashboard": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "title": "Envelope",
@@ -848,6 +2121,46 @@
             }
           ]
         },
+        "Counted": {
+          "description": "One of the two counts the request service keeps, and what it has left.",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "description": "How many the period allows. Absent where nothing limits them, which is a\ndifferent answer from a limit of nought.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "period": {
+              "description": "How long the period is, in the words a household says it in — absent where\nthe count runs from the beginning rather than over a window.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "remaining": {
+              "description": "How many more they may ask for. Absent where nothing limits them.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "used": {
+              "description": "How many the period has already counted against them.",
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "used"
+          ]
+        },
         "Criticality": {
           "description": "How much a service's absence costs.\n\nSerialisable as well as readable, because it reaches an operator: a status\nreport that says a service is down without saying whether that matters\nleaves them to guess, and the manifest already holds the answer.",
           "oneOf": [
@@ -895,6 +2208,26 @@
           "required": [
             "secs",
             "nanos"
+          ]
+        },
+        "Estimate": {
+          "description": "About how much room one request will want.\n\nCarried as a number and a word rather than as a rendered string, so a surface can\nput it in a column and still say what it is. The word is not decoration: a figure\nwith nothing hedging it is a promise, and this cannot keep one.",
+          "type": "object",
+          "properties": {
+            "bytes": {
+              "description": "About how many bytes it will take.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "measured": {
+              "description": "Whether this was measured. Always false — nothing here has measured anything,\nand the field is present so that a surface rendering it cannot forget to say so.",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "bytes",
+            "measured"
           ]
         },
         "Facing": {
@@ -1020,6 +2353,17 @@
               "description": "What they may watch.",
               "$ref": "#/$defs/MemberAccess"
             },
+            "asking": {
+              "description": "What they may ask for, and what their period has left of it.\n\nAbsent where the request service holds no account for them, and where it could\nnot be asked — an unread answer is not an unlimited member, and reporting one as\nthe other would tell an operator their quota was never applied.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/MemberAsking"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "claimed": {
               "description": "Whether somebody has set a password on the account. False is an invitation\nnobody has taken up rather than a member who is not here.",
               "type": "boolean"
@@ -1041,22 +2385,44 @@
               "items": {
                 "$ref": "#/$defs/MemberRequest"
               }
+            },
+            "to_hand_over": {
+              "description": "What this member would be told, in the words they would read it in.\n\nEverything a household member is owed at the moment of asking and cannot be\nshown where they ask: what happens to what they ask for, what their period has\nleft and when it makes room, roughly what a thing costs before they choose one,\nwhat is still waiting on an answer, and what was refused and why. Written to\nthem rather than about them, so it can be handed over as it stands.\n\nEmpty where there is nothing to tell them — a member the request service holds\nno account for has no standing to report and nothing waiting.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           "required": [
             "name",
             "requests",
             "access",
-            "claimed"
+            "claimed",
+            "to_hand_over"
           ]
         },
         "HouseholdReport": {
           "description": "Who is in the household, what each may watch, and what each has asked for.",
           "type": "object",
           "properties": {
+            "allows": {
+              "description": "What that policy allows in a period, in the words a household says it in.\n\nAbsent where nothing limits the household, which is not the same as a policy\nthat could not be read: that one leaves [`Self::policy`] absent too.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
             "available": {
               "description": "Whether the household could be read at all. A false here is why the list is\nempty, and keeps an unread record from being mistaken for an empty house — the\nsame honesty a trace keeps about a silence it did not hear.",
               "type": "boolean"
+            },
+            "filtering": {
+              "description": "What the limits on this household are and are not, where anybody carries one.\n\nAbsent on a household nobody has limited, because there is no claim to be modest\nabout. Present the moment there is one, because a parent who has set a limit is\nexactly the reader who might take it for a lock.",
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "findings": {
               "description": "What could not be read, and anything else worth the operator's attention.",
@@ -1071,6 +2437,17 @@
               "items": {
                 "$ref": "#/$defs/HouseholdMember"
               }
+            },
+            "policy": {
+              "description": "What happens to what the household asks for where nobody chose otherwise for\none person. Absent where the request service could not be asked.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Policy"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           },
           "required": [
@@ -1110,24 +2487,107 @@
               "items": {
                 "type": "string"
               }
+            },
+            "rated": {
+              "description": "What that limit comes to in the certificates this media server names, in the\noperator's own country. Absent where no limit is set.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Rated"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "restriction": {
+              "description": "What they are held to, in one word — including where what they may watch and\nwhat they may ask for disagree.",
+              "$ref": "#/$defs/Restriction"
+            },
+            "unrated": {
+              "description": "What becomes of content the media server has no rating for.\n\nSaid either way, because an unexplained absence is the thing this answers: a\nrestricted member missing half the library is either this setting or a defect,\nand an operator cannot tell which from silence.",
+              "$ref": "#/$defs/Unrated"
             }
           },
           "required": [
             "every_library",
             "libraries",
+            "unrated",
+            "restriction",
             "administrator",
             "disabled"
+          ]
+        },
+        "MemberAsking": {
+          "description": "What one member may ask for, where the request service could be asked.\n\nBoth counts, because the service keeps them apart and folding them would report a\nhousehold as within its limit while the half that matters is spent: television is\ncounted a season at a time, so one ask for a six-season series spends six.",
+          "type": "object",
+          "properties": {
+            "films": {
+              "description": "Films, counted one to a request.",
+              "$ref": "#/$defs/Counted"
+            },
+            "frees_up": {
+              "description": "When the count next lets go of something, so one more becomes possible.\n\nAbsent where nothing limits them, and where the request service's own dates\ncould not be read — an invented one would be a promise about a day on which\nnothing happens. The period is a window that rolls rather than a month that\nends, so this is the moment their earliest counted request ages out.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "policy": {
+              "description": "What happens to what they ask for.",
+              "$ref": "#/$defs/Policy"
+            },
+            "standing": {
+              "description": "Where they stand against what their period allows, taken over both counts.",
+              "$ref": "#/$defs/Standing3"
+            },
+            "television": {
+              "description": "Television, counted one to a season.",
+              "$ref": "#/$defs/Counted"
+            }
+          },
+          "required": [
+            "policy",
+            "standing",
+            "films",
+            "television"
           ]
         },
         "MemberRequest": {
           "description": "One thing a household member asked for, and where it stands in their words.",
           "type": "object",
           "properties": {
+            "estimate": {
+              "description": "About how much room it will want, at the quality in force.\n\nA guess and labelled as one — see [`crate::asking::Estimate`]. Absent where the\nrequest service names a kind this build does not know, since there is nothing to\nguess the length of.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Estimate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "id": {
+              "description": "The number the request service files it under, which is how one is named again\nwhen somebody rules on it.",
+              "type": "integer",
+              "format": "int64"
+            },
             "media": {
               "description": "What kind of thing it is — a series, a film — in the household's own words.\nAbsent where the request service names a kind this build does not know.",
               "type": [
                 "string",
                 "null"
+              ]
+            },
+            "refused": {
+              "description": "Why it was turned down, where it was turned down from here.\n\n**The request service keeps none**, so this is lemonfiber's own record and is\nsaid to be — a reason presented as delivered would end the operator's job at\nexactly the point it begins. Absent on a request nobody has refused, and on one\nrefused in the request service itself, where there are no words to report and\ninventing some would put them in somebody's mouth.\n\nWhether the words were carried to the person who asked is the record's own\n`told`, which is why the two travel together: what an operator does next turns\non it, and a reason read without it is a reason of unknown standing.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Refused"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "state": {
@@ -1147,8 +2607,20 @@
                 "string",
                 "null"
               ]
+            },
+            "waiting_days": {
+              "description": "How many whole days it has been waiting on somebody, where it is waiting at all\nand the service's own date could be read.\n\nOnly on the ones nobody has ruled on. A request already answered has not been\nwaiting since it was made, and a figure beside one would be counting the wrong\nthing.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0
             }
-          }
+          },
+          "required": [
+            "id"
+          ]
         },
         "Moment": {
           "description": "Which way a condition went.\n\nBoth directions are worth saying and neither is worth saying twice. An operator\ntold a disk filled up and never told it was resolved goes on believing it — so\nresolution is an alert in its own right rather than the absence of one.",
@@ -1510,6 +2982,49 @@
             }
           ]
         },
+        "Passed": {
+          "description": "Where a refusal's words were carried, and when.",
+          "type": "object",
+          "properties": {
+            "at": {
+              "description": "When the attempt was made, absent where the clock could not be written down.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "to": {
+              "description": "The services they reached, by the names the member knows them by. Empty where\nthere was nowhere this could send.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "to"
+          ]
+        },
+        "Policy": {
+          "description": "What happens to what a household member asks for.\n\nThree, and they are the three the request service can actually be put into. A\nhousehold is in one of them because of two settings taken together — whether requests\narrive unseen, and whether a period limits how many — so the words here are a reading\nof that pair rather than a fourth setting kept beside it.\n\nChoosing per person is not a fourth policy. It is one of these three chosen for one\nmember rather than for the house, which is why what a surface offers is a policy and,\nseparately, who it is for.",
+          "oneOf": [
+            {
+              "description": "Everything asked for arrives, and nothing is counted against anybody.",
+              "type": "string",
+              "const": "trusted"
+            },
+            {
+              "description": "Everything asked for arrives until the period's limit is spent, and what\nwould go past it is refused at the moment of asking.",
+              "type": "string",
+              "const": "within-a-limit"
+            },
+            {
+              "description": "Everything asked for waits for the operator to rule on it.",
+              "type": "string",
+              "const": "everything-waits"
+            }
+          ]
+        },
         "Protocol": {
           "description": "Which protocol a transfer is moving over, since the same download reads\ndifferently on each — a Usenet download has no peers, a torrent has no server.",
           "oneOf": [
@@ -1550,6 +3065,35 @@
             "service",
             "depth",
             "stuck"
+          ]
+        },
+        "Rated": {
+          "description": "What one age limit comes to, in the certificates named for it.\n\nBoth sides, because either alone misleads. What is allowed without what is held\nback reads as a limit that stops nothing; what is held back without what is allowed\nreads as a limit that stops everything.",
+          "type": "object",
+          "properties": {
+            "allows": {
+              "description": "The certificates at the highest age this limit still lets through.\n\nEmpty where the table names nothing at or below the limit, which is a limit\nthat lets nothing rated through at all.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "fell_back": {
+              "description": "Whether these came from lemonfiber's own mapping because the media server's\ntable named no certificates.\n\nCarried rather than hidden: a certificate said to be this household's when it\nis this program's is the kind of claim a parent would act on.",
+              "type": "boolean"
+            },
+            "holds_back": {
+              "description": "The certificates at the lowest age this limit holds back.\n\nEmpty where the table names nothing above the limit, which is a limit that\nholds nothing rated back at all.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "allows",
+            "holds_back",
+            "fell_back"
           ]
         },
         "Reading": {
@@ -1624,6 +3168,73 @@
           "required": [
             "named",
             "because"
+          ]
+        },
+        "Refused": {
+          "description": "What was said when one request was turned down.",
+          "type": "object",
+          "properties": {
+            "at": {
+              "description": "When it was turned down, so somebody reading it later knows which answer this\nwas rather than assuming it is the newest.\n\nAbsent where the machine's clock could not be written as a date, which is a\nrefusal worth keeping the words of and not worth losing them over.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "expired": {
+              "description": "Whether nobody ruled on it and the period the household agreed to closed it,\nrather than an operator turning it down.\n\nThe words are then this program's own, which is why the two are told apart here\nand not left to be read off the sentence: an operator scanning for what happened\nwhile they were away is looking for exactly the ones nobody answered, and a\nmember is owed the difference between having been refused and having run out.\n\nAbsent from every record written before a household could arrange this, which is\nthe right reading of them — they are all somebody's own refusals.",
+              "type": "boolean",
+              "default": false
+            },
+            "reason": {
+              "description": "Why, in the words it was turned down in.",
+              "type": "string"
+            },
+            "told": {
+              "description": "Whether the words have been carried to whoever asked, and where to.\n\nAbsent until the one attempt has been made. **This is what makes a second one\nimpossible rather than unlikely**: carrying happens only where this is absent,\nand it is written whether anything was reached or not — so a member with nowhere\nto send to is asked about once, and a household is never told the same thing\ntwice by a run that happened to be started twice.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Passed"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "reason"
+          ]
+        },
+        "Restriction": {
+          "description": "What one member is held to, in the words a household would use.\n\nThe two restrictions are one decision and two services: the media server decides\nwhat may be *watched* and the request service what may be *asked for*. Setting one\nwithout the other is the hole this vocabulary exists to name — a child who cannot\nwatch something but can pull it into the library has parents who set a limit and got\nhalf of one.",
+          "oneOf": [
+            {
+              "description": "Nothing is held back from them.",
+              "type": "string",
+              "const": "unrestricted"
+            },
+            {
+              "description": "Held to a highest rating.",
+              "type": "string",
+              "const": "rating-limited"
+            },
+            {
+              "description": "Held to some of the libraries.",
+              "type": "string",
+              "const": "library-limited"
+            },
+            {
+              "description": "Held to both a rating and some of the libraries.",
+              "type": "string",
+              "const": "both"
+            },
+            {
+              "description": "What they may watch is limited and what they may ask for is not.",
+              "type": "string",
+              "const": "inconsistent"
+            }
           ]
         },
         "Service": {
@@ -1890,6 +3501,31 @@
             }
           ]
         },
+        "Standing3": {
+          "description": "Where one member stands against what a period allows them.\n\nFour, and the one worth having is the middle: somebody told only when they have run\nout has been told too late to do anything but wait, which is the answer this whole\nfeature exists to avoid handing anybody.",
+          "oneOf": [
+            {
+              "description": "Nothing is counted against them.",
+              "type": "string",
+              "const": "unlimited"
+            },
+            {
+              "description": "There is room, and comfortably.",
+              "type": "string",
+              "const": "within-quota"
+            },
+            {
+              "description": "A fifth of the period's limit or less is left, and at least one of it.",
+              "type": "string",
+              "const": "near-quota"
+            },
+            {
+              "description": "Nothing is left, so the next thing they ask for is refused as they ask.",
+              "type": "string",
+              "const": "quota-exhausted"
+            }
+          ]
+        },
         "State": {
           "description": "What one service is actually doing.\n\nOrdered from worst to best, so a form's condition is the minimum across its\nservices and needs no comparison table. The declaration order is therefore\nload-bearing.",
           "oneOf": [
@@ -2153,6 +3789,21 @@
             "protocol",
             "progress",
             "speed"
+          ]
+        },
+        "Unrated": {
+          "description": "What is to happen to content the media server has no rating for.\n\nA choice rather than a default, because a great deal of content carries no rating\nand either answer is wrong for somebody: holding it back makes legitimate content\ninvisible, and letting it through lets through the one thing nobody vetted.\n\nSpelled `HeldBack` and `LetThrough` rather than blocked and allowed, because\n[`Allowed`] is the shape this sits on and a field called `unrated: Allowed` would\nread as the opposite of what it is.\n\nA word rather than a flag on both the read and the write, so the setting is named\nthe same in the answer that reports it as in the call that made it — and so neither\n[`Access`] nor the report built from it becomes a row of four unlabelled booleans.\n\nLetting it through is the default because it is the media server's: a new account\nis made holding nothing back, so that is the state an account is found in rather\nthan a decision anybody took.",
+          "oneOf": [
+            {
+              "description": "Content with no rating is held back.",
+              "type": "string",
+              "const": "held-back"
+            },
+            {
+              "description": "Content with no rating is let through.",
+              "type": "string",
+              "const": "let-through"
+            }
           ]
         },
         "Vpn": {
@@ -3281,6 +4932,228 @@
         }
       }
     },
+    "hosting": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Envelope",
+      "description": "The wrapper every machine-readable payload arrives in.",
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "description": "The output contract's version.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "data": {
+          "description": "The payload.",
+          "$ref": "#/$defs/HostingReport"
+        },
+        "kind": {
+          "description": "Which payload this is, so a consumer can branch before parsing `data`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ],
+      "$defs": {
+        "Changed": {
+          "description": "What one run of this command did to the machine.",
+          "type": "object",
+          "properties": {
+            "installed": {
+              "description": "Whether it installed it, rather than took it back.",
+              "type": "boolean"
+            },
+            "name": {
+              "description": "The command it acted on.",
+              "type": "string"
+            },
+            "rehearsed": {
+              "description": "Whether this was a rehearsal, in which case nothing above happened.",
+              "type": "boolean"
+            },
+            "started": {
+              "description": "Whether it started the command, which only installing does.",
+              "type": "boolean"
+            },
+            "touched": {
+              "description": "Everything it wrote or removed, so nothing goes unnamed in either direction.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "name",
+            "installed",
+            "touched",
+            "started",
+            "rehearsed"
+          ]
+        },
+        "HostedCommand": {
+          "description": "One long-running command, and what stands between it and this machine.",
+          "type": "object",
+          "properties": {
+            "command": {
+              "description": "How it is typed in a terminal, which is what hosting installs.",
+              "type": "string"
+            },
+            "definition": {
+              "description": "The service definition installed for it, where there is one.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "guarantees": {
+              "description": "What it does for as long as it runs, in one sentence.",
+              "type": "string"
+            },
+            "missing": {
+              "description": "The program the definition names, where nothing is there any more.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "name": {
+              "description": "lemonfiber's own name for it.",
+              "type": "string"
+            },
+            "output": {
+              "description": "Where a hosted run writes the words it would have said on a terminal.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "runs": {
+              "description": "The whole command line that definition runs.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "standing": {
+              "description": "What stands between it and the machine.",
+              "$ref": "#/$defs/Hosting"
+            }
+          },
+          "required": [
+            "name",
+            "guarantees",
+            "command",
+            "standing"
+          ]
+        },
+        "Hosting": {
+          "description": "What stands between one long-running command and the machine.\n\nWritten with hyphens because these are the words the operator reads and the\nrequirement names, and a reading that spelled them differently would be a\nsecond vocabulary for one set of facts.",
+          "oneOf": [
+            {
+              "description": "Nothing is installed; it runs only while a terminal holds it.",
+              "type": "string",
+              "const": "not-hosted"
+            },
+            {
+              "description": "Installed, and the manager confirms it is running.",
+              "type": "string",
+              "const": "hosted"
+            },
+            {
+              "description": "Installed, and the manager would not say whether it is running.",
+              "type": "string",
+              "const": "installed-unverified"
+            },
+            {
+              "description": "Installed, and the manager says it is not running.",
+              "type": "string",
+              "const": "stopped"
+            },
+            {
+              "description": "Installed against a program that is no longer there.",
+              "type": "string",
+              "const": "orphaned"
+            },
+            {
+              "description": "This platform has no service manager lemonfiber configures.",
+              "type": "string",
+              "const": "unsupported"
+            }
+          ]
+        },
+        "HostingReport": {
+          "description": "What this machine keeps running on lemonfiber's behalf.\n\nDefaultable so a test can read one out of a `Result` without a branch it can\nnever take: a closure standing in for the impossible arm is a region no\npassing run enters, and the coverage gate counts those.",
+          "type": "object",
+          "properties": {
+            "caveat": {
+              "description": "What is true of this manager and worth knowing before it is relied on.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "changed": {
+              "description": "What this run changed, where it was asked to change something.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Changed"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "commands": {
+              "description": "Every long-running command there is, hosted or not.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/HostedCommand"
+              }
+            },
+            "instruction": {
+              "description": "What to do instead, where lemonfiber cannot configure this platform.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "manager": {
+              "description": "The service manager this platform has, or the absence of one.",
+              "$ref": "#/$defs/Manager"
+            }
+          },
+          "required": [
+            "manager",
+            "commands"
+          ]
+        },
+        "Manager": {
+          "description": "The service manager a machine has, or the absence of one lemonfiber configures.\n\nThe absence is the default, because a machine nobody has told is a machine\nnothing is known about, and guessing at a manager is how a report comes to\nclaim a platform it never asked.",
+          "oneOf": [
+            {
+              "description": "macOS, through a launch agent in the operator's own login session.",
+              "type": "string",
+              "const": "launchd"
+            },
+            {
+              "description": "Linux, through a user service in the operator's own session.",
+              "type": "string",
+              "const": "systemd"
+            },
+            {
+              "description": "A platform lemonfiber does not configure.",
+              "type": "string",
+              "const": "unsupported"
+            }
+          ]
+        }
+      }
+    },
     "household": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "title": "Envelope",
@@ -3308,6 +5181,66 @@
         "data"
       ],
       "$defs": {
+        "Counted": {
+          "description": "One of the two counts the request service keeps, and what it has left.",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "description": "How many the period allows. Absent where nothing limits them, which is a\ndifferent answer from a limit of nought.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "period": {
+              "description": "How long the period is, in the words a household says it in — absent where\nthe count runs from the beginning rather than over a window.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "remaining": {
+              "description": "How many more they may ask for. Absent where nothing limits them.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint32",
+              "minimum": 0
+            },
+            "used": {
+              "description": "How many the period has already counted against them.",
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "used"
+          ]
+        },
+        "Estimate": {
+          "description": "About how much room one request will want.\n\nCarried as a number and a word rather than as a rendered string, so a surface can\nput it in a column and still say what it is. The word is not decoration: a figure\nwith nothing hedging it is a promise, and this cannot keep one.",
+          "type": "object",
+          "properties": {
+            "bytes": {
+              "description": "About how many bytes it will take.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "measured": {
+              "description": "Whether this was measured. Always false — nothing here has measured anything,\nand the field is present so that a surface rendering it cannot forget to say so.",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "bytes",
+            "measured"
+          ]
+        },
         "HouseholdMember": {
           "description": "One household member: who they are, what they may watch, when they were last\nseen, and everything they have asked for.",
           "type": "object",
@@ -3315,6 +5248,17 @@
             "access": {
               "description": "What they may watch.",
               "$ref": "#/$defs/MemberAccess"
+            },
+            "asking": {
+              "description": "What they may ask for, and what their period has left of it.\n\nAbsent where the request service holds no account for them, and where it could\nnot be asked — an unread answer is not an unlimited member, and reporting one as\nthe other would tell an operator their quota was never applied.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/MemberAsking"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "claimed": {
               "description": "Whether somebody has set a password on the account. False is an invitation\nnobody has taken up rather than a member who is not here.",
@@ -3337,22 +5281,44 @@
               "items": {
                 "$ref": "#/$defs/MemberRequest"
               }
+            },
+            "to_hand_over": {
+              "description": "What this member would be told, in the words they would read it in.\n\nEverything a household member is owed at the moment of asking and cannot be\nshown where they ask: what happens to what they ask for, what their period has\nleft and when it makes room, roughly what a thing costs before they choose one,\nwhat is still waiting on an answer, and what was refused and why. Written to\nthem rather than about them, so it can be handed over as it stands.\n\nEmpty where there is nothing to tell them — a member the request service holds\nno account for has no standing to report and nothing waiting.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           "required": [
             "name",
             "requests",
             "access",
-            "claimed"
+            "claimed",
+            "to_hand_over"
           ]
         },
         "HouseholdReport": {
           "description": "Who is in the household, what each may watch, and what each has asked for.",
           "type": "object",
           "properties": {
+            "allows": {
+              "description": "What that policy allows in a period, in the words a household says it in.\n\nAbsent where nothing limits the household, which is not the same as a policy\nthat could not be read: that one leaves [`Self::policy`] absent too.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
             "available": {
               "description": "Whether the household could be read at all. A false here is why the list is\nempty, and keeps an unread record from being mistaken for an empty house — the\nsame honesty a trace keeps about a silence it did not hear.",
               "type": "boolean"
+            },
+            "filtering": {
+              "description": "What the limits on this household are and are not, where anybody carries one.\n\nAbsent on a household nobody has limited, because there is no claim to be modest\nabout. Present the moment there is one, because a parent who has set a limit is\nexactly the reader who might take it for a lock.",
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "findings": {
               "description": "What could not be read, and anything else worth the operator's attention.",
@@ -3367,6 +5333,17 @@
               "items": {
                 "$ref": "#/$defs/HouseholdMember"
               }
+            },
+            "policy": {
+              "description": "What happens to what the household asks for where nobody chose otherwise for\none person. Absent where the request service could not be asked.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Policy"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           },
           "required": [
@@ -3406,24 +5383,107 @@
               "items": {
                 "type": "string"
               }
+            },
+            "rated": {
+              "description": "What that limit comes to in the certificates this media server names, in the\noperator's own country. Absent where no limit is set.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Rated"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "restriction": {
+              "description": "What they are held to, in one word — including where what they may watch and\nwhat they may ask for disagree.",
+              "$ref": "#/$defs/Restriction"
+            },
+            "unrated": {
+              "description": "What becomes of content the media server has no rating for.\n\nSaid either way, because an unexplained absence is the thing this answers: a\nrestricted member missing half the library is either this setting or a defect,\nand an operator cannot tell which from silence.",
+              "$ref": "#/$defs/Unrated"
             }
           },
           "required": [
             "every_library",
             "libraries",
+            "unrated",
+            "restriction",
             "administrator",
             "disabled"
+          ]
+        },
+        "MemberAsking": {
+          "description": "What one member may ask for, where the request service could be asked.\n\nBoth counts, because the service keeps them apart and folding them would report a\nhousehold as within its limit while the half that matters is spent: television is\ncounted a season at a time, so one ask for a six-season series spends six.",
+          "type": "object",
+          "properties": {
+            "films": {
+              "description": "Films, counted one to a request.",
+              "$ref": "#/$defs/Counted"
+            },
+            "frees_up": {
+              "description": "When the count next lets go of something, so one more becomes possible.\n\nAbsent where nothing limits them, and where the request service's own dates\ncould not be read — an invented one would be a promise about a day on which\nnothing happens. The period is a window that rolls rather than a month that\nends, so this is the moment their earliest counted request ages out.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "policy": {
+              "description": "What happens to what they ask for.",
+              "$ref": "#/$defs/Policy"
+            },
+            "standing": {
+              "description": "Where they stand against what their period allows, taken over both counts.",
+              "$ref": "#/$defs/Standing"
+            },
+            "television": {
+              "description": "Television, counted one to a season.",
+              "$ref": "#/$defs/Counted"
+            }
+          },
+          "required": [
+            "policy",
+            "standing",
+            "films",
+            "television"
           ]
         },
         "MemberRequest": {
           "description": "One thing a household member asked for, and where it stands in their words.",
           "type": "object",
           "properties": {
+            "estimate": {
+              "description": "About how much room it will want, at the quality in force.\n\nA guess and labelled as one — see [`crate::asking::Estimate`]. Absent where the\nrequest service names a kind this build does not know, since there is nothing to\nguess the length of.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Estimate"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "id": {
+              "description": "The number the request service files it under, which is how one is named again\nwhen somebody rules on it.",
+              "type": "integer",
+              "format": "int64"
+            },
             "media": {
               "description": "What kind of thing it is — a series, a film — in the household's own words.\nAbsent where the request service names a kind this build does not know.",
               "type": [
                 "string",
                 "null"
+              ]
+            },
+            "refused": {
+              "description": "Why it was turned down, where it was turned down from here.\n\n**The request service keeps none**, so this is lemonfiber's own record and is\nsaid to be — a reason presented as delivered would end the operator's job at\nexactly the point it begins. Absent on a request nobody has refused, and on one\nrefused in the request service itself, where there are no words to report and\ninventing some would put them in somebody's mouth.\n\nWhether the words were carried to the person who asked is the record's own\n`told`, which is why the two travel together: what an operator does next turns\non it, and a reason read without it is a reason of unknown standing.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Refused"
+                },
+                {
+                  "type": "null"
+                }
               ]
             },
             "state": {
@@ -3443,8 +5503,184 @@
                 "string",
                 "null"
               ]
+            },
+            "waiting_days": {
+              "description": "How many whole days it has been waiting on somebody, where it is waiting at all\nand the service's own date could be read.\n\nOnly on the ones nobody has ruled on. A request already answered has not been\nwaiting since it was made, and a figure beside one would be counting the wrong\nthing.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0
             }
-          }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "Passed": {
+          "description": "Where a refusal's words were carried, and when.",
+          "type": "object",
+          "properties": {
+            "at": {
+              "description": "When the attempt was made, absent where the clock could not be written down.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "to": {
+              "description": "The services they reached, by the names the member knows them by. Empty where\nthere was nowhere this could send.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "to"
+          ]
+        },
+        "Policy": {
+          "description": "What happens to what a household member asks for.\n\nThree, and they are the three the request service can actually be put into. A\nhousehold is in one of them because of two settings taken together — whether requests\narrive unseen, and whether a period limits how many — so the words here are a reading\nof that pair rather than a fourth setting kept beside it.\n\nChoosing per person is not a fourth policy. It is one of these three chosen for one\nmember rather than for the house, which is why what a surface offers is a policy and,\nseparately, who it is for.",
+          "oneOf": [
+            {
+              "description": "Everything asked for arrives, and nothing is counted against anybody.",
+              "type": "string",
+              "const": "trusted"
+            },
+            {
+              "description": "Everything asked for arrives until the period's limit is spent, and what\nwould go past it is refused at the moment of asking.",
+              "type": "string",
+              "const": "within-a-limit"
+            },
+            {
+              "description": "Everything asked for waits for the operator to rule on it.",
+              "type": "string",
+              "const": "everything-waits"
+            }
+          ]
+        },
+        "Rated": {
+          "description": "What one age limit comes to, in the certificates named for it.\n\nBoth sides, because either alone misleads. What is allowed without what is held\nback reads as a limit that stops nothing; what is held back without what is allowed\nreads as a limit that stops everything.",
+          "type": "object",
+          "properties": {
+            "allows": {
+              "description": "The certificates at the highest age this limit still lets through.\n\nEmpty where the table names nothing at or below the limit, which is a limit\nthat lets nothing rated through at all.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "fell_back": {
+              "description": "Whether these came from lemonfiber's own mapping because the media server's\ntable named no certificates.\n\nCarried rather than hidden: a certificate said to be this household's when it\nis this program's is the kind of claim a parent would act on.",
+              "type": "boolean"
+            },
+            "holds_back": {
+              "description": "The certificates at the lowest age this limit holds back.\n\nEmpty where the table names nothing above the limit, which is a limit that\nholds nothing rated back at all.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "allows",
+            "holds_back",
+            "fell_back"
+          ]
+        },
+        "Refused": {
+          "description": "What was said when one request was turned down.",
+          "type": "object",
+          "properties": {
+            "at": {
+              "description": "When it was turned down, so somebody reading it later knows which answer this\nwas rather than assuming it is the newest.\n\nAbsent where the machine's clock could not be written as a date, which is a\nrefusal worth keeping the words of and not worth losing them over.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "expired": {
+              "description": "Whether nobody ruled on it and the period the household agreed to closed it,\nrather than an operator turning it down.\n\nThe words are then this program's own, which is why the two are told apart here\nand not left to be read off the sentence: an operator scanning for what happened\nwhile they were away is looking for exactly the ones nobody answered, and a\nmember is owed the difference between having been refused and having run out.\n\nAbsent from every record written before a household could arrange this, which is\nthe right reading of them — they are all somebody's own refusals.",
+              "type": "boolean",
+              "default": false
+            },
+            "reason": {
+              "description": "Why, in the words it was turned down in.",
+              "type": "string"
+            },
+            "told": {
+              "description": "Whether the words have been carried to whoever asked, and where to.\n\nAbsent until the one attempt has been made. **This is what makes a second one\nimpossible rather than unlikely**: carrying happens only where this is absent,\nand it is written whether anything was reached or not — so a member with nowhere\nto send to is asked about once, and a household is never told the same thing\ntwice by a run that happened to be started twice.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Passed"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "reason"
+          ]
+        },
+        "Restriction": {
+          "description": "What one member is held to, in the words a household would use.\n\nThe two restrictions are one decision and two services: the media server decides\nwhat may be *watched* and the request service what may be *asked for*. Setting one\nwithout the other is the hole this vocabulary exists to name — a child who cannot\nwatch something but can pull it into the library has parents who set a limit and got\nhalf of one.",
+          "oneOf": [
+            {
+              "description": "Nothing is held back from them.",
+              "type": "string",
+              "const": "unrestricted"
+            },
+            {
+              "description": "Held to a highest rating.",
+              "type": "string",
+              "const": "rating-limited"
+            },
+            {
+              "description": "Held to some of the libraries.",
+              "type": "string",
+              "const": "library-limited"
+            },
+            {
+              "description": "Held to both a rating and some of the libraries.",
+              "type": "string",
+              "const": "both"
+            },
+            {
+              "description": "What they may watch is limited and what they may ask for is not.",
+              "type": "string",
+              "const": "inconsistent"
+            }
+          ]
+        },
+        "Standing": {
+          "description": "Where one member stands against what a period allows them.\n\nFour, and the one worth having is the middle: somebody told only when they have run\nout has been told too late to do anything but wait, which is the answer this whole\nfeature exists to avoid handing anybody.",
+          "oneOf": [
+            {
+              "description": "Nothing is counted against them.",
+              "type": "string",
+              "const": "unlimited"
+            },
+            {
+              "description": "There is room, and comfortably.",
+              "type": "string",
+              "const": "within-quota"
+            },
+            {
+              "description": "A fifth of the period's limit or less is left, and at least one of it.",
+              "type": "string",
+              "const": "near-quota"
+            },
+            {
+              "description": "Nothing is left, so the next thing they ask for is refused as they ask.",
+              "type": "string",
+              "const": "quota-exhausted"
+            }
+          ]
         },
         "State": {
           "description": "Where one request stands, in the words the person who made it would use.\n\nDeliberately coarser than a [`crate::trace::Stage`]: a member does not need to know\nthat a release was grabbed but not imported, only that it is on its way. The trace is\nwhere that detail stays, and a request names the item so it can be asked for.",
@@ -3485,6 +5721,21 @@
               "const": "gone"
             }
           ]
+        },
+        "Unrated": {
+          "description": "What is to happen to content the media server has no rating for.\n\nA choice rather than a default, because a great deal of content carries no rating\nand either answer is wrong for somebody: holding it back makes legitimate content\ninvisible, and letting it through lets through the one thing nobody vetted.\n\nSpelled `HeldBack` and `LetThrough` rather than blocked and allowed, because\n[`Allowed`] is the shape this sits on and a field called `unrated: Allowed` would\nread as the opposite of what it is.\n\nA word rather than a flag on both the read and the write, so the setting is named\nthe same in the answer that reports it as in the call that made it — and so neither\n[`Access`] nor the report built from it becomes a row of four unlabelled booleans.\n\nLetting it through is the default because it is the media server's: a new account\nis made holding nothing back, so that is the state an account is found in rather\nthan a decision anybody took.",
+          "oneOf": [
+            {
+              "description": "Content with no rating is held back.",
+              "type": "string",
+              "const": "held-back"
+            },
+            {
+              "description": "Content with no rating is let through.",
+              "type": "string",
+              "const": "let-through"
+            }
+          ]
         }
       }
     },
@@ -3515,6 +5766,44 @@
         "data"
       ],
       "$defs": {
+        "Applied": {
+          "description": "What an invitation wrote on the account, in the household's own words.\n\n**Said back so an absence later is explicable.** A member held to a rating who\ncannot find half the library is either this working or a defect, and an operator\nwith nothing on record cannot tell which. So the limit, the libraries, what happened\nto content the media server has no rating for, and whether the request service was\nheld to the same decision all travel back on the answer that applied them.\n\nAbsent where the offer set nothing at all, which is not the same as an offer that\nset no restrictions: naming neither a library nor a limit is saying nothing about\naccess, and nothing is what gets written.\n\nSerialised in the field names the household read uses for the same facts, rather\nthan in the invitation's own spelling: one setting named two ways across two shapes\nis two shapes a client has to be told are about the same thing.",
+          "type": "object",
+          "properties": {
+            "filtering": {
+              "description": "What a limit here is, and what it is not.\n\nCarried on the answer rather than left to a document, because the reader who\nmost needs it is the parent who has just set one.",
+              "type": "string"
+            },
+            "libraries": {
+              "description": "The libraries they may open, as the operator named them. Empty is every one.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "limit": {
+              "description": "How far up the ratings they may watch, in the words and the certificates this\nmedia server names in the operator's own country. Absent where no limit was set.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "requesting": {
+              "description": "Whether the request service was held to the same decision.\n\nThe same three answers a link carries, and for the same reason: what somebody\nmay *ask for* is a second service's business, and that service can be down while\nthe media server is not. `NotTried` here is a service with no account for them\nyet — nothing to hold rather than a failure to hold something.",
+              "$ref": "#/$defs/Linked"
+            },
+            "unrated": {
+              "description": "What becomes of content the media server has no rating for.\n\nHeld back by default on somebody being narrowed, because a rating limit cannot\ndecide about a thing that carries no rating. The cost is real and is why this is\nreported rather than assumed: some legitimate content becomes invisible to them.",
+              "$ref": "#/$defs/Unrated"
+            }
+          },
+          "required": [
+            "libraries",
+            "unrated",
+            "requesting",
+            "filtering"
+          ]
+        },
         "Invitation": {
           "description": "One invitation, as it was just made.\n\nCarries what the operator has to pass on and nothing else — a name to sign in\nwith, one address, and how long it stands. The address is the media server's,\nbecause setting a first password happens there.",
           "type": "object",
@@ -3522,6 +5811,17 @@
             "address": {
               "description": "The one address to send them.\n\nWhere a *person* reaches the media server: built from what this machine is\ncalled on the network, not from either of the hosts the stack wires itself\nwith — those resolve only on this machine or inside the stack, and an\ninvitation carrying one sends somebody an address that cannot open.",
               "type": "string"
+            },
+            "applied": {
+              "description": "What this offer wrote on the account, where it wrote anything.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Applied"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "caution": {
               "description": "What is worth knowing about the address itself, where anything is.\n\nAn address that is a number is one a router can hand elsewhere, so a bookmark\nmade from it stops working with nothing here having changed. Carried on the\ninvitation because that is the copy somebody keeps.",
@@ -3611,6 +5911,21 @@
               "description": "Nothing was tried: a rehearsal, or a stack with no request service at all.\n\nNot a failure either way, and nothing a later run would put right — which is\nwhat separates it from `NotYet`.",
               "type": "string",
               "const": "not-tried"
+            }
+          ]
+        },
+        "Unrated": {
+          "description": "What is to happen to content the media server has no rating for.\n\nA choice rather than a default, because a great deal of content carries no rating\nand either answer is wrong for somebody: holding it back makes legitimate content\ninvisible, and letting it through lets through the one thing nobody vetted.\n\nSpelled `HeldBack` and `LetThrough` rather than blocked and allowed, because\n[`Allowed`] is the shape this sits on and a field called `unrated: Allowed` would\nread as the opposite of what it is.\n\nA word rather than a flag on both the read and the write, so the setting is named\nthe same in the answer that reports it as in the call that made it — and so neither\n[`Access`] nor the report built from it becomes a row of four unlabelled booleans.\n\nLetting it through is the default because it is the media server's: a new account\nis made holding nothing back, so that is the state an account is found in rather\nthan a decision anybody took.",
+          "oneOf": [
+            {
+              "description": "Content with no rating is held back.",
+              "type": "string",
+              "const": "held-back"
+            },
+            {
+              "description": "Content with no rating is let through.",
+              "type": "string",
+              "const": "let-through"
             }
           ]
         }
@@ -4439,7 +6754,7 @@
           ]
         },
         "Reach": {
-          "description": "One of the requests lemonfiber makes on its own account.\n\nFive, and the closed set is the claim. A sixth is a decision somebody makes by\nadding a variant here and answering four questions about it, rather than one\nthat happens by somebody building a request.",
+          "description": "One of the requests lemonfiber makes on its own account.\n\nSix, and the closed set is the claim. A seventh is a decision somebody makes by\nadding a variant here and answering four questions about it, rather than one\nthat happens by somebody building a request.\n\nThe sixth is the one that carries somebody's words rather than a credential or a\nname, and it was added deliberately and late: five of these prove or fetch\nsomething and could say what travels in a phrase, and this one travels to a\nperson. What that costs is the same four answers as the rest, and one more thing\nthe others do not owe — it is the only entry whose destination is somebody else's\nchoice, so the list names the two services it can reach and the sender is handed\nthem rather than holding addresses of its own.",
           "oneOf": [
             {
               "description": "Fetching the service images the stack runs.",
@@ -4465,6 +6780,11 @@
               "description": "Proving a Usenet login against the provider.",
               "type": "string",
               "const": "usenet"
+            },
+            {
+              "description": "Telling a household member the one thing the request service cannot carry.",
+              "type": "string",
+              "const": "household"
             }
           ]
         }
@@ -5809,6 +8129,654 @@
         }
       }
     },
+    "space": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Envelope",
+      "description": "The wrapper every machine-readable payload arrives in.",
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "description": "The output contract's version.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "data": {
+          "description": "The payload.",
+          "$ref": "#/$defs/Reckoning"
+        },
+        "kind": {
+          "description": "Which payload this is, so a consumer can branch before parsing `data`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ],
+      "$defs": {
+        "Candidate": {
+          "description": "One completed download, and what reclaiming it would come to.",
+          "type": "object",
+          "properties": {
+            "bytes": {
+              "description": "What it occupies.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "consequence": {
+              "description": "What removing it costs, where it costs anything.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "name": {
+              "description": "What both sides call it.",
+              "type": "string"
+            },
+            "standing": {
+              "description": "Where it stands.",
+              "$ref": "#/$defs/Standing"
+            }
+          },
+          "required": [
+            "name",
+            "bytes",
+            "standing"
+          ]
+        },
+        "Category": {
+          "description": "What one line of the accounting is about.",
+          "oneOf": [
+            {
+              "description": "One directory beneath the data root, named as the operator named it.\n\nPer directory rather than one figure for the library, because several\nlibraries commonly share a volume and \"the library is large\" tells nobody\nwhich of them is growing.",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "of": {
+                  "type": "string",
+                  "const": "tree"
+                }
+              },
+              "required": [
+                "of",
+                "name"
+              ]
+            },
+            {
+              "description": "What the download clients still have to write.",
+              "type": "object",
+              "properties": {
+                "of": {
+                  "type": "string",
+                  "const": "landing"
+                }
+              },
+              "required": [
+                "of"
+              ]
+            },
+            {
+              "description": "Completed downloads the client is still seeding.",
+              "type": "object",
+              "properties": {
+                "of": {
+                  "type": "string",
+                  "const": "seeding"
+                }
+              },
+              "required": [
+                "of"
+              ]
+            },
+            {
+              "description": "Downloads on disk that no service ever took.",
+              "type": "object",
+              "properties": {
+                "of": {
+                  "type": "string",
+                  "const": "orphaned"
+                }
+              },
+              "required": [
+                "of"
+              ]
+            },
+            {
+              "description": "Archives whose extracted contents sit beside them.",
+              "type": "object",
+              "properties": {
+                "of": {
+                  "type": "string",
+                  "const": "extracted"
+                }
+              },
+              "required": [
+                "of"
+              ]
+            },
+            {
+              "description": "The services' own configuration and databases.",
+              "type": "object",
+              "properties": {
+                "of": {
+                  "type": "string",
+                  "const": "services"
+                }
+              },
+              "required": [
+                "of"
+              ]
+            },
+            {
+              "description": "What the operator said to leave alone.",
+              "type": "object",
+              "properties": {
+                "of": {
+                  "type": "string",
+                  "const": "unmanaged"
+                }
+              },
+              "required": [
+                "of"
+              ]
+            }
+          ]
+        },
+        "Consumption": {
+          "description": "One line of the accounting.",
+          "type": "object",
+          "properties": {
+            "category": {
+              "description": "What it is about.",
+              "$ref": "#/$defs/Category"
+            },
+            "reclaim": {
+              "description": "What getting it back would cost.",
+              "$ref": "#/$defs/Reclaim"
+            },
+            "tally": {
+              "description": "What it occupies, counted both ways.",
+              "$ref": "#/$defs/Tally"
+            }
+          },
+          "required": [
+            "category",
+            "tally",
+            "reclaim"
+          ]
+        },
+        "Freshness": {
+          "description": "How much a reading can be relied on.",
+          "oneOf": [
+            {
+              "description": "Read off a local disk, so it is true as of now.",
+              "type": "object",
+              "properties": {
+                "as": {
+                  "type": "string",
+                  "const": "live"
+                }
+              },
+              "required": [
+                "as"
+              ]
+            },
+            {
+              "description": "Read across a network share, which answers with what it was last told —\ncarrying the moment it was taken, in seconds since the epoch, so a figure\nnobody can refresh is at least dated.",
+              "type": "object",
+              "properties": {
+                "as": {
+                  "type": "string",
+                  "const": "as_of"
+                },
+                "at": {
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "as",
+                "at"
+              ]
+            }
+          ]
+        },
+        "Interrupted": {
+          "description": "An import that stopped part-way, in the words of whatever stopped it.",
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "What the service calls it.",
+              "type": "string"
+            },
+            "partial": {
+              "description": "What is on disk for it already, where the walk could find it.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "said": {
+              "description": "What the service said, verbatim.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "partial",
+            "said"
+          ]
+        },
+        "Left": {
+          "description": "Something a cleanup could not take.",
+          "type": "object",
+          "properties": {
+            "at": {
+              "description": "Where it is.",
+              "type": "string"
+            },
+            "why": {
+              "description": "What the platform said, verbatim.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "at",
+            "why"
+          ]
+        },
+        "Level": {
+          "description": "Where a volume stands.",
+          "oneOf": [
+            {
+              "description": "Usage cannot be determined.\n\nOrdered first so that it never wins a comparison against a level that was\nactually measured: a volume nobody could read must not make a stack that is\nvisibly full read as merely unknown.",
+              "type": "string",
+              "const": "unknown"
+            },
+            {
+              "description": "Comfortable headroom.",
+              "type": "string",
+              "const": "ample"
+            },
+            {
+              "description": "Below comfortable, not urgent.",
+              "type": "string",
+              "const": "advisory"
+            },
+            {
+              "description": "Projected to exhaust within the horizon.",
+              "type": "string",
+              "const": "warning"
+            },
+            {
+              "description": "Nearly exhausted.",
+              "type": "string",
+              "const": "critical"
+            },
+            {
+              "description": "Full; acquisitions halted.",
+              "type": "string",
+              "const": "exhausted"
+            }
+          ]
+        },
+        "Outsized": {
+          "description": "One file far larger than the rest.",
+          "type": "object",
+          "properties": {
+            "bytes": {
+              "description": "What it occupies.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "path": {
+              "description": "Where it is.",
+              "type": "string"
+            },
+            "times_typical": {
+              "description": "How many times the middle file of this walk it is.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "path",
+            "bytes",
+            "times_typical"
+          ]
+        },
+        "Reckoning": {
+          "description": "Where the disk stands, what is on it, and what could be got back.",
+          "type": "object",
+          "properties": {
+            "agreement": {
+              "description": "What this offer names itself, so an answer to it can say which offer it was\nanswering.",
+              "type": "string"
+            },
+            "candidates": {
+              "description": "The completed downloads, each with where it stands and what removing it\nwould cost.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Candidate"
+              }
+            },
+            "consumption": {
+              "description": "Where the room went, one line per tree plus the services' own files, and\none line for what is committed but has not landed yet.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Consumption"
+              }
+            },
+            "halted": {
+              "description": "Whether new acquisitions are halted to keep the services writable.",
+              "type": "boolean"
+            },
+            "interrupted": {
+              "description": "The imports that stopped part-way, with what is on disk for each.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Interrupted"
+              }
+            },
+            "level": {
+              "description": "Where the stack stands, which is where its worst volume stands.",
+              "$ref": "#/$defs/Level"
+            },
+            "outsized": {
+              "description": "The files far enough out of line with the rest to be worth pointing at.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Outsized"
+              }
+            },
+            "reclaimable": {
+              "description": "What of that room could be got back, and what each would cost.\n\nA second reading of bytes already counted above rather than more of them: a\nseeding torrent's file is in the tree it lives in *and* here. Summing the\ntwo lists together would double what is on the disk, which is the mistake\nthis whole module is arranged to avoid.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Consumption"
+              }
+            },
+            "reclaimed": {
+              "description": "What became of a confirmed cleanup, where one was asked for.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Reclaimed"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "volumes": {
+              "description": "The volumes watched. Either filling stops the stack, so both are reported\nwhether or not they are the same drive.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Volume"
+              }
+            }
+          },
+          "required": [
+            "volumes",
+            "level",
+            "halted",
+            "consumption",
+            "reclaimable",
+            "candidates",
+            "outsized",
+            "interrupted",
+            "agreement"
+          ]
+        },
+        "Reclaim": {
+          "description": "What getting a line's room back costs.",
+          "oneOf": [
+            {
+              "description": "Only by deciding to lose something you chose to keep.",
+              "type": "string",
+              "const": "by_losing_content"
+            },
+            {
+              "description": "Nothing to reclaim: it is being written right now.",
+              "type": "string",
+              "const": "in_progress"
+            },
+            {
+              "description": "Yes, and it costs standing with the trackers it came from.",
+              "type": "string",
+              "const": "at_the_cost_of_ratio"
+            },
+            {
+              "description": "Yes, and it costs nothing — the usual easy win.",
+              "type": "string",
+              "const": "the_easy_win"
+            },
+            {
+              "description": "Yes: the unpacked copy is the one being used.",
+              "type": "string",
+              "const": "already_have_it"
+            },
+            {
+              "description": "A little, and rarely worth it.",
+              "type": "string",
+              "const": "marginally"
+            },
+            {
+              "description": "No, because you said so.",
+              "type": "string",
+              "const": "you_said_not"
+            }
+          ]
+        },
+        "Reclaimed": {
+          "description": "What became of a confirmed cleanup.",
+          "type": "object",
+          "properties": {
+            "bytes": {
+              "description": "What they occupied.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "gone": {
+              "description": "The paths that were taken.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "left": {
+              "description": "What could not be taken, and what the platform said about it.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Left"
+              }
+            }
+          },
+          "required": [
+            "gone",
+            "bytes",
+            "left"
+          ]
+        },
+        "Role": {
+          "description": "Which of the two volumes a reading is about.",
+          "oneOf": [
+            {
+              "description": "Where the media and the downloads live.",
+              "type": "string",
+              "const": "data"
+            },
+            {
+              "description": "Where the services keep their own configuration and databases.",
+              "type": "string",
+              "const": "services"
+            }
+          ]
+        },
+        "Standing": {
+          "description": "Where one completed download stands.",
+          "oneOf": [
+            {
+              "description": "Nothing ever linked it into a library: it was never imported, and removing\nit loses nothing.",
+              "type": "object",
+              "properties": {
+                "standing": {
+                  "type": "string",
+                  "const": "never_imported"
+                }
+              },
+              "required": [
+                "standing"
+              ]
+            },
+            {
+              "description": "It was imported and is still seeding, so removing it has a consequence\noutside this machine.",
+              "type": "object",
+              "properties": {
+                "ratio": {
+                  "description": "What it has uploaded against what it downloaded, in hundredths, as the\nclient reports it.\n\nA whole number rather than a fraction because every report this product\nmakes is compared for equality somewhere, and a fraction cannot be —\ntwo figures a client would call the same would not be. The hundredth is\nfiner than any decision made on a ratio.",
+                  "type": "integer",
+                  "format": "uint32",
+                  "minimum": 0
+                },
+                "standing": {
+                  "type": "string",
+                  "const": "seeding"
+                }
+              },
+              "required": [
+                "standing",
+                "ratio"
+              ]
+            },
+            {
+              "description": "The operator asked for this one to be left alone.",
+              "type": "object",
+              "properties": {
+                "standing": {
+                  "type": "string",
+                  "const": "left_alone"
+                }
+              },
+              "required": [
+                "standing"
+              ]
+            }
+          ]
+        },
+        "Tally": {
+          "description": "What a set of files occupies, counted both ways.",
+          "type": "object",
+          "properties": {
+            "files": {
+              "description": "How many names were counted.",
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0
+            },
+            "logical": {
+              "description": "The bytes the names add up to — what this would take with nothing shared.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "physical": {
+              "description": "The bytes the underlying files add up to — what the volume has actually\nlost to them.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "shared": {
+              "description": "How many of those names pointed at a file already counted.",
+              "type": "integer",
+              "format": "uint",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "logical",
+            "physical",
+            "files",
+            "shared"
+          ]
+        },
+        "Volume": {
+          "description": "One volume, as one run measured it.",
+          "type": "object",
+          "properties": {
+            "at": {
+              "description": "The path that was measured.",
+              "type": "string"
+            },
+            "committed": {
+              "description": "The bytes already committed to landing here.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "free": {
+              "description": "Bytes free, or nothing where the volume could not be read.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0
+            },
+            "level": {
+              "description": "Where it stands.",
+              "$ref": "#/$defs/Level"
+            },
+            "limit": {
+              "description": "The effective limit — the mount's own size, which on a dataset given a\nquota is the quota rather than the device beneath it.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0
+            },
+            "point": {
+              "description": "Where the volume holding it is mounted, which is what the limit belongs to.",
+              "type": "string"
+            },
+            "projected": {
+              "description": "What would be free once the committed content has landed.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0
+            },
+            "reading": {
+              "description": "What the reading is worth.",
+              "$ref": "#/$defs/Freshness"
+            },
+            "role": {
+              "description": "Which of the two this is.",
+              "$ref": "#/$defs/Role"
+            }
+          },
+          "required": [
+            "role",
+            "at",
+            "point",
+            "committed",
+            "level",
+            "reading"
+          ]
+        }
+      }
+    },
     "start": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "title": "Envelope",
@@ -6135,6 +9103,177 @@
               "description": "It is in the library and playable.",
               "type": "string",
               "const": "available"
+            }
+          ]
+        }
+      }
+    },
+    "stop-seeding": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Envelope",
+      "description": "The wrapper every machine-readable payload arrives in.",
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "description": "The output contract's version.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "data": {
+          "description": "The payload.",
+          "$ref": "#/$defs/Letting"
+        },
+        "kind": {
+          "description": "Which payload this is, so a consumer can branch before parsing `data`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ],
+      "$defs": {
+        "Candidate": {
+          "description": "One completed download, and what reclaiming it would come to.",
+          "type": "object",
+          "properties": {
+            "bytes": {
+              "description": "What it occupies.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "consequence": {
+              "description": "What removing it costs, where it costs anything.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "name": {
+              "description": "What both sides call it.",
+              "type": "string"
+            },
+            "standing": {
+              "description": "Where it stands.",
+              "$ref": "#/$defs/Standing"
+            }
+          },
+          "required": [
+            "name",
+            "bytes",
+            "standing"
+          ]
+        },
+        "Gone": {
+          "description": "What became of a download the client was asked to let go.",
+          "type": "object",
+          "properties": {
+            "bytes": {
+              "description": "What it occupied, as the client reported it.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "name": {
+              "description": "What the client is no longer holding.",
+              "type": "string"
+            },
+            "rehearsed": {
+              "description": "Whether this was a rehearsal, which asks the client for nothing.",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "name",
+            "bytes",
+            "rehearsed"
+          ]
+        },
+        "Letting": {
+          "description": "One completed download, what letting it go would cost, and what became of it.",
+          "type": "object",
+          "properties": {
+            "agreement": {
+              "description": "What this offer names itself, so an answer to it can say which offer it\nanswered.",
+              "type": "string"
+            },
+            "download": {
+              "description": "The download, in the same words the account names it in: where it stands, what\nit occupies, and what removing it costs.",
+              "$ref": "#/$defs/Candidate"
+            },
+            "goes": {
+              "description": "What goes with it, carried rather than left for a surface to remember.",
+              "type": "string"
+            },
+            "gone": {
+              "description": "What became of an answered offer, and nothing where the offer is all this is.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Gone"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "download",
+            "goes",
+            "agreement"
+          ]
+        },
+        "Standing": {
+          "description": "Where one completed download stands.",
+          "oneOf": [
+            {
+              "description": "Nothing ever linked it into a library: it was never imported, and removing\nit loses nothing.",
+              "type": "object",
+              "properties": {
+                "standing": {
+                  "type": "string",
+                  "const": "never_imported"
+                }
+              },
+              "required": [
+                "standing"
+              ]
+            },
+            {
+              "description": "It was imported and is still seeding, so removing it has a consequence\noutside this machine.",
+              "type": "object",
+              "properties": {
+                "ratio": {
+                  "description": "What it has uploaded against what it downloaded, in hundredths, as the\nclient reports it.\n\nA whole number rather than a fraction because every report this product\nmakes is compared for equality somewhere, and a fraction cannot be —\ntwo figures a client would call the same would not be. The hundredth is\nfiner than any decision made on a ratio.",
+                  "type": "integer",
+                  "format": "uint32",
+                  "minimum": 0
+                },
+                "standing": {
+                  "type": "string",
+                  "const": "seeding"
+                }
+              },
+              "required": [
+                "standing",
+                "ratio"
+              ]
+            },
+            {
+              "description": "The operator asked for this one to be left alone.",
+              "type": "object",
+              "properties": {
+                "standing": {
+                  "type": "string",
+                  "const": "left_alone"
+                }
+              },
+              "required": [
+                "standing"
+              ]
             }
           ]
         }
@@ -6996,6 +10135,450 @@
           "required": [
             "target",
             "action"
+          ]
+        }
+      }
+    },
+    "uninstall": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Envelope",
+      "description": "The wrapper every machine-readable payload arrives in.",
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "description": "The output contract's version.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "data": {
+          "description": "The payload.",
+          "$ref": "#/$defs/Uninstall"
+        },
+        "kind": {
+          "description": "Which payload this is, so a consumer can branch before parsing `data`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ],
+      "$defs": {
+        "Coming": {
+          "description": "One download still coming down when the removal was asked for.",
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "What it is, as the client names it.",
+              "type": "string"
+            },
+            "progress": {
+              "description": "How far along, from zero to a hundred.",
+              "type": "integer",
+              "format": "uint8",
+              "maximum": 255,
+              "minimum": 0
+            }
+          },
+          "required": [
+            "name",
+            "progress"
+          ]
+        },
+        "Confidence": {
+          "description": "How much of a manifest was read and how much stood in for what could not be.",
+          "type": "object",
+          "properties": {
+            "complete": {
+              "description": "Whether every source this tier needed answered.",
+              "type": "boolean"
+            },
+            "unread": {
+              "description": "What could not be read, each in the words of whatever refused.\n\nThe point of the field: a manifest that is short says so and says why, rather\nthan reading as a machine with less on it than it has.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "complete",
+            "unread"
+          ]
+        },
+        "Foreign": {
+          "description": "Something beneath the data location that the stack did not put there.",
+          "type": "object",
+          "properties": {
+            "at": {
+              "description": "The directory it is in, relative to the data location — or the file itself,\nwhere it sits directly in the data location.",
+              "type": "string"
+            },
+            "bytes": {
+              "description": "What they occupy.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "files": {
+              "description": "How many files were found under it.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "at",
+            "files",
+            "bytes"
+          ]
+        },
+        "Item": {
+          "description": "One thing a removal reaches, said to be going or said to be kept.",
+          "type": "object",
+          "properties": {
+            "bytes": {
+              "description": "What it occupies, where that is knowable. Absent for a container or a network,\nwhose room is the image's rather than their own.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "uint64",
+              "minimum": 0
+            },
+            "kept": {
+              "description": "Why it is being kept rather than removed, where it is being kept.\n\n`None` is the ordinary case: this line is going. A reason here is the whole of\nhow an image shared with another project, or a path this run could not\nconfirm, stays on the list without being taken.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "name": {
+              "description": "What it is called — a container name, an image reference, or a full path.",
+              "type": "string"
+            },
+            "secret": {
+              "description": "Whether it holds a credential, so a report can say what destroying it destroys.",
+              "type": "boolean"
+            },
+            "sort": {
+              "description": "Which of the four sorts of thing it is.",
+              "$ref": "#/$defs/Sort"
+            },
+            "what": {
+              "description": "What it is, in the operator's words.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "sort",
+            "what",
+            "secret"
+          ]
+        },
+        "Left": {
+          "description": "Something a removal could not take.",
+          "type": "object",
+          "properties": {
+            "by_hand": {
+              "description": "How to finish it by hand.",
+              "type": "string"
+            },
+            "name": {
+              "description": "What is still there.",
+              "type": "string"
+            },
+            "why": {
+              "description": "What the machine said about it, verbatim.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "why",
+            "by_hand"
+          ]
+        },
+        "Manifest": {
+          "description": "What removing would come to, shown before anything is removed.",
+          "type": "object",
+          "properties": {
+            "agreement": {
+              "description": "What this reading names itself, so an answer says which reading it answered.",
+              "type": "string"
+            },
+            "backup": {
+              "description": "Whether a backup was offered before configuration is destroyed, and how.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "bytes": {
+              "description": "What the lines that are going occupy, where that is knowable.",
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0
+            },
+            "coming": {
+              "description": "What is still coming down, which stopping would interrupt.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Coming"
+              }
+            },
+            "confidence": {
+              "description": "How much of this was read, and what could not be.",
+              "$ref": "#/$defs/Confidence"
+            },
+            "foreign": {
+              "description": "What is beneath the data location that the stack did not put there.\n\nNot a warning. While this is non-empty the data location is never removed as\none tree, and only the stack's own directories beneath it are offered.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Foreign"
+              }
+            },
+            "items": {
+              "description": "Every line it reaches, each said to be going or said to be kept.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Item"
+              }
+            },
+            "keeps": {
+              "description": "What it leaves alone, in the operator's words.",
+              "type": "string"
+            },
+            "outside": {
+              "description": "What lemonfiber cannot remove, each with how to remove it by hand.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Outside"
+              }
+            },
+            "removes": {
+              "description": "What it takes, in the operator's words.",
+              "type": "string"
+            },
+            "tier": {
+              "description": "Which removal this is.",
+              "$ref": "#/$defs/Tier"
+            },
+            "volume": {
+              "description": "Whether the data location is on a network share or a drive that unplugs.\n\nSaid where it is, so removing across a mount an operator forgot was a mount is\nsomething they read before agreeing rather than after.",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "tier",
+            "removes",
+            "keeps",
+            "items",
+            "bytes",
+            "foreign",
+            "coming",
+            "outside",
+            "confidence",
+            "agreement"
+          ]
+        },
+        "Outside": {
+          "description": "Something an uninstall leaves behind, and how to remove it by hand.",
+          "type": "object",
+          "properties": {
+            "by_hand": {
+              "description": "How to remove it on this platform, as the operator would type or do it.",
+              "type": "string"
+            },
+            "found": {
+              "description": "Whether this machine was found to have it.\n\nA survey that could not look says nothing was found rather than that nothing\nis there, which is why the entry is listed either way and this field carries\nthe difference.",
+              "type": "boolean"
+            },
+            "what": {
+              "description": "What it is.",
+              "type": "string"
+            },
+            "why": {
+              "description": "Why it is not lemonfiber's to take away.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "what",
+            "why",
+            "by_hand",
+            "found"
+          ]
+        },
+        "Removal": {
+          "description": "Whether anything was removed on this run, and what became of it.\n\nFour states rather than the five a removal passes through. `removing` is the\ninterval between the last two and is said through the narrator as it happens — a\nvalue returned at the end cannot be the state a run is in while it runs, and a\nvariant nothing could ever answer with would be a state that is documentation\npretending to be a value.",
+          "oneOf": [
+            {
+              "description": "Everything is enumerated with its size, and nothing has been removed.",
+              "type": "object",
+              "properties": {
+                "state": {
+                  "type": "string",
+                  "const": "surveyed"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            },
+            {
+              "description": "The tier and the manifest were agreed to, and this run changes nothing — the\nstate a rehearsal ends in.",
+              "type": "object",
+              "properties": {
+                "state": {
+                  "type": "string",
+                  "const": "confirmed"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            },
+            {
+              "description": "Everything the manifest named as going is gone.",
+              "type": "object",
+              "properties": {
+                "credentials": {
+                  "description": "The credentials this destroyed, said rather than left to be inferred.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gone": {
+                  "description": "What went, by the name the manifest gave it.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "state": {
+                  "type": "string",
+                  "const": "complete"
+                }
+              },
+              "required": [
+                "state",
+                "gone",
+                "credentials"
+              ]
+            },
+            {
+              "description": "Some of it could not be removed, and each of those is named with how to\nfinish it by hand.",
+              "type": "object",
+              "properties": {
+                "credentials": {
+                  "description": "The credentials this destroyed.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "gone": {
+                  "description": "What went, by the name the manifest gave it.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "left": {
+                  "description": "What is still there, and how to remove it.",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/Left"
+                  }
+                },
+                "state": {
+                  "type": "string",
+                  "const": "partial"
+                }
+              },
+              "required": [
+                "state",
+                "gone",
+                "credentials",
+                "left"
+              ]
+            }
+          ]
+        },
+        "Sort": {
+          "description": "What sort of thing one line of a manifest is.",
+          "oneOf": [
+            {
+              "description": "A container the engine is holding.",
+              "type": "string",
+              "const": "container"
+            },
+            {
+              "description": "A network the containers were on.",
+              "type": "string",
+              "const": "network"
+            },
+            {
+              "description": "An image that was pulled.",
+              "type": "string",
+              "const": "image"
+            },
+            {
+              "description": "A directory or file on this machine.",
+              "type": "string",
+              "const": "path"
+            }
+          ]
+        },
+        "Tier": {
+          "description": "Which of the four removals was asked for.",
+          "oneOf": [
+            {
+              "description": "Nothing removed. The services are stopped and everything stays where it is.",
+              "type": "string",
+              "const": "stop"
+            },
+            {
+              "description": "The containers, the networks between them, and the images that were pulled.",
+              "type": "string",
+              "const": "services"
+            },
+            {
+              "description": "Each service's own configuration, lemonfiber's own state, and the credentials\nin both.",
+              "type": "string",
+              "const": "configuration"
+            },
+            {
+              "description": "The library and the downloads.",
+              "type": "string",
+              "const": "media"
+            }
+          ]
+        },
+        "Uninstall": {
+          "description": "A removal, before or after it happened.",
+          "type": "object",
+          "properties": {
+            "manifest": {
+              "description": "What removing would come to, or what it came to.",
+              "$ref": "#/$defs/Manifest"
+            },
+            "removal": {
+              "description": "Whether anything was removed on this run.",
+              "$ref": "#/$defs/Removal"
+            }
+          },
+          "required": [
+            "manifest",
+            "removal"
           ]
         }
       }

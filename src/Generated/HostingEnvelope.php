@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `front-door` envelope, shaped as the contract describes it.
+ * The `hosting` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{address?: array{caution?: string|null, url: string}|null, beside: list<array{because: string, facing: 'asking'|'watching'|'shelf'|'operators'|'carriage'|'unstated', service: string}>, chosen: array{chosen: 'derived'}|array{chosen: 'named', door: string}|array{chosen: 'refused', door: array{because: string, named: string}}, facing?: 'asking'|'watching'|'shelf'|'operators'|'carriage'|'unstated'|null, meaning: string, service?: string|null, standing: 'established'|'library-only'|'unreachable'|'stranded'|'none'}
+ * @phpstan-type Data array{caveat?: string|null, changed?: array{installed: bool, name: string, rehearsed: bool, started: bool, touched: list<string>}|null, commands: list<array{command: string, definition?: string|null, guarantees: string, missing?: string|null, name: string, output?: string|null, runs?: string|null, standing: 'not-hosted'|'hosted'|'installed-unverified'|'stopped'|'orphaned'|'unsupported'}>, instruction?: string|null, manager: 'launchd'|'systemd'|'unsupported'}
  */
-final class FrontDoorEnvelope
+final class HostingEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::FrontDoor;
+    public const Kind KIND = Kind::Hosting;
 
     /**
      * The same envelope with its payload typed by its kind.

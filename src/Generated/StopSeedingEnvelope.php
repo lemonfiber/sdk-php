@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `front-door` envelope, shaped as the contract describes it.
+ * The `stop-seeding` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{address?: array{caution?: string|null, url: string}|null, beside: list<array{because: string, facing: 'asking'|'watching'|'shelf'|'operators'|'carriage'|'unstated', service: string}>, chosen: array{chosen: 'derived'}|array{chosen: 'named', door: string}|array{chosen: 'refused', door: array{because: string, named: string}}, facing?: 'asking'|'watching'|'shelf'|'operators'|'carriage'|'unstated'|null, meaning: string, service?: string|null, standing: 'established'|'library-only'|'unreachable'|'stranded'|'none'}
+ * @phpstan-type Data array{agreement: string, download: array{bytes: int, consequence?: string|null, name: string, standing: array{standing: 'never_imported'}|array{ratio: int, standing: 'seeding'}|array{standing: 'left_alone'}}, goes: string, gone?: array{bytes: int, name: string, rehearsed: bool}|null}
  */
-final class FrontDoorEnvelope
+final class StopSeedingEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::FrontDoor;
+    public const Kind KIND = Kind::StopSeeding;
 
     /**
      * The same envelope with its payload typed by its kind.
