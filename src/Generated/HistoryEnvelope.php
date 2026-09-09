@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `version` envelope, shaped as the contract describes it.
+ * The `history` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{binary: string, compose?: string|null, stack: string, supported_schema: list<int>}
+ * @phpstan-type Data array{changes: list<array{alongside: int, at: string, because?: string|null, did: string, instead?: string|null, operation: string, reversal: string, target: string}>, horizon: string}
  */
-final class VersionEnvelope
+final class HistoryEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Version;
+    public const Kind KIND = Kind::History;
 
     /**
      * The same envelope with its payload typed by its kind.
