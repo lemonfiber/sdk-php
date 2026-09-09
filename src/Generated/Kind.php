@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 20fdb305796624ba209c78ef8de2b631990d442c, api_version 1.
+// Source: e6cd57b374cee20ba03feb8f18df4b1743056976, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -14,10 +14,12 @@ namespace Lemonfiber\Sdk\Generated;
 enum Kind: string
 {
     case Admission = 'admission';
+    case Adoption = 'adoption';
     case Alerts = 'alerts';
     case Archives = 'archives';
     case Backup = 'backup';
     case Bandwidth = 'bandwidth';
+    case Beside = 'beside';
     case Bundle = 'bundle';
     case Clients = 'clients';
     case Config = 'config';
@@ -30,10 +32,12 @@ enum Kind: string
     case Glossary = 'glossary';
     case Hosting = 'hosting';
     case Household = 'household';
+    case Import = 'import';
     case Invitation = 'invitation';
     case Job = 'job';
     case Lifecycle = 'lifecycle';
     case Log = 'log';
+    case Migration = 'migration';
     case Music = 'music';
     case Outbound = 'outbound';
     case Preview = 'preview';
@@ -41,6 +45,7 @@ enum Kind: string
     case Quality = 'quality';
     case Removal = 'removal';
     case Repair = 'repair';
+    case Replacement = 'replacement';
     case Reset = 'reset';
     case Restore = 'restore';
     case Seed = 'seed';

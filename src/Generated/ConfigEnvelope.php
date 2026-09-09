@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 20fdb305796624ba209c78ef8de2b631990d442c, api_version 1.
+// Source: e6cd57b374cee20ba03feb8f18df4b1743056976, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `config` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{changed: bool, consequence?: string|null, rehearsed: bool, settings: list<array{key: string, secret: bool, value: string}>}
+ * @phpstan-type Data array{changed: bool, consequence?: string|null, rehearsed: bool, review?: array{change: array{cost: 'cheap'|'consequential', from?: string|null, key: string, to: string}, findings?: array{active: list<array{name: string, progress: int, protocol: string}>, edited?: array{found: string, secret: bool, wrote: string}|null, keeps: list<string>, library: list<array{because: string, carried: bool, host?: string|null, path: string, service: string}>, opens: list<array{because: string, setting?: string|null, what: string}>, stops: list<string>}, proof?: array{observed: string, outcome: 'valid'}|array{detail: string, outcome: 'rejected'}|array{detail: string, outcome: 'unreachable'}|array{detail: string, outcome: 'degraded'}|null, refusal?: string|null, stance: 'unchanged'|'pending'|'blocked'|'applied'}|null, settings: list<array{key: string, secret: bool, value: string}>}
  */
 final class ConfigEnvelope
 {

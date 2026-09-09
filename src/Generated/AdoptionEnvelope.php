@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `pull` envelope, shaped as the contract describes it.
+ * The `adoption` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data string
+ * @phpstan-type Data array{back_up: list<string>, project?: string|null, refusal?: string|null, stance: 'unchanged'|'pending'|'blocked'|'applied', upgrades: list<array{backup_first: bool, because: string, existing: string, ours: string, refused: bool, service: string, verdict: string}>}
  */
-final class PullEnvelope
+final class AdoptionEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Pull;
+    public const Kind KIND = Kind::Adoption;
 
     /**
      * The same envelope with its payload typed by its kind.
