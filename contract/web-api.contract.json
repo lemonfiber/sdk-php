@@ -48,6 +48,146 @@
         }
       }
     },
+    "adoption": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Envelope",
+      "description": "The wrapper every machine-readable payload arrives in.",
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "description": "The output contract's version.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "data": {
+          "description": "The payload.",
+          "$ref": "#/$defs/AdoptReport"
+        },
+        "kind": {
+          "description": "Which payload this is, so a consumer can branch before parsing `data`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ],
+      "$defs": {
+        "AdoptReport": {
+          "description": "What adopting a setup already here came to, or would come to.",
+          "type": "object",
+          "properties": {
+            "back_up": {
+              "description": "The host paths those services keep their data in, so a backup can be taken of\nexactly the right thing.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "project": {
+              "description": "The project lemonfiber would manage, where exactly one could be adopted.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "refusal": {
+              "description": "Why nothing was done, where nothing was.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "stance": {
+              "description": "Where the act stands.",
+              "$ref": "#/$defs/Stance"
+            },
+            "upgrades": {
+              "description": "The services whose databases a newer version would upgrade, and whose data\ntherefore has to be backed up before anything opens it.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/CarryingReport"
+              }
+            }
+          },
+          "required": [
+            "stance",
+            "upgrades",
+            "back_up"
+          ]
+        },
+        "CarryingReport": {
+          "description": "What adopting one existing service would come to.",
+          "type": "object",
+          "properties": {
+            "backup_first": {
+              "description": "Whether its database must be backed up before lemonfiber opens it.",
+              "type": "boolean"
+            },
+            "because": {
+              "description": "What that means for this service's data, in the operator's terms.",
+              "type": "string"
+            },
+            "existing": {
+              "description": "The version standing here now.",
+              "type": "string"
+            },
+            "ours": {
+              "description": "The version lemonfiber pins.",
+              "type": "string"
+            },
+            "refused": {
+              "description": "Whether lemonfiber will not do this at all.",
+              "type": "boolean"
+            },
+            "service": {
+              "description": "The service, by the name lemonfiber runs it under.",
+              "type": "string"
+            },
+            "verdict": {
+              "description": "Which of the two is the later, in one word.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "service",
+            "existing",
+            "ours",
+            "verdict",
+            "because",
+            "backup_first",
+            "refused"
+          ]
+        },
+        "Stance": {
+          "description": "Where a proposed change stands once it has been read against what is in force.",
+          "oneOf": [
+            {
+              "description": "The setting already holds what was asked for. Nothing to apply, nothing to\nconfirm, and the file is not touched — a write of the same value would move\nthe file's own timestamp and read afterwards as an edit somebody made.",
+              "type": "string",
+              "const": "unchanged"
+            },
+            {
+              "description": "Staged and not applied: nothing has been written. Either it is consequential\nand nobody has said yes to it yet, or it was rehearsed.\n\nThe default, because nothing having happened yet is what every act starts as,\nand a report built and not filled in should say that rather than claim it acted.",
+              "type": "string",
+              "const": "pending"
+            },
+            {
+              "description": "Turned away. It cannot be applied safely, the file is exactly as it was, and\nthe refusal says why.",
+              "type": "string",
+              "const": "blocked"
+            },
+            {
+              "description": "Written.",
+              "type": "string",
+              "const": "applied"
+            }
+          ]
+        }
+      }
+    },
     "alerts": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "title": "Envelope",
@@ -1030,6 +1170,124 @@
         }
       }
     },
+    "beside": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Envelope",
+      "description": "The wrapper every machine-readable payload arrives in.",
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "description": "The output contract's version.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "data": {
+          "description": "The payload.",
+          "$ref": "#/$defs/BesideReport"
+        },
+        "kind": {
+          "description": "Which payload this is, so a consumer can branch before parsing `data`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ],
+      "$defs": {
+        "BesideReport": {
+          "description": "What standing lemonfiber beside an existing setup came to, or would come to.",
+          "type": "object",
+          "properties": {
+            "ports": {
+              "description": "Where each service would listen instead, lowest original port first.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/MovedReport"
+              }
+            },
+            "refusal": {
+              "description": "Why nothing was written, where nothing was.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "stance": {
+              "description": "Where the act stands.",
+              "$ref": "#/$defs/Stance"
+            },
+            "written": {
+              "description": "Where the Compose file that says so was written.",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "ports",
+            "stance"
+          ]
+        },
+        "MovedReport": {
+          "description": "Where one service would listen to run beside what is already here.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "The port it would ordinarily take.",
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "service": {
+              "description": "The lemonfiber service being moved.",
+              "type": "string"
+            },
+            "to": {
+              "description": "The port it would take instead.",
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "required": [
+            "service",
+            "from",
+            "to"
+          ]
+        },
+        "Stance": {
+          "description": "Where a proposed change stands once it has been read against what is in force.",
+          "oneOf": [
+            {
+              "description": "The setting already holds what was asked for. Nothing to apply, nothing to\nconfirm, and the file is not touched — a write of the same value would move\nthe file's own timestamp and read afterwards as an edit somebody made.",
+              "type": "string",
+              "const": "unchanged"
+            },
+            {
+              "description": "Staged and not applied: nothing has been written. Either it is consequential\nand nobody has said yes to it yet, or it was rehearsed.\n\nThe default, because nothing having happened yet is what every act starts as,\nand a report built and not filled in should say that rather than claim it acted.",
+              "type": "string",
+              "const": "pending"
+            },
+            {
+              "description": "Turned away. It cannot be applied safely, the file is exactly as it was, and\nthe refusal says why.",
+              "type": "string",
+              "const": "blocked"
+            },
+            {
+              "description": "Written.",
+              "type": "string",
+              "const": "applied"
+            }
+          ]
+        }
+      }
+    },
     "bundle": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "title": "Envelope",
@@ -1421,6 +1679,62 @@
         "data"
       ],
       "$defs": {
+        "Active": {
+          "description": "One download still coming down when a reduction was asked for.",
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "What it is, as the client names it.",
+              "type": "string"
+            },
+            "progress": {
+              "description": "How far along, from zero to a hundred.",
+              "type": "integer",
+              "format": "uint8",
+              "maximum": 255,
+              "minimum": 0
+            },
+            "protocol": {
+              "description": "Which client has it.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "protocol",
+            "name",
+            "progress"
+          ]
+        },
+        "Change": {
+          "description": "The difference between the configuration in force and the one proposed.\n\nOne setting, because one call changes one setting. What makes it a diff rather than\na value is `from`: an operator deciding whether to go ahead is deciding between two\nthings, and a report that showed only the new one would be asking them to remember\nthe old one correctly.",
+          "type": "object",
+          "properties": {
+            "cost": {
+              "description": "Whether applying it is cheap or consequential.",
+              "$ref": "#/$defs/Cost"
+            },
+            "from": {
+              "description": "What it holds now, withheld where it is a credential, and absent where the\nsetting holds nothing yet.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "key": {
+              "description": "The setting the change names.",
+              "type": "string"
+            },
+            "to": {
+              "description": "What it would hold, withheld the same way.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "key",
+            "to",
+            "cost"
+          ]
+        },
         "ConfigReport": {
           "description": "The answer to a configuration command.",
           "type": "object",
@@ -1430,7 +1744,7 @@
               "type": "boolean"
             },
             "consequence": {
-              "description": "What this change costs, where making it decided something with a\nconsequence — turning port forwarding off, or moving to a provider while it\nis off. Absent for every other change, and for a rehearsal, which decided\nnothing.",
+              "description": "What this change costs, where making it decides something with a\nconsequence — moving the library, turning port forwarding off, or naming a\nfront door. Stated for a change that is only staged as well as one that\nlanded, since the moment before it happens is the moment it is worth reading.\nAbsent for a read, and for a change to a setting nobody catalogued a cost for.",
               "type": [
                 "string",
                 "null"
@@ -1439,6 +1753,17 @@
             "rehearsed": {
               "description": "Whether this was a rehearsal, so a change that `changed` reports was one\nthat *would* be made rather than one that was.",
               "type": "boolean"
+            },
+            "review": {
+              "description": "The difference between the configuration in force and the one proposed, and\nwhere that proposal stands: applied, staged for a confirmation, turned away,\nor nothing to do. Absent for a read, which proposes nothing.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Review"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "settings": {
               "description": "The settings asked about — one for a lookup, all of them for a listing.",
@@ -1452,6 +1777,210 @@
             "settings",
             "changed",
             "rehearsed"
+          ]
+        },
+        "Cost": {
+          "description": "What changing a decision costs.",
+          "oneOf": [
+            {
+              "description": "Applied with a restart of the services it affects, and nothing else moves.",
+              "type": "string",
+              "const": "cheap"
+            },
+            {
+              "description": "Said and confirmed before it is applied: it may move data, invalidate library\npaths, or take a service away.",
+              "type": "string",
+              "const": "consequential"
+            }
+          ]
+        },
+        "Edited": {
+          "description": "A setting changed outside lemonfiber since it last wrote one.\n\nBoth sides, so the operator chooses between them rather than being told one of\nthem lost. Values a listing withholds are withheld here too — a report a script\ncan log must not be the one place a password is printed.",
+          "type": "object",
+          "properties": {
+            "found": {
+              "description": "What the file holds now.",
+              "type": "string"
+            },
+            "secret": {
+              "description": "Whether either value was withheld rather than shown.",
+              "type": "boolean"
+            },
+            "wrote": {
+              "description": "What lemonfiber last wrote there.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "wrote",
+            "found",
+            "secret"
+          ]
+        },
+        "Findings": {
+          "description": "What a proposed change comes to on this machine.\n\nEmpty on every change that comes to nothing beyond its value, which is most of\nthem: a report full of empty lists about a timezone would teach the operator to\nskip the one that matters.",
+          "type": "object",
+          "properties": {
+            "active": {
+              "description": "What is still coming down, where a reduction would interrupt it.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Active"
+              }
+            },
+            "edited": {
+              "description": "The hand-edit found in the configuration file, where one was found.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Edited"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "keeps": {
+              "description": "What this change leaves exactly as it is, said in full — because an operator\ndropping a way of downloading is weighing whether they lose what they built\nwith it.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "library": {
+              "description": "The library paths the services hold, and what moving the data location does\nto each. Empty for every change that does not move it.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/LibraryPath"
+              }
+            },
+            "opens": {
+              "description": "What this change newly asks the operator for, in the order they meet it.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Opening"
+              }
+            },
+            "stops": {
+              "description": "What this change stops running, by service name.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "opens",
+            "stops",
+            "keeps",
+            "library",
+            "active"
+          ]
+        },
+        "LibraryPath": {
+          "description": "One library path a service files into, and what moving the data location does\nto it.",
+          "type": "object",
+          "properties": {
+            "because": {
+              "description": "Why it does or does not, in the operator's terms.",
+              "type": "string"
+            },
+            "carried": {
+              "description": "Whether the library at this path survives the move.",
+              "type": "boolean"
+            },
+            "host": {
+              "description": "The host directory it would resolve to after the move, where the move can\nresolve it at all.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "path": {
+              "description": "The path as that service holds it, which is a path inside its container.",
+              "type": "string"
+            },
+            "service": {
+              "description": "The service holding it.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "service",
+            "path",
+            "carried",
+            "because"
+          ]
+        },
+        "Opening": {
+          "description": "One thing a way of downloading newly asks the operator for.\n\nWhat is opened and nothing beside it: an operator adding Usenet is shown the\nUsenet provider and the settings its login is kept in, and never the tunnel,\nwhich they neither need nor asked about.",
+          "type": "object",
+          "properties": {
+            "because": {
+              "description": "Why this protocol needs it.",
+              "type": "string"
+            },
+            "setting": {
+              "description": "The setting its answer is kept in, where it is kept in one. Absent for an\naccount the operator has to go and obtain, which no setting holds.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "what": {
+              "description": "What it is, in the operator's terms.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "what",
+            "because"
+          ]
+        },
+        "Review": {
+          "description": "A proposed change, read against what is in force, and where it stands.",
+          "type": "object",
+          "properties": {
+            "change": {
+              "description": "The difference, as it would be applied.",
+              "$ref": "#/$defs/Change"
+            },
+            "findings": {
+              "description": "What the change comes to on this machine, beyond the value it changes.\n\nFilled by whoever went and asked — the services where they file, the clients\nwhat they are fetching — and empty on every change that comes to nothing\nbeyond its value. Carried on a staged proposal as well as an applied one: a\nreview that withheld this until after the yes would be asking for a yes to\nsomething unstated.",
+              "$ref": "#/$defs/Findings",
+              "default": {
+                "active": [],
+                "keeps": [],
+                "library": [],
+                "opens": [],
+                "stops": []
+              }
+            },
+            "proof": {
+              "description": "What proving the replacement credential came to, where one was proven.\n\nA replacement is proven against its live service before the credential it\nreplaces is discarded, so this is present for exactly those settings and\nabsent everywhere else.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Validation"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "refusal": {
+              "description": "Why nothing was written, where nothing was and the reason is not simply that\nsomebody has yet to say yes.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "stance": {
+              "description": "Where the proposal stands.",
+              "$ref": "#/$defs/Stance"
+            }
+          },
+          "required": [
+            "change",
+            "stance"
           ]
         },
         "SettingReport": {
@@ -1475,6 +2004,108 @@
             "key",
             "value",
             "secret"
+          ]
+        },
+        "Stance": {
+          "description": "Where a proposed change stands once it has been read against what is in force.",
+          "oneOf": [
+            {
+              "description": "The setting already holds what was asked for. Nothing to apply, nothing to\nconfirm, and the file is not touched — a write of the same value would move\nthe file's own timestamp and read afterwards as an edit somebody made.",
+              "type": "string",
+              "const": "unchanged"
+            },
+            {
+              "description": "Staged and not applied: nothing has been written. Either it is consequential\nand nobody has said yes to it yet, or it was rehearsed.\n\nThe default, because nothing having happened yet is what every act starts as,\nand a report built and not filled in should say that rather than claim it acted.",
+              "type": "string",
+              "const": "pending"
+            },
+            {
+              "description": "Turned away. It cannot be applied safely, the file is exactly as it was, and\nthe refusal says why.",
+              "type": "string",
+              "const": "blocked"
+            },
+            {
+              "description": "Written.",
+              "type": "string",
+              "const": "applied"
+            }
+          ]
+        },
+        "Validation": {
+          "description": "What proving a credential against its live service established — never the\ninput, only the outcome.\n\nRead back as well as built. A surface that is not in this process asks setup to\nprove a credential and is told what came of it, so the four outcomes are tagged\nby name rather than distinguished by which field is present — the same reason an\nanswer carries the step it belongs to.",
+          "oneOf": [
+            {
+              "description": "Proven working, carrying the capability observed while proving it.",
+              "type": "object",
+              "properties": {
+                "observed": {
+                  "description": "The observed fact — what the service did, not that it merely answered.",
+                  "type": "string"
+                },
+                "outcome": {
+                  "type": "string",
+                  "const": "valid"
+                }
+              },
+              "required": [
+                "outcome",
+                "observed"
+              ]
+            },
+            {
+              "description": "The service answered and refused: the credential is wrong for it.",
+              "type": "object",
+              "properties": {
+                "detail": {
+                  "description": "What the service said, in terms the operator can act on.",
+                  "type": "string"
+                },
+                "outcome": {
+                  "type": "string",
+                  "const": "rejected"
+                }
+              },
+              "required": [
+                "outcome",
+                "detail"
+              ]
+            },
+            {
+              "description": "Nothing usable answered, so nothing can be concluded about the credential.",
+              "type": "object",
+              "properties": {
+                "detail": {
+                  "description": "Why nothing usable came back.",
+                  "type": "string"
+                },
+                "outcome": {
+                  "type": "string",
+                  "const": "unreachable"
+                }
+              },
+              "required": [
+                "outcome",
+                "detail"
+              ]
+            },
+            {
+              "description": "It authenticated, but cannot do the job it is for — exhausted, limited, or\notherwise unable.",
+              "type": "object",
+              "properties": {
+                "detail": {
+                  "description": "What it can no longer do, and why where the service says.",
+                  "type": "string"
+                },
+                "outcome": {
+                  "type": "string",
+                  "const": "degraded"
+                }
+              },
+              "required": [
+                "outcome",
+                "detail"
+              ]
+            }
           ]
         }
       }
@@ -5739,6 +6370,152 @@
         }
       }
     },
+    "import": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Envelope",
+      "description": "The wrapper every machine-readable payload arrives in.",
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "description": "The output contract's version.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "data": {
+          "description": "The payload.",
+          "$ref": "#/$defs/ImportReport"
+        },
+        "kind": {
+          "description": "Which payload this is, so a consumer can branch before parsing `data`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ],
+      "$defs": {
+        "ImportReport": {
+          "description": "What copying an operator's own records across came to, or would come to.",
+          "type": "object",
+          "properties": {
+            "carried": {
+              "description": "What was carried across.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RecordReport"
+              }
+            },
+            "not_carried": {
+              "description": "What could not be carried, and why.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/UnsupportedReport"
+              }
+            },
+            "project": {
+              "description": "The project the records were read from.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "refusal": {
+              "description": "Why nothing was carried, where nothing was.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "stance": {
+              "description": "Where the act stands.",
+              "$ref": "#/$defs/Stance"
+            },
+            "would_carry": {
+              "description": "What would be, where nothing has been yet.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RecordReport"
+              }
+            }
+          },
+          "required": [
+            "carried",
+            "would_carry",
+            "not_carried",
+            "stance"
+          ]
+        },
+        "RecordReport": {
+          "description": "One record carried across, or that would be.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "description": "What kind of record it is, in the plural a person reads.",
+              "type": "string"
+            },
+            "name": {
+              "description": "What it is called.",
+              "type": "string"
+            },
+            "service": {
+              "description": "The service it belongs to.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "service",
+            "kind",
+            "name"
+          ]
+        },
+        "Stance": {
+          "description": "Where a proposed change stands once it has been read against what is in force.",
+          "oneOf": [
+            {
+              "description": "The setting already holds what was asked for. Nothing to apply, nothing to\nconfirm, and the file is not touched — a write of the same value would move\nthe file's own timestamp and read afterwards as an edit somebody made.",
+              "type": "string",
+              "const": "unchanged"
+            },
+            {
+              "description": "Staged and not applied: nothing has been written. Either it is consequential\nand nobody has said yes to it yet, or it was rehearsed.\n\nThe default, because nothing having happened yet is what every act starts as,\nand a report built and not filled in should say that rather than claim it acted.",
+              "type": "string",
+              "const": "pending"
+            },
+            {
+              "description": "Turned away. It cannot be applied safely, the file is exactly as it was, and\nthe refusal says why.",
+              "type": "string",
+              "const": "blocked"
+            },
+            {
+              "description": "Written.",
+              "type": "string",
+              "const": "applied"
+            }
+          ]
+        },
+        "UnsupportedReport": {
+          "description": "Something found that lemonfiber cannot take over, named rather than passed over.",
+          "type": "object",
+          "properties": {
+            "because": {
+              "description": "Why it cannot be adopted, in the operator's terms.",
+              "type": "string"
+            },
+            "what": {
+              "description": "What was found, by the name the engine gives it.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "what",
+            "because"
+          ]
+        }
+      }
+    },
     "invitation": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "title": "Envelope",
@@ -6449,6 +7226,355 @@
               "type": "string",
               "const": "stderr"
             }
+          ]
+        }
+      }
+    },
+    "migration": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Envelope",
+      "description": "The wrapper every machine-readable payload arrives in.",
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "description": "The output contract's version.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "data": {
+          "description": "The payload.",
+          "$ref": "#/$defs/MigrationReport"
+        },
+        "kind": {
+          "description": "Which payload this is, so a consumer can branch before parsing `data`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ],
+      "$defs": {
+        "CarryingReport": {
+          "description": "What adopting one existing service would come to.",
+          "type": "object",
+          "properties": {
+            "backup_first": {
+              "description": "Whether its database must be backed up before lemonfiber opens it.",
+              "type": "boolean"
+            },
+            "because": {
+              "description": "What that means for this service's data, in the operator's terms.",
+              "type": "string"
+            },
+            "existing": {
+              "description": "The version standing here now.",
+              "type": "string"
+            },
+            "ours": {
+              "description": "The version lemonfiber pins.",
+              "type": "string"
+            },
+            "refused": {
+              "description": "Whether lemonfiber will not do this at all.",
+              "type": "boolean"
+            },
+            "service": {
+              "description": "The service, by the name lemonfiber runs it under.",
+              "type": "string"
+            },
+            "verdict": {
+              "description": "Which of the two is the later, in one word.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "service",
+            "existing",
+            "ours",
+            "verdict",
+            "because",
+            "backup_first",
+            "refused"
+          ]
+        },
+        "ConflictReport": {
+          "description": "A port lemonfiber wants for a service that something else already answers on.",
+          "type": "object",
+          "properties": {
+            "held_by": {
+              "description": "The project already holding it.",
+              "type": "string"
+            },
+            "port": {
+              "description": "The host port both want.",
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "wanted_by": {
+              "description": "The lemonfiber service that would publish it.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "port",
+            "wanted_by",
+            "held_by"
+          ]
+        },
+        "LinkingReport": {
+          "description": "What an existing layout costs, where it cannot hold a hardlink.",
+          "type": "object",
+          "properties": {
+            "because": {
+              "description": "Why they cannot, naming the filesystems it is about.",
+              "type": "string"
+            },
+            "cost": {
+              "description": "What that costs, in room rather than in adjectives.",
+              "type": "string"
+            },
+            "filesystems": {
+              "description": "The filesystems the existing setup keeps its data on.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "forced": {
+              "description": "Whether lemonfiber will do it. Always false: the layout and the library in it\nare the operator's, and correctness does not outrank their data.",
+              "type": "boolean"
+            },
+            "links": {
+              "description": "Whether imports can be hardlinks across this layout. False whenever this is\nreported at all, since a layout that links is not reported.",
+              "type": "boolean"
+            },
+            "remedy": {
+              "description": "What would fix it, offered.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "links",
+            "because",
+            "cost",
+            "remedy",
+            "forced",
+            "filesystems"
+          ]
+        },
+        "MigrationReport": {
+          "description": "What is already on this machine, before anything is proposed.",
+          "type": "object",
+          "properties": {
+            "beside": {
+              "description": "Where each service would listen to run beside the existing setup.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/MovedReport"
+              }
+            },
+            "carrying": {
+              "description": "What adopting each recognised service would come to, by service name.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/CarryingReport"
+              }
+            },
+            "conflicts": {
+              "description": "Ports wanted by lemonfiber that an existing service already holds.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ConflictReport"
+              }
+            },
+            "linking": {
+              "description": "What the existing layout costs where it cannot hold a hardlink, absent where\nit can.",
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/LinkingReport"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "modes": {
+              "description": "What may be done about what was found, least destructive first.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ModeReport"
+              }
+            },
+            "not_carried": {
+              "description": "What no migration carries across, whatever mode it runs in.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/UnsupportedReport"
+              }
+            },
+            "read": {
+              "description": "Whether the engine answered at all.\n\nFalse means the survey found nothing because it could not look, which is a\ndifferent answer from finding nothing, and the only one that must never be\nread as an empty machine.",
+              "type": "boolean"
+            },
+            "standing": {
+              "description": "Existing projects, by project name.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/StandingReport"
+              }
+            },
+            "unsupported": {
+              "description": "What was found and cannot be adopted.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/UnsupportedReport"
+              }
+            }
+          },
+          "required": [
+            "read",
+            "standing",
+            "conflicts",
+            "unsupported",
+            "carrying",
+            "not_carried",
+            "modes",
+            "beside"
+          ]
+        },
+        "ModeReport": {
+          "description": "One thing an operator may do about a setup already here.",
+          "type": "object",
+          "properties": {
+            "disturbs": {
+              "description": "Whether carrying it out stops or alters what is already running.",
+              "type": "boolean"
+            },
+            "mode": {
+              "description": "The word an operator types for it.",
+              "type": "string"
+            },
+            "preselected": {
+              "description": "Whether it is offered already chosen. Only adopting is.",
+              "type": "boolean"
+            },
+            "what": {
+              "description": "What choosing it would come to, in the operator's terms.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "mode",
+            "preselected",
+            "what",
+            "disturbs"
+          ]
+        },
+        "MovedReport": {
+          "description": "Where one service would listen to run beside what is already here.",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "The port it would ordinarily take.",
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            },
+            "service": {
+              "description": "The lemonfiber service being moved.",
+              "type": "string"
+            },
+            "to": {
+              "description": "The port it would take instead.",
+              "type": "integer",
+              "format": "uint16",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "required": [
+            "service",
+            "from",
+            "to"
+          ]
+        },
+        "OccupantReport": {
+          "description": "One container of somebody else's stack, as the engine reports it.",
+          "type": "object",
+          "properties": {
+            "adoptable": {
+              "description": "Whether lemonfiber knows this service and could take it over as it stands.",
+              "type": "boolean"
+            },
+            "ports": {
+              "description": "Every host port it publishes, lowest first.",
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "uint16",
+                "maximum": 65535,
+                "minimum": 0
+              }
+            },
+            "running": {
+              "description": "Whether it is running now, as against present but stopped.",
+              "type": "boolean"
+            },
+            "service": {
+              "description": "The Compose service name it answers to.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "service",
+            "running",
+            "ports",
+            "adoptable"
+          ]
+        },
+        "StandingReport": {
+          "description": "One Compose project on this machine that is not lemonfiber's.",
+          "type": "object",
+          "properties": {
+            "project": {
+              "description": "The Compose project name.",
+              "type": "string"
+            },
+            "services": {
+              "description": "Its containers, by service name.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/OccupantReport"
+              }
+            }
+          },
+          "required": [
+            "project",
+            "services"
+          ]
+        },
+        "UnsupportedReport": {
+          "description": "Something found that lemonfiber cannot take over, named rather than passed over.",
+          "type": "object",
+          "properties": {
+            "because": {
+              "description": "Why it cannot be adopted, in the operator's terms.",
+              "type": "string"
+            },
+            "what": {
+              "description": "What was found, by the name the engine gives it.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "what",
+            "because"
           ]
         }
       }
@@ -7423,6 +8549,111 @@
             "mended",
             "beyond",
             "acted"
+          ]
+        }
+      }
+    },
+    "replacement": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Envelope",
+      "description": "The wrapper every machine-readable payload arrives in.",
+      "type": "object",
+      "properties": {
+        "api_version": {
+          "description": "The output contract's version.",
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0
+        },
+        "data": {
+          "description": "The payload.",
+          "$ref": "#/$defs/ReplaceReport"
+        },
+        "kind": {
+          "description": "Which payload this is, so a consumer can branch before parsing `data`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "api_version",
+        "kind",
+        "data"
+      ],
+      "$defs": {
+        "ReplaceReport": {
+          "description": "What standing in place of a setup already here came to, or would come to.",
+          "type": "object",
+          "properties": {
+            "project": {
+              "description": "The project that would be stood in place of.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "refusal": {
+              "description": "Why nothing was stopped, where nothing was.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "stance": {
+              "description": "Where the act stands.",
+              "$ref": "#/$defs/Stance"
+            },
+            "still_running": {
+              "description": "The services that would not stop and are still up.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "stopped": {
+              "description": "The services that were stopped.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "would_stop": {
+              "description": "The services that would be stopped, by name.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "would_stop",
+            "stopped",
+            "still_running",
+            "stance"
+          ]
+        },
+        "Stance": {
+          "description": "Where a proposed change stands once it has been read against what is in force.",
+          "oneOf": [
+            {
+              "description": "The setting already holds what was asked for. Nothing to apply, nothing to\nconfirm, and the file is not touched — a write of the same value would move\nthe file's own timestamp and read afterwards as an edit somebody made.",
+              "type": "string",
+              "const": "unchanged"
+            },
+            {
+              "description": "Staged and not applied: nothing has been written. Either it is consequential\nand nobody has said yes to it yet, or it was rehearsed.\n\nThe default, because nothing having happened yet is what every act starts as,\nand a report built and not filled in should say that rather than claim it acted.",
+              "type": "string",
+              "const": "pending"
+            },
+            {
+              "description": "Turned away. It cannot be applied safely, the file is exactly as it was, and\nthe refusal says why.",
+              "type": "string",
+              "const": "blocked"
+            },
+            {
+              "description": "Written.",
+              "type": "string",
+              "const": "applied"
+            }
           ]
         }
       }
