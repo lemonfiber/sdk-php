@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: a21dad1cf2f016bfe8f8b426e0351736d7a1f691, api_version 1.
+// Source: 23e2c42506e8210fb26c35c56448b098b185ebd6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `update` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{afterwards: string, asked?: string|null, at?: string|null, carries: string, command?: string|null, configuration?: string|null, installed: 'homebrew'|'scoop'|'winget'|'cargo'|'distribution'|'installer'|'elsewhere'|'untellable', instead?: string|null, offered?: string|null, owner?: string|null, replaceable?: bool|null, running: string, standing: 'current'|'update-available'|'managed-externally'|'check-failed', untold?: string|null}
+ * @phpstan-type Data array{applied: list<array{detail?: string|null, ending: 'updated'|'not-fetched'|'not-started'|'not-reached', from: string, reversal: 'rollback'|'restore', service: string, to: string}>, backup?: string|null, changes: list<array{because: string, current: string, irreversible: bool, jump: 'major'|'minor'|'patch'|'untellable', refused: bool, service: string, target: string}>, confirmed: bool, halted?: string|null, in_flight: list<string>, stack_edits: list<array{diff: string, path: string}>, state: 'current'|'updates-available'|'updated'|'partial'|'failed'}
  */
 final class UpdateEnvelope
 {

@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `adoption` envelope, shaped as the contract describes it.
+ * The `self-update` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{back_up: list<string>, project?: string|null, refusal?: string|null, stance: 'unchanged'|'pending'|'blocked'|'applied', upgrades: list<array{backup_first: bool, because: string, existing: string, ours: string, refused: bool, service: string, verdict: string}>}
+ * @phpstan-type Data array{afterwards: string, asked?: string|null, at?: string|null, carries: string, command?: string|null, configuration?: string|null, installed: 'homebrew'|'scoop'|'winget'|'cargo'|'distribution'|'installer'|'elsewhere'|'untellable', instead?: string|null, offered?: string|null, owner?: string|null, replaceable?: bool|null, running: string, standing: 'current'|'update-available'|'managed-externally'|'check-failed', untold?: string|null}
  */
-final class AdoptionEnvelope
+final class SelfUpdateEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Adoption;
+    public const Kind KIND = Kind::SelfUpdate;
 
     /**
      * The same envelope with its payload typed by its kind.
