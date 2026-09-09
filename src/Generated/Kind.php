@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: e6cd57b374cee20ba03feb8f18df4b1743056976, api_version 1.
+// Source: a21dad1cf2f016bfe8f8b426e0351736d7a1f691, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -30,6 +30,7 @@ enum Kind: string
     case Forms = 'forms';
     case FrontDoor = 'front-door';
     case Glossary = 'glossary';
+    case History = 'history';
     case Hosting = 'hosting';
     case Household = 'household';
     case Import = 'import';
@@ -60,6 +61,7 @@ enum Kind: string
     case Trace = 'trace';
     case Undo = 'undo';
     case Uninstall = 'uninstall';
+    case Update = 'update';
     case Upgrade = 'upgrade';
     case Version = 'version';
     case Walkthrough = 'walkthrough';
