@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `pull` envelope, shaped as the contract describes it.
+ * The `alerts` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data string
+ * @phpstan-type Data array{changed: bool, exceptions: list<array{kind: string, wanted: bool}>, means: string, preset: string, rehearsed: bool}
  */
-final class PullEnvelope
+final class AlertsEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Pull;
+    public const Kind KIND = Kind::Alerts;
 
     /**
      * The same envelope with its payload typed by its kind.
