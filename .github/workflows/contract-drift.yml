@@ -10,52 +10,66 @@
 # not the set of kinds inside it. So a client generated from a stale artefact
 # parses every reply it still understands and simply has no type for the rest.
 #
-# This reports rather than gates, which is what `Q-R68` asks of it. Taking a
-# contract change is a deliberate act that arrives as a diff somebody reads, so
-# running this on pull requests would refuse every unrelated change for the whole
-# stretch between the server moving and this package catching up — and the pin is
-# meant to lag. A red run here is news about lemonfiber, not a fault in whichever
-# commit happened to be last.
+# This ran on a calendar and reported, and reporting was the half that did not
+# work. It went red, correctly, and stayed red for days with nobody acting on it,
+# because in the Actions list an advisory red and a broken gate are the same red
+# X and telling them apart meant opening this file. So it runs on pull requests,
+# fails them, and `main` requires it (`Q-R68`).
 #
-# So the run says which of those it is. A check nobody is required to pass, that
-# has been red for days, is otherwise indistinguishable from a check that is
-# broken, and the only reader who can tell them apart is one who already knew.
+# The pin is meant to lag, and gating it does refuse pull requests that have
+# nothing to do with the contract. That is the trade, taken deliberately: the
+# stretch it refuses is the stretch this package would spend shipping against an
+# artefact it has been told is wrong. What makes it payable is that a failure
+# hands over the remedy rather than the diagnosis (`Q-R70`) — two commands, with
+# the revision already filled in, printed where the author reads the failure.
 name: contract-drift
 on:
+  pull_request:
   workflow_dispatch:
   schedule:
-    # Weekly. The contract moves with releases rather than with commits, so a
-    # daily run would mostly report the same thing twice; a week is still short
-    # enough that catching up is a sync rather than an excavation.
+    # Still weekly, now as the floor rather than the notice: a pull request is
+    # what usually asks the question, and this catches a `main` that went a week
+    # without one while the server moved.
     - cron: "20 7 * * 1"
 
 permissions:
   contents: read
 
 jobs:
-  look:
+  contract-drift:
+    name: contract-drift
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Compare the vendored contract with the one the server describes
         env:
-          SERVED: https://raw.githubusercontent.com/lemonfiber/lemonfiber/main/contract/web-api.contract.json
+          LEMONFIBER: https://github.com/lemonfiber/lemonfiber.git
         run: |
           set -euo pipefail
+
+          # The revision is resolved first and the artefact fetched at it, so the
+          # comparison and the command printed to fix it name the same commit.
+          # Fetching `main` twice would let it move in between, and the remedy
+          # would then be for a contract nobody compared.
+          head=$(git ls-remote "$LEMONFIBER" refs/heads/main | cut -f1)
+
           # `-L` follows redirects, and a redirect may point anywhere. These refuse
           # any hop that is not HTTPS, so what is fetched cannot be downgraded.
-          curl -fsSL --proto "=https" --proto-redir "=https" --retry 3 -o served.json "$SERVED"
-          python3 - <<'PY'
+          curl -fsSL --proto "=https" --proto-redir "=https" --retry 3 -o served.json \
+            "https://raw.githubusercontent.com/lemonfiber/lemonfiber/${head}/contract/web-api.contract.json"
+
+          HEAD_REVISION="$head" python3 - <<'PY'
           import json
           import os
           import pathlib
           import sys
 
           # What the run page shows above the log. The verdict is written here as
-          # well as printed, so what this check found and what it is for are read
-          # together — the reader who has to be told it reports rather than gates
-          # is the one who did not go looking for the workflow file.
+          # well as printed, because a required check is read from the pull
+          # request, where the log is one click further away than the summary.
           summary = os.environ.get("GITHUB_STEP_SUMMARY")
           said = []
 
@@ -71,6 +85,7 @@ jobs:
               sys.exit(code)
 
 
+          head = os.environ["HEAD_REVISION"]
           vendored = json.loads(pathlib.Path("contract/web-api.contract.json").read_text())
           served = json.loads(pathlib.Path("served.json").read_text())
           stamp = pathlib.Path("contract/VERSION").read_text().strip()
@@ -81,7 +96,7 @@ jobs:
           if vendored == served:
               say("## The vendored contract is current")
               say()
-              say(f"It matches the one the server describes, at `{stamp}`.")
+              say(f"It matches the one lemonfiber `{head}` describes, vendored at `{stamp}`.")
               leave(0)
 
           missing = sorted(theirs - ours)
@@ -89,12 +104,12 @@ jobs:
 
           say("## The vendored contract is behind")
           say()
-          say("**This check reports; it gates nothing.** A red run means lemonfiber's")
-          say("contract has moved on, which is expected between catch-ups — it does not")
-          say("mean this check is broken, and it is not failing any pull request.")
+          say("**This check gates.** It fails every pull request against `main` until")
+          say("the artefact in `contract/` is the one lemonfiber serves. You did not")
+          say("break this and you do not need to understand the kinds below to fix it.")
           say()
           say(f"- vendored at `{stamp}`: api_version {vendored.get('api_version')}, {len(ours)} kinds")
-          say(f"- served on main: api_version {served.get('api_version')}, {len(theirs)} kinds")
+          say(f"- served at lemonfiber `{head}`: api_version {served.get('api_version')}, {len(theirs)} kinds")
           if missing:
               say(f"- described by the server and not here: {', '.join(missing)}")
           if extra:
@@ -102,12 +117,21 @@ jobs:
           if not missing and not extra:
               say("- the same kinds, described differently — a shape changed inside one of them.")
           say()
-          say("To catch up: `composer contract:sync -- <revision>`, then")
-          say("`composer contract:generate`, and commit both.")
+          say("### Run this")
+          say()
+          say("```sh")
+          say(f"composer contract:sync -- {head}")
+          say("composer contract:generate")
+          say("```")
+          say()
+          say("Then commit `contract/` and `src/Generated`. Where that regenerates more")
+          say("than types — a kind arriving is a change to this package's surface — land")
+          say("the sync on its own first; that is the change this gate is asking for.")
 
           print(
-              "::error::the vendored contract no longer matches the one the server "
-              "describes — this check reports it and gates nothing"
+              "::error::the vendored contract is behind lemonfiber "
+              f"{head} — run `composer contract:sync -- {head}` then "
+              "`composer contract:generate`, and commit contract/ and src/Generated"
           )
           leave(1)
           PY
