@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `seed` envelope, shaped as the contract describes it.
+ * The `self-update` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{assessment: 'assessed'|'unassessable', wirings: list<array{connection: string, severity: array{severity: 'informational'}|array{breakage: string, remediation: string, severity: 'warning'}, state: array{state: 'wired'}|array{state: 'already-wired'}|array{state: 'drifted'}|array{state: 'stale'}|array{ours: string, state: 'conflicted', yours?: string|null}|array{state: 'adopted'}|array{state: 'unmanaged'}|array{reason: string, state: 'skipped'}|array{detail: string, state: 'failed'}|array{reason: string, state: 'refused'}}>}
+ * @phpstan-type Data array{afterwards: string, asked?: string|null, at?: string|null, carries: string, command?: string|null, configuration?: string|null, installed: 'homebrew'|'scoop'|'winget'|'cargo'|'distribution'|'installer'|'elsewhere'|'untellable', instead?: string|null, offered?: string|null, owner?: string|null, replaceable?: bool|null, running: string, standing: 'current'|'update-available'|'managed-externally'|'check-failed', untold?: string|null}
  */
-final class SeedEnvelope
+final class SelfUpdateEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Seed;
+    public const Kind KIND = Kind::SelfUpdate;
 
     /**
      * The same envelope with its payload typed by its kind.
