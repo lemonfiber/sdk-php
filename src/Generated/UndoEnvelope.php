@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 588d3227a19e8d2245ceb7dae3c6a7cdb5e62977, api_version 1.
+// Source: d4f5fc4840b7ef7b4e6218be55f451d158b404fd, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `undo` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{reversed: list<array{action: array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}, target: string}>}
+ * @phpstan-type Data array{left: list<array{because: string, target: string}>, reversed: list<array{action: array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}, target: string}>}
  */
 final class UndoEnvelope
 {
