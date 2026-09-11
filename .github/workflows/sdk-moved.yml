@@ -1,0 +1,67 @@
+# Tell the companion when the client it locks has moved.
+#
+# `lemonfiber-companion` reaches a stack through this package and through nothing
+# else — its `ARCHITECTURE.md` says so, and its `sdk` module is the only adapter
+# allowed to name it. It takes this package as `dev-main`, so `composer.lock`
+# pins an exact commit and `composer install` is content with one from any point
+# in the past.
+#
+# So a fix here is not a fix there until somebody moves that reference, and
+# nothing there was watching. The companion was created with its lock three
+# commits behind this repository, drawn through a contract that did not have the
+# field saying what a reversal did *not* put back, and every check it ran passed.
+#
+# Its `sdk-drift` check now compares the two, but on a weekly schedule. This
+# fires on the change instead of on the calendar, and asks the companion to
+# *take* this main rather than to judge its lock: asking for the verdict only
+# produces a red required check that whoever next opens a pull request has to
+# clear, about anything. `sdk-bump` there opens the bump instead.
+#
+# Every commit on main counts. What the companion gets is generated envelopes, a
+# transport and a vendored contract, and there is no subset of this repository
+# that leaves all three alone — so this is not filtered by path.
+name: sdk-moved
+
+on:
+  push:
+    branches: [main]
+  # Kept so the notifier can be driven against a real change rather than trusted.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tell:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Mint a token that can reach the companion
+        id: token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.RELEASE_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: lemonfiber-companion
+
+      - name: Ask the companion to take this main
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+
+          if ! gh api --method POST \
+            "repos/${OWNER}/lemonfiber-companion/actions/workflows/sdk-bump.yml/dispatches" \
+            -f ref=main
+          then
+            # A notifier that cannot notify has to say so. Reporting success
+            # here would leave the weekly run as the only thing looking, which
+            # is the state this workflow exists to end.
+            echo "::error::the client moved and the companion was not told"
+            exit 1
+          fi
+
+          echo "asked lemonfiber-companion to take this main."
