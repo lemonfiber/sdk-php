@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: d4f5fc4840b7ef7b4e6218be55f451d158b404fd, api_version 1.
+// Source: 96c8c21bfbdec98ea55fe3809d42ed0d561b07f0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `adoption` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{back_up: list<string>, project?: string|null, refusal?: string|null, stance: 'unchanged'|'pending'|'blocked'|'applied', upgrades: list<array{backup_first: bool, because: string, existing: string, ours: string, refused: bool, service: string, verdict: string}>}
+ * @phpstan-type Data array{back_up: list<string>, backed_up?: string|null, project?: string|null, refusal?: string|null, stance: 'unchanged'|'pending'|'blocked'|'applied', upgrades: list<array{backup_first: bool, because: string, existing: string, ours: string, refused: bool, service: string, verdict: string}>}
  */
 final class AdoptionEnvelope
 {
