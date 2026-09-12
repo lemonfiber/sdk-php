@@ -168,6 +168,61 @@ it('accepts a reference described but not constrained', function () use ($root):
     removeTree($tree);
 });
 
+/**
+ * A contract whose one kind points at a definition that is somewhere else.
+ *
+ * Which is what hoisting `$defs` to the document root produces: the definition
+ * is still in the artefact, and no longer where the kind pointing at it looks.
+ *
+ * @return array<string, mixed>
+ */
+function contractHoistedToTheRoot(): array
+{
+    return [
+        'api_version' => 1,
+        '$defs' => ['Word' => ['type' => 'object']],
+        'kinds' => [
+            'word' => [
+                'type' => 'object',
+                'properties' => [
+                    'api_version' => ['type' => 'integer'],
+                    'kind' => ['type' => 'string'],
+                    'data' => ['$ref' => '#/$defs/Word'],
+                ],
+                'required' => ['api_version', 'kind', 'data'],
+            ],
+        ],
+    ];
+}
+
+it('refuses a reference to a definition the kind does not carry, and names it', function () use ($root): void {
+    $hoisted = contractHoistedToTheRoot();
+    $tree = treeWith($root, json_encode($hoisted, JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+
+    // Nought with a surface of `mixed` in it is the outcome this exists to stop,
+    // so the status matters as much as the words.
+    expect($result['status'])->toBe(1)
+        ->and($result['stderr'])->toContain('word -> Word')
+        ->and($result['stderr'])->toContain('mixed')
+        ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
+
+    removeTree($tree);
+});
+
+it('accepts a reference to a definition the kind carries', function () use ($root): void {
+    $carried = contractPointingAt([]);
+    $tree = treeWith($root, json_encode($carried, JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+
+    expect($result['status'])->toBe(0)
+        ->and(is_file($tree . '/src/Generated/Contract.php'))->toBeTrue();
+
+    removeTree($tree);
+});
+
 it('refuses a contract describing no kinds', function () use ($root): void {
     $tree = treeWith($root, json_encode(['api_version' => 1, 'kinds' => []], JSON_THROW_ON_ERROR));
 

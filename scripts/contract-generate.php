@@ -34,8 +34,11 @@ use function mkdir;
 use function preg_match;
 use function preg_split;
 use function sprintf;
+use function str_starts_with;
+use function strlen;
 use function strtolower;
 use function strval;
+use function substr;
 use function trim;
 use function ucfirst;
 use function unlink;
@@ -168,6 +171,17 @@ final readonly class ContractGenerator
             return null;
         }
 
+        $dangling = $this->pointingAtNothing($kinds);
+
+        if ($dangling !== []) {
+            $this->refuse(
+                'The vendored contract points at definitions it does not carry, and every one of them '
+                . 'would have been generated as mixed: ' . implode(', ', $dangling),
+            );
+
+            return null;
+        }
+
         ksort($kinds);
 
         return $kinds;
@@ -198,6 +212,70 @@ final readonly class ContractGenerator
         foreach ($node as $key => $value) {
             if (is_array($value)) {
                 $found = [...$found, ...$this->besideAReference($value, $path . '/' . strval($key))];
+            }
+        }
+
+        return $found;
+    }
+
+    /**
+     * Every reference pointing at a definition the kind carrying it does not hold.
+     *
+     * An unresolvable reference is not an error anywhere below this. `SchemaTypes`
+     * answers one with `mixed`, and `union()` collapses any union holding a `mixed`
+     * to `mixed` entire — so a contract that moved its definitions somewhere this
+     * does not look would generate a whole surface of `mixed`, exit nought, and be
+     * committed by the bump that fetched it. Nothing else would notice: `src/Generated`
+     * is excluded from PHPStan, and the suite checks kind names rather than shapes.
+     *
+     * Hoisting `$defs` to the document root is exactly that change, and is a thing
+     * somebody may reasonably try. This is what makes it fail loudly and say where.
+     *
+     * A cycle needs no exception: a definition pointing back at one already being
+     * expanded still points at a definition this holds, and `SchemaTypes` stops that
+     * walk on its own.
+     *
+     * @param  array<mixed, mixed>  $kinds
+     * @return list<string>
+     */
+    private function pointingAtNothing(array $kinds): array
+    {
+        $dangling = [];
+
+        foreach ($kinds as $kind => $schema) {
+            if (! is_array($schema)) {
+                continue;
+            }
+
+            $defs = $schema['$defs'] ?? null;
+            $carried = is_array($defs) ? $defs : [];
+
+            foreach ($this->referenced($schema) as $name) {
+                if (! array_key_exists($name, $carried)) {
+                    $dangling[] = sprintf('%s -> %s', strval($kind), $name);
+                }
+            }
+        }
+
+        return $dangling;
+    }
+
+    /**
+     * The name of every definition a schema points at, however deeply, in order.
+     *
+     * @param  array<mixed, mixed>  $node
+     * @return list<string>
+     */
+    private function referenced(array $node): array
+    {
+        $prefix = '#/$defs/';
+        $found = [];
+
+        foreach ($node as $key => $value) {
+            if ($key === '$ref' && is_string($value) && str_starts_with($value, $prefix)) {
+                $found[] = substr($value, strlen($prefix));
+            } elseif (is_array($value)) {
+                $found = [...$found, ...$this->referenced($value)];
             }
         }
 
