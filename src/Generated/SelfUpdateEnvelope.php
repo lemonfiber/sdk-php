@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 387f0c83c55614ac3839bb21e88dd0c3a2feb50f, api_version 1.
+// Source: e28022c19009f9bd3dec6a6b737e511d4e2f53e5, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `self-update` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{afterwards: string, asked?: string|null, at?: string|null, carries: string, command?: string|null, configuration?: string|null, installed: 'homebrew'|'scoop'|'winget'|'cargo'|'distribution'|'installer'|'elsewhere'|'untellable', instead?: string|null, offered?: string|null, owner?: string|null, replaceable?: bool|null, running: string, standing: 'current'|'update-available'|'managed-externally'|'check-failed', untold?: string|null}
+ * @phpstan-type Data array{afterwards: string, asked?: string|null, at?: string|null, carries: string, changed?: string|null, command?: string|null, configuration?: string|null, installed: 'homebrew'|'scoop'|'winget'|'cargo'|'distribution'|'installer'|'elsewhere'|'untellable', instead?: string|null, offered?: string|null, owner?: string|null, replaceable?: bool|null, running: string, standing: 'current'|'update-available'|'managed-externally'|'check-failed', untold?: string|null}
  */
 final class SelfUpdateEnvelope
 {
