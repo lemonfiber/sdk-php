@@ -69,20 +69,46 @@ jobs:
           GH_TOKEN: ${{ steps.token.outputs.token }}
         run: |
           set -euo pipefail
-          # `contract/VERSION` is the revision the vendored bytes were taken at,
-          # which is the pin. The artefact itself carries no revision.
+
+          # The artefact decides, not the revision.
+          #
+          # `contract/VERSION` records which commit the vendored bytes came
+          # from, and the server's main moves for every commit — a README, a
+          # workflow, a test. Comparing the two says "behind" on all of them,
+          # and each would open a pull request whose only change is the
+          # revision stamp. That is the noise this workflow exists to remove,
+          # arriving from the other direction.
+          #
+          # So this compares what `contract-drift` compares: the parsed
+          # artefact. When the bytes match, there is nothing to take, and the
+          # stamp staying where it is remains true — it says where the bytes
+          # came from, and they came from there.
           pin="$(tr -d '[:space:]' < contract/VERSION)"
           head="$(gh api "repos/${SERVER}/commits/main" --jq .sha)"
           echo "pin=${pin}" >> "$GITHUB_OUTPUT"
           echo "head=${head}" >> "$GITHUB_OUTPUT"
-          if [ "$pin" = "$head" ]; then
+
+          # `-L` follows redirects, and a redirect may point anywhere. These
+          # refuse any hop that is not HTTPS, so what is fetched cannot be
+          # downgraded.
+          curl -fsSL --proto "=https" --proto-redir "=https" --retry 3 -o served.json \
+            "https://raw.githubusercontent.com/${SERVER}/${head}/contract/web-api.contract.json"
+
+          if VENDORED=contract/web-api.contract.json SERVED=served.json python3 -c '
+          import json, os, sys
+          vendored = json.load(open(os.environ["VENDORED"]))
+          served = json.load(open(os.environ["SERVED"]))
+          sys.exit(0 if vendored == served else 1)
+          '; then
             echo "moved=no" >> "$GITHUB_OUTPUT"
-            echo "The vendored contract is at ${head}, which is the server's main."
-            echo "## The vendored contract is already at the server's main" >>"${GITHUB_STEP_SUMMARY:-/dev/null}"
+            echo "The vendored artefact matches the one ${head} serves; nothing to take."
+            echo "## The vendored contract is what the server describes" >>"${GITHUB_STEP_SUMMARY:-/dev/null}"
           else
             echo "moved=yes" >> "$GITHUB_OUTPUT"
-            echo "Vendored ${pin}; the server's main is ${head}."
+            echo "The artefact has changed since ${pin}; the server's main is ${head}."
           fi
+
+          rm -f served.json
 
       - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         if: steps.behind.outputs.moved == 'yes'
