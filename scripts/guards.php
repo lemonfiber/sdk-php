@@ -160,6 +160,7 @@ final class Guards
         'contract:check' => 'regenerating the contract types produces no diff',
         'guards' => 'these checks run at all',
         'test:coverage' => 'every line is exercised',
+        'test:mutation' => 'a line that ran is a line a test would notice changing',
         'analyse' => 'the analyser sees what the types claim',
     ];
 

@@ -188,12 +188,54 @@ jobs:
       - uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
       - run: composer test:coverage
 
+  # Which shards of `src` there are, asked of the same script that mutates
+  # them. A list written into this file would be a second source of truth, and
+  # it would go stale the day a directory is added — silently, since the run
+  # still passes, over less.
+  #
+  # The script reads the tree and nothing else, so this job installs nothing
+  # and answers in seconds.
+  mutation-scope:
+    name: what to mutate
+    needs: scope
+    # The guard every gate above carries, for the reasons written on `checks`:
+    # a `scope` that failed leaves no output, and no output is not a "no".
+    if: ${{ !cancelled() && github.event_name == 'pull_request' && (needs.scope.result != 'success' || needs.scope.outputs.code == 'true') }}
+    runs-on: ubuntu-latest
+    outputs:
+      shards: ${{ steps.list.outputs.shards }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          coverage: none
+      - id: list
+        run: echo "shards=$(php scripts/mutation.php --list)" >> "$GITHUB_OUTPUT"
+
   # The most expensive gate here, so the most guarded: only on a pull request,
   # and only once the tests have passed. Mutating code whose tests already fail
   # measures nothing.
+  #
+  # A runner per shard, which is a top-level directory of `src`. The work
+  # separates because the floor is 100: a score of 100 over a set of files is a
+  # score of 100 over every part of it, so a shard is judged exactly as it would
+  # have been inside a whole run, and no shard can carry another. What was the
+  # sum of every file's mutants in one process is now the slowest single shard.
+  #
+  # `fail-fast: false`, since the point of a shard is to learn about all of
+  # them: cancelling six runners over one escaped mutant means another push to
+  # find the next one.
   mutation:
-    name: mutation testing
-    needs: tests
+    name: mutation
+    needs: [tests, mutation-scope]
+    if: ${{ !cancelled() && needs.tests.result == 'success' && needs.mutation-scope.result == 'success' && needs.mutation-scope.outputs.shards != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJson(needs.mutation-scope.outputs.shards) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -204,7 +246,56 @@ jobs:
           php-version: ${{ env.PHP_VERSION }}
           coverage: pcov
       - uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
-      - run: composer test:mutation
+      - run: composer test:mutation -- --shard=${{ matrix.shard }}
+
+  # The check branch protection names.
+  #
+  # A matrix job reports one check per entry — `mutation (Http)`,
+  # `mutation (Events)` — and not one of them is called `mutation testing`.
+  # That required check would simply never report, and a required check that
+  # never reports blocks every pull request with nothing anywhere naming the
+  # cause. It is the hole `sonar.yml`'s gate exists to close, reached here by a
+  # rename rather than by a failure.
+  #
+  # So this job keeps the name the shards lost and answers for them.
+  # `!cancelled()` rather than `always()`: a cancelled run is somebody pressing
+  # stop. It asks their results rather than only depending on them, for the
+  # reason the gates above ask `scope`'s — `needs` alone makes a job disappear
+  # when what it needs fails, which turns a red gate into a missing one.
+  mutation-gate:
+    name: mutation testing
+    needs: [scope, tests, mutation-scope, mutation]
+    if: ${{ !cancelled() && github.event_name == 'pull_request' && (needs.scope.result != 'success' || needs.scope.outputs.code == 'true') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: every shard that was mutated passed
+        env:
+          TESTS: ${{ needs.tests.result }}
+          LISTING: ${{ needs.mutation-scope.result }}
+          SHARDS: ${{ needs.mutation.result }}
+          LIST: ${{ needs.mutation-scope.outputs.shards }}
+        run: |
+          echo "tests=${TESTS} listing=${LISTING} shards=${SHARDS} list=${LIST}"
+
+          if [ "${TESTS}" != success ] || [ "${LISTING}" != success ]; then
+            echo "::error::Mutation did not run: the tests or the shard list did not pass."
+            exit 1
+          fi
+
+          # `skipped` is a pass here and only here: the matrix is skipped when
+          # there is no shard to run at all, which `what to mutate` reports as
+          # an empty list. A skip with shards named behind it is a matrix that
+          # never started, and that is a gate which mutated nothing rather than
+          # one that found nothing wrong.
+          if [ "${SHARDS}" = skipped ] && [ "${LIST}" != "[]" ]; then
+            echo "::error::No shard ran, and ${LIST} were listed to run."
+            exit 1
+          fi
+
+          if [ "${SHARDS}" != success ] && [ "${SHARDS}" != skipped ]; then
+            echo "::error::A shard's mutation run did not pass. Open the mutation (<shard>) job that is red."
+            exit 1
+          fi
 
   # A library's promise to its consumers, checked against the last release.
   # Kept on its own because it needs the full history and a second install of
