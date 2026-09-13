@@ -42,6 +42,14 @@ final class UnreadableResponse extends RuntimeException implements Problem
         );
     }
 
+    public static function endingUnreadable(string $written): self
+    {
+        return new self(sprintf(
+            'The session came back with an ending this client cannot read as a moment: %s.',
+            $written,
+        ));
+    }
+
     public static function dataMissing(): self
     {
         return new self(
