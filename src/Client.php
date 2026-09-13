@@ -15,6 +15,7 @@ use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Http\ActionRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
+use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\ReadRequest;
 use Lemonfiber\Sdk\Http\RunToken;
@@ -51,6 +52,19 @@ final readonly class Client
     public static function at(string $address, string $token): self
     {
         return new self(new LemonfiberConnector(BaseUrl::fromString($address), RunToken::fromString($token)));
+    }
+
+    /**
+     * A stack reached anywhere, held to the one certificate whose digest pairing material carried.
+     *
+     * @throws ConfigurationProblem
+     */
+    public static function pinnedAt(string $address, string $token, string $certificateDigest): self
+    {
+        return new self(new LemonfiberConnector(
+            BaseUrl::pinned($address, CertificatePin::fromSha256($certificateDigest)),
+            RunToken::fromString($token),
+        ));
     }
 
     /**

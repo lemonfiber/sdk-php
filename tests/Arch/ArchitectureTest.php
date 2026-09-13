@@ -8,6 +8,7 @@ use Lemonfiber\Sdk\Events\HeldValue;
 use Lemonfiber\Sdk\Events\ServerEvent;
 use Lemonfiber\Sdk\Exception\Problem;
 use Lemonfiber\Sdk\Http\BaseUrl;
+use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\RunToken;
 use Lemonfiber\Sdk\Time\Duration;
 
@@ -31,6 +32,7 @@ arch('values are readonly')
         HeldValue::class,
         ServerEvent::class,
         BaseUrl::class,
+        CertificatePin::class,
         RunToken::class,
         Duration::class,
     ])

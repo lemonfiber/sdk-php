@@ -29,6 +29,22 @@ final class ConfigurationProblem extends InvalidArgumentException implements Pro
         ));
     }
 
+    public static function pinIsNotACertificateDigest(string $given): self
+    {
+        return new self(sprintf(
+            'A certificate pin is the SHA-256 of the certificate, written as 64 hexadecimal characters. "%s" is not. A value of about 44 characters ending in "=" is the digest of the certificate\'s public key, which is a different value of the same size and is not what pairing material carries.',
+            $given,
+        ));
+    }
+
+    public static function pinnedAddressIsNotEncrypted(string $scheme): self
+    {
+        return new self(sprintf(
+            'A certificate pin is checked while an encrypted connection is being set up, and an address starting with "%s" never sets one up, so the pin would decide nothing. Give the address as https, or give no pin and stay on this machine.',
+            $scheme,
+        ));
+    }
+
     public static function unsupportedScheme(string $scheme): self
     {
         return new self(sprintf(
