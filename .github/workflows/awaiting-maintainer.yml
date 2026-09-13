@@ -1,0 +1,54 @@
+# The maintainer queue flag. Triggers are declared here because a reusable
+# cannot declare its caller's; the behaviour lives in the spec repo. OPS-R26, OPS-R27.
+#
+# This repository had none. Every other repository in the org that takes pull
+# requests has carried one, so a pull request here that was ready to merge sat
+# ready and nobody was told — the flag is the only thing that says so, and
+# silence from it reads exactly like a pull request that is not ready.
+#
+# The list below is also the wait list. The flag only goes up once every check
+# `main` requires has passed, and the reusable reads this same list back out of
+# this file to know what it must see finish first — so a workflow missing from it
+# is a workflow the gate never waits for and never re-evaluates on. The required
+# contexts here and where they come from:
+#
+#   ci               spec-check / spec-check, dco / dco, commitlint / commitlint,
+#                    hygiene / {actionlint, invite, links, markdown, pins,
+#                    shared-files, typos}, security / {gitleaks, osv-scanner},
+#                    checks, tests and coverage, mutation testing,
+#                    backward compatibility
+#   sonar            gate / gate
+#   contract-drift   contract-drift
+#
+# `SonarCloud Code Analysis` is required too and is posted by the SonarCloud app
+# rather than by a workflow, so it cannot be waited for by name; `gate / gate`
+# reads that summary and cannot succeed before it exists.
+#
+# `codeql` is in the list for a different reason: no required context comes from
+# it, but its `alerts` job refuses a branch an open alert stands against. A
+# gating workflow left out can be the last one to finish, with nothing
+# afterwards to notice the pull request became mergeable.
+#
+# Add a workflow to branch protection and it belongs here in the same change.
+name: awaiting-maintainer
+on:
+  workflow_run:
+    workflows: [ci, sonar, contract-drift, codeql]
+    types: [completed]
+  pull_request_review:
+    types: [submitted]
+  # Fork PRs carry a read-only token under `pull_request`, so the close event has
+  # to run in the base repo's context to be able to edit a label at all.
+  pull_request_target:
+    types: [closed]
+permissions:
+  contents: read
+
+jobs:
+  awaiting:
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: lemonfiber/spec/.github/workflows/awaiting-maintainer.yml@a269e7f347ed92988cbf03394130b6fee93347da # main
+    secrets:
+      DISCORD_MAINTAINERS_WEBHOOK: ${{ secrets.DISCORD_MAINTAINERS_WEBHOOK }}
