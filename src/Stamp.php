@@ -35,12 +35,13 @@ use function substr;
  * client stricter than the service it talks to breaks on the day that service
  * starts writing something it has always said it would accept.
  *
- * **The calendar does the refusing, not a pattern.** An earlier version checked
- * the shape with a regular expression first, which read well and was worse: it
- * made the calendar's own refusal unreachable, and unreachable code is code no
- * test can hold. Everything that is not the two decorations is handed to
- * `createFromFormat` exactly as it arrived, and what it will not read is what
- * this will not read.
+ * **The calendar does the refusing, and it is asked by writing the moment back
+ * out.** `createFromFormat` is lenient in a way no pattern in front of it can
+ * fix: February 30th is answered with March 2nd, hour 25 with one in the
+ * morning, and the return value is a perfectly good date either way. Formatting
+ * the result with the same format and comparing it to what arrived catches both
+ * that and text the format could not read at all — one question, asked once,
+ * with no branch that cannot be reached.
  */
 final readonly class Stamp
 {
@@ -65,7 +66,7 @@ final readonly class Stamp
 
         $read = DateTimeImmutable::createFromFormat(self::FIELDS, $bare, new DateTimeZone('UTC'));
 
-        if ($read === false || self::theCalendarObjected()) {
+        if ($read === false || $read->format(self::FIELDS) !== $bare) {
             return null;
         }
 
@@ -103,21 +104,4 @@ final readonly class Stamp
         return count($parts) === 2 && ctype_digit($parts[1]) ? $parts[0] : null;
     }
 
-    /**
-     * Whether the calendar had to move the moment in order to accept it.
-     *
-     * `createFromFormat` answers a February 30th with March 2nd and a warning
-     * rather than a refusal, and a session that expires two days after it says
-     * it does is worse than one that could not be read at all. The stack bounds
-     * every field for this reason; this is the same refusal on the near side.
-     *
-     * Asked as *did it say anything*, rather than by counting warnings: since
-     * PHP 8.2 a parse with nothing to report answers `false` here, so the
-     * count is either absent or at least one and comparing it to a number would
-     * be arithmetic on a value that only ever takes one interesting shape.
-     */
-    private static function theCalendarObjected(): bool
-    {
-        return DateTimeImmutable::getLastErrors() !== false;
-    }
 }
