@@ -84,6 +84,30 @@ jobs:
       pull-requests: write
     uses: lemonfiber/spec/.github/workflows/labeler.yml@d972aee34a685b3d1fa763c9ea9753191ebe87d0 # main
 
+  # OPS-R39, OPS-R40, OPS-R42: label a PR that cites a goal the staged version
+  # locks, put it in that version's milestone, comment which goals it moves, and
+  # route one citing only out-of-scope requirements to the next version.
+  #
+  # This repository satisfies goals — `0.10.0`, `0.16.0` and `0.17.0` each name
+  # it in `satisfied_in` — and OPS-R39 is written about a pull request rather
+  # than about a repository, so a PR here citing a locked goal is one the rule
+  # already covers. It was never labelled because the workflow was never called,
+  # which is a silence rather than an exemption.
+  #
+  # Gated on the event like `labeler` above: this workflow also runs on push,
+  # where there is no pull request to label.
+  #
+  # `issues: write` is what the milestone half needs: a milestone is an
+  # issues-API object even when it sits on a pull request, and granting less
+  # gets the label and a warning instead.
+  goals:
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    uses: lemonfiber/spec/.github/workflows/goal-automations.yml@d972aee34a685b3d1fa763c9ea9753191ebe87d0 # main
+
   # Formatting, static analysis, dead idioms, the repository's guards, the
   # contract diff and dependency hygiene. One checkout, one PHP, one install.
   #
