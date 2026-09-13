@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk;
 
+use function count;
+use function ctype_digit;
+
 use DateTimeImmutable;
 use DateTimeZone;
 
-use function preg_match;
+use function explode;
+use function str_ends_with;
+use function substr;
 
 /**
  * An instant as the services write one, read back as a count of seconds.
@@ -29,57 +34,90 @@ use function preg_match;
  * and accepts two decorations on top of it, so this accepts the same two: a
  * client stricter than the service it talks to breaks on the day that service
  * starts writing something it has always said it would accept.
+ *
+ * **The calendar does the refusing, not a pattern.** An earlier version checked
+ * the shape with a regular expression first, which read well and was worse: it
+ * made the calendar's own refusal unreachable, and unreachable code is code no
+ * test can hold. Everything that is not the two decorations is handed to
+ * `createFromFormat` exactly as it arrived, and what it will not read is what
+ * this will not read.
  */
 final readonly class Stamp
 {
-    /**
-     * The shape a stamp must have, with the two optional decorations on it.
-     *
-     * A trailing `Z` is read and dropped because it says UTC, which is the
-     * frame this is already in. A fraction is read and dropped because what is
-     * wanted is the second something happened, and a service recording six
-     * decimal places is not offering more certainty than that.
-     *
-     * **An offset other than `Z` is deliberately not matched.** A stamp naming
-     * one is not this frame, and guessing would place a moment hours from where
-     * it says it is — so it is not read at all rather than read wrongly, which
-     * is the same choice lemonfiber's own reader makes.
-     */
-    private const string SHAPE = '/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(\.\d+)?Z?$/';
-
     /**
      * The bare shape, as the calendar reads it.
      *
      * Every field is spelled out, so nothing is filled in from the system clock
      * — which is what makes reading a stamp a function of its text rather than
-     * of the moment it was read.
+     * of the moment it was read. Anything left over after it, an offset or a
+     * word, is text the format does not account for and the parse refuses.
      */
     private const string FIELDS = 'Y-m-d\TH:i:s';
 
     /** The count of seconds this stamp names, or nothing where it names none. */
     public static function secondsIn(string $written): ?int
     {
-        if (preg_match(self::SHAPE, $written, $found) !== 1) {
+        $bare = self::withoutDecoration($written);
+
+        if ($bare === null) {
             return null;
         }
 
-        $read = DateTimeImmutable::createFromFormat(self::FIELDS, $found[1], new DateTimeZone('UTC'));
+        $read = DateTimeImmutable::createFromFormat(self::FIELDS, $bare, new DateTimeZone('UTC'));
 
-        return $read === false || self::rolledOver() ? null : $read->getTimestamp();
+        if ($read === false || self::theCalendarObjected()) {
+            return null;
+        }
+
+        return $read->getTimestamp();
     }
 
     /**
-     * Whether the calendar had to move the moment to accept it.
+     * The same stamp with the two things the writer never emits taken off.
+     *
+     * A trailing `Z` is dropped because it says UTC, which is the frame this is
+     * already in. A fraction is dropped because what is wanted is the second
+     * something happened, and a service recording six decimal places is not
+     * offering more certainty than that.
+     *
+     * Nothing where what follows the dot is not digits, which is the one place
+     * this is deliberately stricter than dropping would be: `10:00:00.abc` is
+     * not a stamp with a fraction on it, it is a stamp with something else on
+     * it, and taking the front off would turn text nobody wrote into a moment.
+     *
+     * **An offset other than `Z` is not handled here at all**, and so reaches
+     * the calendar with the offset still on it and is refused as text the
+     * format does not account for. That is the same choice lemonfiber's own
+     * reader makes: a stamp naming an offset is not this frame, and placing it
+     * anyway would put a moment hours from where it says it is.
+     */
+    private static function withoutDecoration(string $written): ?string
+    {
+        $rest = str_ends_with($written, 'Z') ? substr($written, 0, -1) : $written;
+        $parts = explode('.', $rest);
+
+        if (count($parts) === 1) {
+            return $rest;
+        }
+
+        return count($parts) === 2 && ctype_digit($parts[1]) ? $parts[0] : null;
+    }
+
+    /**
+     * Whether the calendar had to move the moment in order to accept it.
      *
      * `createFromFormat` answers a February 30th with March 2nd and a warning
      * rather than a refusal, and a session that expires two days after it says
      * it does is worse than one that could not be read at all. The stack bounds
      * every field for this reason; this is the same refusal on the near side.
+     *
+     * Asked as *did it say anything*, rather than by counting warnings: since
+     * PHP 8.2 a parse with nothing to report answers `false` here, so the
+     * count is either absent or at least one and comparing it to a number would
+     * be arithmetic on a value that only ever takes one interesting shape.
      */
-    private static function rolledOver(): bool
+    private static function theCalendarObjected(): bool
     {
-        $complaints = DateTimeImmutable::getLastErrors();
-
-        return $complaints !== false && $complaints['warning_count'] > 0;
+        return DateTimeImmutable::getLastErrors() !== false;
     }
 }

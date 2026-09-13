@@ -26,6 +26,15 @@ it('reads a fraction of a second and drops it', function (): void {
         ->and(Stamp::secondsIn('2026-09-14T10:00:00.5Z'))->toBe(AT_TEN);
 });
 
+it('refuses a dot with something other than digits after it', function (): void {
+    // Not a stamp with a fraction on it — a stamp with something else on it.
+    // Dropping the tail the way a real fraction is dropped would turn text
+    // nobody wrote into a moment.
+    expect(Stamp::secondsIn('2026-09-14T10:00:00.abc'))->toBeNull()
+        ->and(Stamp::secondsIn('2026-09-14T10:00:00.'))->toBeNull()
+        ->and(Stamp::secondsIn('2026-09-14T10:00:00.1.2'))->toBeNull();
+});
+
 it('refuses a stamp that names an offset of its own', function (): void {
     // Not this frame, and guessing at it would place the moment hours from
     // where it says it is — so it is not read at all rather than read wrongly.
