@@ -85,6 +85,18 @@ final class Guards
     private const string COMMENT_LINE = '~^\\s*(?://|\\*|/\\*|\\#)~';
 
     /**
+     * What a directory that has gone says, before anything is said about its files.
+     *
+     * Every per-file check here is a claim about an absence — no suppression, no
+     * remote address, no reasoning in a comment — and a claim about an absence is
+     * satisfied by having looked at nothing. Rename `src` and `scandir` returns
+     * false, `phpFilesIn` answers with an empty list, and the run prints *every
+     * check passed*: the same sentence a clean tree gets, with a PHP warning on
+     * stderr as the only difference.
+     */
+    private const string NOTHING_READ = 'holds no PHP file, so every check scoped to it passed on nothing';
+
+    /**
      * @var list<string>
      */
     private const array SCANNED = ['src', 'tests', 'scripts'];
@@ -170,14 +182,26 @@ final class Guards
 
     public function run(): int
     {
+        $read = 0;
+
         foreach (self::SCANNED as $directory) {
             $loopbackOnly = in_array($directory, self::LOOPBACK_ONLY, true);
+            $found = $this->phpFilesIn($this->root . '/' . $directory);
 
-            foreach ($this->phpFilesIn($this->root . '/' . $directory) as $file) {
+            // Said about each directory rather than about the total. A rename that
+            // empties one of the three leaves the other two reading, so a count of
+            // everything would still be a number and the checks scoped to the
+            // renamed one would have gone quiet with nothing to say so.
+            if ($found === []) {
+                $this->fail($directory, 0, self::NOTHING_READ);
+            }
+
+            foreach ($found as $file) {
                 if ($this->isGenerated($file)) {
                     continue;
                 }
 
+                ++$read;
                 $this->inspect($file, $loopbackOnly);
             }
         }
@@ -187,7 +211,7 @@ final class Guards
         $this->checkAnAddressIsMadeOneWay();
 
         if ($this->failures === []) {
-            echo "guards: every check passed\n";
+            echo 'guards: every check passed over ' . $read . " files\n";
 
             return 0;
         }
@@ -436,6 +460,14 @@ final class Guards
      */
     private function phpFilesIn(string $directory): array
     {
+        // Asked whether it is there before it is read. `scandir` on a directory that
+        // is not there warns to stderr and answers false, and a warning is the wrong
+        // way to report a rename — nobody reads stderr on a green run, and the run
+        // was green. The caller says it in the failure list instead.
+        if (! is_dir($directory)) {
+            return [];
+        }
+
         $entries = scandir($directory);
 
         if ($entries === false) {
