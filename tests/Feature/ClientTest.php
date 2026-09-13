@@ -131,6 +131,21 @@ it('refuses to be built against another machine', function (): void {
         ->toThrow(ConfigurationProblem::class, 'points somewhere else');
 });
 
+it('is built against another machine when a certificate digest vouches for it', function (): void {
+    $client = Client::pinnedAt(
+        'https://192.168.1.42:9000',
+        A_RUN_TOKEN,
+        '86b25c676b761e9a398081373fec783c2bec970baa255370838aebb5c687841e',
+    );
+
+    expect($client->connector()->resolveBaseUrl())->toBe('https://192.168.1.42:9000');
+});
+
+it('refuses to be built against another machine with a digest it cannot use', function (): void {
+    expect(fn(): Client => Client::pinnedAt('https://192.168.1.42:9000', A_RUN_TOKEN, 'not-a-digest'))
+        ->toThrow(ConfigurationProblem::class, '64 hexadecimal characters');
+});
+
 it('refuses to be built without a token', function (): void {
     expect(fn(): Client => Client::onPort(9000, ''))
         ->toThrow(ConfigurationProblem::class, 'No run token was given');

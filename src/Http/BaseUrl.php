@@ -18,7 +18,7 @@ use function str_starts_with;
 use function trim;
 
 /**
- * An address on the machine lemonfiber runs on, and nowhere else.
+ * An address on the machine lemonfiber runs on, or one a certificate pin vouches for.
  */
 final readonly class BaseUrl
 {
@@ -30,12 +30,14 @@ final readonly class BaseUrl
 
     private const string IPV6_LOOPBACK = '::1';
 
+    private const string ENCRYPTED_SCHEME = 'https';
+
     /**
      * @var list<string>
      */
     private const array FORBIDDEN_PARTS = ['user', 'pass', 'query', 'fragment'];
 
-    private function __construct(private string $value) {}
+    private function __construct(private string $value, private ?CertificatePin $pin) {}
 
     /**
      * @throws ConfigurationProblem
@@ -46,41 +48,40 @@ final readonly class BaseUrl
             throw ConfigurationProblem::portOutOfRange($port);
         }
 
-        return new self('http://127.0.0.1:' . $port);
+        return new self('http://127.0.0.1:' . $port, null);
     }
 
     /**
+     * An address on this machine, which needs no pin and accepts none.
+     *
      * @throws ConfigurationProblem
      */
     public static function fromString(string $address, ?HostResolver $resolver = null): self
     {
-        $parts = parse_url($address);
+        $parts = self::partsOf($address);
 
-        if ($parts === false) {
-            throw ConfigurationProblem::unreadableAddress($address);
+        if (! self::isOnThisMachine(self::hostIn($parts), $resolver ?? new SystemHostResolver())) {
+            throw ConfigurationProblem::addressIsNotOnThisMachine(self::hostIn($parts));
         }
 
-        $scheme = $parts['scheme'] ?? '';
+        return new self(self::assemble($parts), null);
+    }
 
-        if ($scheme !== 'http' && $scheme !== 'https') {
-            throw ConfigurationProblem::unsupportedScheme($scheme);
+    /**
+     * An address anywhere, held to the one certificate the pin names.
+     *
+     * @throws ConfigurationProblem
+     */
+    public static function pinned(string $address, CertificatePin $pin): self
+    {
+        $parts = self::partsOf($address);
+        $scheme = self::schemeIn($parts);
+
+        if ($scheme !== self::ENCRYPTED_SCHEME) {
+            throw ConfigurationProblem::pinnedAddressIsNotEncrypted($scheme);
         }
 
-        if (array_intersect(self::FORBIDDEN_PARTS, array_keys($parts)) !== []) {
-            throw ConfigurationProblem::addressCarriesExtras();
-        }
-
-        $host = $parts['host'] ?? '';
-
-        if (! self::isOnThisMachine($host, $resolver ?? new SystemHostResolver())) {
-            throw ConfigurationProblem::addressIsNotOnThisMachine($host);
-        }
-
-        $port = $parts['port'] ?? null;
-
-        $authority = $port === null ? $host : $host . ':' . $port;
-
-        return new self($scheme . '://' . $authority . rtrim($parts['path'] ?? '', '/'));
+        return new self(self::assemble($parts), $pin);
     }
 
     /**
@@ -89,6 +90,68 @@ final readonly class BaseUrl
     public function toString(): string
     {
         return $this->value;
+    }
+
+    /**
+     * The certificate this address is held to, where it is held to one.
+     */
+    public function pin(): ?CertificatePin
+    {
+        return $this->pin;
+    }
+
+    /**
+     * @return array{scheme?: string, host?: string, port?: int, user?: string, pass?: string, path?: string, query?: string, fragment?: string}
+     *
+     * @throws ConfigurationProblem
+     */
+    private static function partsOf(string $address): array
+    {
+        $parts = parse_url($address);
+
+        if ($parts === false) {
+            throw ConfigurationProblem::unreadableAddress($address);
+        }
+
+        $scheme = self::schemeIn($parts);
+
+        if ($scheme !== 'http' && $scheme !== self::ENCRYPTED_SCHEME) {
+            throw ConfigurationProblem::unsupportedScheme($scheme);
+        }
+
+        if (array_intersect(self::FORBIDDEN_PARTS, array_keys($parts)) !== []) {
+            throw ConfigurationProblem::addressCarriesExtras();
+        }
+
+        return $parts;
+    }
+
+    /**
+     * @param  array{scheme?: string, host?: string, port?: int, user?: string, pass?: string, path?: string, query?: string, fragment?: string}  $parts
+     */
+    private static function hostIn(array $parts): string
+    {
+        return $parts['host'] ?? '';
+    }
+
+    /**
+     * @param  array{scheme?: string, host?: string, port?: int, user?: string, pass?: string, path?: string, query?: string, fragment?: string}  $parts
+     */
+    private static function schemeIn(array $parts): string
+    {
+        return $parts['scheme'] ?? '';
+    }
+
+    /**
+     * @param  array{scheme?: string, host?: string, port?: int, user?: string, pass?: string, path?: string, query?: string, fragment?: string}  $parts
+     */
+    private static function assemble(array $parts): string
+    {
+        $host = self::hostIn($parts);
+        $port = $parts['port'] ?? null;
+        $authority = $port === null ? $host : $host . ':' . $port;
+
+        return self::schemeIn($parts) . '://' . $authority . rtrim($parts['path'] ?? '', '/');
     }
 
     private static function isOnThisMachine(string $host, HostResolver $resolver): bool

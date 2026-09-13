@@ -33,8 +33,11 @@ reference for the other. A client that disagrees with the contract is wrong.
   library's dependency tree becomes every consumer's.
 - **No rendering, no policy, no state beyond the stream.** A figure it has not
   been given is one it does not have.
-- **The token is a header, never a URL** (`ARCH-R52`); **loopback only**, any
-  other host refused before anything is sent (`C6-R1`).
+- **The token is a header, never a URL** (`ARCH-R52`); **loopback, or an address
+  a certificate pin vouches for** (`ARCH-R60`, `ARCH-R99`) — any other host is
+  refused before anything is sent. A pin is given when the client is built and
+  travels with the address, so there is no way to reach a host off this machine
+  without one, and no seam a caller can reach to weaken verification.
 - **Comments state what a thing is or does.** Reasoning, history and
   justification belong in an ADR in the spec, not in source. `scripts/guards.php`
   fails a comment line opening with `because`, `the reason`, `we` as a word, and

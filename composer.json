@@ -1,6 +1,6 @@
 {
     "name": "lemonfiber/sdk-php",
-    "description": "PHP client for lemonfiber's local HTTP API: envelope reading, loopback-only transport, and a live event stream that never presents stale values as current.",
+    "description": "PHP client for lemonfiber's HTTP API: envelope reading, a transport that leaves this machine only for a pinned certificate, and a live event stream that never presents stale values as current.",
     "license": "LicenseRef-Hippocratic-3.0",
     "type": "library",
     "keywords": [
@@ -19,6 +19,7 @@
         "php": "^8.5",
         "ext-filter": "*",
         "ext-json": "*",
+        "guzzlehttp/guzzle": "^7.15",
         "psr/http-message": "^2.0",
         "saloonphp/saloon": "^4.0"
     },

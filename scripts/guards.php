@@ -123,11 +123,11 @@ final class Guards
     /**
      * The one place an address is made, and the checks that must run to hold it.
      *
-     * A client refuses an address that is not on this machine, and that holds only
-     * while there is one way to make one. `BaseUrl`'s constructor is private, so
-     * every address goes through a named factory that checks it — a public
-     * constructor, or a third factory that skipped the check, would be a client
-     * talking wherever it was pointed.
+     * A client refuses an address that is not on this machine unless a certificate
+     * pin vouches for it, and that holds only while there is one way to make one.
+     * `BaseUrl`'s constructor is private, so every address goes through a named
+     * factory that checks it — a public constructor, or a further factory that
+     * skipped the check, would be a client talking wherever it was pointed.
      */
     /**
      * What is said of a file this cannot open.
@@ -142,8 +142,11 @@ final class Guards
 
     /**
      * How many times an address may be constructed, which is once per factory.
+     *
+     * Three: a port on this machine, a written out address on this machine, and an
+     * address anywhere that arrived with the pin permitting it.
      */
-    private const int FACTORIES = 2;
+    private const int FACTORIES = 3;
 
     /**
      * The composer scripts that hold something, and what each holds.

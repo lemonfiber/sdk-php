@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Http\BaseUrl;
+use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\HostResolver;
 
 it('builds an address from a port on this machine', function (): void {
@@ -141,4 +142,58 @@ it('refuses a literal address that is not loopback without resolving it', functi
 it('accepts localhost through the machine\'s own resolver', function (): void {
     expect(BaseUrl::fromString('http://localhost:7777')->toString())
         ->toBe('http://localhost:7777');
+});
+
+function aPin(): CertificatePin
+{
+    return CertificatePin::fromSha256('86b25c676b761e9a398081373fec783c2bec970baa255370838aebb5c687841e');
+}
+
+it('carries no pin for an address on this machine', function (): void {
+    expect(BaseUrl::onPort(9000)->pin())->toBeNull()
+        ->and(BaseUrl::fromString('http://127.0.0.1:9000')->pin())->toBeNull();
+});
+
+it('accepts an address off this machine when a pin vouches for it', function (string $given, string $expected): void {
+    $address = BaseUrl::pinned($given, aPin());
+
+    expect($address->toString())->toBe($expected)
+        ->and($address->pin())->not->toBeNull();
+})->with([
+    'a private address' => ['https://192.168.1.42:9000', 'https://192.168.1.42:9000'],
+    'a name' => ['https://stack.local:9000', 'https://stack.local:9000'],
+    'a public address' => ['https://198.51.100.34:9000', 'https://198.51.100.34:9000'],
+    'no port' => ['https://192.168.1.42', 'https://192.168.1.42'],
+    'with a path' => ['https://192.168.1.42:9000/lemonfiber', 'https://192.168.1.42:9000/lemonfiber'],
+    'trailing slash trimmed' => ['https://192.168.1.42:9000/', 'https://192.168.1.42:9000'],
+    'on this machine anyway' => ['https://127.0.0.1:9000', 'https://127.0.0.1:9000'],
+]);
+
+it('holds the pin it was given', function (): void {
+    expect(BaseUrl::pinned('https://192.168.1.42:9000', aPin())->pin()?->toString())
+        ->toBe('86b25c676b761e9a398081373fec783c2bec970baa255370838aebb5c687841e');
+});
+
+// A pin is compared against a certificate, and an unencrypted address presents none,
+// so accepting one here would hold the address to nothing.
+it('refuses a pinned address that is not encrypted', function (): void {
+    expect(fn(): BaseUrl => BaseUrl::pinned('http://192.168.1.42:9000', aPin()))
+        ->toThrow(ConfigurationProblem::class, 'never sets one up');
+});
+
+it('refuses a pinned address it cannot read or does not speak', function (string $given, string $says): void {
+    expect(fn(): BaseUrl => BaseUrl::pinned($given, aPin()))
+        ->toThrow(ConfigurationProblem::class, $says);
+})->with([
+    'unreadable' => ['https://:9000', 'could not be read'],
+    'a scheme it does not speak' => ['ftp://192.168.1.42:9000', 'This one starts with "ftp"'],
+    'sign-in details' => ['https://operator:secret@192.168.1.42:9000', 'may carry a host, a port and a path'],
+    'a query' => ['https://192.168.1.42:9000?token=secret', 'may carry a host, a port and a path'],
+]);
+
+// The address off this machine and the pin that permits it arrive together or not at
+// all. There is no order of arguments that reaches one without the other.
+it('refuses an address off this machine when no pin vouches for it', function (): void {
+    expect(fn(): BaseUrl => BaseUrl::fromString('https://192.168.1.42:9000', resolvingTo(['192.168.1.42'])))
+        ->toThrow(ConfigurationProblem::class, 'The address "192.168.1.42" points somewhere else');
 });
