@@ -8,6 +8,7 @@ use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\PasswordWasRefused;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\TooManyAttempts;
+use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Http\AdmissionRequest;
 use Saloon\Contracts\Body\BodyRepository;
 use Saloon\Http\Faking\MockClient;
@@ -51,11 +52,18 @@ function whatWasSaidBy(Admission $door): string
     return 'nothing was raised at all';
 }
 
-/** The answer a machine gives somebody who got the password right. */
+/**
+ * The answer a machine gives somebody who got the password right.
+ *
+ * The ending is written the way lemonfiber writes every instant — to the
+ * second, in UTC, with no zone on it — rather than with the `Z` an RFC 3339
+ * example would carry. A fixture that invents a shape the stack does not send
+ * is a test that passes against a client which could not read a real answer.
+ */
 function admits(): MockResponse
 {
     return MockResponse::make(
-        '{"api_version":1,"kind":"admission","data":{"token":"a-session","until":"2026-09-14T10:00:00Z"}}',
+        '{"api_version":1,"kind":"admission","data":{"token":"a-session","until":"2026-09-14T10:00:00"}}',
     );
 }
 
@@ -65,7 +73,7 @@ it('exchanges a password for a session', function (): void {
     $admitted = $door->open(A_PASSWORD);
 
     expect($admitted->token)->toBe('a-session')
-        ->and($admitted->until)->toBe('2026-09-14T10:00:00Z');
+        ->and($admitted->untilEpochSeconds)->toBe(1789380000);
 });
 
 it('sends the password in the body, to the one endpoint, and never in the address', function (): void {
@@ -194,4 +202,17 @@ it('holds a stack reached over the network to its certificate', function (): voi
 it('refuses a pinned address that is not encrypted', function (): void {
     expect(fn(): mixed => Admission::at('http://192.168.1.42', A_CERTIFICATE_DIGEST))
         ->toThrow(ConfigurationProblem::class);
+});
+
+it('refuses an answer whose ending cannot be read as a moment', function (): void {
+    // Rather than admitting with a guessed one. Either direction of guess is
+    // worse than the refusal, and neither is something a caller could find out
+    // about: a moment already past throws away a session the stack just opened,
+    // and a far-future one leaves an application believing in a session long
+    // after the stack has stopped honouring it.
+    [$door] = doorAnswering(MockResponse::make(
+        '{"api_version":1,"kind":"admission","data":{"token":"a-session","until":"whenever"}}',
+    ));
+
+    expect(fn(): mixed => $door->open(A_PASSWORD))->toThrow(UnreadableResponse::class);
 });
