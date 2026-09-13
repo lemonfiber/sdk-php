@@ -53,7 +53,7 @@ jobs:
   # pinned by commit. Those needing a pull request are guarded, because this
   # workflow also runs on pushes to main.
   dco:
-    uses: lemonfiber/spec/.github/workflows/dco.yml@d972aee34a685b3d1fa763c9ea9753191ebe87d0 # main
+    uses: lemonfiber/spec/.github/workflows/dco.yml@a269e7f347ed92988cbf03394130b6fee93347da # main
 
   # `pull-requests: write` is what lets the gate close a pull request whose
   # citation is missing or names an identifier that does not exist, rather than
@@ -65,24 +65,24 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: lemonfiber/spec/.github/workflows/spec-check.yml@d972aee34a685b3d1fa763c9ea9753191ebe87d0 # main
+    uses: lemonfiber/spec/.github/workflows/spec-check.yml@a269e7f347ed92988cbf03394130b6fee93347da # main
 
   commitlint:
     if: github.event_name == 'pull_request'
-    uses: lemonfiber/spec/.github/workflows/commitlint.yml@d972aee34a685b3d1fa763c9ea9753191ebe87d0 # main
+    uses: lemonfiber/spec/.github/workflows/commitlint.yml@a269e7f347ed92988cbf03394130b6fee93347da # main
 
   hygiene:
-    uses: lemonfiber/spec/.github/workflows/hygiene.yml@d972aee34a685b3d1fa763c9ea9753191ebe87d0 # main
+    uses: lemonfiber/spec/.github/workflows/hygiene.yml@a269e7f347ed92988cbf03394130b6fee93347da # main
 
   security:
-    uses: lemonfiber/spec/.github/workflows/security.yml@d972aee34a685b3d1fa763c9ea9753191ebe87d0 # main
+    uses: lemonfiber/spec/.github/workflows/security.yml@a269e7f347ed92988cbf03394130b6fee93347da # main
 
   labeler:
     if: github.event_name == 'pull_request'
     permissions:
       contents: read
       pull-requests: write
-    uses: lemonfiber/spec/.github/workflows/labeler.yml@d972aee34a685b3d1fa763c9ea9753191ebe87d0 # main
+    uses: lemonfiber/spec/.github/workflows/labeler.yml@a269e7f347ed92988cbf03394130b6fee93347da # main
 
   # OPS-R39, OPS-R40, OPS-R42: label a PR that cites a goal the staged version
   # locks, put it in that version's milestone, comment which goals it moves, and
@@ -106,7 +106,7 @@ jobs:
       contents: read
       pull-requests: write
       issues: write
-    uses: lemonfiber/spec/.github/workflows/goal-automations.yml@d972aee34a685b3d1fa763c9ea9753191ebe87d0 # main
+    uses: lemonfiber/spec/.github/workflows/goal-automations.yml@a269e7f347ed92988cbf03394130b6fee93347da # main
 
   # Formatting, static analysis, dead idioms, the repository's guards, the
   # contract diff and dependency hygiene. One checkout, one PHP, one install.
