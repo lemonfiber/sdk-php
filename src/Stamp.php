@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Lemonfiber\Sdk;
 
 use function count;
-use function ctype_digit;
 
 use DateTimeImmutable;
 use DateTimeZone;
 
 use function explode;
+use function preg_match;
 use function str_ends_with;
 use function substr;
 
@@ -86,6 +86,12 @@ final readonly class Stamp
      * not a stamp with a fraction on it, it is a stamp with something else on
      * it, and taking the front off would turn text nobody wrote into a moment.
      *
+     * Asked with a pattern rather than `ctype_digit`, which would make this
+     * library require `ext-ctype` for one question about one field. PCRE is
+     * already a dependency of everything, and a client that has to be told to
+     * install an extension for a timestamp is a client that is harder to adopt
+     * than it needs to be.
+     *
      * **An offset other than `Z` is not handled here at all**, and so reaches
      * the calendar with the offset still on it and is refused as text the
      * format does not account for. That is the same choice lemonfiber's own
@@ -101,7 +107,7 @@ final readonly class Stamp
             return $rest;
         }
 
-        return count($parts) === 2 && ctype_digit($parts[1]) ? $parts[0] : null;
+        return count($parts) === 2 && preg_match('/^\d+$/', $parts[1]) === 1 ? $parts[0] : null;
     }
 
 }
