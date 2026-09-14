@@ -21,7 +21,17 @@ it('names every endpoint it knows, because the contract names none', function ()
     // own spelling lives, so the test's job is to notice a change rather than
     // to restate a derivation.
     expect(Api::EVENTS_ENDPOINT)->toBe('/api/events')
-        ->and(Api::CHECKS_ENDPOINT)->toBe('/api/checks');
+        ->and(Api::CHECKS_ENDPOINT)->toBe('/api/checks')
+        ->and(Api::ACTIONS_ENDPOINT)->toBe('/api/actions');
+});
+
+it('composes the path one action is asked for under', function (): void {
+    // An action is a name under one path rather than an endpoint of its own,
+    // so the join lives here and a caller never writes either half. Two names
+    // rather than one: a join that dropped the name, or put it in front of the
+    // path, would answer the first correctly by accident.
+    expect(Api::action('repair'))->toBe('/api/actions/repair')
+        ->and(Api::action('undo'))->toBe('/api/actions/undo');
 });
 
 it('keeps the two media types apart', function (): void {

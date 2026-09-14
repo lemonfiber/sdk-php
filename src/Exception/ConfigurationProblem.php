@@ -97,4 +97,11 @@ final class ConfigurationProblem extends InvalidArgumentException implements Pro
             $limit,
         ));
     }
+
+    public static function agreementNamesNoOffer(): self
+    {
+        return new self(
+            'An agreement to repairs names the offer it answers, and this one names none. Ask what could be put right, and answer with the agreement that offer came back with.',
+        );
+    }
 }

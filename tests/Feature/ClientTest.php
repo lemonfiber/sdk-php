@@ -10,6 +10,7 @@ use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Http\ActionRequest;
 use Lemonfiber\Sdk\Http\ReadRequest;
+use Lemonfiber\Sdk\Repair;
 use Lemonfiber\Sdk\Time\Duration;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
@@ -79,6 +80,53 @@ it('acts on an endpoint, carrying its payload as json', function (): void {
         ->and($pending?->body()?->all())->toBe(['service' => 'sonarr'])
         ->and($pending?->headers()->get(Api::TOKEN_HEADER))->toBe(A_RUN_TOKEN)
         ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/actions/retry-import');
+});
+
+it('asks what could be put right, at the endpoint it never asked a caller for', function (): void {
+    // The offer half. A caller spelling `/api/actions/repair` itself is a
+    // caller that goes on spelling it the day lemonfiber moves it, so the
+    // path is composed here and the body is a shape rather than an array.
+    [$client, $mock] = clientAnswering([
+        ActionRequest::class => MockResponse::make(
+            '{"api_version":1,"kind":"job","data":{"job":"j1","action":"repair"}}',
+            202,
+        ),
+    ]);
+
+    $envelope = $client->repair(Repair::offer());
+
+    $pending = $mock->getLastPendingRequest();
+
+    expect($envelope->kind)->toBe('job')
+        ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/actions/repair')
+        ->and($pending?->body()?->all())->toBe(['confirm' => false]);
+});
+
+it('carries the yes as every other request carries what it says', function (): void {
+    // The same header, the same media type and the same token as a read. An
+    // action that travelled differently would be a second transport, and the
+    // repair is the one where a request going astray carries out work.
+    [$client, $mock] = clientAnswering([
+        ActionRequest::class => MockResponse::make(
+            '{"api_version":1,"kind":"job","data":{"job":"j1","action":"repair"}}',
+            202,
+        ),
+    ]);
+
+    $client->repair(Repair::agreedTo('a4f1c0e9', 'vpn.killswitch', 'media.permissions'));
+
+    $pending = $mock->getLastPendingRequest();
+    $address = (string) $pending?->getUri();
+
+    expect($pending?->body()?->all())->toBe([
+        'confirm' => true,
+        'offer' => 'a4f1c0e9',
+        'agreed' => ['vpn.killswitch', 'media.permissions'],
+    ])
+        ->and($pending?->headers()->get(Api::TOKEN_HEADER))->toBe(A_RUN_TOKEN)
+        ->and($pending?->headers()->get('Accept'))->toBe(Api::JSON_MEDIA_TYPE)
+        ->and($pending?->headers()->get('Content-Type'))->toBe(Api::JSON_MEDIA_TYPE)
+        ->and($address)->not->toContain(A_RUN_TOKEN);
 });
 
 it('reports an endpoint that was turned down, reading nothing from it', function (): void {
