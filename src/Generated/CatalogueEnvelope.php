@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `word` envelope, shaped as the contract describes it.
+ * The `catalogue` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{also_called: list<string>, deep?: string|null, short: string, word: string}
+ * @phpstan-type Data array{removed: list<array{id: string, reason: string, removed_in: string, replaced_by?: string|null}>, services: list<array{criticality: 'critical'|'core'|'important'|'enhancing'|'optional', describes: string, id: string, name: string, without_it: string}>}
  */
-final class WordEnvelope
+final class CatalogueEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Word;
+    public const Kind KIND = Kind::Catalogue;
 
     /**
      * The same envelope with its payload typed by its kind.
