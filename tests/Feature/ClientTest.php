@@ -7,11 +7,15 @@ use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Events\EventFeed;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
+use Lemonfiber\Sdk\Exception\NoSuchJob;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Http\ActionRequest;
 use Lemonfiber\Sdk\Http\ReadRequest;
+use Lemonfiber\Sdk\Http\ReleaseRequest;
+use Lemonfiber\Sdk\JobStanding;
 use Lemonfiber\Sdk\Repair;
 use Lemonfiber\Sdk\Time\Duration;
+use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
 
@@ -127,6 +131,139 @@ it('carries the yes as every other request carries what it says', function (): v
         ->and($pending?->headers()->get('Accept'))->toBe(Api::JSON_MEDIA_TYPE)
         ->and($pending?->headers()->get('Content-Type'))->toBe(Api::JSON_MEDIA_TYPE)
         ->and($address)->not->toContain(A_RUN_TOKEN);
+});
+
+/**
+ * The answer work still going and work ended both arrive as.
+ */
+function stillNamed(int $status): MockResponse
+{
+    return MockResponse::make(
+        '{"api_version":1,"kind":"job","data":{"job":"k3n9v2xq","action":"repair"}}',
+        $status,
+        ['Content-Type' => 'application/json'],
+    );
+}
+
+/**
+ * Which of the three standings an answer came to, as a word.
+ */
+function standingWord(JobStanding $standing): string
+{
+    return $standing->answering(
+        static fn(): string => 'still going',
+        static fn(Envelope $outcome): string => 'finished as ' . $outcome->kind,
+        static fn(): string => 'ended',
+    );
+}
+
+it('asks what became of a name, at the path it never asked a caller for', function (): void {
+    [$client, $mock] = clientAnswering([ReadRequest::class => stillNamed(202)]);
+
+    $standing = $client->whatBecameOf('k3n9v2xq');
+
+    $pending = $mock->getLastPendingRequest();
+
+    expect(standingWord($standing))->toBe('still going')
+        ->and($standing->job)->toBe('k3n9v2xq')
+        ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/jobs/k3n9v2xq')
+        ->and($pending?->headers()->get(Api::TOKEN_HEADER))->toBe(A_RUN_TOKEN)
+        ->and($pending?->headers()->get('Accept'))->toBe(Api::JSON_MEDIA_TYPE);
+});
+
+it('tells work that ended apart from work still going', function (): void {
+    // Both are the `job` envelope, so only the status separates them.
+    [$client] = clientAnswering([ReadRequest::class => stillNamed(200)]);
+
+    expect(standingWord($client->whatBecameOf('k3n9v2xq')))->toBe('ended');
+});
+
+it('hands over what finished work came to', function (): void {
+    [$client] = clientAnswering([
+        ReadRequest::class => MockResponse::make(
+            '{"api_version":1,"kind":"repair","data":{"acted":false,"offered":[]}}',
+            200,
+            ['Content-Type' => 'application/json'],
+        ),
+    ]);
+
+    expect(standingWord($client->whatBecameOf('k3n9v2xq')))->toBe('finished as repair');
+});
+
+it('says a name this run never handed out is not work that failed', function (): void {
+    // Answered in prose, which is how this surface labels what it says in its
+    // own words. A name goes when the run that minted it goes, so one carried
+    // across a restart arrives here.
+    [$client] = clientAnswering([
+        ReadRequest::class => MockResponse::make(
+            'No work in this run goes by that name.',
+            404,
+            ['Content-Type' => 'text/plain; charset=utf-8'],
+        ),
+    ]);
+
+    expect(fn(): JobStanding => $client->whatBecameOf('k3n9v2xq'))
+        ->toThrow(NoSuchJob::class, 'names nothing now');
+});
+
+it('says a name answered with no media type at all is not work that failed', function (): void {
+    [$client] = clientAnswering([
+        ReadRequest::class => MockResponse::make('No work in this run goes by that name.', 404),
+    ]);
+
+    expect(fn(): JobStanding => $client->whatBecameOf('k3n9v2xq'))->toThrow(NoSuchJob::class);
+});
+
+it('tells work that failed apart from a name nobody minted, on the same status', function (): void {
+    // A problem answers with the `error` envelope at whatever status it
+    // warrants, and that can be 404 too — a form nothing declares is absent
+    // whichever door asked about it.
+    [$client] = clientAnswering([
+        ReadRequest::class => MockResponse::make(
+            '{"api_version":1,"kind":"error","data":{"code":"FORM-1","summary":"Nothing here declares a form called tv.","meaning":"m","severity":"error","state":"actionable","remedies":[]}}',
+            404,
+            ['Content-Type' => 'application/json'],
+        ),
+    ]);
+
+    expect(fn(): JobStanding => $client->whatBecameOf('k3n9v2xq'))
+        ->toThrow(RequestFailed::class, 'Nothing here declares a form called tv.');
+});
+
+it('reports any other refusal of a name as the request having failed', function (): void {
+    [$client] = clientAnswering([
+        ReadRequest::class => MockResponse::make('{}', 500, ['Content-Type' => 'application/json']),
+    ]);
+
+    expect(fn(): JobStanding => $client->whatBecameOf('k3n9v2xq'))
+        ->toThrow(RequestFailed::class, '/api/jobs/k3n9v2xq');
+});
+
+it('lets go of a name, and says where the work it stood for now stands', function (): void {
+    // A screen has nothing to interrupt with, so the name is the handle. What
+    // comes back is the same answer asking would have given.
+    [$client, $mock] = clientAnswering([ReleaseRequest::class => stillNamed(200)]);
+
+    $standing = $client->letGoOf('k3n9v2xq');
+
+    $pending = $mock->getLastPendingRequest();
+
+    expect(standingWord($standing))->toBe('ended')
+        ->and($pending?->getMethod())->toBe(Method::DELETE)
+        ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/jobs/k3n9v2xq')
+        ->and($pending?->headers()->get(Api::TOKEN_HEADER))->toBe(A_RUN_TOKEN);
+});
+
+it('answers a release of work that had already finished with what it finished as', function (): void {
+    [$client] = clientAnswering([
+        ReleaseRequest::class => MockResponse::make(
+            '{"api_version":1,"kind":"repair","data":{"acted":true,"offered":[]}}',
+            200,
+            ['Content-Type' => 'application/json'],
+        ),
+    ]);
+
+    expect(standingWord($client->letGoOf('k3n9v2xq')))->toBe('finished as repair');
 });
 
 it('reports an endpoint that was turned down, reading nothing from it', function (): void {
