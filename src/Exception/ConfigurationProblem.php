@@ -82,6 +82,20 @@ final class ConfigurationProblem extends InvalidArgumentException implements Pro
         );
     }
 
+    public static function attemptIsUnnamed(): self
+    {
+        return new self(
+            'An action names the attempt it is part of, and this name is blank. A stack cannot tell a re-send from a second change without one, so give a fresh value for each attempt or give none at all.',
+        );
+    }
+
+    public static function attemptNameHasHiddenCharacters(): self
+    {
+        return new self(
+            'The name given for this attempt holds characters that cannot travel in a request, so it would end the header it travels in and begin another. Build it from something printable.',
+        );
+    }
+
     public static function lengthOfTimeNotPositive(int $milliseconds): self
     {
         return new self(sprintf(

@@ -9,6 +9,7 @@ use Lemonfiber\Sdk\Events\ServerEvent;
 use Lemonfiber\Sdk\Exception\Problem;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
+use Lemonfiber\Sdk\Http\IdempotencyKey;
 use Lemonfiber\Sdk\Http\RunToken;
 use Lemonfiber\Sdk\Time\Duration;
 
@@ -33,6 +34,7 @@ arch('values are readonly')
         ServerEvent::class,
         BaseUrl::class,
         CertificatePin::class,
+        IdempotencyKey::class,
         RunToken::class,
         Duration::class,
     ])

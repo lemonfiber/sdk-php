@@ -28,14 +28,18 @@ it('names every endpoint it knows, because the contract names none', function ()
 });
 
 it('names the reads it holds a path for, and holds no path it has no caller for', function (): void {
-    // Literals for the reason the endpoints above are literals. Five, and each
+    // Literals for the reason the endpoints above are literals, and each
     // written out rather than looped over a list: a loop would assert the list
     // against itself and pass whatever the list said.
+    //
+    // How many there are is deliberately not said. A count in a comment is a
+    // number nothing computes, and the next read added is what makes it wrong.
     expect(Api::STATUS_ENDPOINT)->toBe('/api/status')
         ->and(Api::SERVICES_ENDPOINT)->toBe('/api/services')
         ->and(Api::STORAGE_ENDPOINT)->toBe('/api/storage')
         ->and(Api::REQUESTS_ENDPOINT)->toBe('/api/requests')
-        ->and(Api::STUCK_ENDPOINT)->toBe('/api/stuck');
+        ->and(Api::STUCK_ENDPOINT)->toBe('/api/stuck')
+        ->and(Api::UPDATE_ENDPOINT)->toBe('/api/update');
 });
 
 it('composes the path one action is asked for under', function (): void {
