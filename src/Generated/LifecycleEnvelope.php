@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 24ddf47e248873717c50eb3243dec61f43e6cccd, api_version 1.
+// Source: 2e3e492ec02d33edbe42e39be05e9f5c9905e3a6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `lifecycle` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{action: string, command: list<string>, condition?: 'inactive'|'degraded'|'partial'|'active'|null, forwarding?: string|null, plan: array{dropped: list<array{needs: 'usenet'|'torrent', profile: string}>, forms: list<string>, profiles: list<string>, services: list<string>}, rehearsed: bool, services: list<array{criticality: 'critical'|'core'|'important'|'enhancing'|'optional', depends_on: list<string>, exit?: int|null, id: string, name: string, profile: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>, stack_edits: list<array{diff: string, path: string}>, status?: int|null, switched?: array{kept: list<string>, started: list<string>, stop_command?: list<string>|null, stopped: list<string>}|null}
+ * @phpstan-type Data array{action: string, command: list<string>, condition?: 'inactive'|'degraded'|'partial'|'active'|null, forwarding?: string|null, held?: string|null, plan: array{dropped: list<array{needs: 'usenet'|'torrent', profile: string}>, forms: list<string>, profiles: list<string>, services: list<string>}, rehearsed: bool, services: list<array{criticality: 'critical'|'core'|'important'|'enhancing'|'optional', depends_on: list<string>, exit?: int|null, id: string, name: string, profile: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>, stack_edits: list<array{diff: string, path: string}>, status?: int|null, switched?: array{kept: list<string>, started: list<string>, stop_command?: list<string>|null, stopped: list<string>}|null}
  */
 final class LifecycleEnvelope
 {
