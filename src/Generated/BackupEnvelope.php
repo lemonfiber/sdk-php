@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: be01322365767b4f7a75b07dd99785140086c371, api_version 1.
+// Source: 2a98a32a02fe0baeab5c2ae32665bf19b265b8b8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `backup` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{pace: array{brisk: bool, budget: int, moved: int}, path: string, pruned: list<string>, scope: array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project: string, scope: 'existing', trees: list<array{archive_path: string, host_path: string}>}, sensitive: bool}
+ * @phpstan-type Data array{pace: array{brisk: bool, budget: int, moved: int}, path: string, pruned: list<string>, rehearsed: bool, scope: array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project: string, scope: 'existing', trees: list<array{archive_path: string, host_path: string}>}, sensitive: bool}
  */
 final class BackupEnvelope
 {
