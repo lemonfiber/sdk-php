@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 41067195202edaaa380b339294ccafae05e2e99d, api_version 1.
+// Source: 468091e1dc8b30b0bb6006302690be10e39275fb, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `outbound` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{ours: list<array{allowed: bool, cost: string, destination: list<string>, purpose: string, reach: 'registry'|'guides'|'echo'|'indexer'|'usenet'|'household'|'updates', sends: string, switch: string}>, theirs: list<array{destination: string, purpose: string, service: string}>}
+ * @phpstan-type Data array{ours: list<array{allowed: bool, cost: string, destination: list<string>, purpose: string, reach: 'registry'|'guides'|'echo'|'indexer'|'usenet'|'household'|'updates', sends: string, switch: string}>, theirs: list<array{destination: string, purpose: string, recorded: bool, service: string}>}
  */
 final class OutboundEnvelope
 {
