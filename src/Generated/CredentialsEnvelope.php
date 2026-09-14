@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: be01322365767b4f7a75b07dd99785140086c371, api_version 1.
+// Source: 2a98a32a02fe0baeab5c2ae32665bf19b265b8b8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `credentials` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{held: list<array{advisory?: string|null, consumers: list<string>, fingerprint?: string|null, location: string, name: string, origin: 'operator'|'service'|'lemonfiber', setting: string, state: 'absent'|'active'|'stale'|'invalid'|'rotating'|'superseded'}>, protection: array{against: list<string>, not_against: list<string>, summary: string}, revealed?: array{name: string, value?: string|null, warning: string}|null, rotated?: array{consumers: list<array{consumer: string, reach: array{reach: 'updated'}|array{detail: string, reach: 'pending'}|array{detail: string, reach: 'failed'}}>, credential: string, settled: array{observed: string, settled: 'replaced'}|array{detail: string, settled: 'refused'}|array{detail: string, settled: 'unproven'}|array{known: list<string>, settled: 'unknown'}|array{detail: string, settled: 'elsewhere'}}|null}
+ * @phpstan-type Data array{held: list<array{advisory?: string|null, consumers: list<string>, fingerprint?: string|null, location: string, name: string, origin: 'operator'|'service'|'lemonfiber', setting: string, state: 'absent'|'active'|'stale'|'invalid'|'rotating'|'superseded'}>, protection: array{against: list<string>, not_against: list<string>, summary: string}, revealed?: array{name: string, value?: string|null, warning: string}|null, rotated?: array{consumers: list<array{consumer: string, reach: array{reach: 'updated'}|array{detail: string, reach: 'pending'}|array{detail: string, reach: 'failed'}}>, credential: string, settled: array{observed: string, settled: 'replaced'}|array{detail: string, settled: 'refused'}|array{detail: string, settled: 'unproven'}|array{afterwards: list<string>, detail: string, location: string, settled: 'rehearsed'}|array{known: list<string>, settled: 'unknown'}|array{detail: string, settled: 'elsewhere'}}|null}
  */
 final class CredentialsEnvelope
 {

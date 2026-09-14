@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: be01322365767b4f7a75b07dd99785140086c371, api_version 1.
+// Source: 2a98a32a02fe0baeab5c2ae32665bf19b265b8b8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `bundle` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{bytes: int, contents: array{missing: list<string>, pieces: list<array{body: string, name: string}>, taken: array{at: string, lemonfiber: string, stack: string}, terms: array{filenames: bool, revealed: list<string>, window: string}}, path?: string|null}
+ * @phpstan-type Data array{bytes: int, contents: array{missing: list<string>, pieces: list<array{body: string, name: string}>, taken: array{at: string, lemonfiber: string, stack: string}, terms: array{filenames: bool, revealed: list<string>, window: string}}, path?: string|null, would_go?: string|null}
  */
 final class BundleEnvelope
 {
