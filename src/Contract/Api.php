@@ -52,6 +52,67 @@ final class Api
     public const string CHECKS_ENDPOINT = '/api/checks';
 
     /**
+     * The endpoint answering with what the whole stack is doing.
+     *
+     * Named here for the reason {@see self::CHECKS_ENDPOINT} is, as are the
+     * reads beside it.
+     *
+     * It answers with the `status` envelope, so
+     * {@see \Lemonfiber\Sdk\Generated\StatusEnvelope} is what reads it. It
+     * takes nothing at all: what is running is a property of the machine, and
+     * {@see self::SERVICES_ENDPOINT} is this same reading narrowed.
+     */
+    public const string STATUS_ENDPOINT = '/api/status';
+
+    /**
+     * The endpoint answering with what each service is doing.
+     *
+     * The reading {@see self::STATUS_ENDPOINT} takes whole, narrowed to the
+     * forms that were named, under the one `status` envelope both arrive in.
+     *
+     * It takes `form`, and lemonfiber takes that one more than once — a
+     * narrowing is a list of forms rather than a single one. Naming none is
+     * the whole stack, which is what {@see self::STATUS_ENDPOINT} asks for
+     * with nothing to name.
+     */
+    public const string SERVICES_ENDPOINT = '/api/services';
+
+    /**
+     * The endpoint answering with what the checks about the disk found.
+     *
+     * {@see self::CHECKS_ENDPOINT} held to the storage group, so it answers
+     * with the same `doctor` envelope and
+     * {@see \Lemonfiber\Sdk\Generated\DoctorEnvelope} is what reads it. The
+     * narrowing is the path's own and not a caller's: it takes no parameter,
+     * so this door cannot be turned into a second way of asking for any other
+     * group.
+     */
+    public const string STORAGE_ENDPOINT = '/api/storage';
+
+    /**
+     * The endpoint answering with who is in the household, what each may
+     * watch, and what each has asked for.
+     *
+     * It answers with the `household` envelope, so
+     * {@see \Lemonfiber\Sdk\Generated\HouseholdEnvelope} is what reads it.
+     *
+     * It takes `member`, once, to narrow to one of them. Naming none is the
+     * whole household and naming an empty one is refused, so a caller holding
+     * a name it has not got must leave the parameter off rather than send it
+     * blank.
+     */
+    public const string REQUESTS_ENDPOINT = '/api/requests';
+
+    /**
+     * The endpoint answering with the items whose downloads have stopped.
+     *
+     * It answers with the `stuck` envelope, so
+     * {@see \Lemonfiber\Sdk\Generated\StuckEnvelope} is what reads it, and it
+     * takes nothing.
+     */
+    public const string STUCK_ENDPOINT = '/api/stuck';
+
+    /**
      * The endpoint every action is asked for through.
      *
      * One path for the whole of what this surface can be told to do: the name

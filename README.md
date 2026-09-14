@@ -25,16 +25,37 @@ never puts it in an address.
 
 ```php
 use Lemonfiber\Sdk\Client;
+use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Time\Duration;
 
 $client = Client::onPort(9000, $tokenLemonfiberPrinted);
 
-$status = $client->read('/api/status');
+$status = $client->read(Api::STATUS_ENDPOINT);
 $status->kind;        // 'status'
 $status->data;        // the payload, shaped by kind
 
 $client->act('/api/actions/restart', ['forms' => ['tv'], 'services' => ['sonarr']]);
 ```
+
+`Api` carries the path of every read this client knows, so a caller names the read instead of
+spelling where it lives — the contract describes envelope kinds and no endpoints, so the paths are
+this client's to hold and its to move:
+
+| Constant | Answers with | Takes |
+|---|---|---|
+| `Api::STATUS_ENDPOINT` | `status` | nothing |
+| `Api::SERVICES_ENDPOINT` | `status`, narrowed | `form`, which lemonfiber accepts more than once |
+| `Api::CHECKS_ENDPOINT` | `doctor` | `only`, naming a group of checks or one check |
+| `Api::STORAGE_ENDPOINT` | `doctor`, held to the disk | nothing |
+| `Api::REQUESTS_ENDPOINT` | `household` | `member`, once |
+| `Api::STUCK_ENDPOINT` | `stuck` | nothing |
+
+```php
+$client->read(Api::REQUESTS_ENDPOINT, ['member' => 'ada']);
+```
+
+A read refuses a parameter it has no name for rather than dropping it, since a dropped narrowing
+answers a wider question than the one that was asked and a wider answer reads like the answer.
 
 An action's name and its arguments are the command line's own. A name this surface does not
 offer is refused rather than invented, and a field no action takes is refused rather than

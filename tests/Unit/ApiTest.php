@@ -26,6 +26,17 @@ it('names every endpoint it knows, because the contract names none', function ()
         ->and(Api::JOBS_ENDPOINT)->toBe('/api/jobs');
 });
 
+it('names the reads it holds a path for, and holds no path it has no caller for', function (): void {
+    // Literals for the reason the endpoints above are literals. Five, and each
+    // written out rather than looped over a list: a loop would assert the list
+    // against itself and pass whatever the list said.
+    expect(Api::STATUS_ENDPOINT)->toBe('/api/status')
+        ->and(Api::SERVICES_ENDPOINT)->toBe('/api/services')
+        ->and(Api::STORAGE_ENDPOINT)->toBe('/api/storage')
+        ->and(Api::REQUESTS_ENDPOINT)->toBe('/api/requests')
+        ->and(Api::STUCK_ENDPOINT)->toBe('/api/stuck');
+});
+
 it('composes the path one action is asked for under', function (): void {
     // An action is a name under one path rather than an endpoint of its own,
     // so the join lives here and a caller never writes either half. Two names
