@@ -136,6 +136,31 @@ final class Api
     public const string REQUESTS_ENDPOINT = '/api/requests';
 
     /**
+     * The endpoint answering with where a copy stands and what moving it comes to.
+     *
+     * Named here for the reason {@see self::CHECKS_ENDPOINT} is, as are the
+     * reads beside it. A read and never a replacement: what it answers with
+     * about this program is the exact command for whichever tool owns the copy
+     * that is running, which is a thing to put in front of somebody rather
+     * than a thing this surface carries out.
+     *
+     * **It takes `what`, and naming nothing is refused.** Two things can be
+     * moved forward and the endpoint serves both, so a request that does not
+     * say which is answered in prose rather than with an envelope. `stack`
+     * asks where the services stand, which arrives as the `update` envelope
+     * and {@see \Lemonfiber\Sdk\Generated\UpdateEnvelope} is what reads it.
+     * `self` asks where this copy of lemonfiber stands, which is the
+     * `self-update` envelope and a different type
+     * ({@see \Lemonfiber\Sdk\Generated\SelfUpdateEnvelope}).
+     *
+     * It also takes `to`, the version to move to instead of whatever is
+     * newest, which is the one question a downgrade asks. Only the `self`
+     * reading reads it; named beside `stack` it is dropped rather than
+     * refused, so a caller asking about the services names neither.
+     */
+    public const string UPDATE_ENDPOINT = '/api/update';
+
+    /**
      * The endpoint answering with the items whose downloads have stopped.
      *
      * It answers with the `stuck` envelope, so
