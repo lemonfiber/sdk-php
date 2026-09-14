@@ -67,6 +67,50 @@ under it was agreed to by whoever wrote the call rather than by whoever is at th
 A repair reaches the services, so what comes back is a name for the work rather than its
 outcome: the `job` envelope, and the `repair` envelope arrives through it.
 
+## Work that outlives the request
+
+Any action reaching the services runs for minutes, so lemonfiber answers it with a name and
+runs the work somewhere the connection cannot reach. The name is redeemed afterwards:
+
+```php
+$standing = $client->whatBecameOf($job);
+
+$standing->answering(
+    stillRunning: fn() => 'ask again in a moment',
+    finished: fn(Envelope $outcome) => $outcome,
+    ended: fn() => 'this one stopped before it got there',
+);
+```
+
+**Three standings across two statuses, and neither half tells them apart alone.** Still going
+and ended are both the `job` envelope; ended and finished are both `200`. Only the pair
+separates them, which is why the reading is in `JobStanding` rather than at each call site —
+and why `answering()` takes an arm for each and has no default. Work that ended was released
+by name or let go for want of anybody asking; a client that read it as still going would poll
+a name nothing is doing, and one that read it as a stack it could not reach would report a
+machine as broken when it answered perfectly.
+
+Pass the arms by name. The two that take nothing are alike enough that position is a poor way
+to tell them apart, and this repository's own analyser forbids named arguments in its own call
+sites, so its tests read positionally where yours should not.
+
+A name is also the handle work is stopped by, since a screen has nothing to interrupt with:
+
+```php
+$client->letGoOf($job);   // ends it, and says where it now stands
+```
+
+A name does not outlive the run that minted it. One carried across a break in the connection
+may name nothing by the time it is asked about, which arrives as `NoSuchJob` rather than as a
+stack that could not be reached — and is a reason to redeem a name promptly. Asking after a
+name is a read: the work it names is work lemonfiber acknowledged, and asking again cannot
+start a second one.
+
+Work that stopped on a problem is not one of the three standings. It answers with the `error`
+envelope at whatever status that problem warrants, and arrives as `RequestFailed` carrying the
+sentence lemonfiber wrote — including where that status is `404`, which is why a name nobody
+minted is told apart by the media type rather than by the status.
+
 What an envelope holds is shaped by its `kind`, so it is reached through the kind rather than
 as an open value (ARCH-R63). There is one generated class per kind, and it is the way through:
 
@@ -130,6 +174,7 @@ Everything else in `src/` is behaviour no schema expresses:
 |---|---|
 | `Http\RunToken` | The per-run token travels in a header, never in an address (ARCH-R52) |
 | `Repair` | The offer and the yes are one request read twice, and the arrangements the surface refuses cannot be written (N2-R4, N2-R5, N2-R6) |
+| `JobStanding` | Still going, finished and ended are three standings across two statuses, and none of them is a fall-through |
 | `Http\BaseUrl` | Loopback only; any other host is refused before anything is sent, and a loopback address is not refused for being named rather than numeric (ARCH-R60) |
 | `Envelope\EnvelopeReader` | A version mismatch is refused plainly, naming both versions, rather than rendering part of an answer (ARCH-R55) |
 | `Envelope\Payload` | An envelope is read as the kind it carries, or not at all (ARCH-R63) |

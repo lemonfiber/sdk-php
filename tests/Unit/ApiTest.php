@@ -22,7 +22,8 @@ it('names every endpoint it knows, because the contract names none', function ()
     // to restate a derivation.
     expect(Api::EVENTS_ENDPOINT)->toBe('/api/events')
         ->and(Api::CHECKS_ENDPOINT)->toBe('/api/checks')
-        ->and(Api::ACTIONS_ENDPOINT)->toBe('/api/actions');
+        ->and(Api::ACTIONS_ENDPOINT)->toBe('/api/actions')
+        ->and(Api::JOBS_ENDPOINT)->toBe('/api/jobs');
 });
 
 it('composes the path one action is asked for under', function (): void {
@@ -32,6 +33,14 @@ it('composes the path one action is asked for under', function (): void {
     // path, would answer the first correctly by accident.
     expect(Api::action('repair'))->toBe('/api/actions/repair')
         ->and(Api::action('undo'))->toBe('/api/actions/undo');
+});
+
+it('composes the path one piece of running work is asked about under', function (): void {
+    // A name lemonfiber answered with is only an answer if it can be redeemed,
+    // and where to redeem it is this client's to know. Two names again, since
+    // a join that dropped the name would answer the first one by accident.
+    expect(Api::job('k3n9v2xq'))->toBe('/api/jobs/k3n9v2xq')
+        ->and(Api::job('b7p1'))->toBe('/api/jobs/b7p1');
 });
 
 it('keeps the two media types apart', function (): void {

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk;
 
+use function is_string;
+
+use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Envelope\EnvelopeReader;
 use Lemonfiber\Sdk\Events\EventFeed;
@@ -11,6 +14,7 @@ use Lemonfiber\Sdk\Events\EventStream;
 use Lemonfiber\Sdk\Events\HeldValues;
 use Lemonfiber\Sdk\Exception\ApiVersionMismatch;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
+use Lemonfiber\Sdk\Exception\NoSuchJob;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Http\ActionRequest;
@@ -18,11 +22,15 @@ use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\ReadRequest;
+use Lemonfiber\Sdk\Http\ReleaseRequest;
 use Lemonfiber\Sdk\Http\RunToken;
 use Lemonfiber\Sdk\Http\StreamingEventSource;
 use Lemonfiber\Sdk\Time\Duration;
 use Lemonfiber\Sdk\Time\SystemClock;
 use Saloon\Http\Request;
+use Saloon\Http\Response;
+
+use function str_contains;
 
 /**
  * The client: reads, actions and live updates against one running lemonfiber.
@@ -32,6 +40,11 @@ final readonly class Client
     private const int DEFAULT_RECONNECT_LIMIT = 5;
 
     private const int DEFAULT_WAIT_MILLISECONDS = 250;
+
+    /**
+     * What a name this run never handed out is answered with.
+     */
+    private const int NO_SUCH_NAME = 404;
 
     public function __construct(
         private LemonfiberConnector $connector,
@@ -117,6 +130,54 @@ final readonly class Client
     }
 
     /**
+     * What became of the work one name stands for.
+     *
+     * A name is answered with rather than an outcome wherever the work reaches
+     * the services, so this is the other half of {@see self::repair()} and of
+     * every other action that runs for minutes. The answer is one of three
+     * standings and {@see JobStanding} is what tells them apart.
+     *
+     * **Redeem a name promptly.** A name does not outlive the run that minted
+     * it, so one carried across a break in the connection may name nothing by
+     * the time it is asked about — which arrives as {@see NoSuchJob} rather
+     * than as a stack that could not be reached. Asking is a read and changes
+     * nothing, which is what separates it from re-sending the action: the work
+     * this asks after is work lemonfiber acknowledged, and asking again cannot
+     * start a second one.
+     *
+     * @throws ApiVersionMismatch
+     * @throws NoSuchJob
+     * @throws RequestFailed
+     * @throws UnreadableResponse
+     */
+    public function whatBecameOf(string $job): JobStanding
+    {
+        return $this->standingOf(new ReadRequest(Api::job($job)), $job);
+    }
+
+    /**
+     * Let go of a name, ending the work it stands for.
+     *
+     * A terminal interrupts what it is running and a screen has nothing to
+     * interrupt with, so the name is the handle. What was already asked of the
+     * container engine goes on, exactly as it does when a terminal is closed.
+     *
+     * The answer is where the work now stands, which is the same answer asking
+     * would have given — so a caller that released one need not ask again to
+     * find out what it released. Work that had already finished answers with
+     * what it finished as.
+     *
+     * @throws ApiVersionMismatch
+     * @throws NoSuchJob
+     * @throws RequestFailed
+     * @throws UnreadableResponse
+     */
+    public function letGoOf(string $job): JobStanding
+    {
+        return $this->standingOf(new ReleaseRequest(Api::job($job)), $job);
+    }
+
+    /**
      * @throws ConfigurationProblem
      */
     public function events(
@@ -169,5 +230,47 @@ final readonly class Client
         }
 
         return $this->reader->read($response->body());
+    }
+
+    /**
+     * Where the work a name stands for got to, or why the name answered nothing.
+     *
+     * @throws ApiVersionMismatch
+     * @throws NoSuchJob
+     * @throws RequestFailed
+     * @throws UnreadableResponse
+     */
+    private function standingOf(Request $request, string $job): JobStanding
+    {
+        $response = $this->connector->send($request);
+        $status = $response->status();
+
+        if ($status === self::NO_SUCH_NAME && $this->saidInProse($response)) {
+            throw NoSuchJob::inThisRun($job);
+        }
+
+        if ($response->failed()) {
+            throw RequestFailed::from($request->resolveEndpoint(), $status, $response->body());
+        }
+
+        return JobStanding::of($job, $status, $this->reader->read($response->body()));
+    }
+
+    /**
+     * Whether the answer is this surface speaking in its own words.
+     *
+     * lemonfiber labels a sentence as prose and an envelope as JSON, so that a
+     * caller parsing what it was told it was given is not handed a sentence to
+     * parse as an envelope. That label is what separates the two `404`s this
+     * endpoint has: a name nobody minted is said in prose, and work that
+     * stopped on a problem is the `error` envelope at the status that problem
+     * warrants.
+     */
+    private function saidInProse(Response $response): bool
+    {
+        /** @var array<mixed>|string|null $type */
+        $type = $response->header('Content-Type');
+
+        return ! is_string($type) || ! str_contains($type, Api::JSON_MEDIA_TYPE);
     }
 }

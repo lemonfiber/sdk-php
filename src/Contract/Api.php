@@ -63,6 +63,17 @@ final class Api
     public const string ACTIONS_ENDPOINT = '/api/actions';
 
     /**
+     * The endpoint work already begun is asked about through.
+     *
+     * The name of the work is the last segment, as an action's name is the last
+     * segment of {@see self::ACTIONS_ENDPOINT} — and for the same reason it is
+     * named here. A name lemonfiber answered with is only an answer if it can
+     * be redeemed, and a caller that had to spell where is a caller holding a
+     * word with nothing to do with it.
+     */
+    public const string JOBS_ENDPOINT = '/api/jobs';
+
+    /**
      * The media type live updates arrive as.
      */
     public const string EVENT_STREAM_MEDIA_TYPE = 'text/event-stream';
@@ -84,5 +95,18 @@ final class Api
     public static function action(string $name): string
     {
         return self::ACTIONS_ENDPOINT . '/' . $name;
+    }
+
+    /**
+     * Where the work of that name is asked about, and released.
+     *
+     * One path for both, since asking what became of a name and letting it go
+     * are one question and one answer: releasing ends the work and reports
+     * where it now stands, which is what asking would have said. The method
+     * separates them.
+     */
+    public static function job(string $name): string
+    {
+        return self::JOBS_ENDPOINT . '/' . $name;
     }
 }
