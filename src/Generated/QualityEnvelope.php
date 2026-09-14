@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 41067195202edaaa380b339294ccafae05e2e99d, api_version 1.
+// Source: 468091e1dc8b30b0bb6006302690be10e39275fb, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `quality` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{choices: list<array{means: string, needs_transcoding_here: bool, preset: string, resolution: string, scope: string, size_per_hour: string, transcoding: string}>, customised: bool, disposition: 'shown'|'recorded'|'rehearsed'|'held'|'reapplied'|'would-reapply', music?: array{format: string, means: string, note: string, scope: string, size_per_hour: string, targets: string}|null}
+ * @phpstan-type Data array{choices: list<array{means: string, needs_transcoding_here: bool, preset: string, resolution: string, scope: string, size_per_hour: string, transcoding: string}>, customised: bool, disposition: 'shown'|'recorded'|'rehearsed'|'held'|'reapplied'|'would-reapply', music?: array{format: string, means: string, note: string, scope: string, size_per_hour: string, targets: string}|null, overwritten?: array{diff: string, path: string}|null}
  */
 final class QualityEnvelope
 {

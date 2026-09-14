@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 41067195202edaaa380b339294ccafae05e2e99d, api_version 1.
+// Source: 468091e1dc8b30b0bb6006302690be10e39275fb, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `repair` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{acted: bool, agreement: string, beyond: list<array{check: string, remedy: array{action: string, detail?: string|null}}>, mended: list<array{outcome: array{outcome: 'fixed'}|array{outcome: 'fix_failed'}|array{leaving: string, outcome: 'stopped'}|array{outcome: 'declined'}|array{outcome: 'would_overwrite'}, repair: array{check: string, does: string, effects: list<string>, reversible: bool}}>, offered: list<array{check: string, does: string, effects: list<string>, reversible: bool}>}
+ * @phpstan-type Data array{acted: bool, agreement: string, beyond: list<array{check: string, remedy: array{action: string, detail?: string|null}}>, mended: list<array{outcome: array{outcome: 'fixed'}|array{outcome: 'fix_failed'}|array{leaving: string, outcome: 'stopped'}|array{outcome: 'declined'}|array{outcome: 'would_overwrite'}|array{outcome: 'unmanaged'}, repair: array{check: string, does: string, effects: list<string>, reversible: bool}}>, offered: list<array{check: string, does: string, effects: list<string>, reversible: bool}>}
  */
 final class RepairEnvelope
 {
