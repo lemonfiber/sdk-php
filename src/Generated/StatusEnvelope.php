@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 2a98a32a02fe0baeab5c2ae32665bf19b265b8b8, api_version 1.
+// Source: 41067195202edaaa380b339294ccafae05e2e99d, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `status` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{condition: 'inactive'|'degraded'|'partial'|'active', forms: list<string>, services: list<array{criticality: 'critical'|'core'|'important'|'enhancing'|'optional', depends_on: list<string>, describes: string, exit?: int|null, id: string, name: string, profile: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>, undeclared: list<array{describes: string, id: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>}
+ * @phpstan-type Data array{condition: 'inactive'|'degraded'|'partial'|'active', disturbs: array{restarting: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, starting: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, stopping: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, stopping_after_downloads: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, switching: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}}, forms: list<string>, services: list<array{criticality: 'critical'|'core'|'important'|'enhancing'|'optional', depends_on: list<string>, describes: string, exit?: int|null, id: string, name: string, profile: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>, undeclared: list<array{describes: string, id: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>}
  */
 final class StatusEnvelope
 {
