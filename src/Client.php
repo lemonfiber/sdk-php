@@ -21,6 +21,7 @@ use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Http\ActionRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
+use Lemonfiber\Sdk\Http\IdempotencyKey;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\ReadRequest;
 use Lemonfiber\Sdk\Http\ReleaseRequest;
@@ -95,16 +96,26 @@ final readonly class Client
     }
 
     /**
+     * Ask a stack to change something, as one attempt at it.
+     *
+     * The key names that attempt. A caller that re-sends the same request
+     * under the same key is telling the stack these are one act, so an answer
+     * lost on the way back costs nothing; a caller acting again, or acting
+     * after the connection came back, mints a new one and nothing earlier is
+     * applied under it. A key is given per call and this client keeps none of
+     * them, so there is no value here for a later request to pick up.
+     *
      * @param  array<string, mixed>  $body
      * @return Envelope<mixed>
      *
      * @throws ApiVersionMismatch
+     * @throws ConfigurationProblem
      * @throws RequestFailed
      * @throws UnreadableResponse
      */
-    public function act(string $endpoint, array $body = []): Envelope
+    public function act(string $endpoint, array $body = [], ?string $idempotencyKey = null): Envelope
     {
-        return $this->envelopeFrom(new ActionRequest($endpoint, $body), $endpoint);
+        return $this->envelopeFrom(new ActionRequest($endpoint, $body, $this->naming($idempotencyKey)), $endpoint);
     }
 
     /**
@@ -122,12 +133,13 @@ final readonly class Client
      * @return Envelope<mixed>
      *
      * @throws ApiVersionMismatch
+     * @throws ConfigurationProblem
      * @throws RequestFailed
      * @throws UnreadableResponse
      */
-    public function repair(Repair $asked): Envelope
+    public function repair(Repair $asked, ?string $idempotencyKey = null): Envelope
     {
-        return $this->act($asked->endpoint(), $asked->arguments());
+        return $this->act($asked->endpoint(), $asked->arguments(), $idempotencyKey);
     }
 
     /**
@@ -239,6 +251,16 @@ final readonly class Client
     public function connector(): LemonfiberConnector
     {
         return $this->connector;
+    }
+
+    /**
+     * The key a caller gave for this attempt, checked, or none.
+     *
+     * @throws ConfigurationProblem
+     */
+    private function naming(?string $idempotencyKey): ?IdempotencyKey
+    {
+        return $idempotencyKey === null ? null : IdempotencyKey::fromString($idempotencyKey);
     }
 
     /**

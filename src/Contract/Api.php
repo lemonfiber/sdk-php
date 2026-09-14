@@ -30,6 +30,22 @@ final class Api
     public const string RESUME_HEADER = 'Last-Event-ID';
 
     /**
+     * The header an action names the single attempt it is part of in.
+     *
+     * A re-send inside that attempt carries the same value, so an answer lost
+     * on the way back is not a second change to the machine. A later attempt
+     * carries a fresh one, and nothing the first attempt asked for is applied
+     * under it.
+     *
+     * The name the HTTP working group's draft gives it, rather than an
+     * `X-Lemonfiber-` name of the sort {@see self::TOKEN_HEADER} is. That
+     * prefix belongs to what this surface invented, and a retry key is none of
+     * its invention: anything sitting in front of a stack already reads this
+     * spelling and would never see a private one.
+     */
+    public const string IDEMPOTENCY_HEADER = 'Idempotency-Key';
+
+    /**
      * The endpoint serving live updates.
      */
     public const string EVENTS_ENDPOINT = '/api/events';

@@ -88,6 +88,53 @@ it('acts on an endpoint, carrying its payload as json', function (): void {
         ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/actions/retry-import');
 });
 
+it('names the attempt an action is part of, in a header and never in the body', function (): void {
+    [$client, $mock] = clientAnswering([
+        ActionRequest::class => MockResponse::make('{"api_version":1,"kind":"job","data":{"id":"j1"}}'),
+    ]);
+
+    $client->act('/api/actions/down', ['services' => ['sonarr']], 'an-attempt');
+
+    $pending = $mock->getLastPendingRequest();
+
+    // The body stays what the action's arguments are. lemonfiber reads an
+    // action's arguments against a closed list and refuses a field it does not
+    // offer, so a key put there would turn every action into a refusal.
+    expect($pending?->headers()->get(Api::IDEMPOTENCY_HEADER))->toBe('an-attempt')
+        ->and($pending?->body()?->all())->toBe(['services' => ['sonarr']]);
+});
+
+it('sends no attempt header where a caller named no attempt', function (): void {
+    [$client, $mock] = clientAnswering([
+        ActionRequest::class => MockResponse::make('{"api_version":1,"kind":"job","data":{"id":"j1"}}'),
+    ]);
+
+    $client->act('/api/actions/down');
+
+    expect($mock->getLastPendingRequest()?->headers()->get(Api::IDEMPOTENCY_HEADER))->toBeNull();
+});
+
+it('refuses to send an action under a key that cannot travel', function (): void {
+    [$client] = clientAnswering([
+        ActionRequest::class => MockResponse::make('{"api_version":1,"kind":"job","data":{"id":"j1"}}'),
+    ]);
+
+    expect(fn(): Envelope => $client->act('/api/actions/down', [], "key\r\nIdempotency-Key: theirs"))
+        ->toThrow(ConfigurationProblem::class, 'cannot travel in a request');
+});
+
+it('carries an attempt through a repair, which is the action it changes most with', function (): void {
+    [$client, $mock] = clientAnswering([
+        ActionRequest::class => MockResponse::make(
+            '{"api_version":1,"kind":"job","data":{"job":"j1","action":"repair"}}',
+        ),
+    ]);
+
+    $client->repair(Repair::agreedInAdvance(), 'an-attempt');
+
+    expect($mock->getLastPendingRequest()?->headers()->get(Api::IDEMPOTENCY_HEADER))->toBe('an-attempt');
+});
+
 it('asks what could be put right, at the endpoint it never asked a caller for', function (): void {
     // The offer half. A caller spelling `/api/actions/repair` itself is a
     // caller that goes on spelling it the day lemonfiber moves it, so the
