@@ -35,6 +35,22 @@ final class Api
     public const string EVENTS_ENDPOINT = '/api/events';
 
     /**
+     * The endpoint answering with what the services have been saying.
+     *
+     * Named here for the reason {@see self::EVENTS_ENDPOINT} is: the contract
+     * carries envelope kinds and no endpoints, so a path is knowledge this
+     * client holds on its callers' behalf, and a caller spelling one is a
+     * caller that breaks silently the day lemonfiber moves it.
+     *
+     * The one read whose answer is not a single envelope. It reaches no
+     * command and renders no report: it opens the scrollback and writes a `log`
+     * envelope per line, one document a line, which is a body read by
+     * `EnvelopeReader::readEach()` rather than by `EnvelopeReader::read()`.
+     * `Logs` is what asks for it, and asks for a look that ends.
+     */
+    public const string LOGS_ENDPOINT = '/api/logs';
+
+    /**
      * The endpoint answering with a diagnosis.
      *
      * Named here rather than by whoever asks, which is the same argument

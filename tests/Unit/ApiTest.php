@@ -21,6 +21,7 @@ it('names every endpoint it knows, because the contract names none', function ()
     // own spelling lives, so the test's job is to notice a change rather than
     // to restate a derivation.
     expect(Api::EVENTS_ENDPOINT)->toBe('/api/events')
+        ->and(Api::LOGS_ENDPOINT)->toBe('/api/logs')
         ->and(Api::CHECKS_ENDPOINT)->toBe('/api/checks')
         ->and(Api::ACTIONS_ENDPOINT)->toBe('/api/actions')
         ->and(Api::JOBS_ENDPOINT)->toBe('/api/jobs');

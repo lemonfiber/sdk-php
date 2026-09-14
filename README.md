@@ -137,19 +137,54 @@ as an open value (ARCH-R63). There is one generated class per kind, and it is th
 
 ```php
 use Lemonfiber\Sdk\Generated\Kind;
-use Lemonfiber\Sdk\Generated\LogEnvelope;
+use Lemonfiber\Sdk\Generated\StatusEnvelope;
 
-$envelope = $client->read('/api/logs');   // Envelope<mixed>
+$envelope = $client->read('/api/status');   // Envelope<mixed>
 
-if ($envelope->kind === Kind::Log->value) {
-    $log = LogEnvelope::in($envelope);    // Envelope<the shape the contract gives `log`>
+if ($envelope->kind === Kind::Status->value) {
+    $status = StatusEnvelope::in($envelope);  // Envelope<the shape the contract gives `status`>
 
-    $log->data;   // typed by that shape, and checked by static analysis
+    $status->data;   // typed by that shape, and checked by static analysis
 }
 ```
 
-`LogEnvelope::in()` refuses an envelope carrying any other kind rather than handing back a
+`StatusEnvelope::in()` refuses an envelope carrying any other kind rather than handing back a
 payload of the wrong shape.
+
+## Logs, as a window rather than a stream
+
+`/api/logs` is the one read whose answer is not a single envelope: it renders a `log` envelope
+per line. It is asked for through a type rather than through a path and a query, and that type
+takes a service and a number of lines and nothing else.
+
+```php
+use Lemonfiber\Sdk\Logs;
+
+$window = $client->logs(Logs::ofService('sonarr', 200));
+
+$window->service();          // 'sonarr'
+$window->bound();            // 200 — how many lines were asked for
+$window->count();            // how many came back
+$window->reachedTheBound();  // whether the view stops where it was told to
+
+foreach ($window->lines() as $line) {
+    $line->data['line'];     // typed by the shape the contract gives `log`
+}
+```
+
+There is no default line count. How many lines to show is a decision about somebody's screen and
+this client owns nobody's screen; lemonfiber holds the ceiling and names it in its refusal, so no
+copy of that figure lives here.
+
+`follow` is absent rather than offered and declined. Asking lemonfiber to keep reading is not this
+request with a flag on it — the answer stops being lines and becomes a name for work that will not
+end, with the lines arriving on the event stream instead.
+
+**Nothing on the wire says how much was left behind.** A window is so many `log` envelopes and then
+the end of the body: no total, no cursor, no mark where the gathering stopped. What
+`reachedTheBound()` answers is the size asked for against the number that arrived — as many as were
+asked for means the view stops at the bound and what is behind it is unknown; fewer means the bound
+cut nothing, which is not a claim that this is everything the service ever said.
 
 Live updates arrive as envelopes. Anything gathered before a break in the connection is marked
 out of date rather than shown as current:
@@ -199,6 +234,7 @@ Everything else in `src/` is behaviour no schema expresses:
 | `Http\BaseUrl` | Loopback only; any other host is refused before anything is sent, and a loopback address is not refused for being named rather than numeric (ARCH-R60) |
 | `Envelope\EnvelopeReader` | A version mismatch is refused plainly, naming both versions, rather than rendering part of an answer (ARCH-R55) |
 | `Envelope\Payload` | An envelope is read as the kind it carries, or not at all (ARCH-R63) |
+| `Logs`, `LogWindow` | The logs are a bounded read that names its service and states its own edge (N2-R10) |
 | `Events\EventStream` | A stream quiet for twice the agreed heartbeat is reported as broken, not as calm; one missed beat is not (ARCH-R61) |
 | `Events\HeldValues` | Values gathered before a reconnection gap are marked out of date (ARCH-R51) |
 | `Exception\RequestFailed` | A refusal carries the sentence lemonfiber answered with, read back through `said()`; an answer carrying none names the endpoint and the status instead (G4-R1) |
