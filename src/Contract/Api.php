@@ -52,6 +52,17 @@ final class Api
     public const string CHECKS_ENDPOINT = '/api/checks';
 
     /**
+     * The endpoint every action is asked for through.
+     *
+     * One path for the whole of what this surface can be told to do: the name
+     * of the action is the last segment of it, and no action has an endpoint
+     * of its own. Named here for the reason {@see self::CHECKS_ENDPOINT} is,
+     * and {@see self::action()} beside it is what keeps a caller from spelling
+     * either half.
+     */
+    public const string ACTIONS_ENDPOINT = '/api/actions';
+
+    /**
      * The media type live updates arrive as.
      */
     public const string EVENT_STREAM_MEDIA_TYPE = 'text/event-stream';
@@ -60,4 +71,18 @@ final class Api
      * The media type every other answer arrives as.
      */
     public const string JSON_MEDIA_TYPE = 'application/json';
+
+    /**
+     * Where the action of that name is asked for.
+     *
+     * Composed from the name rather than written out per action, so there is
+     * one place the path is spelled and one place it moves. What names are
+     * offered is the surface's own list and not this client's to hold: a name
+     * lemonfiber does not offer is refused by name, which is an answer a
+     * caller can act on, and a list kept here would go stale silently instead.
+     */
+    public static function action(string $name): string
+    {
+        return self::ACTIONS_ENDPOINT . '/' . $name;
+    }
 }

@@ -38,7 +38,34 @@ $client->act('/api/actions/restart', ['forms' => ['tv'], 'services' => ['sonarr'
 
 An action's name and its arguments are the command line's own. A name this surface does not
 offer is refused rather than invented, and a field no action takes is refused rather than
-ignored.
+ignored. The name is composed into a path by `Api::action()` rather than written out by
+whoever calls, so there is one place it moves when lemonfiber moves it.
+
+The repair is the one action with a method of its own, since it is the one whose two halves are
+a single request read twice. Unconfirmed it says what each repair would do and what else
+changes if it does; confirmed it carries out what was agreed to, and the yes names the offer it
+answered:
+
+```php
+use Lemonfiber\Sdk\Repair;
+
+$client->repair(Repair::offer());                                // says what it would do, does none of it
+$client->repair(Repair::agreedTo($agreement, 'vpn.killswitch')); // carries that one out, out of that offer
+```
+
+`$agreement` is the `agreement` the `repair` envelope came back with, which is what names the
+offer being answered. lemonfiber builds that name again from a fresh look before it acts and
+refuses an agreement whose offer has moved on, so a yes given to something that has since
+changed is turned down rather than spent on whatever stands now.
+
+`Repair` is a type rather than three arguments so that the arrangements lemonfiber refuses
+cannot be written at all: a yes that does not name the offer it answered, and an offer with none
+of it agreed to. `Repair::agreedInAdvance()` is the third shape — the standing consent the
+command line spells `--yes` — and it is spelled out at the call site, since a run carried out
+under it was agreed to by whoever wrote the call rather than by whoever is at the screen.
+
+A repair reaches the services, so what comes back is a name for the work rather than its
+outcome: the `job` envelope, and the `repair` envelope arrives through it.
 
 What an envelope holds is shaped by its `kind`, so it is reached through the kind rather than
 as an open value (ARCH-R63). There is one generated class per kind, and it is the way through:
@@ -102,6 +129,7 @@ Everything else in `src/` is behaviour no schema expresses:
 | Written by hand | What it holds to |
 |---|---|
 | `Http\RunToken` | The per-run token travels in a header, never in an address (ARCH-R52) |
+| `Repair` | The offer and the yes are one request read twice, and the arrangements the surface refuses cannot be written (N2-R4, N2-R5, N2-R6) |
 | `Http\BaseUrl` | Loopback only; any other host is refused before anything is sent, and a loopback address is not refused for being named rather than numeric (ARCH-R60) |
 | `Envelope\EnvelopeReader` | A version mismatch is refused plainly, naming both versions, rather than rendering part of an answer (ARCH-R55) |
 | `Envelope\Payload` | An envelope is read as the kind it carries, or not at all (ARCH-R63) |

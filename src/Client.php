@@ -94,6 +94,29 @@ final readonly class Client
     }
 
     /**
+     * Ask what could be put right, or carry out what was agreed to.
+     *
+     * The one action with a method of its own here, since it is the one whose
+     * two halves are a single request read twice: a caller assembling that
+     * body by hand can assemble a shape lemonfiber refuses, and {@see Repair}
+     * is the shape it cannot.
+     *
+     * A repair reaches the services, so what comes back is a name for the work
+     * rather than its outcome — the `job` envelope, with the `repair` envelope
+     * arriving through it once the run is finished.
+     *
+     * @return Envelope<mixed>
+     *
+     * @throws ApiVersionMismatch
+     * @throws RequestFailed
+     * @throws UnreadableResponse
+     */
+    public function repair(Repair $asked): Envelope
+    {
+        return $this->act($asked->endpoint(), $asked->arguments());
+    }
+
+    /**
      * @throws ConfigurationProblem
      */
     public function events(
