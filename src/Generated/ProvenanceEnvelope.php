@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `forms` envelope, shaped as the contract describes it.
+ * The `provenance` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{forms: list<array{composable: bool, description: string, id: string, name: string}>}
+ * @phpstan-type Data array{services: list<array{id: string, image: string, license: string, name: string, pinned: string, upstream: string}>}
  */
-final class FormsEnvelope
+final class ProvenanceEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Forms;
+    public const Kind KIND = Kind::Provenance;
 
     /**
      * The same envelope with its payload typed by its kind.
