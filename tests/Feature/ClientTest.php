@@ -13,6 +13,8 @@ use Lemonfiber\Sdk\Http\ActionRequest;
 use Lemonfiber\Sdk\Http\ReadRequest;
 use Lemonfiber\Sdk\Http\ReleaseRequest;
 use Lemonfiber\Sdk\JobStanding;
+use Lemonfiber\Sdk\Logs;
+use Lemonfiber\Sdk\LogWindow;
 use Lemonfiber\Sdk\Repair;
 use Lemonfiber\Sdk\Time\Duration;
 use Saloon\Enums\Method;
@@ -264,6 +266,69 @@ it('answers a release of work that had already finished with what it finished as
     ]);
 
     expect(standingWord($client->letGoOf('k3n9v2xq')))->toBe('finished as repair');
+});
+
+it('reads a bounded window of one service\'s lines', function (): void {
+    $body = '{"api_version":1,"kind":"log","data":{"at":"2026-09-14T02:10:00Z","line":"started","service":"sonarr","stream":"stdout"}}' . "\n"
+        . '{"api_version":1,"kind":"log","data":{"at":"2026-09-14T02:10:01Z","line":"listening","service":"sonarr","stream":"stderr"}}' . "\n";
+
+    [$client, $mock] = clientAnswering([
+        ReadRequest::class => MockResponse::make($body),
+    ]);
+
+    $window = $client->logs(Logs::ofService('sonarr', 2));
+    $lines = $window->lines();
+
+    expect($window)->toBeInstanceOf(LogWindow::class)
+        ->and((string) $mock->getLastPendingRequest()?->getUri())
+        ->toBe('http://127.0.0.1:9000/api/logs?service=sonarr&tail=2')
+        ->and($window->service())->toBe('sonarr')
+        ->and($window->bound())->toBe(2)
+        ->and($window->count())->toBe(2)
+        ->and($window->reachedTheBound())->toBeTrue()
+        ->and($lines[0]->data['line'])->toBe('started')
+        ->and($lines[1]->data['stream'])->toBe('stderr');
+});
+
+it('says the bound cut nothing where the service had less to say', function (): void {
+    [$client] = clientAnswering([
+        ReadRequest::class => MockResponse::make(
+            '{"api_version":1,"kind":"log","data":{"line":"started","service":"sonarr","stream":"stdout"}}' . "\n",
+        ),
+    ]);
+
+    $window = $client->logs(Logs::ofService('sonarr', 200));
+
+    expect($window->count())->toBe(1)
+        ->and($window->reachedTheBound())->toBeFalse();
+});
+
+it('reads a service that has said nothing as a window with nothing in it', function (): void {
+    [$client] = clientAnswering([
+        ReadRequest::class => MockResponse::make(''),
+    ]);
+
+    expect($client->logs(Logs::ofService('sonarr', 50))->lines())->toBe([]);
+});
+
+it('hands over the ceiling lemonfiber names, rather than holding one of its own', function (): void {
+    $said = 'How many lines to begin with must be a number, and no more than 10000.';
+
+    [$client] = clientAnswering([
+        ReadRequest::class => MockResponse::make($said, 400),
+    ]);
+
+    $problem = null;
+
+    try {
+        $client->logs(Logs::ofService('sonarr', 20_000));
+    } catch (RequestFailed $refusal) {
+        $problem = $refusal;
+    }
+
+    expect($problem?->said())->toBe($said)
+        ->and($problem?->status())->toBe(400)
+        ->and($problem?->endpoint())->toBe(Api::LOGS_ENDPOINT);
 });
 
 it('reports an endpoint that was turned down, reading nothing from it', function (): void {

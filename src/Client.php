@@ -16,6 +16,7 @@ use Lemonfiber\Sdk\Exception\ApiVersionMismatch;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\NoSuchJob;
 use Lemonfiber\Sdk\Exception\RequestFailed;
+use Lemonfiber\Sdk\Exception\UnexpectedKind;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Http\ActionRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
@@ -178,6 +179,32 @@ final readonly class Client
     }
 
     /**
+     * A look at what one service has been saying, of the size that was asked for.
+     *
+     * The one read with a method of its own here, since it is the one whose
+     * answer is not an envelope: the scrollback comes back as a `log` envelope
+     * per line, which {@see read()} would hand to a decoder expecting one
+     * document and be told the answer is not readable as JSON.
+     *
+     * What comes back carries the size it was asked for beside the lines, so
+     * whoever draws it can say which of the two it is looking at.
+     *
+     * @throws ApiVersionMismatch
+     * @throws RequestFailed
+     * @throws UnexpectedKind
+     * @throws UnreadableResponse
+     */
+    public function logs(Logs $asked): LogWindow
+    {
+        $body = $this->bodyFrom(
+            new ReadRequest(Api::LOGS_ENDPOINT, $asked->parameters()),
+            Api::LOGS_ENDPOINT,
+        );
+
+        return LogWindow::of($asked, $this->reader->readEach($body));
+    }
+
+    /**
      * @throws ConfigurationProblem
      */
     public function events(
@@ -223,13 +250,23 @@ final readonly class Client
      */
     private function envelopeFrom(Request $request, string $endpoint): Envelope
     {
+        return $this->reader->read($this->bodyFrom($request, $endpoint));
+    }
+
+    /**
+     * The answer's text, or the refusal it arrived as instead.
+     *
+     * @throws RequestFailed
+     */
+    private function bodyFrom(Request $request, string $endpoint): string
+    {
         $response = $this->connector->send($request);
 
         if ($response->failed()) {
             throw RequestFailed::from($endpoint, $response->status(), $response->body());
         }
 
-        return $this->reader->read($response->body());
+        return $response->body();
     }
 
     /**

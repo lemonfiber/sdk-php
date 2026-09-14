@@ -98,6 +98,21 @@ final class ConfigurationProblem extends InvalidArgumentException implements Pro
         ));
     }
 
+    public static function logsNameNoService(): self
+    {
+        return new self(
+            'A window on the logs is a window on one service, and none was named. Name the service the lines should come from.',
+        );
+    }
+
+    public static function windowHoldsNoLines(int $lines): self
+    {
+        return new self(sprintf(
+            'A window on the logs holds at least one line, and %d were asked for. Say how many lines to show; lemonfiber names its own ceiling if the number is past it.',
+            $lines,
+        ));
+    }
+
     public static function agreementNamesNoOffer(): self
     {
         return new self(

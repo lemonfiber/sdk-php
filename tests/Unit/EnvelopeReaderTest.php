@@ -67,3 +67,52 @@ it('refuses an answer it cannot read', function (string $body, string $expected)
     'a kind that is not words' => ['{"api_version":1,"kind":4,"data":{}}', 'carries no kind'],
     'no data' => ['{"api_version":1,"kind":"status"}', 'carries no data'],
 ]);
+
+it('reads a body of one document a line as an envelope a line', function (): void {
+    $body = '{"api_version":1,"kind":"log","data":{"line":"started","service":"sonarr","stream":"stdout"}}' . "\n"
+        . '{"api_version":1,"kind":"log","data":{"line":"listening","service":"sonarr","stream":"stderr"}}' . "\n";
+
+    $envelopes = new EnvelopeReader()->readEach($body);
+
+    expect($envelopes)->toHaveCount(2)
+        ->and($envelopes[0]->kind)->toBe('log')
+        ->and($envelopes[0]->data)->toBe(['line' => 'started', 'service' => 'sonarr', 'stream' => 'stdout'])
+        ->and($envelopes[1]->data)->toBe(['line' => 'listening', 'service' => 'sonarr', 'stream' => 'stderr']);
+});
+
+it('reads a body of one document and no break after it', function (): void {
+    expect(new EnvelopeReader()->readEach('{"api_version":1,"kind":"log","data":null}'))->toHaveCount(1);
+});
+
+it('passes over a line with nothing on it wherever it falls', function (): void {
+    // A break between two documents is skipped the same way the one after the
+    // last document is, so a body is read by what it holds rather than by how
+    // it is spaced.
+    $body = "\n" . '{"api_version":1,"kind":"log","data":null}' . "\n\n"
+        . '{"api_version":1,"kind":"log","data":null}' . "\n";
+
+    expect(new EnvelopeReader()->readEach($body))->toHaveCount(2);
+});
+
+it('reads a body carrying no documents as no envelopes', function (string $body): void {
+    expect(new EnvelopeReader()->readEach($body))->toBe([]);
+})->with([
+    'nothing at all' => [''],
+    'a break and nothing else' => ["\n"],
+    'breaks and nothing else' => ["\n\n\n"],
+]);
+
+it('holds every line to the version this client speaks', function (): void {
+    $body = '{"api_version":1,"kind":"log","data":null}' . "\n"
+        . '{"api_version":2,"kind":"log","data":null}' . "\n";
+
+    expect(fn(): array => new EnvelopeReader()->readEach($body))
+        ->toThrow(ApiVersionMismatch::class, 'the answer came back as version 2');
+});
+
+it('refuses a line it cannot read rather than passing over it', function (): void {
+    $body = '{"api_version":1,"kind":"log","data":null}' . "\n" . 'not json at all' . "\n";
+
+    expect(fn(): array => new EnvelopeReader()->readEach($body))
+        ->toThrow(UnreadableResponse::class, 'not readable as JSON');
+});
