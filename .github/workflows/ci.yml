@@ -53,9 +53,9 @@ jobs:
   # pinned by commit. Those needing a pull request are guarded, because this
   # workflow also runs on pushes to main.
   dco:
-    uses: lemonfiber/spec/.github/workflows/dco.yml@e23aaf9e22468ba230801ab558be22351270ce5a # main
+    uses: lemonfiber/spec/.github/workflows/dco.yml@04447ba64dbbdbce7af81cace90b69e89601fdac # main
   attribution:
-    uses: lemonfiber/spec/.github/workflows/attribution.yml@e23aaf9e22468ba230801ab558be22351270ce5a # main
+    uses: lemonfiber/spec/.github/workflows/attribution.yml@04447ba64dbbdbce7af81cace90b69e89601fdac # main
 
   # `pull-requests: write` is what lets the gate close a pull request whose
   # citation is missing or names an identifier that does not exist, rather than
@@ -67,30 +67,30 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: lemonfiber/spec/.github/workflows/spec-check.yml@e23aaf9e22468ba230801ab558be22351270ce5a # main
+    uses: lemonfiber/spec/.github/workflows/spec-check.yml@04447ba64dbbdbce7af81cace90b69e89601fdac # main
 
   commitlint:
     if: github.event_name == 'pull_request'
-    uses: lemonfiber/spec/.github/workflows/commitlint.yml@e23aaf9e22468ba230801ab558be22351270ce5a # main
+    uses: lemonfiber/spec/.github/workflows/commitlint.yml@04447ba64dbbdbce7af81cace90b69e89601fdac # main
 
   hygiene:
-    uses: lemonfiber/spec/.github/workflows/hygiene.yml@e23aaf9e22468ba230801ab558be22351270ce5a # main
+    uses: lemonfiber/spec/.github/workflows/hygiene.yml@04447ba64dbbdbce7af81cace90b69e89601fdac # main
 
   # Every pin this repository holds on a shared workflow, against what the spec's
   # default branch holds now. It fails naming the commits a pin has not taken; a
   # run that could not ask which they are says so rather than reporting clean.
   workflow-pins:
-    uses: lemonfiber/spec/.github/workflows/workflow-pins.yml@e23aaf9e22468ba230801ab558be22351270ce5a # main
+    uses: lemonfiber/spec/.github/workflows/workflow-pins.yml@04447ba64dbbdbce7af81cace90b69e89601fdac # main
 
   security:
-    uses: lemonfiber/spec/.github/workflows/security.yml@e23aaf9e22468ba230801ab558be22351270ce5a # main
+    uses: lemonfiber/spec/.github/workflows/security.yml@04447ba64dbbdbce7af81cace90b69e89601fdac # main
 
   labeler:
     if: github.event_name == 'pull_request'
     permissions:
       contents: read
       pull-requests: write
-    uses: lemonfiber/spec/.github/workflows/labeler.yml@e23aaf9e22468ba230801ab558be22351270ce5a # main
+    uses: lemonfiber/spec/.github/workflows/labeler.yml@04447ba64dbbdbce7af81cace90b69e89601fdac # main
 
   # OPS-R39, OPS-R40, OPS-R42: label a PR that cites a goal the staged version
   # locks, put it in that version's milestone, comment which goals it moves, and
@@ -114,7 +114,7 @@ jobs:
       contents: read
       pull-requests: write
       issues: write
-    uses: lemonfiber/spec/.github/workflows/goal-automations.yml@e23aaf9e22468ba230801ab558be22351270ce5a # main
+    uses: lemonfiber/spec/.github/workflows/goal-automations.yml@04447ba64dbbdbce7af81cace90b69e89601fdac # main
 
   # Formatting, static analysis, dead idioms, the repository's guards, the
   # contract diff and dependency hygiene. One checkout, one PHP, one install.
