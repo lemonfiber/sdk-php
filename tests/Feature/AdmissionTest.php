@@ -76,6 +76,40 @@ it('exchanges a password for a session', function (): void {
         ->and($admitted->untilEpochSeconds)->toBe(1789380000);
 });
 
+it('carries the member a session is for', function (): void {
+    // The subject, and the reason it is on the session rather than worked out
+    // from a later read: what a caller may draw turns on whose session this is,
+    // and a caller that had to ask a second endpoint to find out would be
+    // holding an answer that could disagree with the one it signed in with.
+    [$door] = doorAnswering(MockResponse::make(
+        '{"api_version":1,"kind":"admission","data":{"member":"a7f3","token":"a-session","until":"2026-09-14T10:00:00"}}',
+    ));
+
+    expect($door->open(A_PASSWORD)->member)->toBe('a7f3');
+});
+
+it('reads a body with no member as the operator', function (): void {
+    // Absent is the operator, and that is the whole of the discriminator. A
+    // second field naming which kind of person this is could disagree with this
+    // one, and the day they disagreed a caller would have to choose which to
+    // believe.
+    [$door] = doorAnswering(admits());
+
+    expect($door->open(A_PASSWORD)->member)->toBeNull();
+});
+
+it('reads a member that arrived as null as the operator', function (): void {
+    // The field is optional on the wire and nullable in the schema, so a body
+    // may leave it out or send it empty. Both mean the same thing, and reading
+    // them differently would make the operator's session depend on which of two
+    // ways a stack chose to say nothing.
+    [$door] = doorAnswering(MockResponse::make(
+        '{"api_version":1,"kind":"admission","data":{"member":null,"token":"a-session","until":"2026-09-14T10:00:00"}}',
+    ));
+
+    expect($door->open(A_PASSWORD)->member)->toBeNull();
+});
+
 it('sends the password in the body, to the one endpoint, and never in the address', function (): void {
     // A password in a query string is written to every proxy log between here
     // and the machine. The endpoint is the client's rather than a caller's for

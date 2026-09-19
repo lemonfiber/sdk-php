@@ -179,9 +179,13 @@ final readonly class Admission
      */
     private function admitted(object $envelope): Admitted
     {
-        /** @var array{token: string, until: string} $data */
+        /** @var array{member?: string|null, token: string, until: string} $data */
         $data = AdmissionEnvelope::in($envelope)->data;
 
-        return Admitted::of($data['token'], $data['until']);
+        // Absent and present-and-null are one answer on this field, which is
+        // what the schema says of it: optional there, nullable in the type, and
+        // either way of leaving it out names the operator. `??` reads both
+        // without asking which of the two a stack chose to send.
+        return Admitted::of($data['token'], $data['until'], $data['member'] ?? null);
     }
 }
