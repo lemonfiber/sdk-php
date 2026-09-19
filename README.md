@@ -48,6 +48,8 @@ this client's to hold and its to move:
 | `Api::CHECKS_ENDPOINT` | `doctor` | `only`, naming a group of checks or one check |
 | `Api::STORAGE_ENDPOINT` | `doctor`, held to the disk | nothing |
 | `Api::REQUESTS_ENDPOINT` | `household` | `member`, once |
+| `Api::HELD_ENDPOINT` | `held` | `member`, whose shelf, and `most`, how many |
+| `Api::CONFIG_ENDPOINT` | `config` | `key`, once; naming none is every setting |
 | `Api::STUCK_ENDPOINT` | `stuck` | nothing |
 
 ```php
