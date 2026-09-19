@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `backup` envelope, shaped as the contract describes it.
+ * The `wiring` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{pace: array{brisk: bool, budget: int, moved: int}, path: string, pruned: list<string>, rehearsed: bool, scope: array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project: string, scope: 'existing', trees: list<array{archive_path: string, host_path: string}>}, sensitive: bool}
+ * @phpstan-type Data array{unfilled: list<array{by: string, capability: string}>, wired: list<array{by: string, reaches: array{capability: string, how: 'asked', services: list<string>, settled: array{settled: 'outright'}|array{settled: 'each'}|array{claimants: list<string>, settled: 'contested'}|array{over: list<string>, settled: 'chosen', whose: 'stack'|'operator', why?: string|null}|array{settled: 'unfilled'}}|array{how: 'by-name', service: string, why: string}}>}
  */
-final class BackupEnvelope
+final class WiringEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Backup;
+    public const Kind KIND = Kind::Wiring;
 
     /**
      * The same envelope with its payload typed by its kind.

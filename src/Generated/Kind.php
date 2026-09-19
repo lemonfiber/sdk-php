@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 7a055462021054aad2191f137986826003d714be, api_version 1.
+// Source: eb40fb4d4a052f2d063de373920b1fb4c2ea7957, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -62,6 +62,7 @@ enum Kind: string
     case StopSeeding = 'stop-seeding';
     case Stored = 'stored';
     case Stuck = 'stuck';
+    case Substitution = 'substitution';
     case Trace = 'trace';
     case Undo = 'undo';
     case Uninstall = 'uninstall';
@@ -70,6 +71,7 @@ enum Kind: string
     case Version = 'version';
     case Walkthrough = 'walkthrough';
     case Watch = 'watch';
+    case Wiring = 'wiring';
     case Wizard = 'wizard';
     case Word = 'word';
 }
