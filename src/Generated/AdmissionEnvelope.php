@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: f00ef6a8fb3f3cd78034eaccd7faedecddda9257, api_version 1.
+// Source: 711cf31b3c8b451720fb8adfb307755db8d23c83, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `admission` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{token: string, until: string}
+ * @phpstan-type Data array{member?: string|null, token: string, until: string}
  */
 final class AdmissionEnvelope
 {
