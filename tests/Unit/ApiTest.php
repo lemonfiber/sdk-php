@@ -34,12 +34,35 @@ it('names the reads it holds a path for, and holds no path it has no caller for'
     //
     // How many there are is deliberately not said. A count in a comment is a
     // number nothing computes, and the next read added is what makes it wrong.
-    expect(Api::STATUS_ENDPOINT)->toBe('/api/status')
+    expect(Api::VERSION_ENDPOINT)->toBe('/api/version')
+        ->and(Api::FORMS_ENDPOINT)->toBe('/api/forms')
+        ->and(Api::STATUS_ENDPOINT)->toBe('/api/status')
         ->and(Api::SERVICES_ENDPOINT)->toBe('/api/services')
         ->and(Api::STORAGE_ENDPOINT)->toBe('/api/storage')
         ->and(Api::REQUESTS_ENDPOINT)->toBe('/api/requests')
+        ->and(Api::HELD_ENDPOINT)->toBe('/api/held')
+        ->and(Api::CONFIG_ENDPOINT)->toBe('/api/config')
+        ->and(Api::QUALITY_ENDPOINT)->toBe('/api/quality')
+        ->and(Api::TRACE_ENDPOINT)->toBe('/api/trace')
         ->and(Api::STUCK_ENDPOINT)->toBe('/api/stuck')
-        ->and(Api::UPDATE_ENDPOINT)->toBe('/api/update');
+        ->and(Api::UPDATE_ENDPOINT)->toBe('/api/update')
+        ->and(Api::ALERTS_ENDPOINT)->toBe('/api/alerts')
+        ->and(Api::BANDWIDTH_ENDPOINT)->toBe('/api/bandwidth')
+        ->and(Api::SPACE_ENDPOINT)->toBe('/api/space')
+        ->and(Api::STORED_ENDPOINT)->toBe('/api/stored')
+        ->and(Api::OUTBOUND_ENDPOINT)->toBe('/api/outbound')
+        ->and(Api::CATALOGUE_ENDPOINT)->toBe('/api/catalogue')
+        ->and(Api::PROVENANCE_ENDPOINT)->toBe('/api/provenance')
+        ->and(Api::CLIENTS_ENDPOINT)->toBe('/api/clients')
+        ->and(Api::CREDENTIALS_ENDPOINT)->toBe('/api/credentials')
+        ->and(Api::HISTORY_ENDPOINT)->toBe('/api/history')
+        ->and(Api::HOSTING_ENDPOINT)->toBe('/api/hosting')
+        ->and(Api::MIGRATION_ENDPOINT)->toBe('/api/migration')
+        ->and(Api::FRONT_DOOR_ENDPOINT)->toBe('/api/front-door')
+        ->and(Api::EXPLAIN_ENDPOINT)->toBe('/api/explain')
+        ->and(Api::BACKUPS_ENDPOINT)->toBe('/api/backups')
+        ->and(Api::BUNDLE_ENDPOINT)->toBe('/api/bundle')
+        ->and(Api::UNINSTALL_ENDPOINT)->toBe('/api/uninstall');
 });
 
 it('composes the path one action is asked for under', function (): void {
@@ -57,6 +80,14 @@ it('composes the path one piece of running work is asked about under', function 
     // a join that dropped the name would answer the first one by accident.
     expect(Api::job('k3n9v2xq'))->toBe('/api/jobs/k3n9v2xq')
         ->and(Api::job('b7p1'))->toBe('/api/jobs/b7p1');
+});
+
+it('composes the path one support bundle is asked for under', function (): void {
+    // A bundle is a name under one path rather than an endpoint of its own, so
+    // the join lives here for the reason the two above it do. Two names again,
+    // since a join that dropped the name would answer the first by accident.
+    expect(Api::bundle('t4m8'))->toBe('/api/bundle/t4m8')
+        ->and(Api::bundle('w2qr'))->toBe('/api/bundle/w2qr');
 });
 
 it('keeps the two media types apart', function (): void {
