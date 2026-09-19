@@ -136,6 +136,27 @@ final class Api
     public const string REQUESTS_ENDPOINT = '/api/requests';
 
     /**
+     * The endpoint answering with what the stack is configured to do.
+     *
+     * It answers with the `config` envelope, so
+     * {@see \Lemonfiber\Sdk\Generated\ConfigEnvelope} is what reads it, and what
+     * it carries is the settings the stack holds rather than a list this client
+     * knows: a consumer enumerating the settings it has heard of offers a subset the
+     * day the stack grows one, and offers it silently.
+     *
+     * It takes `key`, once, to narrow to one of them. Naming none is every setting
+     * and naming an empty one is refused, so a caller holding a key it has not got
+     * must leave the parameter off rather than send it blank — the same shape
+     * {@see self::REQUESTS_ENDPOINT} has, and refused in the same place, so a line
+     * typed at a screen and a query string arriving empty are answered alike.
+     *
+     * **Reading is all this does.** Changing a setting is an action and goes through
+     * {@see self::action()}, which is what keeps a read that a browser may repeat
+     * apart from a write it may not.
+     */
+    public const string CONFIG_ENDPOINT = '/api/config';
+
+    /**
      * The endpoint answering with what one member can actually watch.
      *
      * The sibling of {@see self::REQUESTS_ENDPOINT} and a different question of
