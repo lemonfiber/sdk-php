@@ -136,6 +136,24 @@ final class Api
     public const string REQUESTS_ENDPOINT = '/api/requests';
 
     /**
+     * The endpoint answering with what one member can actually watch.
+     *
+     * The sibling of {@see self::REQUESTS_ENDPOINT} and a different question of
+     * the same household: that one says what has been *asked for*, and this says
+     * what is already here.
+     *
+     * It answers with the `held` envelope, so
+     * {@see \Lemonfiber\Sdk\Generated\HeldEnvelope} is what reads it.
+     *
+     * It takes `member`, naming whose shelf, and `most`, how many to answer with.
+     * There is no whole-household form: the shelf is read from the media server
+     * *as* that account, so the age limit, the blocked kinds and the libraries it
+     * reaches are applied before the answer is written — and a single answer about
+     * a house would be wrong for whoever it was not read as.
+     */
+    public const string HELD_ENDPOINT = '/api/held';
+
+    /**
      * The endpoint answering with where a copy stands and what moving it comes to.
      *
      * Named here for the reason {@see self::CHECKS_ENDPOINT} is, as are the
