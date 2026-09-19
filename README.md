@@ -43,14 +43,37 @@ this client's to hold and its to move:
 
 | Constant | Answers with | Takes |
 |---|---|---|
+| `Api::VERSION_ENDPOINT` | `version` | nothing |
+| `Api::FORMS_ENDPOINT` | `forms` | nothing |
 | `Api::STATUS_ENDPOINT` | `status` | nothing |
 | `Api::SERVICES_ENDPOINT` | `status`, narrowed | `form`, which lemonfiber accepts more than once |
 | `Api::CHECKS_ENDPOINT` | `doctor` | `only`, naming a group of checks or one check |
 | `Api::STORAGE_ENDPOINT` | `doctor`, held to the disk | nothing |
+| `Api::LOGS_ENDPOINT` | `log`, one a line | `form` and `service`, each more than once, plus `tail` and `follow` |
 | `Api::REQUESTS_ENDPOINT` | `household` | `member`, once |
 | `Api::HELD_ENDPOINT` | `held` | `member`, whose shelf, and `most`, how many |
 | `Api::CONFIG_ENDPOINT` | `config` | `key`, once; naming none is every setting |
+| `Api::QUALITY_ENDPOINT` | `quality` | nothing |
+| `Api::TRACE_ENDPOINT` | `trace` | `term`, what is followed, and `season` |
 | `Api::STUCK_ENDPOINT` | `stuck` | nothing |
+| `Api::UPDATE_ENDPOINT` | `update` or `self-update` | `what`, required, and `to` for the `self` reading |
+| `Api::ALERTS_ENDPOINT` | `alerts` | nothing |
+| `Api::BANDWIDTH_ENDPOINT` | `bandwidth` | nothing |
+| `Api::SPACE_ENDPOINT` | `space` | nothing |
+| `Api::STORED_ENDPOINT` | `stored` | nothing |
+| `Api::OUTBOUND_ENDPOINT` | `outbound` | nothing |
+| `Api::CATALOGUE_ENDPOINT` | `catalogue` | nothing |
+| `Api::PROVENANCE_ENDPOINT` | `provenance` | nothing |
+| `Api::CLIENTS_ENDPOINT` | `clients` | nothing |
+| `Api::CREDENTIALS_ENDPOINT` | `credentials`, carrying no value | nothing |
+| `Api::HISTORY_ENDPOINT` | `history` | nothing |
+| `Api::HOSTING_ENDPOINT` | `hosting` | nothing |
+| `Api::MIGRATION_ENDPOINT` | `migration` | nothing |
+| `Api::FRONT_DOOR_ENDPOINT` | `front-door` | nothing |
+| `Api::EXPLAIN_ENDPOINT` | `word`, or `glossary` naming none | `word`, once |
+| `Api::BACKUPS_ENDPOINT` | `backup` | nothing |
+| `Api::bundle($name)` | `bundle` | nothing; the name is the last segment |
+| `Api::UNINSTALL_ENDPOINT` | `uninstall` | `tier`, once; naming none removes nothing |
 
 ```php
 $client->read(Api::REQUESTS_ENDPOINT, ['member' => 'ada']);

@@ -8,6 +8,20 @@ use Lemonfiber\Sdk\Generated\Contract;
 
 /**
  * The wire contract this client speaks.
+ *
+ * Every read lemonfiber serves has a path here, held as a constant rather than
+ * spelled by a caller: the contract carries envelope kinds and no endpoints, so
+ * a path is knowledge this client keeps on its callers' behalf, and a caller
+ * spelling one breaks silently the day lemonfiber moves it.
+ * `scripts/the_doors_this_client_names.py` holds this list to the contract page
+ * in both directions, a read named there being unreachable without one.
+ *
+ * **Reading is all of them do.** Where a read has a change beside it — choosing
+ * an alert preset, declaring a bandwidth limit, agreeing to what the disk
+ * account offered, putting a journalled change back, installing a hosted
+ * command, acting on what a migration survey found — the change is an action
+ * and goes through {@see self::action()}. That is the line between what a
+ * browser may repeat and what it may not.
  */
 final class Api
 {
@@ -84,6 +98,27 @@ final class Api
     public const string CHECKS_ENDPOINT = '/api/checks';
 
     /**
+     * The endpoint answering with the versions in play.
+     *
+     * It answers with the `version` envelope, so
+     * {@see \Lemonfiber\Sdk\Generated\VersionEnvelope} is what reads it, and
+     * it takes nothing. What this client speaks is {@see self::VERSION}, which
+     * is a different question: that one is the wire version these types were
+     * generated from, and this is what the machine is running.
+     */
+    public const string VERSION_ENDPOINT = '/api/version';
+
+    /**
+     * The endpoint answering with the forms this stack offers.
+     *
+     * It answers with the `forms` envelope, so
+     * {@see \Lemonfiber\Sdk\Generated\FormsEnvelope} is what reads it, and it
+     * takes nothing. A form is what {@see self::SERVICES_ENDPOINT} narrows by,
+     * so this is where a caller finds the names that reading will accept.
+     */
+    public const string FORMS_ENDPOINT = '/api/forms';
+
+    /**
      * The endpoint answering with what the whole stack is doing.
      *
      * Named here for the reason {@see self::CHECKS_ENDPOINT} is, as are the
@@ -157,6 +192,23 @@ final class Api
     public const string CONFIG_ENDPOINT = '/api/config';
 
     /**
+     * The endpoint answering with what quality was asked for.
+     *
+     * The other half of the choices in force, beside {@see self::CONFIG_ENDPOINT}:
+     * that one is what the settings say and this is which preset is standing.
+     *
+     * It answers with the `quality` envelope, so
+     * {@see \Lemonfiber\Sdk\Generated\QualityEnvelope} is what reads it, and
+     * it takes nothing — a preset is one choice for the machine rather than a
+     * list to narrow.
+     *
+     * **Reading is all this does.** Choosing a preset is an action and goes
+     * through {@see self::action()}, the same line
+     * {@see self::CONFIG_ENDPOINT} draws.
+     */
+    public const string QUALITY_ENDPOINT = '/api/quality';
+
+    /**
      * The endpoint answering with what one member can actually watch.
      *
      * The sibling of {@see self::REQUESTS_ENDPOINT} and a different question of
@@ -207,6 +259,216 @@ final class Api
      * takes nothing.
      */
     public const string STUCK_ENDPOINT = '/api/stuck';
+
+    /**
+     * The endpoint answering with where one item got to.
+     *
+     * The middle of three readings of one subject, with
+     * {@see self::REQUESTS_ENDPOINT} and {@see self::STUCK_ENDPOINT} either
+     * side: the household's requests are the list, this follows one of them,
+     * and the stuck reading is the same question from the other end — which is
+     * why each entry a stuck reading names is named the way this is asked for.
+     *
+     * It answers with the `trace` envelope ({@see \Lemonfiber\Sdk\Generated\TraceEnvelope}) and takes
+     * `term`, what is being followed, and `season`, narrowing a television one.
+     */
+    public const string TRACE_ENDPOINT = '/api/trace';
+
+    /**
+     * The endpoint answering with what the operator is told about.
+     *
+     * The reading half of the word and only that half: the preset in force,
+     * what it means in the operator's own terms, and any event kind set apart
+     * from it. It answers with the `alerts` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\AlertsEnvelope}) and takes nothing.
+     */
+    public const string ALERTS_ENDPOINT = '/api/alerts';
+
+    /**
+     * The endpoint answering with how the line is shared.
+     *
+     * What the line was measured to carry, what the stack is held to, which
+     * side of the household's day each download client says it is on, and
+     * whether each is keeping to what it was given. It answers with the
+     * `bandwidth` envelope ({@see \Lemonfiber\Sdk\Generated\BandwidthEnvelope}) and takes nothing.
+     */
+    public const string BANDWIDTH_ENDPOINT = '/api/bandwidth';
+
+    /**
+     * The endpoint answering with where the disk went.
+     *
+     * The account of the disk and an offer of what could be got back. It
+     * answers with the `space` envelope ({@see \Lemonfiber\Sdk\Generated\SpaceEnvelope}) and takes
+     * nothing: there is no parameter choosing what to reclaim, and that choice
+     * is never a caller's to make.
+     */
+    public const string SPACE_ENDPOINT = '/api/space';
+
+    /**
+     * The endpoint answering with what this machine keeps of lemonfiber's.
+     *
+     * Where lemonfiber's own files are on the host, what each is, and which
+     * hold a credential — the reading a caller with no filesystem in front of
+     * it cannot answer at all. It answers with the `stored` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\StoredEnvelope}) and takes nothing.
+     */
+    public const string STORED_ENDPOINT = '/api/stored';
+
+    /**
+     * The endpoint answering with everything that leaves this machine.
+     *
+     * One list, over the settings this machine actually holds. What a caller
+     * can see of its own traffic is what it asked for and nothing of what the
+     * process behind it does. It answers with the `outbound` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\OutboundEnvelope}) and takes nothing.
+     */
+    public const string OUTBOUND_ENDPOINT = '/api/outbound';
+
+    /**
+     * The endpoint answering with what each service is for.
+     *
+     * Read out of the stack description this machine runs, so a caller holding
+     * its own copy would describe whichever stack its author had in mind. It
+     * answers with the `catalogue` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\CatalogueEnvelope}) and takes nothing.
+     */
+    public const string CATALOGUE_ENDPOINT = '/api/catalogue';
+
+    /**
+     * The endpoint answering with where the services come from.
+     *
+     * The licences and origins of what is bundled, read out of the same stack
+     * description {@see self::CATALOGUE_ENDPOINT} is. It answers with the
+     * `provenance` envelope ({@see \Lemonfiber\Sdk\Generated\ProvenanceEnvelope}) and takes nothing.
+     */
+    public const string PROVENANCE_ENDPOINT = '/api/provenance';
+
+    /**
+     * The endpoint answering with which app to watch on.
+     *
+     * It answers with the `clients` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\ClientsEnvelope}) and takes nothing: what to watch on is the
+     * same answer on every machine, so this needs neither a stack running nor
+     * a daemon reachable — which is when somebody deciding what to tell the
+     * house is most likely to ask.
+     */
+    public const string CLIENTS_ENDPOINT = '/api/clients';
+
+    /**
+     * The endpoint answering with the credentials this stack holds.
+     *
+     * What each is, what authenticates with it, where its value lives and
+     * where it stands — and **no value at all**, the shape it is built from
+     * having nowhere to put one. It answers with the `credentials` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\CredentialsEnvelope}) and takes nothing.
+     *
+     * Printing a credential and replacing one are offered nowhere on this
+     * surface, not here and not through {@see self::action()}. A value sent
+     * through this door would pass a browser's cache, whatever proxy is
+     * between and the log each of them keeps; both belong at the terminal, in
+     * front of the person who typed the confirmation.
+     */
+    public const string CREDENTIALS_ENDPOINT = '/api/credentials';
+
+    /**
+     * The endpoint answering with what lemonfiber has already changed.
+     *
+     * Every journalled change newest first, what each did in the operator's
+     * own terms, and how far each could be put back — whole, in part, or not
+     * at all, with the reason where it is not. It answers with the `history`
+     * envelope ({@see \Lemonfiber\Sdk\Generated\HistoryEnvelope}) and takes nothing.
+     */
+    public const string HISTORY_ENDPOINT = '/api/history';
+
+    /**
+     * The endpoint answering with what this machine keeps running when nobody
+     * is watching.
+     *
+     * Not that a definition was written, but that the machine confirms it is
+     * keeping the command going. It answers with the `hosting` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\HostingEnvelope}) and takes nothing.
+     */
+    public const string HOSTING_ENDPOINT = '/api/hosting';
+
+    /**
+     * The endpoint answering with what is already on this machine.
+     *
+     * A survey and nothing else: the projects already standing here, the ports
+     * they hold that lemonfiber would want, and what it could not take over.
+     * It answers with the `migration` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\MigrationEnvelope}) and takes nothing.
+     */
+    public const string MIGRATION_ENDPOINT = '/api/migration';
+
+    /**
+     * The one address to hand somebody who lives here.
+     *
+     * Every other reading answers something an operator asks about their
+     * stack; this answers what they send to somebody who does not operate it,
+     * which is why the answer names one service and says why nothing else it
+     * lists is that service. It answers with the `front-door` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\FrontDoorEnvelope}) and takes nothing.
+     */
+    public const string FRONT_DOOR_ENDPOINT = '/api/front-door';
+
+    /**
+     * The endpoint answering with what one of this product's words means.
+     *
+     * The one reading about lemonfiber rather than about a stack, answered
+     * from a table compiled into the binary — so a caller meeting an
+     * unfamiliar word in a report can ask what it means with nothing else up.
+     *
+     * It takes `word`, once. Naming one explains that one, which arrives as
+     * the `word` envelope ({@see \Lemonfiber\Sdk\Generated\WordEnvelope}); naming none lists them
+     * all, which is the `glossary` envelope and a different type
+     * ({@see \Lemonfiber\Sdk\Generated\GlossaryEnvelope}). A word this product does not explain is
+     * refused rather than answered with the listing, and naming an empty one
+     * is naming a word it does not explain.
+     */
+    public const string EXPLAIN_ENDPOINT = '/api/explain';
+
+    /**
+     * The endpoint answering with which backups are here to restore from.
+     *
+     * The command line names a path, having one in front of whoever typed it;
+     * a caller here has none, so what a path would have given it is given by
+     * the server instead. **A name, never a path** — the listing is names and
+     * a restore is asked for by name, each resolved beneath a directory of its
+     * own. It answers with the `backup` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\BackupEnvelope}) and takes nothing.
+     */
+    public const string BACKUPS_ENDPOINT = '/api/backups';
+
+    /**
+     * The endpoint answering with the support bundle that was asked for.
+     *
+     * The other half of what {@see self::BACKUPS_ENDPOINT} answers. The name
+     * of the bundle is the last segment, as an action's name is the last
+     * segment of {@see self::ACTIONS_ENDPOINT}, and {@see self::bundle()}
+     * is what keeps a caller from spelling either half. It answers with the
+     * `bundle` envelope ({@see \Lemonfiber\Sdk\Generated\BundleEnvelope}) and takes no parameter at
+     * all — the name it needs is in the path.
+     */
+    public const string BUNDLE_ENDPOINT = '/api/bundle';
+
+    /**
+     * The endpoint answering with what taking lemonfiber off this machine
+     * comes to.
+     *
+     * **A read and never a removal.** Every container, image and path a
+     * removal would take, with what each occupies; the action of the same name
+     * is where an answer to that listing goes, so the thing agreed to on one
+     * surface is the thing read on the other. It answers with the `uninstall`
+     * envelope ({@see \Lemonfiber\Sdk\Generated\UninstallEnvelope}).
+     *
+     * It takes `tier`, once, naming which of the four removals is being read.
+     * Naming none reads the one that removes nothing, which is the safe
+     * reading and the one a caller has chosen nothing by; a word naming none
+     * of the four is refused rather than read as whichever the shape would
+     * default to, since on this subject the default that would hurt is the one
+     * that reaches the library.
+     */
+    public const string UNINSTALL_ENDPOINT = '/api/uninstall';
 
     /**
      * The endpoint every action is asked for through.
@@ -265,5 +527,18 @@ final class Api
     public static function job(string $name): string
     {
         return self::JOBS_ENDPOINT . '/' . $name;
+    }
+
+    /**
+     * Where the support bundle of that name is asked for.
+     *
+     * Composed from the name for the reason {@see self::action()} is: one place
+     * the path is spelled and one place it moves. A name the server answered
+     * with is only an answer if it can be redeemed, and a caller that had to
+     * spell where is a caller holding a word with nothing to do with it.
+     */
+    public static function bundle(string $name): string
+    {
+        return self::BUNDLE_ENDPOINT . '/' . $name;
     }
 }
