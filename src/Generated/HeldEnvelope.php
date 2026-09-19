@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `hosting` envelope, shaped as the contract describes it.
+ * The `held` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{caveat?: string|null, changed?: array{installed: bool, name: string, rehearsed: bool, started: bool, touched: list<string>}|null, commands: list<array{command: string, definition?: string|null, guarantees: string, missing?: string|null, name: string, output?: string|null, runs?: string|null, standing: 'not-hosted'|'hosted'|'installed-unverified'|'stopped'|'orphaned'|'unsupported'}>, instruction?: string|null, manager: 'launchd'|'systemd'|'unsupported'}
+ * @phpstan-type Data array{available: bool, findings: list<string>, holdings: list<array{id: string, medium: 'film'|'series'|'other', title: string, year?: int|null}>, id: string, member: string}
  */
-final class HostingEnvelope
+final class HeldEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Hosting;
+    public const Kind KIND = Kind::Held;
 
     /**
      * The same envelope with its payload typed by its kind.
