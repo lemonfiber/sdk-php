@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 711cf31b3c8b451720fb8adfb307755db8d23c83, api_version 1.
+// Source: 1f93acf64d10438872c89b96838406794f7c6ea7, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `front-door` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{address?: array{caution?: string|null, url: string}|null, beside: list<array{because: string, facing: 'asking'|'watching'|'shelf'|'operators'|'carriage'|'unstated', service: string}>, chosen: array{chosen: 'derived'}|array{chosen: 'named', door: string}|array{chosen: 'refused', door: array{because: string, named: string}}, facing?: 'asking'|'watching'|'shelf'|'operators'|'carriage'|'unstated'|null, meaning: string, service?: string|null, standing: 'established'|'library-only'|'unreachable'|'stranded'|'none'}
+ * @phpstan-type Data array{address?: array{caution?: string|null, url: string}|null, beside: list<array{address?: array{caution?: string|null, url: string}|null, because: string, facing: 'asking'|'watching'|'shelf'|'operators'|'carriage'|'unstated', service: string}>, chosen: array{chosen: 'derived'}|array{chosen: 'named', door: string}|array{chosen: 'refused', door: array{because: string, named: string}}, facing?: 'asking'|'watching'|'shelf'|'operators'|'carriage'|'unstated'|null, meaning: string, service?: string|null, standing: 'established'|'library-only'|'unreachable'|'stranded'|'none'}
  */
 final class FrontDoorEnvelope
 {
