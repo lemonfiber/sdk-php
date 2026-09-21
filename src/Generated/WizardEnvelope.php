@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: eb40fb4d4a052f2d063de373920b1fb4c2ea7957, api_version 1.
+// Source: d3e6b53cfcf942d3d8b50bb29bf29bfdbb741d40, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `wizard` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{asks: bool, at: 'welcome'|'preflight'|'prerequisites'|'protocols'|'vpn'|'data-location'|'credentials'|'provider'|'service-user'|'library'|'household'|'notifications'|'autostart'|'review', offered: bool, phase: 'in-progress'|'reviewing'|'applying'|'applied', plan: list<array{key: string, secret: bool, value: string}>, proof?: array{observed: string, outcome: 'valid'}|array{detail: string, outcome: 'rejected'}|array{detail: string, outcome: 'unreachable'}|array{detail: string, outcome: 'degraded'}|null, ready_for_review: bool, unanswered: list<'welcome'|'preflight'|'prerequisites'|'protocols'|'vpn'|'data-location'|'credentials'|'provider'|'service-user'|'library'|'household'|'notifications'|'autostart'|'review'>, written: list<string>}
+ * @phpstan-type Data array{asks: bool, at: 'welcome'|'preflight'|'prerequisites'|'protocols'|'vpn'|'data-location'|'credentials'|'provider'|'service-user'|'library'|'household'|'notifications'|'autostart'|'review', offered: bool, phase: 'in-progress'|'reviewing'|'applying'|'applied', plan: list<array{key: string, origin: array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}, secret: bool, value: string}>, proof?: array{observed: string, outcome: 'valid'}|array{detail: string, outcome: 'rejected'}|array{detail: string, outcome: 'unreachable'}|array{detail: string, outcome: 'degraded'}|null, ready_for_review: bool, unanswered: list<'welcome'|'preflight'|'prerequisites'|'protocols'|'vpn'|'data-location'|'credentials'|'provider'|'service-user'|'library'|'household'|'notifications'|'autostart'|'review'>, written: list<string>}
  */
 final class WizardEnvelope
 {
