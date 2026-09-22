@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `self-update` envelope, shaped as the contract describes it.
+ * The `plugins` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{afterwards: string, asked?: string|null, at?: string|null, carries: string, changed?: string|null, command?: string|null, configuration?: string|null, installed: 'homebrew'|'scoop'|'winget'|'cargo'|'distribution'|'installer'|'elsewhere'|'untellable', instead?: string|null, offered?: string|null, owner?: string|null, replaceable?: bool|null, running: string, standing: 'current'|'update-available'|'managed-externally'|'check-failed', untold?: string|null}
+ * @phpstan-type Data array{install?: array{recorded: bool, would: array{plugin: string, services: list<array{config_path: string, digest: string, image: string, reached?: array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}|null, service: string, tag: string, takes_data: bool}>, version: string}}|null, installed: list<array{plugin: string, services: list<array{config_path: string, digest: string, image: string, reached?: array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}|null, service: string, tag: string, takes_data: bool}>, version: string}>}
  */
-final class SelfUpdateEnvelope
+final class PluginsEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::SelfUpdate;
+    public const Kind KIND = Kind::Plugins;
 
     /**
      * The same envelope with its payload typed by its kind.
