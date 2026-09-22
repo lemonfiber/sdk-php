@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `held` envelope, shaped as the contract describes it.
+ * The `plugins` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{available: bool, findings: list<string>, holdings: list<array{id: string, medium: 'film'|'series'|'other', title: string, year?: int|null}>, id: string, member: string}
+ * @phpstan-type Data array{install?: array{recorded: bool, would: array{plugin: string, services: list<array{config_path: string, digest: string, image: string, reached?: array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}|null, service: string, tag: string, takes_data: bool}>, version: string}}|null, installed: list<array{plugin: string, services: list<array{config_path: string, digest: string, image: string, reached?: array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}|null, service: string, tag: string, takes_data: bool}>, version: string}>}
  */
-final class HeldEnvelope
+final class PluginsEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Held;
+    public const Kind KIND = Kind::Plugins;
 
     /**
      * The same envelope with its payload typed by its kind.
