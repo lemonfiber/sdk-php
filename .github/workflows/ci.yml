@@ -21,6 +21,7 @@ jobs:
   scope:
     name: what changed
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       code: ${{ steps.diff.outputs.code }}
     steps:
@@ -141,6 +142,7 @@ jobs:
     # So the condition asks the result as well as the output.
     if: ${{ !cancelled() && (needs.scope.result != 'success' || needs.scope.outputs.code == 'true') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -201,6 +203,7 @@ jobs:
     # So the condition asks the result as well as the output.
     if: ${{ !cancelled() && github.event_name == 'pull_request' && (needs.scope.result != 'success' || needs.scope.outputs.code == 'true') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -226,6 +229,7 @@ jobs:
     # a `scope` that failed leaves no output, and no output is not a "no".
     if: ${{ !cancelled() && github.event_name == 'pull_request' && (needs.scope.result != 'success' || needs.scope.outputs.code == 'true') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       shards: ${{ steps.list.outputs.shards }}
     steps:
@@ -261,6 +265,7 @@ jobs:
       matrix:
         shard: ${{ fromJson(needs.mutation-scope.outputs.shards) }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -291,6 +296,7 @@ jobs:
     needs: [scope, tests, mutation-scope, mutation]
     if: ${{ !cancelled() && github.event_name == 'pull_request' && (needs.scope.result != 'success' || needs.scope.outputs.code == 'true') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: every shard that was mutated passed
         env:
@@ -342,6 +348,7 @@ jobs:
     # So the condition asks the result as well as the output.
     if: ${{ !cancelled() && github.event_name == 'pull_request' && (needs.scope.result != 'success' || needs.scope.outputs.code == 'true') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
