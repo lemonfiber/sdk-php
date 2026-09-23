@@ -496,16 +496,16 @@
         },
         {
             "name": "saloonphp/saloon",
-            "version": "v4.0.1",
+            "version": "v4.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/saloonphp/saloon.git",
-                "reference": "7eb41570730a3fb84bb434d3d88ae6b9c7dd6650"
+                "reference": "8476092949f1b544b2a04d7ecaa71d98c3c2f7fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/saloonphp/saloon/zipball/7eb41570730a3fb84bb434d3d88ae6b9c7dd6650",
-                "reference": "7eb41570730a3fb84bb434d3d88ae6b9c7dd6650",
+                "url": "https://api.github.com/repos/saloonphp/saloon/zipball/8476092949f1b544b2a04d7ecaa71d98c3c2f7fe",
+                "reference": "8476092949f1b544b2a04d7ecaa71d98c3c2f7fe",
                 "shasum": ""
             },
             "require": {
@@ -565,7 +565,7 @@
             ],
             "support": {
                 "issues": "https://github.com/saloonphp/saloon/issues",
-                "source": "https://github.com/saloonphp/saloon/tree/v4.0.1"
+                "source": "https://github.com/saloonphp/saloon/tree/v4.3.0"
             },
             "funding": [
                 {
@@ -573,7 +573,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-09-04T20:48:33+00:00"
+            "time": "2026-09-18T21:37:59+00:00"
         },
         {
             "name": "symfony/polyfill-php80",
@@ -3119,11 +3119,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.2.14",
+            "version": "2.2.15",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9c672e7a8e791dfc3d30e55f683e73fc0b63a3ac",
-                "reference": "9c672e7a8e791dfc3d30e55f683e73fc0b63a3ac",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/b158556ffd26825cf615a1c1f72fb5157a2301b7",
+                "reference": "b158556ffd26825cf615a1c1f72fb5157a2301b7",
                 "shasum": ""
             },
             "require": {
@@ -3179,7 +3179,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-09-12T21:39:33+00:00"
+            "time": "2026-09-23T12:23:07+00:00"
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",
