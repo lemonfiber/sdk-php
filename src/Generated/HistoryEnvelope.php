@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 7d4d153a396e03d6c866440f97f9b61e6584c952, api_version 1.
+// Source: 150bca10c47dd2a08076d6810ea09f8eb1a7c49e, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `history` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{changes: list<array{alongside: int, at: string, because?: string|null, did: string, instead?: string|null, operation: string, reversal: string, target: string}>, horizon: string}
+ * @phpstan-type Data array{changes: list<array{alongside: int, at: string, because?: string|null, did: string, instead?: string|null, operation: string, reversal: 'whole'|'partial'|'none', target: string}>, horizon: string}
  */
 final class HistoryEnvelope
 {
