@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 9628c81a376b78ad26c54847659f6047a544b913, api_version 1.
+// Source: becca9b0c303f3ef3ef28b93fccca299db0d8d18, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `plugins` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{install?: array{recorded: bool, would: array{plugin: string, services: list<array{config_path: string, digest: string, image: string, reached?: array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}|null, service: string, tag: string, takes_data: bool}>, version: string}}|null, installed: list<array{plugin: string, services: list<array{config_path: string, digest: string, image: string, reached?: array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}|null, service: string, tag: string, takes_data: bool}>, version: string}>}
+ * @phpstan-type Data array{install?: array{changes: list<array{path: string, puts: 'directory'|'document'}>, overrides: list<array{setting: string, why: string}>, proofs: list<array{asks: string, establishes: string, of?: string|null, proof: string, why: string}>, recorded: bool, would: array{plugin: string, services: list<array{config_path: string, digest: string, image: string, reached?: array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}|null, service: string, tag: string, takes_data: bool}>, version: string}}|null, installed: list<array{plugin: string, services: list<array{config_path: string, digest: string, image: string, reached?: array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}|null, service: string, tag: string, takes_data: bool}>, version: string}>}
  */
 final class PluginsEnvelope
 {
