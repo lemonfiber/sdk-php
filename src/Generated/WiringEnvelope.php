@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 9fd0586162913789261e9b17399655655f1de60a, api_version 1.
+// Source: f2519ad9ccd4d7d4ac40eea3306289a6ee400e50, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `wiring` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{unfilled: list<array{by: string, capability: string}>, wired: list<array{by: string, reaches: array{capability: string, how: 'asked', origins: array<string, array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}>, services: list<string>, settled: array{settled: 'outright'}|array{settled: 'each'}|array{claimants: list<string>, settled: 'contested'}|array{over: list<string>, settled: 'chosen', whose: 'stack'|'operator', why?: string|null}|array{settled: 'unfilled'}}|array{how: 'by-name', service: string, why: string}}>}
+ * @phpstan-type Data array{unfilled: list<array{by: string, capability: string}>, wired: list<array{by: string, reaches: array{capability: string, how: 'asked', origins: array<string, array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}|array{named: string, origin: 'overridden', replaced: array{from: mixed, value?: string|null, withheld: bool}}|array{named: string, origin: 'orphaned'}>, services: list<string>, settled: array{settled: 'outright'}|array{settled: 'each'}|array{claimants: list<string>, settled: 'contested'}|array{over: list<string>, settled: 'chosen', whose: 'stack'|'operator', why?: string|null}|array{settled: 'unfilled'}}|array{how: 'by-name', service: string, why: string}}>}
  */
 final class WiringEnvelope
 {
