@@ -442,12 +442,12 @@ final class Api
     /**
      * The endpoint answering with the support bundle that was asked for.
      *
-     * The other half of what {@see self::BACKUPS_ENDPOINT} answers. The name
-     * of the bundle is the last segment, as an action's name is the last
-     * segment of {@see self::ACTIONS_ENDPOINT}, and {@see self::bundle()}
-     * is what keeps a caller from spelling either half. It answers with the
-     * `bundle` envelope ({@see \Lemonfiber\Sdk\Generated\BundleEnvelope}) and takes no parameter at
-     * all — the name it needs is in the path.
+     * The bundle is handed over whole, as a file rather than a value, so no
+     * envelope arrives here: the body is the bundle file itself. The name of
+     * the bundle is the last segment, as an action's name is the last segment
+     * of {@see self::ACTIONS_ENDPOINT}, and {@see self::bundle()} is what
+     * keeps a caller from spelling either half. It takes no parameter at all —
+     * the name it needs is in the path.
      */
     public const string BUNDLE_ENDPOINT = '/api/bundle';
 
