@@ -434,8 +434,8 @@ final class Api
      * a caller here has none, so what a path would have given it is given by
      * the server instead. **A name, never a path** — the listing is names and
      * a restore is asked for by name, each resolved beneath a directory of its
-     * own. It answers with the `backup` envelope
-     * ({@see \Lemonfiber\Sdk\Generated\BackupEnvelope}) and takes nothing.
+     * own. It answers with the `archives` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\ArchivesEnvelope}) and takes nothing.
      */
     public const string BACKUPS_ENDPOINT = '/api/backups';
 
