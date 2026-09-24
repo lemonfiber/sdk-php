@@ -71,8 +71,8 @@ this client's to hold and its to move:
 | `Api::MIGRATION_ENDPOINT` | `migration` | nothing |
 | `Api::FRONT_DOOR_ENDPOINT` | `front-door` | nothing |
 | `Api::EXPLAIN_ENDPOINT` | `word`, or `glossary` naming none | `word`, once |
-| `Api::BACKUPS_ENDPOINT` | `backup` | nothing |
-| `Api::bundle($name)` | `bundle` | nothing; the name is the last segment |
+| `Api::BACKUPS_ENDPOINT` | `archives` | nothing |
+| `Api::bundle($name)` | the bundle file itself, in no envelope | nothing; the name is the last segment |
 | `Api::UNINSTALL_ENDPOINT` | `uninstall` | `tier`, once; naming none removes nothing |
 
 ```php
@@ -256,7 +256,7 @@ Everything else in `src/` is behaviour no schema expresses:
 | `Http\RunToken` | The per-run token travels in a header, never in an address (ARCH-R52) |
 | `Repair` | The offer and the yes are one request read twice, and the arrangements the surface refuses cannot be written (N2-R4, N2-R5, N2-R6) |
 | `JobStanding` | Still going, finished and ended are three standings across two statuses, and none of them is a fall-through |
-| `Http\BaseUrl` | Loopback only; any other host is refused before anything is sent, and a loopback address is not refused for being named rather than numeric (ARCH-R60) |
+| `Http\BaseUrl` | Loopback, or an address a certificate pin vouches for; any other host is refused before anything is sent, and a loopback address is not refused for being named rather than numeric (ARCH-R60, ARCH-R99) |
 | `Envelope\EnvelopeReader` | A version mismatch is refused plainly, naming both versions, rather than rendering part of an answer (ARCH-R55) |
 | `Envelope\Payload` | An envelope is read as the kind it carries, or not at all (ARCH-R63) |
 | `Logs`, `LogWindow` | The logs are a bounded read that names its service and states its own edge (N2-R10) |
