@@ -109,12 +109,16 @@ final class Api
     public const string VERSION_ENDPOINT = '/api/version';
 
     /**
-     * The endpoint answering with the forms this stack offers.
+     * The endpoint answering with the forms this stack offers, or with what
+     * starting some of them would come to.
      *
-     * It answers with the `forms` envelope, so
-     * {@see \Lemonfiber\Sdk\Generated\FormsEnvelope} is what reads it, and it
-     * takes nothing. A form is what {@see self::SERVICES_ENDPOINT} narrows by,
-     * so this is where a caller finds the names that reading will accept.
+     * It takes `form`, more than once. Forms named are answered with the
+     * `preview` envelope, {@see \Lemonfiber\Sdk\Generated\PreviewEnvelope}:
+     * what starting them would bring up and leave out, and nothing started.
+     * A request naming none is answered with the `forms` envelope, which
+     * {@see \Lemonfiber\Sdk\Generated\FormsEnvelope} reads. A form is what
+     * {@see self::SERVICES_ENDPOINT} narrows by, so this is where a caller
+     * finds the names that reading will accept.
      */
     public const string FORMS_ENDPOINT = '/api/forms';
 
