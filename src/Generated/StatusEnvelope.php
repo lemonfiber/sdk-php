@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: d477cc1d38842ce1245279201fb03b6fbef2e51d, api_version 1.
+// Source: 844c3a814eda21947270c155943221a2e08e1561, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `status` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{condition: 'inactive'|'degraded'|'partial'|'active', disturbs: array{restarting: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, starting: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, stopping: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, stopping_after_downloads: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, switching: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}}, forms: list<string>, services: list<array{criticality: 'critical'|'core'|'important'|'enhancing'|'optional', depends_on: list<string>, describes: string, exit?: int|null, id: string, name: string, profile: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>, undeclared: list<array{describes: string, id: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>, unsupported?: list<array{because: string, what: string}>}
+ * @phpstan-type Data array{active_forms: list<string>, condition: 'inactive'|'degraded'|'partial'|'active', disturbs: array{restarting: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, starting: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, stopping: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, stopping_after_downloads: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, switching: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}}, filtered: list<array{forms: list<string>, id: string, name: string, needs: 'usenet'|'torrent', profile: string}>, forms: list<string>, services: list<array{criticality: 'critical'|'core'|'important'|'enhancing'|'optional', depends_on: list<string>, describes: string, exit?: int|null, forms: list<string>, id: string, name: string, profile: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>, undeclared: list<array{describes: string, id: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>, unsupported?: list<array{because: string, what: string}>}
  */
 final class StatusEnvelope
 {
