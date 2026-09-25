@@ -15,8 +15,8 @@ reference** — where this client disagrees with the contract, this client is wr
 composer require lemonfiber/sdk-php
 ```
 
-Requires PHP 8.5. The only runtime dependency is [Saloon 4](https://docs.saloon.dev), plus the
-PSR-7 interfaces it already brings.
+Requires PHP 8.5. The runtime dependencies are [Saloon 4](https://docs.saloon.dev) and Guzzle 8,
+plus the PSR-7 interfaces.
 
 ## Use
 
@@ -44,7 +44,7 @@ this client's to hold and its to move:
 | Constant | Answers with | Takes |
 |---|---|---|
 | `Api::VERSION_ENDPOINT` | `version` | nothing |
-| `Api::FORMS_ENDPOINT` | `forms` | nothing |
+| `Api::FORMS_ENDPOINT` | `forms`, or `preview` naming some | `form`, which lemonfiber accepts more than once |
 | `Api::STATUS_ENDPOINT` | `status` | nothing |
 | `Api::SERVICES_ENDPOINT` | `status`, narrowed | `form`, which lemonfiber accepts more than once |
 | `Api::CHECKS_ENDPOINT` | `doctor` | `only`, naming a group of checks or one check |
@@ -72,7 +72,7 @@ this client's to hold and its to move:
 | `Api::FRONT_DOOR_ENDPOINT` | `front-door` | nothing |
 | `Api::EXPLAIN_ENDPOINT` | `word`, or `glossary` naming none | `word`, once |
 | `Api::BACKUPS_ENDPOINT` | `archives` | nothing |
-| `Api::bundle($name)` | the bundle file itself, in no envelope | nothing; the name is the last segment |
+| `Api::bundle($name)` | the bundle file itself, as `application/gzip` rather than an envelope | nothing; the name is the last segment |
 | `Api::UNINSTALL_ENDPOINT` | `uninstall` | `tier`, once; naming none removes nothing |
 
 ```php

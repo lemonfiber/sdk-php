@@ -53,7 +53,7 @@ and the error model's wording. That is the part worth reviewing.
 ## Checks
 
 ```
-composer ci       # every gate but one, in the order CI runs them
+composer ci       # every gate but one
 composer bc       # the one it leaves out: backward compatibility
 composer test     # the suite alone
 ```
