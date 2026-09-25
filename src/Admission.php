@@ -13,6 +13,7 @@ use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\PasswordWasRefused;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\TooManyAttempts;
+use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Generated\AdmissionEnvelope;
 use Lemonfiber\Sdk\Http\AdmissionRequest;
@@ -108,6 +109,7 @@ final readonly class Admission
      * @throws PasswordWasRefused
      * @throws RequestFailed
      * @throws TooManyAttempts
+     * @throws Unreachable
      * @throws UnreadableResponse
      */
     public function open(string $password): Admitted

@@ -6,10 +6,17 @@ namespace Lemonfiber\Sdk\Http;
 
 use GuzzleHttp\Handler\StreamHandler;
 use Lemonfiber\Sdk\Contract\Api;
+use Lemonfiber\Sdk\Exception\Unreachable;
+use Override;
 use Saloon\Contracts\Authenticator;
 use Saloon\Contracts\Sender;
+use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Http\Connector;
+use Saloon\Http\Faking\MockClient;
+use Saloon\Http\Request;
+use Saloon\Http\Response;
 use Saloon\Http\Senders\GuzzleSender;
+use Throwable;
 
 /**
  * The transport: one address, the pin the address arrived with, and a token
@@ -31,6 +38,28 @@ final class LemonfiberConnector extends Connector
         private readonly BaseUrl $baseUrl,
         private readonly ?RunToken $token = null,
     ) {}
+
+    /**
+     * Send a request, and raise {@see Unreachable} where nothing answered it.
+     *
+     * Every request this package makes passes through here, so a connection that
+     * could not be made, or broke before an answer arrived, reaches a caller as one
+     * of this package's problems whichever door it was sent through. An answer of
+     * any status is still a response; only its absence is raised here.
+     *
+     * @param  callable(Throwable, Request): bool|null  $handleRetry
+     *
+     * @throws Unreachable
+     */
+    #[Override]
+    public function send(Request $request, ?MockClient $mockClient = null, ?callable $handleRetry = null): Response
+    {
+        try {
+            return parent::send($request, $mockClient, $handleRetry);
+        } catch (FatalRequestException $nothingAnswered) {
+            throw Unreachable::whenAsking($request->resolveEndpoint(), $nothingAnswered->getMessage());
+        }
+    }
 
     public function resolveBaseUrl(): string
     {

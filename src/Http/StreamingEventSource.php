@@ -9,6 +9,7 @@ use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Events\EventSource;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\StreamInterrupted;
+use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Time\Duration;
 
 /**
@@ -26,6 +27,7 @@ final readonly class StreamingEventSource implements EventSource
      *
      * @throws RequestFailed
      * @throws StreamInterrupted
+     * @throws Unreachable
      */
     public function open(?string $lastEventId): Iterator
     {

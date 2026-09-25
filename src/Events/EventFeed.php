@@ -9,7 +9,9 @@ use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Envelope\EnvelopeReader;
 use Lemonfiber\Sdk\Exception\ApiVersionMismatch;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
+use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\StreamInterrupted;
+use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
 
 /**
@@ -35,7 +37,9 @@ final readonly class EventFeed
      * @return Generator<int, Envelope<mixed>>
      *
      * @throws ApiVersionMismatch
+     * @throws RequestFailed
      * @throws StreamInterrupted
+     * @throws Unreachable
      * @throws UnreadableResponse
      */
     public function follow(): Generator

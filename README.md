@@ -113,6 +113,34 @@ under it was agreed to by whoever wrote the call rather than by whoever is at th
 A repair reaches the services, so what comes back is a name for the work rather than its
 outcome: the `job` envelope, and the `repair` envelope arrives through it.
 
+## When nothing answers
+
+Every failure this client raises implements `Exception\Problem`, including a request that nothing
+answered. A stack that is stopped, asleep or out of reach, a connection that is refused, and one
+that breaks before an answer arrives all raise `Exception\Unreachable`, from every call that
+sends — a read, an action, a repair, asking after or letting go of work, the logs, live updates
+and the door. The transport's own exception never reaches a caller.
+
+```php
+use Lemonfiber\Sdk\Exception\RequestFailed;
+use Lemonfiber\Sdk\Exception\Unreachable;
+
+try {
+    $client->read(Api::STATUS_ENDPOINT);
+} catch (RequestFailed $refused) {
+    $refused->status();   // lemonfiber answered, and said no
+} catch (Unreachable $silence) {
+    $silence->endpoint(); // '/api/status'
+    $silence->reason();   // what the connection reported
+}
+```
+
+`RequestFailed` is lemonfiber answering, which says the connection works and the address is
+right; `Unreachable` is no answer at all. `reason()` is the connection's own words, with every
+address in them cut back to its scheme, host, port and path, so sign-in details and a query
+never travel with it. It does not say the request went unheard: an action whose answer was lost
+on the way back may have been applied, and re-sending it under the same attempt name is one act.
+
 ## Work that outlives the request
 
 Any action reaching the services runs for minutes, so lemonfiber answers it with a name and
@@ -263,6 +291,7 @@ Everything else in `src/` is behaviour no schema expresses:
 | `Events\EventStream` | A stream quiet for twice the agreed heartbeat is reported as broken, not as calm; one missed beat is not (ARCH-R61) |
 | `Events\HeldValues` | Values gathered before a reconnection gap are marked out of date (ARCH-R51) |
 | `Exception\RequestFailed` | A refusal carries the sentence lemonfiber answered with, read back through `said()`; an answer carrying none names the endpoint and the status instead (G4-R1) |
+| `Exception\Unreachable` | A request nothing answered is one of this client's problems wherever it was sent, carrying the endpoint and the connection's reason with every address in it cut back to where it points |
 | `Exception\*` | The error model, in plain language (G2, G4) |
 
 The package carries semver. `api_version` is a separate integer describing the wire

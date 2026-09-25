@@ -8,6 +8,7 @@ use Lemonfiber\Sdk\Exception\Problem;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\StreamInterrupted;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
+use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
 
 it('names both versions when they disagree', function (): void {
@@ -73,7 +74,8 @@ it('gathers every failure under one type', function (): void {
         ->and(StreamInterrupted::ended())->toBeInstanceOf(Problem::class)
         ->and(UnreadableResponse::notAnEnvelope())->toBeInstanceOf(Problem::class)
         ->and(UnexpectedKind::between('word', 'log'))->toBeInstanceOf(Problem::class)
-        ->and(ConfigurationProblem::tokenIsEmpty())->toBeInstanceOf(Problem::class);
+        ->and(ConfigurationProblem::tokenIsEmpty())->toBeInstanceOf(Problem::class)
+        ->and(Unreachable::whenAsking('/api/status', 'Connection refused'))->toBeInstanceOf(Problem::class);
 });
 
 it('says nothing technical about what went wrong', function (Throwable $problem): void {
@@ -85,6 +87,7 @@ it('says nothing technical about what went wrong', function (Throwable $problem)
 })->with([
     'versions disagree' => [ApiVersionMismatch::between(1, 2)],
     'the request was turned down' => [RequestFailed::from('/api/status', 500, '')],
+    'nothing answered' => [Unreachable::whenAsking('/api/status', 'cURL error 7 for http://127.0.0.1:1/api/status')],
     'the stream ended' => [StreamInterrupted::ended()],
     'the stream went quiet' => [StreamInterrupted::wentQuiet(15_000)],
     'the stream never opened' => [StreamInterrupted::neverOpened()],

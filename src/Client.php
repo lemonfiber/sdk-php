@@ -17,6 +17,7 @@ use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\NoSuchJob;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
+use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Http\ActionRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
@@ -90,6 +91,7 @@ final readonly class Client
      *
      * @throws ApiVersionMismatch
      * @throws RequestFailed
+     * @throws Unreachable
      * @throws UnreadableResponse
      */
     public function read(string $endpoint, array $query = []): Envelope
@@ -113,6 +115,7 @@ final readonly class Client
      * @throws ApiVersionMismatch
      * @throws ConfigurationProblem
      * @throws RequestFailed
+     * @throws Unreachable
      * @throws UnreadableResponse
      */
     public function act(string $endpoint, array $body = [], ?string $idempotencyKey = null): Envelope
@@ -137,6 +140,7 @@ final readonly class Client
      * @throws ApiVersionMismatch
      * @throws ConfigurationProblem
      * @throws RequestFailed
+     * @throws Unreachable
      * @throws UnreadableResponse
      */
     public function repair(Repair $asked, ?string $idempotencyKey = null): Envelope
@@ -163,6 +167,7 @@ final readonly class Client
      * @throws ApiVersionMismatch
      * @throws NoSuchJob
      * @throws RequestFailed
+     * @throws Unreachable
      * @throws UnreadableResponse
      */
     public function whatBecameOf(string $job): JobStanding
@@ -185,6 +190,7 @@ final readonly class Client
      * @throws ApiVersionMismatch
      * @throws NoSuchJob
      * @throws RequestFailed
+     * @throws Unreachable
      * @throws UnreadableResponse
      */
     public function letGoOf(string $job): JobStanding
@@ -206,6 +212,7 @@ final readonly class Client
      * @throws ApiVersionMismatch
      * @throws RequestFailed
      * @throws UnexpectedKind
+     * @throws Unreachable
      * @throws UnreadableResponse
      */
     public function logs(Logs $asked): LogWindow
@@ -270,6 +277,7 @@ final readonly class Client
      *
      * @throws ApiVersionMismatch
      * @throws RequestFailed
+     * @throws Unreachable
      * @throws UnreadableResponse
      */
     private function envelopeFrom(Request $request, string $endpoint): Envelope
@@ -281,6 +289,7 @@ final readonly class Client
      * The answer's text, or the refusal it arrived as instead.
      *
      * @throws RequestFailed
+     * @throws Unreachable
      */
     private function bodyFrom(Request $request, string $endpoint): string
     {
@@ -299,6 +308,7 @@ final readonly class Client
      * @throws ApiVersionMismatch
      * @throws NoSuchJob
      * @throws RequestFailed
+     * @throws Unreachable
      * @throws UnreadableResponse
      */
     private function standingOf(Request $request, string $job): JobStanding
