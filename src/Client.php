@@ -83,7 +83,9 @@ final readonly class Client
     }
 
     /**
-     * @param  array<string, scalar|null>  $query
+     * A list is the parameter repeated once for each value; an empty list or a null sends nothing.
+     *
+     * @param  array<string, scalar|list<scalar>|null>  $query
      * @return Envelope<mixed>
      *
      * @throws ApiVersionMismatch
