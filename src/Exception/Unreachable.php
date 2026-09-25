@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Exception;
 
+use function is_int;
+use function is_string;
 use function parse_url;
-use function preg_replace_callback;
+use function preg_match_all;
 
 use RuntimeException;
 
 use function sprintf;
+use function strtr;
 
 /**
  * No answer came back from lemonfiber at all.
@@ -79,14 +82,21 @@ final class Unreachable extends RuntimeException implements Problem
 
     /**
      * The words, with every address in them cut back to where it points.
+     *
+     * Every address is replaced in one pass, longest first, so an address that
+     * begins another is not cut out of the longer one and leave its query behind.
      */
     private static function withheld(string $reported): string
     {
-        return (string) preg_replace_callback(
-            self::AN_ADDRESS,
-            static fn(array $found): string => self::whereItPoints($found[1], $found[0]),
-            $reported,
-        );
+        preg_match_all(self::AN_ADDRESS, $reported, $found, PREG_SET_ORDER);
+
+        $cut = [];
+
+        foreach ($found as [$address, $scheme]) {
+            $cut[$address] = self::whereItPoints($scheme, $address);
+        }
+
+        return strtr($reported, $cut);
     }
 
     /**
@@ -94,25 +104,21 @@ final class Unreachable extends RuntimeException implements Problem
      */
     private static function whereItPoints(string $scheme, string $address): string
     {
-        $parts = parse_url($address);
+        $host = parse_url($address, PHP_URL_HOST);
 
-        if ($parts === false) {
+        if (! is_string($host)) {
             return self::AN_UNREADABLE_ADDRESS;
         }
 
-        $host = $parts['host'] ?? '';
-        $port = $parts['port'] ?? null;
-
-        if ($host === '') {
-            return self::AN_UNREADABLE_ADDRESS;
-        }
+        $port = parse_url($address, PHP_URL_PORT);
+        $path = parse_url($address, PHP_URL_PATH);
 
         return sprintf(
             '%s://%s%s%s',
             $scheme,
             $host,
-            $port === null ? '' : sprintf(':%d', $port),
-            $parts['path'] ?? '',
+            is_int($port) ? sprintf(':%d', $port) : '',
+            is_string($path) ? $path : '',
         );
     }
 }

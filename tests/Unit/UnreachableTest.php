@@ -38,6 +38,10 @@ it('cuts every address in the report back to where it points', function (string 
         'nothing at http://127.0.0.1:9000; giving up',
         'nothing at http://127.0.0.1:9000; giving up',
     ],
+    'one address beginning another' => [
+        'at http://someone:secret@127.0.0.1/api and http://someone:secret@127.0.0.1/api?token=abc',
+        'at http://127.0.0.1/api and http://127.0.0.1/api',
+    ],
     'more than one address' => [
         'error 7 (see https://someone@127.0.0.1/help?x=1) for http://127.0.0.1:1/api/status?y=2',
         'error 7 (see https://127.0.0.1/help) for http://127.0.0.1:1/api/status',
