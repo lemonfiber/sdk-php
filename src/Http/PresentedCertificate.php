@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Http;
 
+use function is_string;
 use function openssl_x509_fingerprint;
 
 use OpenSSLCertificate;
@@ -49,10 +50,9 @@ final readonly class PresentedCertificate
         /** @var array{ssl: array{peer_certificate: OpenSSLCertificate}} $options */
         $options = stream_context_get_params($connection)['options'];
 
-        /** @var string $digest */
         $digest = openssl_x509_fingerprint($options['ssl']['peer_certificate'], self::DIGEST);
 
-        return $digest;
+        return is_string($digest) ? $digest : null;
     }
 
     /**
