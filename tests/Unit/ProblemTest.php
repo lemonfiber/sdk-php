@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Lemonfiber\Sdk\Exception\ApiVersionMismatch;
+use Lemonfiber\Sdk\Exception\CertificateWasRefused;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\Problem;
 use Lemonfiber\Sdk\Exception\RequestFailed;
@@ -10,6 +11,17 @@ use Lemonfiber\Sdk\Exception\StreamInterrupted;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
+
+it('names the endpoint a stranger answered for, and both certificates', function (): void {
+    $problem = CertificateWasRefused::whenAsking('/api/status', str_repeat('b', 64), str_repeat('a', 64));
+
+    expect($problem->endpoint())->toBe('/api/status')
+        ->and($problem->presented())->toBe(str_repeat('b', 64))
+        ->and($problem->pinned())->toBe(str_repeat('a', 64))
+        ->and($problem->getMessage())->toBe(
+            'Something answered the request for /api/status with a certificate other than the one this client is held to, so nothing was sent to it. It is not the machine the pin was taken from: another machine answers at that address, or something stands between the two.',
+        );
+});
 
 it('names both versions when they disagree', function (): void {
     $problem = ApiVersionMismatch::between(1, 4);
@@ -75,7 +87,8 @@ it('gathers every failure under one type', function (): void {
         ->and(UnreadableResponse::notAnEnvelope())->toBeInstanceOf(Problem::class)
         ->and(UnexpectedKind::between('word', 'log'))->toBeInstanceOf(Problem::class)
         ->and(ConfigurationProblem::tokenIsEmpty())->toBeInstanceOf(Problem::class)
-        ->and(Unreachable::whenAsking('/api/status', 'Connection refused'))->toBeInstanceOf(Problem::class);
+        ->and(Unreachable::whenAsking('/api/status', 'Connection refused'))->toBeInstanceOf(Problem::class)
+        ->and(CertificateWasRefused::whenAsking('/api/status', str_repeat('b', 64), str_repeat('a', 64)))->toBeInstanceOf(Problem::class);
 });
 
 it('says nothing technical about what went wrong', function (Throwable $problem): void {
@@ -87,6 +100,7 @@ it('says nothing technical about what went wrong', function (Throwable $problem)
 })->with([
     'versions disagree' => [ApiVersionMismatch::between(1, 2)],
     'the request was turned down' => [RequestFailed::from('/api/status', 500, '')],
+    'another certificate answered' => [CertificateWasRefused::whenAsking('/api/status', str_repeat('b', 64), str_repeat('a', 64))],
     'nothing answered' => [Unreachable::whenAsking('/api/status', 'cURL error 7 for http://127.0.0.1:1/api/status')],
     'the stream ended' => [StreamInterrupted::ended()],
     'the stream went quiet' => [StreamInterrupted::wentQuiet(15_000)],

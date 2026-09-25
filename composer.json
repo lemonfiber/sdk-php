@@ -19,6 +19,7 @@
         "php": "^8.5",
         "ext-filter": "*",
         "ext-json": "*",
+        "ext-openssl": "*",
         "guzzlehttp/guzzle": "^8.2",
         "psr/http-message": "^2.0",
         "saloonphp/saloon": "^4.0"

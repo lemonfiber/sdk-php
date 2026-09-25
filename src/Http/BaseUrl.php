@@ -32,12 +32,18 @@ final readonly class BaseUrl
 
     private const string ENCRYPTED_SCHEME = 'https';
 
+    /** The port an encrypted address names by naming none. */
+    private const int ENCRYPTED_PORT = 443;
+
+    /** The port an unencrypted address names by naming none. */
+    private const int PLAIN_PORT = 80;
+
     /**
      * @var list<string>
      */
     private const array FORBIDDEN_PARTS = ['user', 'pass', 'query', 'fragment'];
 
-    private function __construct(private string $value, private ?CertificatePin $pin) {}
+    private function __construct(private string $value, private ?CertificatePin $pin, private string $authority) {}
 
     /**
      * @throws ConfigurationProblem
@@ -48,7 +54,7 @@ final readonly class BaseUrl
             throw ConfigurationProblem::portOutOfRange($port);
         }
 
-        return new self('http://127.0.0.1:' . $port, null);
+        return new self('http://127.0.0.1:' . $port, null, '127.0.0.1:' . $port);
     }
 
     /**
@@ -64,7 +70,7 @@ final readonly class BaseUrl
             throw ConfigurationProblem::addressIsNotOnThisMachine(self::hostIn($parts));
         }
 
-        return new self(self::assemble($parts), null);
+        return new self(self::assemble($parts), null, self::authorityOf($parts));
     }
 
     /**
@@ -81,7 +87,7 @@ final readonly class BaseUrl
             throw ConfigurationProblem::pinnedAddressIsNotEncrypted($scheme);
         }
 
-        return new self(self::assemble($parts), $pin);
+        return new self(self::assemble($parts), $pin, self::authorityOf($parts));
     }
 
     /**
@@ -90,6 +96,15 @@ final readonly class BaseUrl
     public function toString(): string
     {
         return $this->value;
+    }
+
+    /**
+     * The host and port a connection to this address is made to, the port
+     * written out where the address leaves it to its scheme.
+     */
+    public function authority(): string
+    {
+        return $this->authority;
     }
 
     /**
@@ -152,6 +167,16 @@ final readonly class BaseUrl
         $authority = $port === null ? $host : $host . ':' . $port;
 
         return self::schemeIn($parts) . '://' . $authority . rtrim($parts['path'] ?? '', '/');
+    }
+
+    /**
+     * @param  array{scheme?: string, host?: string, port?: int, user?: string, pass?: string, path?: string, query?: string, fragment?: string}  $parts
+     */
+    private static function authorityOf(array $parts): string
+    {
+        $unsaid = self::schemeIn($parts) === self::ENCRYPTED_SCHEME ? self::ENCRYPTED_PORT : self::PLAIN_PORT;
+
+        return self::hostIn($parts) . ':' . ($parts['port'] ?? $unsaid);
     }
 
     private static function isOnThisMachine(string $host, HostResolver $resolver): bool
