@@ -63,6 +63,72 @@ it('sends the token as a header and never in the address', function (): void {
         ->and($address)->not->toContain(Api::TOKEN_HEADER);
 });
 
+/**
+ * The address a read was sent to, with the parameters it was given.
+ *
+ * @param array<string, scalar|list<scalar>|null> $query
+ */
+function addressRead(string $endpoint, array $query): string
+{
+    [$client, $mock] = clientAnswering([
+        ReadRequest::class => MockResponse::make('{"api_version":1,"kind":"preview","data":{}}'),
+    ]);
+
+    $client->read($endpoint, $query);
+
+    return (string) $mock->getLastPendingRequest()?->createPsrRequest()->getUri();
+}
+
+it('repeats a parameter once for each value in a list, in order', function (): void {
+    expect(addressRead('/api/forms', ['form' => ['library', 'watch']]))
+        ->toBe('http://127.0.0.1:9000/api/forms?form=library&form=watch');
+});
+
+it('sends a list of one as the parameter given once', function (): void {
+    expect(addressRead('/api/forms', ['form' => ['library']]))
+        ->toBe('http://127.0.0.1:9000/api/forms?form=library');
+});
+
+it('sends nothing for an empty list', function (): void {
+    expect(addressRead('/api/forms', ['form' => []]))
+        ->toBe('http://127.0.0.1:9000/api/forms');
+});
+
+it('sends nothing for a parameter that is null', function (): void {
+    expect(addressRead('/api/logs', ['tail' => null, 'service' => 'sonarr']))
+        ->toBe('http://127.0.0.1:9000/api/logs?service=sonarr');
+});
+
+it('escapes every value in a list on its own', function (): void {
+    expect(addressRead('/api/forms', ['form' => ['a b', 'c&d=e']]))
+        ->toBe('http://127.0.0.1:9000/api/forms?form=a+b&form=c%26d%3De');
+});
+
+it('writes a value in a list as it writes it alone', function (): void {
+    expect(addressRead('/api/logs', ['tail' => [5, 10], 'follow' => [true]]))
+        ->toBe('http://127.0.0.1:9000/api/logs?tail=5&tail=10&follow=1');
+});
+
+it('keeps a query the endpoint already carries, ahead of the parameters', function (): void {
+    expect(addressRead('/api/logs?tail=5', ['service' => 'sonarr']))
+        ->toBe('http://127.0.0.1:9000/api/logs?tail=5&service=sonarr');
+});
+
+it('sends an endpoint that asks nothing with no query at all', function (): void {
+    expect(addressRead('/api/status?', []))
+        ->toBe('http://127.0.0.1:9000/api/status');
+});
+
+it('holds a list among its parameters as it was given', function (): void {
+    [$client, $mock] = clientAnswering([
+        ReadRequest::class => MockResponse::make('{"api_version":1,"kind":"preview","data":{}}'),
+    ]);
+
+    $client->read('/api/forms', ['form' => ['library', 'watch']]);
+
+    expect($mock->getLastPendingRequest()?->query()->all())->toBe(['form' => ['library', 'watch']]);
+});
+
 it('asks for the answer as json', function (): void {
     [$client, $mock] = clientAnswering([
         ReadRequest::class => MockResponse::make('{"api_version":1,"kind":"status","data":{}}'),
