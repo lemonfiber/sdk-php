@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: f2519ad9ccd4d7d4ac40eea3306289a6ee400e50, api_version 1.
+// Source: d477cc1d38842ce1245279201fb03b6fbef2e51d, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `word` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{also_called: list<string>, deep?: string|null, short: string, word: string}
+ * @phpstan-type Data array{also_called: list<string>, deep?: string|null, forms: list<string>, short: string, word: string}
  */
 final class WordEnvelope
 {
