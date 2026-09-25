@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Http;
 
+use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Handler\StreamHandler;
 use Lemonfiber\Sdk\Contract\Api;
+use Lemonfiber\Sdk\Exception\CertificateWasRefused;
 use Lemonfiber\Sdk\Exception\Unreachable;
 use Override;
 use Saloon\Contracts\Authenticator;
@@ -44,11 +46,18 @@ final class LemonfiberConnector extends Connector
      *
      * Every request this package makes passes through here, so a connection that
      * could not be made, or broke before an answer arrived, reaches a caller as one
-     * of this package's problems whichever door it was sent through. An answer of
+     * of this package's problems whichever door it was sent through. Saloon raises
+     * its own exception for a connection it could not make, and hands on the HTTP
+     * library's for one that broke before an answer; both are caught. An answer of
      * any status is still a response; only its absence is raised here.
+     *
+     * A pinned address whose peer presented a certificate the pin does not name
+     * raises {@see CertificateWasRefused} instead: something answered, and it was
+     * not the machine the pin was taken from.
      *
      * @param  callable(Throwable, Request): bool|null  $handleRetry
      *
+     * @throws CertificateWasRefused
      * @throws Unreachable
      */
     #[Override]
@@ -56,8 +65,8 @@ final class LemonfiberConnector extends Connector
     {
         try {
             return parent::send($request, $mockClient, $handleRetry);
-        } catch (FatalRequestException $nothingAnswered) {
-            throw Unreachable::whenAsking($request->resolveEndpoint(), $nothingAnswered->getMessage());
+        } catch (FatalRequestException|TransferException $nothingAnswered) {
+            throw $this->whyNothingAnswered($request->resolveEndpoint(), $nothingAnswered->getMessage());
         }
     }
 
@@ -120,5 +129,28 @@ final class LemonfiberConnector extends Connector
         $sender->getHandlerStack()->setHandler(new StreamHandler());
 
         return $sender;
+    }
+
+    /**
+     * A peer that presented a certificate other than the pinned one, or silence.
+     *
+     * Only a pinned address is asked what it presented, and a peer that presented
+     * the pinned certificate, or presented none, is silence like any other.
+     */
+    private function whyNothingAnswered(string $endpoint, string $reported): CertificateWasRefused|Unreachable
+    {
+        $pin = $this->baseUrl->pin();
+
+        if (! $pin instanceof CertificatePin) {
+            return Unreachable::whenAsking($endpoint, $reported);
+        }
+
+        $presented = PresentedCertificate::at($this->baseUrl);
+
+        if ($presented === null || $presented === $pin->toString()) {
+            return Unreachable::whenAsking($endpoint, $reported);
+        }
+
+        return CertificateWasRefused::whenAsking($endpoint, $presented, $pin->toString());
     }
 }

@@ -197,3 +197,13 @@ it('refuses an address off this machine when no pin vouches for it', function ()
     expect(fn(): BaseUrl => BaseUrl::fromString('https://192.168.1.42:9000', resolvingTo(['192.168.1.42'])))
         ->toThrow(ConfigurationProblem::class, 'The address "192.168.1.42" points somewhere else');
 });
+
+it('names the host and port a connection is made to, writing out the port a scheme leaves unsaid', function (BaseUrl $address, string $authority): void {
+    expect($address->authority())->toBe($authority);
+})->with([
+    'a port on this machine' => [fn(): BaseUrl => BaseUrl::onPort(9000), '127.0.0.1:9000'],
+    'a written out port' => [fn(): BaseUrl => BaseUrl::fromString('http://127.0.0.1:8080/lemonfiber'), '127.0.0.1:8080'],
+    'unencrypted, with no port' => [fn(): BaseUrl => BaseUrl::fromString('http://127.0.0.1'), '127.0.0.1:80'],
+    'encrypted, with no port' => [fn(): BaseUrl => BaseUrl::pinned('https://192.168.1.42', aPin()), '192.168.1.42:443'],
+    'encrypted, with a port' => [fn(): BaseUrl => BaseUrl::pinned('https://192.168.1.42:8443', aPin()), '192.168.1.42:8443'],
+]);

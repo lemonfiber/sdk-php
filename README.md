@@ -135,6 +135,13 @@ try {
 }
 ```
 
+A pinned address whose peer presents a certificate other than the pinned one raises
+`Exception\CertificateWasRefused` instead of `Unreachable`: something answered, and it is not
+the machine the pin was taken from. The connection is refused during the handshake and nothing
+is written to it; the client then reads the certificate the peer presented, over a connection
+that writes nothing either, to tell that refusal apart from silence. `presented()` and
+`pinned()` carry both digests.
+
 `RequestFailed` is lemonfiber answering, which says the connection works and the address is
 right; `Unreachable` is no answer at all. `reason()` is the connection's own words, with every
 address in them cut back to its scheme, host, port and path, so sign-in details and a query
@@ -291,6 +298,7 @@ Everything else in `src/` is behaviour no schema expresses:
 | `Events\EventStream` | A stream quiet for twice the agreed heartbeat is reported as broken, not as calm; one missed beat is not (ARCH-R61) |
 | `Events\HeldValues` | Values gathered before a reconnection gap are marked out of date (ARCH-R51) |
 | `Exception\RequestFailed` | A refusal carries the sentence lemonfiber answered with, read back through `said()`; an answer carrying none names the endpoint and the status instead (G4-R1) |
+| `Exception\CertificateWasRefused` | A pinned peer presenting another certificate is told apart from silence, carrying the digest it presented and the one it was pinned to (ARCH-R99) |
 | `Exception\Unreachable` | A request nothing answered is one of this client's problems wherever it was sent, carrying the endpoint and the connection's reason with every address in it cut back to where it points |
 | `Exception\*` | The error model, in plain language (G2, G4) |
 
