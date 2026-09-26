@@ -93,3 +93,45 @@ it('names the endpoint and the status where the answer carried no sentence', fun
     'an envelope whose summary is not a sentence' => [wentWrong(['summary' => 7])],
     'an envelope whose summary is only spaces' => [wentWrong(['summary' => '   '])],
 ]);
+
+it('carries the whole problem document a command that failed was refused with', function (): void {
+    $problem = RequestFailed::from('/api/jobs/k3n9v2xq', 500, wentWrong([
+        'code' => 'bundle.leak',
+        'severity' => 'critical',
+        'state' => 'guided',
+        'summary' => 'The bundle still held something that reads as a credential',
+        'meaning' => 'Nothing has been written.',
+        'remedies' => [['action' => 'Report which file this names']],
+        'detail' => 'services.txt line 3 — nothing was written',
+    ]));
+
+    expect($problem->refusal()?->code())->toBe('bundle.leak')
+        ->and($problem->refusal()?->detail())->toBe('services.txt line 3 — nothing was written')
+        ->and($problem->said())->toBe('The bundle still held something that reads as a credential');
+});
+
+it('keeps the detail out of the message a logger takes by default', function (): void {
+    $problem = RequestFailed::from('/api/jobs/k3n9v2xq', 500, wentWrong([
+        'code' => 'service.said',
+        'severity' => 'error',
+        'state' => 'guided',
+        'summary' => 'Sonarr refused the request.',
+        'meaning' => 'Sonarr is running and said no.',
+        'remedies' => [],
+        'detail' => 'GET /api/v3/series?apikey=a-key-nobody-recognised failed',
+    ]));
+
+    expect($problem->getMessage())->toBe('Sonarr refused the request.')
+        ->and((string) $problem)->not->toContain('a-key-nobody-recognised');
+});
+
+it('carries no problem document where the answer was not one', function (string $body): void {
+    expect(RequestFailed::from('/api/status', 500, $body)->refusal())->toBeNull();
+})->with([
+    'nothing at all' => [''],
+    'a sentence' => ['This needs the run token.'],
+    'markup' => ['<html>bad gateway</html>'],
+    'another kind' => [answeredAs('status', ['health' => 'healthy'])],
+    'an envelope that cannot be read' => ['{"kind":'],
+    'an error missing what the contract requires' => [wentWrong(['summary' => 'Something went wrong.'])],
+]);

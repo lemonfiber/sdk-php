@@ -9,6 +9,7 @@ use function is_string;
 
 use Lemonfiber\Sdk\Envelope\EnvelopeReader;
 use Lemonfiber\Sdk\Generated\Kind;
+use Lemonfiber\Sdk\Refusal;
 
 use function preg_match;
 
@@ -32,6 +33,7 @@ final class RequestFailed extends RuntimeException implements Problem
         private readonly string $endpoint,
         private readonly int $status,
         private readonly ?string $said,
+        private readonly ?Refusal $refusal,
         string $message,
     ) {
         parent::__construct($message);
@@ -44,9 +46,11 @@ final class RequestFailed extends RuntimeException implements Problem
      */
     public static function from(string $endpoint, int $status, string $body): self
     {
-        $said = self::saidIn($body);
+        $words = trim($body);
+        $problem = self::problemIn($words);
+        $said = self::saidIn($words, $problem);
 
-        return new self($endpoint, $status, $said, $said ?? sprintf(
+        return new self($endpoint, $status, $said, Refusal::from($problem), $said ?? sprintf(
             'lemonfiber turned down the request for %s and answered %d. Nothing was taken from that answer.',
             $endpoint,
             $status,
@@ -79,6 +83,21 @@ final class RequestFailed extends RuntimeException implements Problem
     }
 
     /**
+     * The whole problem document lemonfiber refused with, or none where the
+     * answer was not one this client can read.
+     *
+     * Held apart from the message on purpose. A refusal's `detail` quotes what
+     * a service itself said, with the secrets lemonfiber recognises withheld,
+     * and recognising them is best effort: it is fit to show to the person who
+     * asked and not to forward. The message, which loggers and reporters take
+     * by default, carries the one plain sentence and nothing else.
+     */
+    public function refusal(): ?Refusal
+    {
+        return $this->refusal;
+    }
+
+    /**
      * The sentence a refusal's body carries.
      *
      * Two shapes arrive. An action lemonfiber does not offer, or an argument it
@@ -87,36 +106,43 @@ final class RequestFailed extends RuntimeException implements Problem
      * sentence. A body of any other shape did not come from lemonfiber and is
      * not handed on as its words.
      */
-    private static function saidIn(string $body): ?string
+    private static function saidIn(string $words, mixed $problem): ?string
     {
-        $words = trim($body);
-
         if ($words === '') {
             return null;
         }
 
-        if (preg_match(self::OPENS_A_STRUCTURE, $words) === 1) {
-            return self::summaryIn($words);
+        if (self::opensAStructure($words)) {
+            return self::sentenceIn($problem);
         }
 
         return $words;
     }
 
     /**
-     * The one plain sentence an `error` envelope carries.
+     * The payload of the `error` envelope a body is, or nothing where it is
+     * not one.
      *
      * The body is read as every other answer is read, so one this client cannot
      * read yields nothing. The kind names the payload without proving its shape.
      */
-    private static function summaryIn(string $body): ?string
+    private static function problemIn(string $words): mixed
     {
         try {
-            $envelope = new EnvelopeReader()->read($body);
+            $envelope = new EnvelopeReader()->read($words);
         } catch (Problem) {
             return null;
         }
 
-        return $envelope->kind === Kind::Error->value ? self::sentenceIn($envelope->data) : null;
+        return $envelope->kind === Kind::Error->value ? $envelope->data : null;
+    }
+
+    /**
+     * Whether a body opens something other than a sentence.
+     */
+    private static function opensAStructure(string $words): bool
+    {
+        return preg_match(self::OPENS_A_STRUCTURE, $words) === 1;
     }
 
     /**
