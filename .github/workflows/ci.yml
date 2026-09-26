@@ -385,7 +385,10 @@ jobs:
       - name: Find the last released version
         id: released
         run: |
-          latest="$(git tag --list --sort=-v:refname 'v*' | head -n 1)"
+          # git sorts and stops at one itself, so no pipe can close on it
+          # early: under pipefail, `git tag | head -n 1` fails the step once
+          # the tag list outgrows the pipe buffer.
+          latest="$(git for-each-ref --count=1 --sort=-v:refname --format='%(refname:short)' 'refs/tags/v*')"
           echo "tag=${latest}" >> "$GITHUB_OUTPUT"
           # A job that skips its only two steps still reports success, and a green
           # check that compared nothing reads exactly like one that compared and
