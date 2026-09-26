@@ -44,6 +44,7 @@ it('refuses a peer presenting a certificate the pin does not name, wherever it w
     }
 })->with([
     'a read' => ['/api/status', static fn(string $at): mixed => Client::pinnedAt($at, 'a-run-token', A_PIN_NOTHING_PRESENTS)->read('/api/status')],
+    'a bundle' => [Api::bundle('t4m8'), static fn(string $at): mixed => Client::pinnedAt($at, 'a-run-token', A_PIN_NOTHING_PRESENTS)->bundle('t4m8')],
     'live updates' => [Api::EVENTS_ENDPOINT, static fn(string $at): mixed => Client::pinnedAt($at, 'a-run-token', A_PIN_NOTHING_PRESENTS)->eventSource()->open(null)],
     'the door' => [Admission::ENDPOINT, static fn(string $at): mixed => Admission::at($at, A_PIN_NOTHING_PRESENTS)->open('a-password')],
 ]);

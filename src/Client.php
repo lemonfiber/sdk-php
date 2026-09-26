@@ -49,6 +49,16 @@ final readonly class Client
      */
     private const int NO_SUCH_NAME = 404;
 
+    /**
+     * The header an answer names its type in.
+     */
+    private const string CONTENT_TYPE = 'Content-Type';
+
+    /**
+     * The header an answer states its length in.
+     */
+    private const string CONTENT_LENGTH = 'Content-Length';
+
     public function __construct(
         private LemonfiberConnector $connector,
         private EnvelopeReader $reader = new EnvelopeReader(),
@@ -217,12 +227,37 @@ final readonly class Client
      */
     public function logs(Logs $asked): LogWindow
     {
-        $body = $this->bodyFrom(
+        $body = $this->answerTo(
             new ReadRequest(Api::LOGS_ENDPOINT, $asked->parameters()),
             Api::LOGS_ENDPOINT,
-        );
+        )->body();
 
         return LogWindow::of($asked, $this->reader->readEach($body));
+    }
+
+    /**
+     * One support bundle this run wrote, fetched whole.
+     *
+     * The one read with a method of its own here whose answer is a file rather
+     * than a document: lemonfiber hands the archive over as it is, so what comes
+     * back is its bytes beside what the transport said about them, and nothing
+     * here opens it. The name is the last segment of the `path` the `support`
+     * action answered with once the bundle was written.
+     *
+     * @throws RequestFailed
+     * @throws Unreachable
+     */
+    public function bundle(string $name): BundleFile
+    {
+        $endpoint = Api::bundle($name);
+        $response = $this->answerTo(new ReadRequest($endpoint), $endpoint);
+
+        return BundleFile::handedOver(
+            $name,
+            $response->body(),
+            $this->stated($response, self::CONTENT_TYPE),
+            $this->stated($response, self::CONTENT_LENGTH),
+        );
     }
 
     /**
@@ -282,16 +317,16 @@ final readonly class Client
      */
     private function envelopeFrom(Request $request, string $endpoint): Envelope
     {
-        return $this->reader->read($this->bodyFrom($request, $endpoint));
+        return $this->reader->read($this->answerTo($request, $endpoint)->body());
     }
 
     /**
-     * The answer's text, or the refusal it arrived as instead.
+     * The answer, or the refusal it arrived as instead.
      *
      * @throws RequestFailed
      * @throws Unreachable
      */
-    private function bodyFrom(Request $request, string $endpoint): string
+    private function answerTo(Request $request, string $endpoint): Response
     {
         $response = $this->connector->send($request);
 
@@ -299,7 +334,19 @@ final readonly class Client
             throw RequestFailed::from($endpoint, $response->status(), $response->body());
         }
 
-        return $response->body();
+        return $response;
+    }
+
+    /**
+     * The one value an answer gave a header, or none where it gave none or
+     * gave several.
+     */
+    private function stated(Response $response, string $header): ?string
+    {
+        /** @var array<mixed>|string|null $value */
+        $value = $response->header($header);
+
+        return is_string($value) ? $value : null;
     }
 
     /**
@@ -339,9 +386,8 @@ final readonly class Client
      */
     private function saidInProse(Response $response): bool
     {
-        /** @var array<mixed>|string|null $type */
-        $type = $response->header('Content-Type');
+        $type = $this->stated($response, self::CONTENT_TYPE);
 
-        return ! is_string($type) || ! str_contains($type, Api::JSON_MEDIA_TYPE);
+        return $type === null || ! str_contains($type, Api::JSON_MEDIA_TYPE);
     }
 }
