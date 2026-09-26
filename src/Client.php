@@ -227,10 +227,10 @@ final readonly class Client
      */
     public function logs(Logs $asked): LogWindow
     {
-        $body = $this->bodyFrom(
+        $body = $this->answerTo(
             new ReadRequest(Api::LOGS_ENDPOINT, $asked->parameters()),
             Api::LOGS_ENDPOINT,
-        );
+        )->body();
 
         return LogWindow::of($asked, $this->reader->readEach($body));
     }
@@ -317,18 +317,7 @@ final readonly class Client
      */
     private function envelopeFrom(Request $request, string $endpoint): Envelope
     {
-        return $this->reader->read($this->bodyFrom($request, $endpoint));
-    }
-
-    /**
-     * The answer's text, or the refusal it arrived as instead.
-     *
-     * @throws RequestFailed
-     * @throws Unreachable
-     */
-    private function bodyFrom(Request $request, string $endpoint): string
-    {
-        return $this->answerTo($request, $endpoint)->body();
+        return $this->reader->read($this->answerTo($request, $endpoint)->body());
     }
 
     /**
