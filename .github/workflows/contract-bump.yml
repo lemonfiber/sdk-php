@@ -164,7 +164,12 @@ jobs:
           # `createCommitOnBranch` writes additions; a deletion needs a field
           # this does not send, so a sync that removes a file has to be seen by
           # a person rather than half-committed.
-          if git diff --name-only --diff-filter=D | grep -q .; then
+          #
+          # Read into a variable and tested for emptiness rather than piped to
+          # `grep -q`, which exits at the first name and leaves `git diff` to
+          # die of SIGPIPE; under `pipefail` that reads as no deletion at all.
+          deleted="$(git diff --name-only --diff-filter=D)"
+          if [ -n "$deleted" ]; then
             echo "::error::the sync deleted a file, which this cannot commit. Do it by hand."
             exit 1
           fi

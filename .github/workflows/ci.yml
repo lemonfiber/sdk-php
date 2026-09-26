@@ -53,9 +53,14 @@ jobs:
             case "${path}" in
             '' | docs/* | *.md | LICENSE) ;;
             .github/workflows/ci.yml)
-              if git diff -U0 "${BASE}" HEAD -- "${path}" \
+              # Every changed line that is not a pin, read to the end. A
+              # `grep -q` here stops at the first such line, the writers before
+              # it die of SIGPIPE, and `pipefail` turns that into "no such
+              # line": a change to how the gates run would skip them.
+              moved="$(git diff -U0 "${BASE}" HEAD -- "${path}" \
                 | grep -E '^[-+]' | grep -vE '^(\+\+\+|---) ' \
-                | grep -qvE '^[-+][[:space:]]*uses: lemonfiber/spec/\.github/workflows/[^@]+@[0-9a-f]{40}( # .*)?$'; then
+                | grep -vE '^[-+][[:space:]]*uses: lemonfiber/spec/\.github/workflows/[^@]+@[0-9a-f]{40}( # .*)?$' || true)"
+              if [ -n "${moved}" ]; then
                 code=true
               fi
               ;;
