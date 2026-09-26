@@ -62,6 +62,7 @@ it('raises one of its own problems wherever nothing answers', function (string $
     'asking after work' => [Api::job('a-job'), static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->whatBecameOf('a-job')],
     'letting work go' => [Api::job('a-job'), static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->letGoOf('a-job')],
     'the logs' => [Api::LOGS_ENDPOINT, static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->logs(Logs::ofService('sonarr', 5))],
+    'a bundle' => [Api::bundle('t4m8'), static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->bundle('t4m8')],
     'live updates' => [Api::EVENTS_ENDPOINT, static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->eventSource()->open(null)],
     'the door' => [Admission::ENDPOINT, static fn(int $port): mixed => Admission::onPort($port)->open('a-password')],
 ]);
