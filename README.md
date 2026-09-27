@@ -297,7 +297,7 @@ Everything else in `src/` is behaviour no schema expresses:
 | `Logs`, `LogWindow` | The logs are a bounded read that names its service and states its own edge (N2-R10) |
 | `Events\EventStream` | A stream quiet for twice the agreed heartbeat is reported as broken, not as calm; one missed beat is not (ARCH-R61) |
 | `Events\HeldValues` | Values gathered before a reconnection gap are marked out of date (ARCH-R51) |
-| `Exception\RequestFailed` | A refusal carries the sentence lemonfiber answered with, read back through `said()`; an answer carrying none names the endpoint and the status instead (G4-R1) |
+| `Exception\RequestFailed` | A refusal carries the sentence lemonfiber answered with, read back through `said()`; an answer carrying none names the endpoint and the status instead (G4-R1). Where the answer was an `error` envelope, `refusal()` carries the whole problem document — code, severity, state, summary, meaning, remedies, detail and cause — with anything left out left absent. `detail` quotes what a service said with recognised secrets withheld, best effort, so it is fit to show and not to forward, and it is never part of the message |
 | `Exception\CertificateWasRefused` | A pinned peer presenting another certificate is told apart from silence, carrying the digest it presented and the one it was pinned to (ARCH-R99) |
 | `Exception\Unreachable` | A request nothing answered is one of this client's problems wherever it was sent, carrying the endpoint and the connection's reason with every address in it cut back to where it points |
 | `Exception\*` | The error model, in plain language (G2, G4) |
