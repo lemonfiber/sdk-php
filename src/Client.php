@@ -131,7 +131,9 @@ final readonly class Client
      */
     public function act(string $endpoint, array $body = [], ?string $idempotencyKey = null): Envelope
     {
-        return $this->envelopeFrom(new ActionRequest($endpoint, $body, $this->naming($idempotencyKey)), $endpoint);
+        $attempt = $idempotencyKey === null ? null : IdempotencyKey::fromString($idempotencyKey);
+
+        return $this->envelopeFrom(new ActionRequest($endpoint, $body, $attempt), $endpoint);
     }
 
     /**
@@ -306,16 +308,6 @@ final readonly class Client
         $this->connector->withMockClient($mock);
 
         return $this;
-    }
-
-    /**
-     * The key a caller gave for this attempt, checked, or none.
-     *
-     * @throws ConfigurationProblem
-     */
-    private function naming(?string $idempotencyKey): ?IdempotencyKey
-    {
-        return $idempotencyKey === null ? null : IdempotencyKey::fromString($idempotencyKey);
     }
 
     /**
