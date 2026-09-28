@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: aba9f8a46865e2f7340def73f2a02da53ce558d9, api_version 1.
+// Source: 7008624f60cfd94bca598e3361f3167044903fc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `provenance` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{services: list<array{id: string, image: string, license: string, name: string, pinned: string, upstream: string}>}
+ * @phpstan-type Data array{services: list<array{digest?: string|null, id: string, image: string, license: string, name: string, pinned: string, upstream: string}>}
  */
 final class ProvenanceEnvelope
 {
