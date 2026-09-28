@@ -28,8 +28,7 @@ const A_CERTIFICATE_DIGEST = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 function doorAnswering(MockResponse $answer): array
 {
     $mock = new MockClient([AdmissionRequest::class => $answer]);
-    $door = Admission::onPort(9000);
-    $door->connector()->withMockClient($mock);
+    $door = Admission::onPort(9000)->withMockClient($mock);
 
     return [$door, $mock];
 }
@@ -230,7 +229,8 @@ it('holds a stack reached over the network to its certificate', function (): voi
     // unpinned counterpart to this.
     $door = Admission::at(A_PINNED_ADDRESS, A_CERTIFICATE_DIGEST);
 
-    expect($door->connector()->resolveBaseUrl())->toBe(A_PINNED_ADDRESS);
+    expect($door->baseUrl()->toString())->toBe(A_PINNED_ADDRESS)
+        ->and($door->baseUrl()->pin()?->toString())->toBe(A_CERTIFICATE_DIGEST);
 });
 
 it('refuses a pinned address that is not encrypted', function (): void {

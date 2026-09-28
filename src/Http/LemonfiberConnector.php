@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Lemonfiber\Sdk\Http;
 
 use GuzzleHttp\Exception\TransferException;
-use GuzzleHttp\Handler\StreamHandler;
 use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Exception\CertificateWasRefused;
+use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\Unreachable;
 use Override;
 use Saloon\Contracts\Authenticator;
@@ -17,12 +17,15 @@ use Saloon\Http\Connector;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
-use Saloon\Http\Senders\GuzzleSender;
 use Throwable;
 
 /**
  * The transport: one address, the pin the address arrived with, and a token
  * where there is one.
+ *
+ * Every request leaves through {@see StackSender}, which sends it to this
+ * address and nowhere else, holds it to the pin where there is one, and follows
+ * no answer onward, whatever the request or anything that shaped it asked for.
  *
  * **The token is optional, for exactly one route.** `/api/session` is the only
  * door on the surface that answers a request carrying no token — a caller with
@@ -55,9 +58,13 @@ final class LemonfiberConnector extends Connector
      * raises {@see CertificateWasRefused} instead: something answered, and it was
      * not the machine the pin was taken from.
      *
+     * A request addressed anywhere but this address raises
+     * {@see ConfigurationProblem} and is not sent.
+     *
      * @param  callable(Throwable, Request): bool|null  $handleRetry
      *
      * @throws CertificateWasRefused
+     * @throws ConfigurationProblem
      * @throws Unreachable
      */
     #[Override]
@@ -68,6 +75,14 @@ final class LemonfiberConnector extends Connector
         } catch (FatalRequestException|TransferException $nothingAnswered) {
             throw $this->whyNothingAnswered($request->resolveEndpoint(), $nothingAnswered->getMessage());
         }
+    }
+
+    /**
+     * The address this connector sends to, with the pin it holds that address to.
+     */
+    public function baseUrl(): BaseUrl
+    {
+        return $this->baseUrl;
     }
 
     public function resolveBaseUrl(): string
@@ -89,46 +104,11 @@ final class LemonfiberConnector extends Connector
     }
 
     /**
-     * The peer check, where the address carries a pin.
-     *
-     * The digest is compared while the connection is being set up, so a peer that does
-     * not match is dropped before a request carrying the token is written to it. It
-     * decides the peer's identity in place of the platform trust store, which holds no
-     * opinion about a certificate a stack signed itself.
-     *
-     * @return array<string, mixed>
-     */
-    protected function defaultConfig(): array
-    {
-        $pin = $this->baseUrl->pin();
-
-        if (!$pin instanceof CertificatePin) {
-            return [];
-        }
-
-        return [
-            'verify' => false,
-            'stream_context' => ['ssl' => ['peer_fingerprint' => ['sha256' => $pin->toString()]]],
-        ];
-    }
-
-    /**
-     * The handler that honours the peer check where the address carries a pin.
-     *
-     * The check is read by the stream handler and by no other, so a pinned address sent
-     * through the handler chosen by default would travel unpinned. The sender is built
-     * here rather than taken from the default, which a caller may have replaced.
+     * The sender every request leaves through, which holds it to this address and its pin.
      */
     protected function defaultSender(): Sender
     {
-        if (!$this->baseUrl->pin() instanceof CertificatePin) {
-            return parent::defaultSender();
-        }
-
-        $sender = new GuzzleSender();
-        $sender->getHandlerStack()->setHandler(new StreamHandler());
-
-        return $sender;
+        return new StackSender($this->baseUrl);
     }
 
     /**

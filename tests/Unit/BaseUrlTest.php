@@ -207,3 +207,25 @@ it('names the host and port a connection is made to, writing out the port a sche
     'encrypted, with no port' => [fn(): BaseUrl => BaseUrl::pinned('https://192.168.1.42', aPin()), '192.168.1.42:443'],
     'encrypted, with a port' => [fn(): BaseUrl => BaseUrl::pinned('https://192.168.1.42:8443', aPin()), '192.168.1.42:8443'],
 ]);
+
+it('knows an address on its own scheme, host and port for its own', function (BaseUrl $base, string $address): void {
+    expect($base->isOriginOf($address))->toBeTrue();
+})->with([
+    'the same address' => [BaseUrl::onPort(9000), 'http://127.0.0.1:9000/api/status'],
+    'written out' => [BaseUrl::fromString('http://127.0.0.1:9000'), 'http://127.0.0.1:9000/api/status?lines=5'],
+    'the port its scheme names, left unsaid' => [BaseUrl::fromString('http://127.0.0.1'), 'http://127.0.0.1:80/api/status'],
+    'the port its scheme names, said' => [BaseUrl::fromString('https://127.0.0.1:443'), 'https://127.0.0.1/api/status'],
+    'a host in another case' => [BaseUrl::pinned('https://Stack.Example:8443', CertificatePin::fromSha256(str_repeat('a', 64))), 'https://stack.example:8443/api/status'],
+    'the sixth version of loopback' => [BaseUrl::fromString('http://[::1]:9000'), 'http://[::1]:9000/api/status'],
+]);
+
+it('knows an address anywhere else for somewhere else', function (BaseUrl $base, string $address): void {
+    expect($base->isOriginOf($address))->toBeFalse();
+})->with([
+    'another port' => [BaseUrl::onPort(9000), 'http://127.0.0.1:9001/api/status'],
+    'another host' => [BaseUrl::onPort(9000), 'http://[::1]:9000/api/status'],
+    'another scheme' => [BaseUrl::onPort(9000), 'https://127.0.0.1:9000/api/status'],
+    'another scheme, its port unsaid' => [BaseUrl::fromString('http://127.0.0.1'), 'https://127.0.0.1/api/status'],
+    'another host, pinned' => [BaseUrl::pinned('https://192.168.1.42:8443', CertificatePin::fromSha256(str_repeat('a', 64))), 'https://192.168.1.43:8443/api/status'],
+    'an address that cannot be read' => [BaseUrl::onPort(9000), 'http:///api/status'],
+]);

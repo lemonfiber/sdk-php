@@ -30,6 +30,7 @@ use Lemonfiber\Sdk\Http\RunToken;
 use Lemonfiber\Sdk\Http\StreamingEventSource;
 use Lemonfiber\Sdk\Time\Duration;
 use Lemonfiber\Sdk\Time\SystemClock;
+use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 
@@ -290,11 +291,21 @@ final readonly class Client
     }
 
     /**
-     * The transport underneath this client.
+     * Where this client sends, and the certificate it holds that address to.
      */
-    public function connector(): LemonfiberConnector
+    public function baseUrl(): BaseUrl
     {
-        return $this->connector;
+        return $this->connector->baseUrl();
+    }
+
+    /**
+     * Answer every request from the mock, so none reaches a stack at all.
+     */
+    public function withMockClient(MockClient $mock): self
+    {
+        $this->connector->withMockClient($mock);
+
+        return $this;
     }
 
     /**

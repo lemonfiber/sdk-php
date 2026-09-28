@@ -72,6 +72,7 @@ it('describes every way a setting can be wrong', function (): void {
     expect(ConfigurationProblem::unreadableAddress('::')->getMessage())->toContain('could not be read')
         ->and(ConfigurationProblem::addressIsNotOnThisMachine('example.com')->getMessage())->toContain('example.com')
         ->and(ConfigurationProblem::unsupportedScheme('ftp')->getMessage())->toContain('ftp')
+        ->and(ConfigurationProblem::requestLeavesTheStack('http://[::1]:9001')->getMessage())->toContain('"http://[::1]:9001", so nothing was sent')
         ->and(ConfigurationProblem::addressCarriesExtras()->getMessage())->toContain('nothing else')
         ->and(ConfigurationProblem::portOutOfRange(0)->getMessage())->toContain('1 to 65535')
         ->and(ConfigurationProblem::tokenIsEmpty()->getMessage())->toContain('No run token')
