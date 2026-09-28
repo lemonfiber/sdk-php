@@ -15,6 +15,7 @@ use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use function parse_url;
 use function rtrim;
 use function str_starts_with;
+use function strtolower;
 use function trim;
 
 /**
@@ -43,7 +44,12 @@ final readonly class BaseUrl
      */
     private const array FORBIDDEN_PARTS = ['user', 'pass', 'query', 'fragment'];
 
-    private function __construct(private string $value, private ?CertificatePin $pin, private string $authority) {}
+    private function __construct(
+        private string $value,
+        private ?CertificatePin $pin,
+        private string $authority,
+        private string $origin,
+    ) {}
 
     /**
      * @throws ConfigurationProblem
@@ -54,7 +60,7 @@ final readonly class BaseUrl
             throw ConfigurationProblem::portOutOfRange($port);
         }
 
-        return new self('http://127.0.0.1:' . $port, null, '127.0.0.1:' . $port);
+        return new self('http://127.0.0.1:' . $port, null, '127.0.0.1:' . $port, 'http://127.0.0.1:' . $port);
     }
 
     /**
@@ -70,7 +76,7 @@ final readonly class BaseUrl
             throw ConfigurationProblem::addressIsNotOnThisMachine(self::hostIn($parts));
         }
 
-        return new self(self::assemble($parts), null, self::authorityOf($parts));
+        return new self(self::assemble($parts), null, self::authorityOf($parts), self::originOf($parts));
     }
 
     /**
@@ -87,7 +93,7 @@ final readonly class BaseUrl
             throw ConfigurationProblem::pinnedAddressIsNotEncrypted($scheme);
         }
 
-        return new self(self::assemble($parts), $pin, self::authorityOf($parts));
+        return new self(self::assemble($parts), $pin, self::authorityOf($parts), self::originOf($parts));
     }
 
     /**
@@ -105,6 +111,20 @@ final readonly class BaseUrl
     public function authority(): string
     {
         return $this->authority;
+    }
+
+    /**
+     * Whether an address names the same scheme, host and port as this one.
+     *
+     * A port left to its scheme is the port that scheme names, and a host is
+     * compared without regard to case. An address that cannot be read names
+     * nothing, and so is not this one.
+     */
+    public function isOriginOf(string $address): bool
+    {
+        $parts = parse_url($address);
+
+        return $parts !== false && self::originOf($parts) === $this->origin;
     }
 
     /**
@@ -177,6 +197,14 @@ final readonly class BaseUrl
         $unsaid = self::schemeIn($parts) === self::ENCRYPTED_SCHEME ? self::ENCRYPTED_PORT : self::PLAIN_PORT;
 
         return self::hostIn($parts) . ':' . ($parts['port'] ?? $unsaid);
+    }
+
+    /**
+     * @param  array{scheme?: string, host?: string, port?: int, user?: string, pass?: string, path?: string, query?: string, fragment?: string}  $parts
+     */
+    private static function originOf(array $parts): string
+    {
+        return strtolower(self::schemeIn($parts) . '://' . self::authorityOf($parts));
     }
 
     private static function isOnThisMachine(string $host, HostResolver $resolver): bool

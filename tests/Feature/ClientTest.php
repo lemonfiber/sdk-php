@@ -30,8 +30,7 @@ const A_RUN_TOKEN = 'a-run-token';
 function clientAnswering(array $answers): array
 {
     $mock = new MockClient($answers);
-    $client = Client::onPort(9000, A_RUN_TOKEN);
-    $client->connector()->withMockClient($mock);
+    $client = Client::onPort(9000, A_RUN_TOKEN)->withMockClient($mock);
 
     return [$client, $mock];
 }
@@ -486,7 +485,7 @@ it('hands the caller the sentence a read was refused with', function (): void {
 it('is built from a written out address', function (): void {
     $client = Client::at('http://127.0.0.1:9000', A_RUN_TOKEN);
 
-    expect($client->connector()->resolveBaseUrl())->toBe('http://127.0.0.1:9000');
+    expect($client->baseUrl()->toString())->toBe('http://127.0.0.1:9000');
 });
 
 it('refuses to be built against another machine', function (): void {
@@ -501,7 +500,8 @@ it('is built against another machine when a certificate digest vouches for it', 
         '86b25c676b761e9a398081373fec783c2bec970baa255370838aebb5c687841e',
     );
 
-    expect($client->connector()->resolveBaseUrl())->toBe('https://192.168.1.42:9000');
+    expect($client->baseUrl()->toString())->toBe('https://192.168.1.42:9000')
+        ->and($client->baseUrl()->pin()?->toString())->toBe('86b25c676b761e9a398081373fec783c2bec970baa255370838aebb5c687841e');
 });
 
 it('refuses to be built against another machine with a digest it cannot use', function (): void {

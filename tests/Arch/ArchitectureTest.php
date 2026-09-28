@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Lemonfiber\Sdk\Admission;
 use Lemonfiber\Sdk\Client;
 use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Events\HeldValue;
@@ -67,6 +68,6 @@ arch('every failure is one of ours')
 
 arch('nothing outside the transport speaks to Saloon')
     ->expect('Saloon')
-    ->toOnlyBeUsedIn(['Lemonfiber\Sdk\Http', Client::class, 'Lemonfiber\Sdk\Tests']);
+    ->toOnlyBeUsedIn(['Lemonfiber\Sdk\Http', Client::class, Admission::class, 'Lemonfiber\Sdk\Tests']);
 
 arch()->preset()->security();

@@ -8,7 +8,7 @@ use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\RunToken;
-use Saloon\Contracts\Sender;
+use Lemonfiber\Sdk\Http\StackSender;
 use Saloon\Http\Senders\GuzzleSender;
 
 const A_DIGEST = '86b25c676b761e9a398081373fec783c2bec970baa255370838aebb5c687841e';
@@ -27,41 +27,47 @@ function connectorOnThisMachine(): LemonfiberConnector
 }
 
 /**
- * The handler a sender's stack was built around, which the stack does not expose.
+ * The handler beneath the transport a connector sends through, which neither exposes.
  */
-function handlerBeneath(Sender $sender): mixed
+function handlerBeneath(LemonfiberConnector $connector): mixed
 {
-    if (! $sender instanceof GuzzleSender) {
+    $sender = $connector->sender();
+
+    if (! $sender instanceof StackSender) {
         return null;
     }
 
-    return new ReflectionProperty(HandlerStack::class, 'handler')->getValue($sender->getHandlerStack());
+    $transport = new ReflectionProperty(StackSender::class, 'transport')->getValue($sender);
+
+    if (! $transport instanceof GuzzleSender) {
+        return null;
+    }
+
+    return new ReflectionProperty(HandlerStack::class, 'handler')->getValue($transport->getHandlerStack());
 }
 
-it('hands the digest to the transport under the key the peer check reads', function (): void {
-    expect(connectorPinnedTo(A_DIGEST)->config()->all())
-        ->toBe([
-            'verify' => false,
-            'stream_context' => ['ssl' => ['peer_fingerprint' => ['sha256' => A_DIGEST]]],
-        ]);
-});
-
-it('hands the transport nothing when the address is on this machine', function (): void {
-    expect(connectorOnThisMachine()->config()->all())->toBe([]);
+it('sends every request through the sender that holds it to the stack', function (): void {
+    expect(connectorPinnedTo(A_DIGEST)->sender())->toBeInstanceOf(StackSender::class)
+        ->and(connectorOnThisMachine()->sender())->toBeInstanceOf(StackSender::class);
 });
 
 // The peer check is honoured by the stream handler and by no other, so a pinned
 // address sent through the handler chosen by default would travel unpinned.
 it('sends a pinned address through the handler that honours the check', function (): void {
-    expect(handlerBeneath(connectorPinnedTo(A_DIGEST)->sender()))
+    expect(handlerBeneath(connectorPinnedTo(A_DIGEST)))
         ->toBeInstanceOf(StreamHandler::class);
 });
 
 it('leaves an address on this machine with the handler chosen by default', function (): void {
-    expect(handlerBeneath(connectorOnThisMachine()->sender()))
-        ->not->toBeInstanceOf(StreamHandler::class);
+    $handler = handlerBeneath(connectorOnThisMachine());
+
+    expect($handler)->not->toBeNull()
+        ->and($handler)->not->toBeInstanceOf(StreamHandler::class);
 });
 
-it('keeps the address it was pinned at', function (): void {
-    expect(connectorPinnedTo(A_DIGEST)->resolveBaseUrl())->toBe('https://192.168.1.42:9000');
+it('keeps the address it was pinned at, and the pin', function (): void {
+    $connector = connectorPinnedTo(A_DIGEST);
+
+    expect($connector->resolveBaseUrl())->toBe('https://192.168.1.42:9000')
+        ->and($connector->baseUrl()->pin()?->toString())->toBe(A_DIGEST);
 });

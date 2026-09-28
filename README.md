@@ -142,6 +142,18 @@ is written to it; the client then reads the certificate the peer presented, over
 that writes nothing either, to tell that refusal apart from silence. `presented()` and
 `pinned()` carry both digests.
 
+The token goes to the stack the client was built for and nowhere else. A request reaches only
+that address's own scheme, host and port, and the transport underneath is not handed out, so no
+request can be sent past the pin or with it turned off. An answer pointing somewhere else is not
+followed: it raises `Unreachable`, and its `reason()` says it was a redirect. A test that wants
+answers without a stack gives the client or the door a Saloon mock, and nothing reaches the
+network:
+
+```php
+$client = Client::onPort(9000, $token)->withMockClient($mock);
+$client->baseUrl()->pin();  // the certificate this client is held to, or null on this machine
+```
+
 `RequestFailed` is lemonfiber answering, which says the connection works and the address is
 right; `Unreachable` is no answer at all. `reason()` is the connection's own words, with every
 address in them cut back to its scheme, host, port and path, so sign-in details and a query

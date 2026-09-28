@@ -45,6 +45,14 @@ final class ConfigurationProblem extends InvalidArgumentException implements Pro
         ));
     }
 
+    public static function requestLeavesTheStack(string $address): self
+    {
+        return new self(sprintf(
+            'A request goes only to the stack its token was given for, at the scheme, host and port it was built with. This one was addressed to "%s", so nothing was sent.',
+            $address,
+        ));
+    }
+
     public static function unsupportedScheme(string $scheme): self
     {
         return new self(sprintf(

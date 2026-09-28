@@ -30,6 +30,7 @@ use Lemonfiber\Sdk\Http\RunToken;
 use Lemonfiber\Sdk\Http\StreamingEventSource;
 use Lemonfiber\Sdk\Time\Duration;
 use Lemonfiber\Sdk\Time\SystemClock;
+use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 
@@ -130,7 +131,9 @@ final readonly class Client
      */
     public function act(string $endpoint, array $body = [], ?string $idempotencyKey = null): Envelope
     {
-        return $this->envelopeFrom(new ActionRequest($endpoint, $body, $this->naming($idempotencyKey)), $endpoint);
+        $attempt = $idempotencyKey === null ? null : IdempotencyKey::fromString($idempotencyKey);
+
+        return $this->envelopeFrom(new ActionRequest($endpoint, $body, $attempt), $endpoint);
     }
 
     /**
@@ -290,21 +293,21 @@ final readonly class Client
     }
 
     /**
-     * The transport underneath this client.
+     * Where this client sends, and the certificate it holds that address to.
      */
-    public function connector(): LemonfiberConnector
+    public function baseUrl(): BaseUrl
     {
-        return $this->connector;
+        return $this->connector->baseUrl();
     }
 
     /**
-     * The key a caller gave for this attempt, checked, or none.
-     *
-     * @throws ConfigurationProblem
+     * Answer every request from the mock, so none reaches a stack at all.
      */
-    private function naming(?string $idempotencyKey): ?IdempotencyKey
+    public function withMockClient(MockClient $mock): self
     {
-        return $idempotencyKey === null ? null : IdempotencyKey::fromString($idempotencyKey);
+        $this->connector->withMockClient($mock);
+
+        return $this;
     }
 
     /**

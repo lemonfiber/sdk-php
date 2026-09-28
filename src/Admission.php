@@ -20,6 +20,7 @@ use Lemonfiber\Sdk\Http\AdmissionRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
+use Saloon\Http\Faking\MockClient;
 
 /**
  * The door: a password exchanged, once, for a session.
@@ -136,16 +137,21 @@ final readonly class Admission
     }
 
     /**
-     * The transport underneath this door.
-     *
-     * The same accessor {@see Client::connector()} publishes and for the same
-     * reason: a caller substituting the transport — a test, or a consumer
-     * wiring its own middleware — has one place to reach rather than a
-     * constructor that takes one and a password in the same breath.
+     * Where this door is, and the certificate it holds that address to.
      */
-    public function connector(): LemonfiberConnector
+    public function baseUrl(): BaseUrl
     {
-        return $this->connector;
+        return $this->connector->baseUrl();
+    }
+
+    /**
+     * Answer the door from the mock, so no password reaches a stack at all.
+     */
+    public function withMockClient(MockClient $mock): self
+    {
+        $this->connector->withMockClient($mock);
+
+        return $this;
     }
 
     /**
