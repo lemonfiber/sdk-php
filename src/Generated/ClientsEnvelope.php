@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 2fd6d09277f8338669262c5778f34a64b60a49ec, api_version 1.
+// Source: 9829145fea787f88d8172c6727fefa6b684d8f04, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `clients` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{devices: list<array{caution?: string|null, client: string, device: string, instead?: string|null, support: 'good'|'workable'|'poor'|'fallback'}>, nothing_is_installed: string, only_at_home: string, straining?: array{caution: string, instead: string, preset: string}|null, trouble: list<array{causes: list<array{because: string, fix: string, tell: string}>, symptom: string}>}
+ * @phpstan-type Data array{devices: list<array{caution?: string|null, client: string, deep_link?: string|null, device: string, instead?: string|null, open_source: bool, support: 'good'|'workable'|'poor'|'fallback'}>, nothing_is_installed: string, only_at_home: string, straining?: array{caution: string, instead: string, preset: string}|null, trouble: list<array{causes: list<array{because: string, fix: string, tell: string}>, symptom: string}>}
  */
 final class ClientsEnvelope
 {

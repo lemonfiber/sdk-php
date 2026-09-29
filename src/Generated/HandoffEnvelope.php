@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `beside` envelope, shaped as the contract describes it.
+ * The `handoff` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{ports: list<array{from: int, service: string, to: int}>, refusal?: string|null, stance: 'unchanged'|'pending'|'blocked'|'applied', written?: string|null}
+ * @phpstan-type Data array{address?: string|null, caution?: string|null, clients: list<array{client: string, code: string, deep_link: bool, device: string, open_source: bool}>, issued?: string|null, name: string, quick_connect: bool, reason?: string|null, rehearsed: bool, sessions: list<array{client: string, device: string, last_seen?: string|null}>, state: 'unprovisioned'|'ready'|'pending'|'connected'|'failed', steps: list<string>}
  */
-final class BesideEnvelope
+final class HandoffEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Beside;
+    public const Kind KIND = Kind::Handoff;
 
     /**
      * The same envelope with its payload typed by its kind.
