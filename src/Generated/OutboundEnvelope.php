@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 9829145fea787f88d8172c6727fefa6b684d8f04, api_version 1.
+// Source: 8d312584bfab29eea9d354e058f66627bf5502be, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `outbound` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{ours: list<array{allowed: bool, cost: string, destination: list<string>, purpose: string, reach: 'registry'|'guides'|'echo'|'indexer'|'usenet'|'household'|'updates', sends: string, switch: string}>, theirs: list<array{destination: string, origin: array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}|array{named: string, origin: 'overridden', replaced: array{from: mixed, value?: string|null, withheld: bool}}|array{named: string, origin: 'orphaned'}, purpose: string, recorded: bool, service: string}>}
+ * @phpstan-type Data array{ours: list<array{allowed: bool, cost: string, destination: list<string>, purpose: string, reach: 'registry'|'guides'|'echo'|'indexer'|'usenet'|'household'|'updates'|'plugin-source', sends: string, switch: string}>, theirs: list<array{destination: string, origin: array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}|array{named: string, origin: 'overridden', replaced: array{from: mixed, value?: string|null, withheld: bool}}|array{named: string, origin: 'orphaned'}, purpose: string, recorded: bool, service: string}>}
  */
 final class OutboundEnvelope
 {
