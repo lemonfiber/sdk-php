@@ -129,6 +129,7 @@ try {
     $client->read(Api::STATUS_ENDPOINT);
 } catch (RequestFailed $refused) {
     $refused->status();   // lemonfiber answered, and said no
+    $refused->code();     // why, as a RefusalCode, or null: then the status alone says
 } catch (Unreachable $silence) {
     $silence->endpoint(); // '/api/status'
     $silence->reason();   // what the connection reported
@@ -153,6 +154,14 @@ network:
 $client = Client::onPort(9000, $token)->withMockClient($mock);
 $client->baseUrl()->pin();  // the certificate this client is held to, or null on this machine
 ```
+
+What a refusal means is read from `code()`, never from `said()`: the sentence is written for a
+person and may be reworded, and one status covers several refusals with different remedies — a
+`403` may ask for signing in again, or say the thing asked for belongs to someone else.
+`Generated\RefusalCode` is generated from the refusals the contract artefact lists, a case per
+code with the status it is answered with (`status()`); no list of codes is written by hand
+(ARCH-R139). A refusal whose code this package's list does not name, which is what a newer
+server may send, has a null `code()` and is read by its status alone (ARCH-R138).
 
 `RequestFailed` is lemonfiber answering, which says the connection works and the address is
 right; `Unreachable` is no answer at all. `reason()` is the connection's own words, with every
@@ -290,7 +299,9 @@ commands, and only the first touches the network:
 `contract/VERSION` names the revision the vendored copy came from.
 
 Generation refuses an artefact whose `api_version` this package does not implement, naming both
-versions and writing nothing (ARCH-R67). Types that compile and lie are worse than a build that
+versions and writing nothing (ARCH-R67). It refuses a malformed `refusals` list the same way,
+naming the code and what is wrong with it; an artefact listing no refusals generates a
+`RefusalCode` with no cases. Types that compile and lie are worse than a build that
 stops.
 
 `Contract::API_VERSION` comes from the artefact, and `Api::VERSION` comes from that, so the wire
@@ -309,7 +320,7 @@ Everything else in `src/` is behaviour no schema expresses:
 | `Logs`, `LogWindow` | The logs are a bounded read that names its service and states its own edge (N2-R10) |
 | `Events\EventStream` | A stream quiet for twice the agreed heartbeat is reported as broken, not as calm; one missed beat is not (ARCH-R61) |
 | `Events\HeldValues` | Values gathered before a reconnection gap are marked out of date (ARCH-R51) |
-| `Exception\RequestFailed` | A refusal carries the sentence lemonfiber answered with, read back through `said()`; an answer carrying none names the endpoint and the status instead (G4-R1). Where the answer was an `error` envelope, `refusal()` carries the whole problem document — code, severity, state, summary, meaning, remedies, detail and cause — with anything left out left absent. `detail` quotes what a service said with recognised secrets withheld, best effort, so it is fit to show and not to forward, and it is never part of the message |
+| `Exception\RequestFailed` | A refusal carries the sentence lemonfiber answered with, read back through `said()`; an answer carrying none names the endpoint and the status instead (G4-R1). Where the answer was an `error` envelope, `refusal()` carries the whole problem document — code, severity, state, summary, meaning, remedies, detail and cause — with anything left out left absent. `detail` quotes what a service said with recognised secrets withheld, best effort, so it is fit to show and not to forward, and it is never part of the message. `code()` reads the problem's code into the generated `RefusalCode`, and is null where there is no problem document or its code is not in the list, so such a refusal is read by `status()` alone (ARCH-R138) |
 | `Exception\CertificateWasRefused` | A pinned peer presenting another certificate is told apart from silence, carrying the digest it presented and the one it was pinned to (ARCH-R99) |
 | `Exception\Unreachable` | A request nothing answered is one of this client's problems wherever it was sent, carrying the endpoint and the connection's reason with every address in it cut back to where it points |
 | `Exception\*` | The error model, in plain language (G2, G4) |

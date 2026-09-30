@@ -48,6 +48,7 @@ function treeWith(string $root, string $contract): string
     copy($root . GENERATOR, $tree . GENERATOR);
     copy($root . '/scripts/GeneratedSource.php', $tree . '/scripts/GeneratedSource.php');
     copy($root . '/scripts/SchemaTypes.php', $tree . '/scripts/SchemaTypes.php');
+    copy($root . '/scripts/Refusals.php', $tree . '/scripts/Refusals.php');
     file_put_contents($tree . '/contract/web-api.contract.json', $contract);
     file_put_contents($tree . '/contract/VERSION', "v9.9.9\n");
 
@@ -233,3 +234,120 @@ it('refuses a contract describing no kinds', function () use ($root): void {
 
     removeTree($tree);
 });
+
+/**
+ * A contract with one kind and the refusals given to it.
+ *
+ * @return array<string, mixed>
+ */
+function contractRefusing(mixed $refusals): array
+{
+    return contractOf(1) + ['refusals' => $refusals];
+}
+
+/**
+ * What the generated refusal list answers when it is loaded and asked.
+ *
+ * Loaded in a process of its own, so the list a test generated is never the
+ * one this suite is running against.
+ */
+function askTheRefusalList(string $tree, string $question): string
+{
+    $script = sprintf(
+        'require %s; use Lemonfiber\\Sdk\\Generated\\RefusalCode; echo json_encode(%s);',
+        var_export($tree . '/src/Generated/RefusalCode.php', true),
+        $question,
+    );
+
+    return (string) shell_exec(escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($script));
+}
+
+it('writes a case per refusal the contract lists, in the order of its code', function () use ($root): void {
+    $tree = treeWith($root, json_encode(contractRefusing([
+        'ADMIT-10' => ['name' => 'NOT_A_PASSWORD', 'status' => 400, 'description' => 'Raised when what was offered is not a password.'],
+        'ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => "Raised when a request carried\n no token */ this run admits."],
+    ]), JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+    $source = (string) file_get_contents($tree . '/src/Generated/RefusalCode.php');
+
+    expect($result['status'])->toBe(0)
+        ->and($source)->toContain('enum RefusalCode: string')
+        ->and($source)->toContain("case NotAdmitted = 'ADMIT-4';")
+        ->and($source)->toContain("case NotAPassword = 'ADMIT-10';")
+        ->and($source)->toContain('* Raised when a request carried no token *\/ this run admits.')
+        ->and($source)->toContain('* Answered with 403.')
+        ->and($source)->toMatch('/NotAdmitted = .*NotAPassword = /s')
+        ->and(askTheRefusalList($tree, 'array_map(fn($c) => [$c->name, $c->value, $c->status()], RefusalCode::cases())'))
+        ->toBe('[["NotAdmitted","ADMIT-4",403],["NotAPassword","ADMIT-10",400]]')
+        ->and(askTheRefusalList($tree, '[RefusalCode::of("ADMIT-4")?->name, RefusalCode::of("NOBODY-1"), RefusalCode::of(null)]'))
+        ->toBe('["NotAdmitted",null,null]');
+
+    removeTree($tree);
+});
+
+it('writes a list with no cases where the contract lists no refusals', function (array $contract) use ($root): void {
+    $tree = treeWith($root, json_encode($contract, JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+
+    expect($result['status'])->toBe(0)
+        ->and((string) file_get_contents($tree . '/src/Generated/RefusalCode.php'))->not->toMatch('/^\s*case /m')
+        ->and(askTheRefusalList($tree, '[RefusalCode::cases(), RefusalCode::of("ADMIT-4")]'))->toBe('[[],null]');
+
+    removeTree($tree);
+})->with([
+    'the list left out' => [contractOf(1)],
+    'the list empty' => [contractRefusing([])],
+]);
+
+it('refuses a malformed list of refusals, names what is wrong, and writes nothing', function (mixed $refusals, string $named) use ($root): void {
+    $tree = treeWith($root, json_encode(contractRefusing($refusals), JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+
+    expect($result['status'])->toBe(1)
+        ->and($result['stderr'])->toContain($named)
+        ->and($result['stderr'])->toContain('Nothing was generated.')
+        ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
+
+    removeTree($tree);
+})->with([
+    'not an object' => ['ADMIT-4', 'object keyed by code'],
+    'nothing at all' => [null, 'object keyed by code'],
+    'a list rather than codes' => [[['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => 'Raised.']], 'under `0`'],
+    'an empty code' => [['' => ['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => 'Raised.']], 'under ``'],
+    'an entry that is not an object' => [['ADMIT-4' => 'NOT_ADMITTED'], '`ADMIT-4` is not an object'],
+    'no name' => [['ADMIT-4' => ['status' => 403, 'description' => 'Raised.']], '`ADMIT-4` carries no name'],
+    'a name in another case' => [['ADMIT-4' => ['name' => 'NotAdmitted', 'status' => 403, 'description' => 'Raised.']], 'SCREAMING_SNAKE'],
+    'a name with an empty word' => [['ADMIT-4' => ['name' => 'NOT__ADMITTED', 'status' => 403, 'description' => 'Raised.']], 'SCREAMING_SNAKE'],
+    'a name opening on a digit' => [['ADMIT-4' => ['name' => '4_NOT_ADMITTED', 'status' => 403, 'description' => 'Raised.']], 'SCREAMING_SNAKE'],
+    'a name PHP will not take' => [['ADMIT-4' => ['name' => 'CLASS', 'status' => 403, 'description' => 'Raised.']], 'is named Class'],
+    'no status' => [['ADMIT-4' => ['name' => 'NOT_ADMITTED', 'description' => 'Raised.']], '`ADMIT-4` carries no whole-number status'],
+    'a status in words' => [['ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => '403', 'description' => 'Raised.']], 'whole-number status'],
+    'a status with a fraction' => [['ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 403.5, 'description' => 'Raised.']], 'whole-number status'],
+    'a status nothing is refused with' => [['ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 200, 'description' => 'Raised.']], 'whole-number status'],
+    'a status past the last' => [['ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 600, 'description' => 'Raised.']], 'whole-number status'],
+    'no description' => [['ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 403]], '`ADMIT-4` carries no description'],
+    'a description of nothing' => [['ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => '  ']], 'no description'],
+    'a description that is not text' => [['ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => 7]], 'no description'],
+    'two names that meet' => [[
+        'ADMIT-4' => ['name' => 'AB_1', 'status' => 403, 'description' => 'Raised.'],
+        'ADMIT-5' => ['name' => 'AB1', 'status' => 403, 'description' => 'Raised.'],
+    ], '`ADMIT-4` and `ADMIT-5` would both be named Ab1'],
+    'one name twice' => [[
+        'ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => 'Raised.'],
+        'ADMIT-6' => ['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => 'Raised.'],
+    ], 'would both be named NotAdmitted'],
+]);
+
+it('accepts the edges of the statuses a refusal is answered with', function (int $status) use ($root): void {
+    $tree = treeWith($root, json_encode(contractRefusing([
+        'ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => $status, 'description' => 'Raised.'],
+    ]), JSON_THROW_ON_ERROR));
+
+    expect(generateIn($tree)['status'])->toBe(0)
+        ->and(askTheRefusalList($tree, 'RefusalCode::NotAdmitted->status()'))->toBe((string) $status);
+
+    removeTree($tree);
+})->with([400, 599]);

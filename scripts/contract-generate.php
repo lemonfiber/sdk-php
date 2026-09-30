@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lemonfiber\Sdk\Scripts;
 
 require_once __DIR__ . '/GeneratedSource.php';
+require_once __DIR__ . '/Refusals.php';
 require_once __DIR__ . '/SchemaTypes.php';
 
 use function array_filter;
@@ -41,6 +42,9 @@ use function strval;
 use function substr;
 use function trim;
 use function ucfirst;
+
+use UnexpectedValueException;
+
 use function unlink;
 
 /**
@@ -95,7 +99,30 @@ final readonly class ContractGenerator
 
         $kinds = $this->generable($artefact);
 
-        return $kinds === null ? 1 : $this->emit($kinds, $version);
+        if ($kinds === null) {
+            return 1;
+        }
+
+        $refusals = $this->refusals($artefact);
+
+        return $refusals === null ? 1 : $this->emit($kinds, $refusals, $version);
+    }
+
+    /**
+     * The refusal codes the artefact lists, or nothing when it lists them in a shape this cannot read.
+     *
+     * @param  array<mixed, mixed>  $artefact
+     * @return array<string, array{code: string, status: int, description: string}>|null
+     */
+    private function refusals(array $artefact): ?array
+    {
+        try {
+            return new Refusals()->listed($artefact);
+        } catch (UnexpectedValueException $malformed) {
+            $this->refuse($malformed->getMessage() . ' Nothing was generated.');
+
+            return null;
+        }
     }
 
     /**
@@ -344,11 +371,12 @@ final readonly class ContractGenerator
 
     /**
      * @param  array<mixed, mixed>  $kinds
+     * @param  array<string, array{code: string, status: int, description: string}>  $refusals
      */
-    private function emit(array $kinds, int $version): int
+    private function emit(array $kinds, array $refusals, int $version): int
     {
         $stamp = $this->stamp();
-        $planned = $this->planned($kinds, new GeneratedSource(self::ARTEFACT, $stamp, $version));
+        $planned = $this->planned($kinds, $refusals, new GeneratedSource(self::ARTEFACT, $stamp, $version));
 
         return $planned === null ? 1 : $this->write($planned, $stamp);
     }
@@ -358,9 +386,10 @@ final readonly class ContractGenerator
      * from, or nothing when a kind cannot be written at all.
      *
      * @param  array<mixed, mixed>  $kinds
-     * @return array{named: array<string, string>, files: array<string, string>}|null
+     * @param  array<string, array{code: string, status: int, description: string}>  $refusals
+     * @return array{named: array<string, string>, refusals: int, files: array<string, string>}|null
      */
-    private function planned(array $kinds, GeneratedSource $source): ?array
+    private function planned(array $kinds, array $refusals, GeneratedSource $source): ?array
     {
         $named = [];
         $files = [];
@@ -383,9 +412,10 @@ final readonly class ContractGenerator
         }
 
         $files[self::OUTPUT . '/Kind.php'] = $source->kindEnum($named);
+        $files[self::OUTPUT . '/RefusalCode.php'] = $source->refusalEnum($refusals);
         $files[self::OUTPUT . '/Contract.php'] = $source->contractClass();
 
-        return ['named' => $named, 'files' => $files];
+        return ['named' => $named, 'refusals' => count($refusals), 'files' => $files];
     }
 
     /**
@@ -413,7 +443,7 @@ final readonly class ContractGenerator
     }
 
     /**
-     * @param  array{named: array<string, string>, files: array<string, string>}  $planned
+     * @param  array{named: array<string, string>, refusals: int, files: array<string, string>}  $planned
      */
     private function write(array $planned, string $stamp): int
     {
@@ -431,7 +461,13 @@ final readonly class ContractGenerator
             }
         }
 
-        echo sprintf("contract: %d kinds generated from %s into %s\n", count($planned['named']), $stamp, self::OUTPUT);
+        echo sprintf(
+            "contract: %d kinds and %d refusal codes generated from %s into %s\n",
+            count($planned['named']),
+            $planned['refusals'],
+            $stamp,
+            self::OUTPUT,
+        );
 
         return 0;
     }

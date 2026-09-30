@@ -5,6 +5,16 @@ declare(strict_types=1);
 use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Generated\Kind;
+use Lemonfiber\Sdk\Generated\RefusalCode;
+use Lemonfiber\Sdk\Tests\Support\GeneratedRefusals;
+
+const A_CODE_THE_LIST_NAMES = 'FIXTURE-1';
+
+GeneratedRefusals::loadWith(A_CODE_THE_LIST_NAMES, [
+    'name' => 'LISTED_FOR_THESE_TESTS',
+    'status' => 403,
+    'description' => 'Raised by nothing; listed so these tests have a code the list names.',
+]);
 
 const NOTHING_WAS_TAKEN = 'lemonfiber turned down the request for /api/status and answered 500. Nothing was taken from that answer.';
 
@@ -134,4 +144,43 @@ it('carries no problem document where the answer was not one', function (string 
     'another kind' => [answeredAs('status', ['health' => 'healthy'])],
     'an envelope that cannot be read' => ['{"kind":'],
     'an error missing what the contract requires' => [wentWrong(['summary' => 'Something went wrong.'])],
+]);
+
+/**
+ * An `error` envelope whose problem carries the given code.
+ */
+function refusedWith(string $code): string
+{
+    return wentWrong([
+        'code' => $code,
+        'severity' => 'error',
+        'state' => 'actionable',
+        'summary' => 'This run does not admit the session the request carried.',
+        'meaning' => 'Nothing was read.',
+        'remedies' => [['action' => 'Sign in again']],
+    ]);
+}
+
+it('reads the code a refusal carries into the generated list', function (): void {
+    $problem = RequestFailed::from('/api/status', 403, refusedWith(A_CODE_THE_LIST_NAMES));
+
+    expect($problem->code())->not->toBeNull()
+        ->and($problem->code())->toBe(RefusalCode::of(A_CODE_THE_LIST_NAMES))
+        ->and($problem->code()?->status())->toBe(403);
+});
+
+it('reads a code the generated list does not name as no code, and keeps it on the problem', function (): void {
+    $problem = RequestFailed::from('/api/status', 403, refusedWith('NOBODY-1'));
+
+    expect($problem->code())->toBeNull()
+        ->and($problem->refusal()?->code())->toBe('NOBODY-1')
+        ->and($problem->status())->toBe(403);
+});
+
+it('carries no code where the answer carried no problem document', function (string $body): void {
+    expect(RequestFailed::from('/api/status', 403, $body)->code())->toBeNull();
+})->with([
+    'nothing at all' => [''],
+    'a sentence' => ['This needs the run token.'],
+    'an error missing what the contract requires' => [wentWrong(['code' => A_CODE_THE_LIST_NAMES])],
 ]);
