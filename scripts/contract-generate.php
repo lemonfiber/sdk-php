@@ -99,10 +99,17 @@ final readonly class ContractGenerator
 
         $kinds = $this->generable($artefact);
 
-        if ($kinds === null) {
-            return 1;
-        }
+        return $kinds === null ? 1 : $this->generate($artefact, $kinds, $version);
+    }
 
+    /**
+     * Writes the kinds and the refusal codes, or nothing when the refusal codes cannot be read.
+     *
+     * @param  array<mixed, mixed>  $artefact
+     * @param  array<mixed, mixed>  $kinds
+     */
+    private function generate(array $artefact, array $kinds, int $version): int
+    {
         $refusals = $this->refusals($artefact);
 
         return $refusals === null ? 1 : $this->emit($kinds, $refusals, $version);
