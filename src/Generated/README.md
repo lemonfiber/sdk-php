@@ -12,6 +12,7 @@ something that already has one.
 |---|---|
 | `Contract.php` | The `api_version` these types were generated from, and the revision they came from |
 | `Kind.php` | Every kind the contract describes |
+| `RefusalCode.php` | Every code the contract lists a refusal as carrying, and the status each is answered with |
 | `<Kind>Envelope.php` | One class per kind: the kind it reads, and the payload type the contract gives it |
 
 Pint, PHPStan, Rector, the repository guards and the coverage and mutation

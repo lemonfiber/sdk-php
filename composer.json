@@ -51,6 +51,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Lemonfiber\\Sdk\\Scripts\\": "scripts/",
             "Lemonfiber\\Sdk\\Tests\\": "tests/"
         }
     },

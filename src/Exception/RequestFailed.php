@@ -9,6 +9,7 @@ use function is_string;
 
 use Lemonfiber\Sdk\Envelope\EnvelopeReader;
 use Lemonfiber\Sdk\Generated\Kind;
+use Lemonfiber\Sdk\Generated\RefusalCode;
 use Lemonfiber\Sdk\Refusal;
 
 use function preg_match;
@@ -95,6 +96,21 @@ final class RequestFailed extends RuntimeException implements Problem
     public function refusal(): ?Refusal
     {
         return $this->refusal;
+    }
+
+    /**
+     * Why lemonfiber refused, as the code its problem document carries.
+     *
+     * None where the answer carried no problem document this client can read,
+     * and none where it carried a code the generated list does not name: a
+     * server newer than this package refuses with codes this package has not
+     * heard of. A refusal with no code here is read by its `status()` alone.
+     * What a refusal means is read from its code, never from `said()`, which
+     * is written for a person and may be reworded.
+     */
+    public function code(): ?RefusalCode
+    {
+        return RefusalCode::of($this->refusal?->code());
     }
 
     /**
