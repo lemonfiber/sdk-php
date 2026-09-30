@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 8e0a00cdce7e84a89cb87eb5e3e993152adc34cf, api_version 1.
+// Source: 3c0f78582d1b1a8fd2e7dcc8dc296e1394434cc2, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `handoff` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{address?: string|null, caution?: string|null, clients: list<array{client: string, code: string, deep_link: bool, device: string, open_source: bool}>, issued?: string|null, name: string, quick_connect: bool, reason?: string|null, rehearsed: bool, sessions: list<array{client: string, device: string, last_seen?: string|null}>, state: 'unprovisioned'|'ready'|'pending'|'connected'|'failed', steps: list<string>}
+ * @phpstan-type Data array{address?: string|null, caution?: string|null, clients: list<array{client: string, code: string, deep_link: bool, device: string, open_source: bool}>, issued?: string|null, name: string, quick_connect: bool, reason?: string|null, rehearsed: bool, remedy?: 'invite'|'ask-again'|'start-server'|'record-address'|null, sessions: list<array{client: string, device: string, last_seen?: string|null}>, state: 'unprovisioned'|'ready'|'pending'|'connected'|'failed', steps: list<string>}
  */
 final class HandoffEnvelope
 {
