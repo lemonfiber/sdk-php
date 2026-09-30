@@ -110,26 +110,13 @@ final readonly class ContractGenerator
      */
     private function generate(array $artefact, array $kinds, int $version): int
     {
-        $refusals = $this->refusals($artefact);
-
-        return $refusals === null ? 1 : $this->emit($kinds, $refusals, $version);
-    }
-
-    /**
-     * The refusal codes the artefact lists, or nothing when it lists them in a shape this cannot read.
-     *
-     * @param  array<mixed, mixed>  $artefact
-     * @return array<string, array{code: string, status: int, description: string}>|null
-     */
-    private function refusals(array $artefact): ?array
-    {
         try {
-            return new Refusals()->listed($artefact);
+            $refusals = new Refusals()->listed($artefact);
         } catch (UnexpectedValueException $malformed) {
-            $this->refuse($malformed->getMessage() . ' Nothing was generated.');
-
-            return null;
+            return $this->refuse($malformed->getMessage() . ' Nothing was generated.');
         }
+
+        return $this->emit($kinds, $refusals, $version);
     }
 
     /**
