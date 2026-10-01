@@ -24,7 +24,7 @@ use Saloon\Http\PendingRequest;
 // sendings one act.
 
 /** A wait short enough for a test to sit through. */
-const A_SHORT_WAIT_MS = 600;
+const A_SHORT_WAIT_MS = 300;
 
 /** Room on top of the wait for starting a process and tearing a connection down. */
 const LEEWAY_SECONDS = 1.5;
@@ -106,11 +106,11 @@ it('asks again while the wait has room for the pause', function (): void {
 });
 
 it('asks a read again only where the doubling pause before it leaves room in the wait', function (int $firstPause, ?int $readsOwn, int $asked): void {
-    // The clock stands still, so the wait is a whole second throughout and
-    // only the pauses decide: 0.4 s then 0.8 s both fit, 0.6 s then 1.2 s
-    // leaves room for the first alone, and 1.2 s leaves room for none.
+    // The clock stands still, so the wait is a tenth of a second throughout
+    // and only the pauses decide: 40 ms then 80 ms both fit, 60 ms then 120 ms
+    // leaves room for the first alone, and 120 ms leaves room for none.
     $peer = AnsweringListener::hangingUp();
-    $connector = new LemonfiberConnector(BaseUrl::fromString($peer->address()), Duration::ofSeconds(1), RunToken::fromString('a-run-token'), new FakeClock([0.0]));
+    $connector = new LemonfiberConnector(BaseUrl::fromString($peer->address()), Duration::ofMilliseconds(100), RunToken::fromString('a-run-token'), new FakeClock([0.0]));
     $connector->pausingFor(Duration::ofMilliseconds($firstPause));
     $read = new ReadRequest('/api/status');
     $read->retryInterval = $readsOwn;
@@ -120,16 +120,16 @@ it('asks a read again only where the doubling pause before it leaves room in the
     expect($raised)->toBeInstanceOf(Unreachable::class)
         ->and(howManyAsked($peer))->toBe($asked);
 })->with([
-    'pauses that both fit' => [400, null, 3],
-    'a second pause that does not' => [600, null, 2],
-    'a first pause that does not' => [1200, null, 1],
-    'a read whose own first pause does not' => [1, 1200, 1],
+    'pauses that both fit' => [40, null, 3],
+    'a second pause that does not' => [60, null, 2],
+    'a first pause that does not' => [120, null, 1],
+    'a read whose own first pause does not' => [1, 120, 1],
 ]);
 
 it('gives every call its own wait and its own attempts, however many calls came before it', function (): void {
     $peer = AnsweringListener::hangingUp();
-    $connector = new LemonfiberConnector(BaseUrl::fromString($peer->address()), Duration::ofSeconds(1), RunToken::fromString('a-run-token'), new FakeClock([0.0]));
-    $connector->pausingFor(Duration::ofMilliseconds(600));
+    $connector = new LemonfiberConnector(BaseUrl::fromString($peer->address()), Duration::ofMilliseconds(100), RunToken::fromString('a-run-token'), new FakeClock([0.0]));
+    $connector->pausingFor(Duration::ofMilliseconds(60));
     $client = new Client($connector);
 
     timed(static fn(): mixed => $client->read('/api/status'));
