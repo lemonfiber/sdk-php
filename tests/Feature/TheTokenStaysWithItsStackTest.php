@@ -98,19 +98,19 @@ it('follows no answer that points away from the stack, and the token stays behin
         $elsewhere = AnsweringListener::plain();
         $stack = AnsweringListener::plain('127.0.0.1', 302, $elsewhere->address() . '/api/status');
 
-        return [$stack, $elsewhere, Client::at($stack->address(), THE_TOKEN)];
+        return [$stack, $elsewhere, aClientAt($stack->address(), THE_TOKEN)];
     }],
     'to another host' => [static function (): array {
         $elsewhere = AnsweringListener::plain('[::1]');
         $stack = AnsweringListener::plain('127.0.0.1', 302, $elsewhere->address() . '/api/status');
 
-        return [$stack, $elsewhere, Client::at($stack->address(), THE_TOKEN)];
+        return [$stack, $elsewhere, aClientAt($stack->address(), THE_TOKEN)];
     }],
     'to another scheme' => [static function (): array {
         $elsewhere = AnsweringListener::plain();
         $stack = AnsweringListener::encrypted(302, $elsewhere->address() . '/api/status');
 
-        return [$stack, $elsewhere, Client::pinnedAt($stack->address(), THE_TOKEN, $stack->digest)];
+        return [$stack, $elsewhere, aPinnedClient($stack->address(), THE_TOKEN, $stack->digest)];
     }],
 ]);
 
@@ -121,7 +121,7 @@ it('follows no answer that points away from a pinned stack, wherever it was aske
     expect(whatAskingRaised(static fn(): mixed => $ask($stack)))->toBeInstanceOf(Unreachable::class)
         ->and($elsewhere->heard())->toBe('');
 })->with([
-    'live updates' => [static fn(AnsweringListener $stack): mixed => Client::pinnedAt($stack->address(), THE_TOKEN, $stack->digest)->eventSource()->open(null)],
+    'live updates' => [static fn(AnsweringListener $stack): mixed => aPinnedClient($stack->address(), THE_TOKEN, $stack->digest)->eventSource()->open(null)],
     'the door' => [static fn(AnsweringListener $stack): mixed => Admission::at($stack->address(), $stack->digest)->open('a-password')],
 ]);
 
@@ -220,6 +220,7 @@ it('holds a request to the pin whatever it, the connector or anything between as
         BaseUrl::pinned($stack->address(), CertificatePin::fromSha256(A_PIN_THE_PEER_DOES_NOT_PRESENT)),
         RunToken::fromString(THE_TOKEN),
     );
+    $connector->pausingFor(aMoment());
     $connector->config()->merge(everyWayOfWeakeningIt());
     $connector->middleware()->onRequest(static function (PendingRequest $pending): void {
         $pending->config()->merge(everyWayOfWeakeningIt());
@@ -234,7 +235,7 @@ it('holds a request to the pin whatever it, the connector or anything between as
 it('writes nothing to a peer the pin does not name', function (): void {
     $stack = AnsweringListener::encrypted();
 
-    expect(whatAskingRaised(static fn(): mixed => Client::pinnedAt($stack->address(), THE_TOKEN, A_PIN_THE_PEER_DOES_NOT_PRESENT)->read('/api/status')))
+    expect(whatAskingRaised(static fn(): mixed => aPinnedClient($stack->address(), THE_TOKEN, A_PIN_THE_PEER_DOES_NOT_PRESENT)->read('/api/status')))
         ->toBeInstanceOf(CertificateWasRefused::class)
         ->and($stack->heard())->toBe('');
 });
@@ -242,14 +243,14 @@ it('writes nothing to a peer the pin does not name', function (): void {
 it('reads a peer presenting the pinned certificate, whatever the trust store would say of it', function (): void {
     $stack = AnsweringListener::encrypted();
 
-    expect(Client::pinnedAt($stack->address(), THE_TOKEN, $stack->digest)->read('/api/status')->kind)->toBe('status')
+    expect(aPinnedClient($stack->address(), THE_TOKEN, $stack->digest)->read('/api/status')->kind)->toBe('status')
         ->and($stack->heard())->toContain(THE_TOKEN_AS_SENT);
 });
 
 it('hands a refusal on as the stack answered it', function (): void {
     $stack = AnsweringListener::plain('127.0.0.1', 400, '-', 'That is not a question this stack answers.');
 
-    $raised = whatAskingRaised(static fn(): mixed => Client::onPort($stack->port, THE_TOKEN)->read('/api/status'));
+    $raised = whatAskingRaised(static fn(): mixed => aClientOnPort($stack->port, THE_TOKEN)->read('/api/status'));
 
     expect($raised)->toBeInstanceOf(RequestFailed::class)
         ->and($raised instanceof RequestFailed ? $raised->status() : null)->toBe(400);

@@ -9,6 +9,7 @@ use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Exception\CertificateWasRefused;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\Unreachable;
+use Lemonfiber\Sdk\Time\Duration;
 use Override;
 use Saloon\Contracts\Authenticator;
 use Saloon\Contracts\Sender;
@@ -39,6 +40,16 @@ use Throwable;
  */
 final class LemonfiberConnector extends Connector
 {
+    /**
+     * How long before a request that may be asked again is asked again, in
+     * milliseconds; each retry after the first waits twice as long. Only a
+     * read may be asked again, and that is the read's to decide.
+     */
+    public const int FIRST_PAUSE_MS = 250;
+
+    #[Override]
+    public ?int $retryInterval = self::FIRST_PAUSE_MS;
+
     public function __construct(
         private readonly BaseUrl $baseUrl,
         private readonly ?RunToken $token = null,
@@ -75,6 +86,14 @@ final class LemonfiberConnector extends Connector
         } catch (FatalRequestException|TransferException $nothingAnswered) {
             throw $this->whyNothingAnswered($request->resolveEndpoint(), $nothingAnswered->getMessage());
         }
+    }
+
+    /**
+     * Pause this long before the first time a read is asked again; each retry after it waits twice as long.
+     */
+    public function pausingFor(Duration $first): void
+    {
+        $this->retryInterval = $first->milliseconds;
     }
 
     /**
