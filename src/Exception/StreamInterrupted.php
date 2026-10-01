@@ -28,6 +28,13 @@ final class StreamInterrupted extends RuntimeException implements Problem
         );
     }
 
+    public static function cutShort(): self
+    {
+        return new self(
+            'Live updates were cut short. The connection broke while they were being read.',
+        );
+    }
+
     public static function neverOpened(): self
     {
         return new self(
