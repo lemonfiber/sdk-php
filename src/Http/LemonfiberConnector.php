@@ -125,7 +125,8 @@ final class LemonfiberConnector extends Connector
     #[Override]
     public function handleRetry(FatalRequestException|RequestException $exception, Request $request): bool
     {
-        $pause = (($request->retryInterval ?? $this->retryInterval ?? 0) * (2 ** $this->askedAgain)) / self::MILLISECONDS_PER_SECOND;
+        $first = $request->retryInterval ?? $this->retryInterval ?? self::FIRST_PAUSE_MS;
+        $pause = $first * (2 ** $this->askedAgain) / self::MILLISECONDS_PER_SECOND;
         $this->askedAgain++;
 
         return $this->call->hasRoomFor($pause);

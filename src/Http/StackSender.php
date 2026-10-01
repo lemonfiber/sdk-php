@@ -39,8 +39,10 @@ use function sprintf;
  * names no wait of its own, so none can wait longer than the call it belongs
  * to. An answer that is read in full is held to the whole of what is left; a
  * streamed one only while it is being reached, since a stream held open is
- * read at the pace its reader asks for. An attempt with nothing left is not
- * made, and is raised as nothing answering.
+ * read at the pace its reader asks for. That bound on reaching a stream holds
+ * on an address held to a pin; over plain HTTP the transport's own bounds
+ * apply to a stream. An attempt with nothing left is not made, and is raised
+ * as nothing answering.
  */
 final readonly class StackSender implements Sender
 {
@@ -106,7 +108,6 @@ final readonly class StackSender implements Sender
                 RequestOptions::ALLOW_REDIRECTS => false,
                 RequestOptions::HTTP_ERRORS => false,
                 RequestOptions::STREAM => $streamed,
-                RequestOptions::CONNECT_TIMEOUT => $left,
                 ...($streamed ? [RequestOptions::READ_TIMEOUT => $left] : [RequestOptions::TIMEOUT => $left]),
                 ...$this->peerCheck,
             ]);
