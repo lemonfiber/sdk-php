@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Lemonfiber\Sdk\Admission;
-use Lemonfiber\Sdk\Client;
 use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Exception\CertificateWasRefused;
 use Lemonfiber\Sdk\Exception\Unreachable;
@@ -43,23 +42,23 @@ it('refuses a peer presenting a certificate the pin does not name, wherever it w
             ->and($raised->pinned())->toBe(A_PIN_NOTHING_PRESENTS);
     }
 })->with([
-    'a read' => ['/api/status', static fn(string $at): mixed => Client::pinnedAt($at, 'a-run-token', A_PIN_NOTHING_PRESENTS)->read('/api/status')],
-    'a bundle' => [Api::bundle('t4m8'), static fn(string $at): mixed => Client::pinnedAt($at, 'a-run-token', A_PIN_NOTHING_PRESENTS)->bundle('t4m8')],
-    'live updates' => [Api::EVENTS_ENDPOINT, static fn(string $at): mixed => Client::pinnedAt($at, 'a-run-token', A_PIN_NOTHING_PRESENTS)->eventSource()->open(null)],
+    'a read' => ['/api/status', static fn(string $at): mixed => aPinnedClient($at, 'a-run-token', A_PIN_NOTHING_PRESENTS)->read('/api/status')],
+    'a bundle' => [Api::bundle('t4m8'), static fn(string $at): mixed => aPinnedClient($at, 'a-run-token', A_PIN_NOTHING_PRESENTS)->bundle('t4m8')],
+    'live updates' => [Api::EVENTS_ENDPOINT, static fn(string $at): mixed => aPinnedClient($at, 'a-run-token', A_PIN_NOTHING_PRESENTS)->eventSource()->open(null)],
     'the door' => [Admission::ENDPOINT, static fn(string $at): mixed => Admission::at($at, A_PIN_NOTHING_PRESENTS)->open('a-password')],
 ]);
 
 it('reads a peer presenting the pinned certificate and answering nothing as silence', function (): void {
     $peer = TlsListener::start();
 
-    expect(whatThePeerRaised(static fn(): mixed => Client::pinnedAt($peer->address(), 'a-run-token', $peer->digest)->read('/api/status')))
+    expect(whatThePeerRaised(static fn(): mixed => aPinnedClient($peer->address(), 'a-run-token', $peer->digest)->read('/api/status')))
         ->toBeInstanceOf(Unreachable::class);
 });
 
 it('asks no certificate of an address that is not pinned', function (): void {
     $peer = TlsListener::start();
 
-    expect(whatThePeerRaised(static fn(): mixed => Client::at(sprintf('http://127.0.0.1:%d', $peer->port), 'a-run-token')->read('/api/status')))
+    expect(whatThePeerRaised(static fn(): mixed => aClientAt(sprintf('http://127.0.0.1:%d', $peer->port), 'a-run-token')->read('/api/status')))
         ->toBeInstanceOf(Unreachable::class);
 });
 

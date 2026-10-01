@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Lemonfiber\Sdk\Admission;
-use Lemonfiber\Sdk\Client;
 use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Logs;
@@ -56,19 +55,19 @@ it('raises one of its own problems wherever nothing answers', function (string $
             ->and($raised->reason())->not->toBe('');
     }
 })->with([
-    'a read' => ['/api/clients', static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->read('/api/clients')],
-    'an action' => ['/api/actions/restart', static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->act('/api/actions/restart')],
-    'a repair' => [Repair::offer()->endpoint(), static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->repair(Repair::offer())],
-    'asking after work' => [Api::job('a-job'), static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->whatBecameOf('a-job')],
-    'letting work go' => [Api::job('a-job'), static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->letGoOf('a-job')],
-    'the logs' => [Api::LOGS_ENDPOINT, static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->logs(Logs::ofService('sonarr', 5))],
-    'a bundle' => [Api::bundle('t4m8'), static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->bundle('t4m8')],
-    'live updates' => [Api::EVENTS_ENDPOINT, static fn(int $port): mixed => Client::onPort($port, 'a-run-token')->eventSource()->open(null)],
+    'a read' => ['/api/clients', static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->read('/api/clients')],
+    'an action' => ['/api/actions/restart', static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->act('/api/actions/restart')],
+    'a repair' => [Repair::offer()->endpoint(), static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->repair(Repair::offer())],
+    'asking after work' => [Api::job('a-job'), static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->whatBecameOf('a-job')],
+    'letting work go' => [Api::job('a-job'), static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->letGoOf('a-job')],
+    'the logs' => [Api::LOGS_ENDPOINT, static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->logs(Logs::ofService('sonarr', 5))],
+    'a bundle' => [Api::bundle('t4m8'), static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->bundle('t4m8')],
+    'live updates' => [Api::EVENTS_ENDPOINT, static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->eventSource()->open(null)],
     'the door' => [Admission::ENDPOINT, static fn(int $port): mixed => Admission::onPort($port)->open('a-password')],
 ]);
 
 it('keeps a pinned address one of its own problems where nothing answers', function (): void {
-    $raised = whatNothingAnsweringRaises(static fn(): mixed => Client::pinnedAt(
+    $raised = whatNothingAnsweringRaises(static fn(): mixed => aPinnedClient(
         sprintf('https://127.0.0.1:%d', aPortNothingListensOn()),
         'a-run-token',
         str_repeat('a', 64),
@@ -79,7 +78,7 @@ it('keeps a pinned address one of its own problems where nothing answers', funct
 
 it('says nothing of the token or the password in what the connection reported', function (): void {
     $port = aPortNothingListensOn();
-    $read = whatNothingAnsweringRaises(static fn(): mixed => Client::onPort($port, 'a-run-token')->read('/api/status'));
+    $read = whatNothingAnsweringRaises(static fn(): mixed => aClientOnPort($port, 'a-run-token')->read('/api/status'));
     $door = whatNothingAnsweringRaises(static fn(): mixed => Admission::onPort($port)->open('a-password'));
 
     expect($read->getMessage() . ($read instanceof Unreachable ? $read->reason() : ''))->not->toContain('a-run-token')
