@@ -9,11 +9,15 @@ use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Exception\CertificateWasRefused;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\Unreachable;
+use Lemonfiber\Sdk\Time\Clock;
+use Lemonfiber\Sdk\Time\Deadline;
 use Lemonfiber\Sdk\Time\Duration;
+use Lemonfiber\Sdk\Time\SystemClock;
 use Override;
 use Saloon\Contracts\Authenticator;
 use Saloon\Contracts\Sender;
 use Saloon\Exceptions\Request\FatalRequestException;
+use Saloon\Exceptions\Request\RequestException;
 use Saloon\Http\Connector;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Request;
@@ -37,6 +41,13 @@ use Throwable;
  * Null rather than an empty token, because the two are not the same thing on
  * the wire: an absent header is what the door expects, and a header carrying
  * nothing is a token that fails comparison.
+ *
+ * **Every call waits at most the wait it was given.** The wait is required:
+ * a connector that fell back to its transport's own bound would wait thirty
+ * seconds for an answer, three times over for a read asked again. One call is
+ * every attempt at one request, so the attempts share the wait, each is given
+ * what is left of it, and an attempt the pause before it would not leave room
+ * for is not made.
  */
 final class LemonfiberConnector extends Connector
 {
@@ -47,13 +58,25 @@ final class LemonfiberConnector extends Connector
      */
     public const int FIRST_PAUSE_MS = 250;
 
+    private const int MILLISECONDS_PER_SECOND = 1000;
+
     #[Override]
     public ?int $retryInterval = self::FIRST_PAUSE_MS;
 
+    /** The call in flight, and how long it may still take. */
+    private Deadline $call;
+
+    /** How many times the call in flight has been asked again. */
+    private int $askedAgain = 0;
+
     public function __construct(
         private readonly BaseUrl $baseUrl,
+        private readonly Duration $wait,
         private readonly ?RunToken $token = null,
-    ) {}
+        private readonly Clock $clock = new SystemClock(),
+    ) {
+        $this->call = Deadline::after($wait, $clock);
+    }
 
     /**
      * Send a request, and raise {@see Unreachable} where nothing answered it.
@@ -81,11 +104,31 @@ final class LemonfiberConnector extends Connector
     #[Override]
     public function send(Request $request, ?MockClient $mockClient = null, ?callable $handleRetry = null): Response
     {
+        $this->call = Deadline::after($this->wait, $this->clock);
+        $this->askedAgain = 0;
+
         try {
             return parent::send($request, $mockClient, $handleRetry);
         } catch (FatalRequestException|TransferException $nothingAnswered) {
             throw $this->whyNothingAnswered($request->resolveEndpoint(), $nothingAnswered->getMessage());
         }
+    }
+
+    /**
+     * Ask again only where the pause before it leaves room within the call's wait.
+     *
+     * Reached only where the request itself would ask again, so this decides
+     * nothing about which failures are worth another attempt; only whether there
+     * is time for one. The pause doubles with each attempt, as the requests that
+     * ask again are told to.
+     */
+    #[Override]
+    public function handleRetry(FatalRequestException|RequestException $exception, Request $request): bool
+    {
+        $pause = (($request->retryInterval ?? $this->retryInterval ?? 0) * (2 ** $this->askedAgain)) / self::MILLISECONDS_PER_SECOND;
+        $this->askedAgain++;
+
+        return $this->call->hasRoomFor($pause);
     }
 
     /**
@@ -127,7 +170,7 @@ final class LemonfiberConnector extends Connector
      */
     protected function defaultSender(): Sender
     {
-        return new StackSender($this->baseUrl);
+        return new StackSender($this->baseUrl, fn(): float => $this->call->secondsLeft());
     }
 
     /**

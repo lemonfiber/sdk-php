@@ -20,6 +20,7 @@ use Lemonfiber\Sdk\Http\AdmissionRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
+use Lemonfiber\Sdk\Time\Duration;
 use Saloon\Http\Faking\MockClient;
 
 /**
@@ -79,12 +80,14 @@ final readonly class Admission
      * request that carries the operator's password, so it is the last request
      * that should ever reach a machine whose identity nothing established.
      *
+     * The offer waits at most `$wait` for its answer.
+     *
      * @throws ConfigurationProblem
      */
-    public static function at(string $address, string $certificateDigest): self
+    public static function at(string $address, string $certificateDigest, Duration $wait): self
     {
         return new self(
-            new LemonfiberConnector(BaseUrl::pinned($address, CertificatePin::fromSha256($certificateDigest))),
+            new LemonfiberConnector(BaseUrl::pinned($address, CertificatePin::fromSha256($certificateDigest)), $wait),
             new EnvelopeReader(),
         );
     }
@@ -98,9 +101,9 @@ final readonly class Admission
      *
      * @throws ConfigurationProblem
      */
-    public static function onPort(int $port): self
+    public static function onPort(int $port, Duration $wait): self
     {
-        return new self(new LemonfiberConnector(BaseUrl::onPort($port)), new EnvelopeReader());
+        return new self(new LemonfiberConnector(BaseUrl::onPort($port), $wait), new EnvelopeReader());
     }
 
     /**

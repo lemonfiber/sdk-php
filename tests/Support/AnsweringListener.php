@@ -80,6 +80,24 @@ final class AnsweringListener
     }
 
     /**
+     * A peer that hears every request and answers none, over plain TCP or, encrypted, presenting its own certificate.
+     */
+    public static function silent(bool $encrypted = false): self
+    {
+        return $encrypted
+            ? self::start('tls', 'https', '127.0.0.1', 0, '-', '')
+            : self::start('tcp', 'http', '127.0.0.1', 0, '-', '');
+    }
+
+    /**
+     * A peer that hears every request and hangs up on it without answering.
+     */
+    public static function hangingUp(): self
+    {
+        return self::start('tcp', 'http', '127.0.0.1', 1, '-', '');
+    }
+
+    /**
      * Where it listens.
      */
     public function address(): string

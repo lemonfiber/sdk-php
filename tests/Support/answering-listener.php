@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 // A peer that reads each request's head, writes it down, and answers every one
-// with the same answer. Started as:
+// with the same answer. Given the status 0 it holds the connection open and never
+// answers; given the status 1 it hangs up without answering. Started as:
 //
 //   answering-listener.php <tcp|tls> <host> <heard-file> <status> <location or -> <body>
 //
@@ -71,6 +72,9 @@ $answer = sprintf("HTTP/1.1 %s Answered\r\n", $status)
     . "Connection: close\r\n\r\n"
     . $body;
 
+// Connections it heard and will not answer, held open until the test ends it.
+$held = [];
+
 // Until the test that started it ends it.
 for (;;) {
     $accepted = stream_socket_accept($listening, 60);
@@ -88,6 +92,21 @@ for (;;) {
 
     if ($head !== '') {
         file_put_contents($heard, $head . "\n", FILE_APPEND);
+    }
+
+    if ($status === '0') {
+        $held[] = $accepted;
+
+        continue;
+    }
+
+    if ($status === '1') {
+        fclose($accepted);
+
+        continue;
+    }
+
+    if ($head !== '') {
         fwrite($accepted, $answer);
     }
 

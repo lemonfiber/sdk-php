@@ -66,30 +66,37 @@ final readonly class Client
     ) {}
 
     /**
+     * The stack on this machine. Every call waits at most `$wait` for its answer, every attempt at it included.
+     *
      * @throws ConfigurationProblem
      */
-    public static function onPort(int $port, string $token): self
+    public static function onPort(int $port, string $token, Duration $wait): self
     {
-        return new self(new LemonfiberConnector(BaseUrl::onPort($port), RunToken::fromString($token)));
+        return new self(new LemonfiberConnector(BaseUrl::onPort($port), $wait, RunToken::fromString($token)));
     }
 
     /**
+     * A stack at this address. Every call waits at most `$wait` for its answer, every attempt at it included.
+     *
      * @throws ConfigurationProblem
      */
-    public static function at(string $address, string $token): self
+    public static function at(string $address, string $token, Duration $wait): self
     {
-        return new self(new LemonfiberConnector(BaseUrl::fromString($address), RunToken::fromString($token)));
+        return new self(new LemonfiberConnector(BaseUrl::fromString($address), $wait, RunToken::fromString($token)));
     }
 
     /**
      * A stack reached anywhere, held to the one certificate whose digest pairing material carried.
      *
+     * Every call waits at most `$wait` for its answer, every attempt at it included.
+     *
      * @throws ConfigurationProblem
      */
-    public static function pinnedAt(string $address, string $token, string $certificateDigest): self
+    public static function pinnedAt(string $address, string $token, string $certificateDigest, Duration $wait): self
     {
         return new self(new LemonfiberConnector(
             BaseUrl::pinned($address, CertificatePin::fromSha256($certificateDigest)),
+            $wait,
             RunToken::fromString($token),
         ));
     }

@@ -63,7 +63,7 @@ it('raises one of its own problems wherever nothing answers', function (string $
     'the logs' => [Api::LOGS_ENDPOINT, static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->logs(Logs::ofService('sonarr', 5))],
     'a bundle' => [Api::bundle('t4m8'), static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->bundle('t4m8')],
     'live updates' => [Api::EVENTS_ENDPOINT, static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->eventSource()->open(null)],
-    'the door' => [Admission::ENDPOINT, static fn(int $port): mixed => Admission::onPort($port)->open('a-password')],
+    'the door' => [Admission::ENDPOINT, static fn(int $port): mixed => Admission::onPort($port, aWait())->open('a-password')],
 ]);
 
 it('keeps a pinned address one of its own problems where nothing answers', function (): void {
@@ -79,7 +79,7 @@ it('keeps a pinned address one of its own problems where nothing answers', funct
 it('says nothing of the token or the password in what the connection reported', function (): void {
     $port = aPortNothingListensOn();
     $read = whatNothingAnsweringRaises(static fn(): mixed => aClientOnPort($port, 'a-run-token')->read('/api/status'));
-    $door = whatNothingAnsweringRaises(static fn(): mixed => Admission::onPort($port)->open('a-password'));
+    $door = whatNothingAnsweringRaises(static fn(): mixed => Admission::onPort($port, aWait())->open('a-password'));
 
     expect($read->getMessage() . ($read instanceof Unreachable ? $read->reason() : ''))->not->toContain('a-run-token')
         ->and($door->getMessage() . ($door instanceof Unreachable ? $door->reason() : ''))->not->toContain('a-password');

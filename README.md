@@ -28,7 +28,7 @@ use Lemonfiber\Sdk\Client;
 use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Time\Duration;
 
-$client = Client::onPort(9000, $tokenLemonfiberPrinted);
+$client = Client::onPort(9000, $tokenLemonfiberPrinted, Duration::ofSeconds(10));
 
 $status = $client->read(Api::STATUS_ENDPOINT);
 $status->kind;        // 'status'
@@ -121,6 +121,13 @@ that breaks before an answer arrives all raise `Exception\Unreachable`, from eve
 sends — a read, an action, a repair, asking after or letting go of work, the logs, live updates
 and the door. The transport's own exception never reaches a caller.
 
+Every client is built with the longest a call may wait, and there is no default. The wait is the
+whole call: a read is asked again up to twice where nothing answered or a gateway could not reach
+the stack, and an action that carries a key is sent once more under that key where nothing
+answered. All attempts share the one wait. An attempt the pause before it would not leave room
+for is not made, and a call that runs out raises `Unreachable`. An action with no key is never
+sent again.
+
 ```php
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\Unreachable;
@@ -151,7 +158,7 @@ answers without a stack gives the client or the door a Saloon mock, and nothing 
 network:
 
 ```php
-$client = Client::onPort(9000, $token)->withMockClient($mock);
+$client = Client::onPort(9000, $token, Duration::ofSeconds(10))->withMockClient($mock);
 $client->baseUrl()->pin();  // the certificate this client is held to, or null on this machine
 ```
 
