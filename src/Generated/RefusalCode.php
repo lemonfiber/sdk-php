@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 493287299cb1d3236c6788de1bb57f0b2bf9c86f, api_version 1.
+// Source: 33ea43f663b186e38a0234e2df9745e405dd4708, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -135,6 +135,20 @@ enum RefusalCode: string
     case WrongMethod = 'ASK-10';
 
     /**
+     * Raised when an agreement names a reading of this machine that is not the one standing now.
+     *
+     * Answered with 400.
+     */
+    case AnotherReading = 'GONE-2';
+
+    /**
+     * Raised when a replacement was agreed to for an offer that is not the one standing now.
+     *
+     * Answered with 400.
+     */
+    case OfferMoved = 'MIGRATE-1';
+
+    /**
      * Raised where a read was given a parameter its answer has nowhere to put.
      *
      * Answered with 400.
@@ -240,6 +254,20 @@ enum RefusalCode: string
     case NotAChoice = 'READ-15';
 
     /**
+     * Raised when consent was given for an offer that no longer stands.
+     *
+     * Answered with 400.
+     */
+    case Stale = 'REPAIR-1';
+
+    /**
+     * Raised when consent was given for a listing that no longer stands.
+     *
+     * Answered with 400.
+     */
+    case MovedOn = 'RESTORE-11';
+
+    /**
      * Raised when an answer could not be rendered.
      *
      * Answered with 500.
@@ -252,6 +280,13 @@ enum RefusalCode: string
      * Answered with 500.
      */
     case NoJobName = 'SERVE-7';
+
+    /**
+     * Raised when an agreement names an offer that is not the one standing now.
+     *
+     * Answered with 400.
+     */
+    case AnotherOffer = 'SPACE-6';
 
     /**
      * The case a code names, or none where there is no code or one this list does not name.
@@ -284,6 +319,8 @@ enum RefusalCode: string
             self::NotAnAnswer => 400,
             self::NoEndpoint => 404,
             self::WrongMethod => 405,
+            self::AnotherReading => 400,
+            self::OfferMoved => 400,
             self::Unwanted => 400,
             self::Repeated => 400,
             self::NoSuchRead => 404,
@@ -299,8 +336,11 @@ enum RefusalCode: string
             self::NoUpdateObject => 400,
             self::NotALineCount => 400,
             self::NotAChoice => 400,
+            self::Stale => 400,
+            self::MovedOn => 400,
             self::Unrenderable => 500,
             self::NoJobName => 500,
+            self::AnotherOffer => 400,
         };
     }
 }

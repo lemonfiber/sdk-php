@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 493287299cb1d3236c6788de1bb57f0b2bf9c86f, api_version 1.
+// Source: 33ea43f663b186e38a0234e2df9745e405dd4708, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `household` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{allows?: string|null, available: bool, filtering?: string|null, findings: list<string>, members: list<array{access: array{administrator: bool, age_limit?: int|null, disabled: bool, every_library: bool, libraries: list<string>, rated?: array{allows: list<string>, fell_back: bool, holds_back: list<string>}|null, restriction: 'unrestricted'|'rating-limited'|'library-limited'|'both'|'inconsistent', unrated: 'held-back'|'let-through'}, asking?: array{films: array{limit?: int|null, period?: string|null, remaining?: int|null, used: int}, frees_up?: string|null, policy: 'trusted'|'within-a-limit'|'everything-waits', standing: 'unlimited'|'within-quota'|'near-quota'|'quota-exhausted', television: array{limit?: int|null, period?: string|null, remaining?: int|null, used: int}}|null, claimed: bool, last_seen?: string|null, name: string, requests: list<array{estimate?: array{bytes: int, measured: bool}|null, id: int, media?: string|null, refused?: array{at?: string|null, expired?: bool, reason: string, told?: array{at?: string|null, to: list<string>}|null}|null, state?: 'waiting-for-approval'|'declined'|'failed'|'getting'|'partly-here'|'here'|'gone'|null, title?: string|null, waiting_days?: int|null}>, standing: 'invited'|'expired'|'active'|'suspended', to_hand_over: list<string>}>, policy?: 'trusted'|'within-a-limit'|'everything-waits'|null}
+ * @phpstan-type Data array{allows?: string|null, available: bool, filtering?: string|null, findings: list<string>, members: list<array{access: array{administrator: bool, age_limit?: int|null, disabled: bool, every_library: bool, libraries: list<string>, rated?: array{allows: list<string>, fell_back: bool, holds_back: list<string>}|null, restriction: 'unrestricted'|'rating-limited'|'library-limited'|'both'|'inconsistent', unrated: 'held-back'|'let-through'}, asking?: array{films: array{limit?: int|null, period?: string|null, remaining?: int|null, used: int}, frees_up?: string|null, policy: 'trusted'|'within-a-limit'|'everything-waits', standing: 'unlimited'|'within-quota'|'near-quota'|'quota-exhausted', television: array{limit?: int|null, period?: string|null, remaining?: int|null, used: int}}|null, claimed: bool, last_seen?: string|null, name: string, requests: list<array{estimate?: array{bytes: int, measured: bool}|null, id: int, media?: string|null, refused?: array{at?: string|null, expired?: bool, reason: string, told?: array{at?: string|null, to: list<string>}|null}|null, state?: 'waiting-for-approval'|'declined'|'failed'|'getting'|'partly-here'|'here'|'gone'|null, title?: string|null, waiting_days?: int|null}>, standing: 'invited'|'expired'|'active'|'suspended', to_hand_over: list<string>}>, policy?: 'trusted'|'within-a-limit'|'everything-waits'|null, rehearsed: bool}
  */
 final class HouseholdEnvelope
 {

@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 493287299cb1d3236c6788de1bb57f0b2bf9c86f, api_version 1.
+// Source: 33ea43f663b186e38a0234e2df9745e405dd4708, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `stop-seeding` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{agreement: string, download: array{bytes: int, consequence?: string|null, name: string, standing: array{standing: 'never_imported'}|array{ratio: int, standing: 'seeding'}|array{standing: 'left_alone'}}, goes: string, gone?: array{bytes: int, name: string, rehearsed: bool}|null}
+ * @phpstan-type Data array{agreement: string, download: array{bytes: int, consequence?: string|null, name: string, standing: array{standing: 'never_imported'}|array{ratio: int, standing: 'seeding'}|array{standing: 'left_alone'}}, goes: string, gone?: array{bytes: int, name: string, rehearsed: bool}|null, rehearsed: bool}
  */
 final class StopSeedingEnvelope
 {
