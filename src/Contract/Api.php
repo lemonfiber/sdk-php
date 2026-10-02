@@ -151,12 +151,10 @@ final class Api
     /**
      * The endpoint answering with what the checks about the disk found.
      *
-     * {@see self::CHECKS_ENDPOINT} held to the storage group, so it answers
-     * with the same `doctor` envelope and
-     * {@see \Lemonfiber\Sdk\Generated\DoctorEnvelope} is what reads it. The
-     * narrowing is the path's own and not a caller's: it takes no parameter,
-     * so this door cannot be turned into a second way of asking for any other
-     * group.
+     * {@see self::CHECKS_ENDPOINT} held to the storage group, so it answers with the same `doctor`
+     * envelope and {@see \Lemonfiber\Sdk\Generated\DoctorEnvelope} is what reads it. The narrowing
+     * is the path's own and not a caller's: it takes no parameter, so this door cannot be turned
+     * into a second way of asking for any other group.
      */
     public const string STORAGE_ENDPOINT = '/api/storage';
 
@@ -239,14 +237,12 @@ final class Api
      * that is running, which is a thing to put in front of somebody rather
      * than a thing this surface carries out.
      *
-     * **It takes `what`, and naming nothing is refused.** Two things can be
-     * moved forward and the endpoint serves both, so a request that does not
-     * say which is answered in prose rather than with an envelope. `stack`
-     * asks where the services stand, which arrives as the `update` envelope
-     * and {@see \Lemonfiber\Sdk\Generated\UpdateEnvelope} is what reads it.
-     * `self` asks where this copy of lemonfiber stands, which is the
-     * `self-update` envelope and a different type
-     * ({@see \Lemonfiber\Sdk\Generated\SelfUpdateEnvelope}).
+     * **It takes `what`, and naming nothing is refused.** Two things can be moved forward and the
+     * endpoint serves both, so a request that does not say which is answered in prose rather than
+     * with an envelope. `stack` asks where the services stand, which arrives as the `update`
+     * envelope and {@see \Lemonfiber\Sdk\Generated\UpdateEnvelope} is what reads it. `self` asks
+     * where this copy of lemonfiber stands, which is the `self-update` envelope and a different
+     * type ({@see \Lemonfiber\Sdk\Generated\SelfUpdateEnvelope}).
      *
      * It also takes `to`, the version to move to instead of whatever is
      * newest, which is the one question a downgrade asks. Only the `self`
@@ -416,6 +412,14 @@ final class Api
     public const string FRONT_DOOR_ENDPOINT = '/api/front-door';
 
     /**
+     * What a surface can mark as new: releases, requests and checks found wrong, newest first.
+     * It answers with the `news-items` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\NewsItemsEnvelope}) and takes nothing; the stream
+     * names the newest of each as `news`.
+     */
+    public const string NEWS_ENDPOINT = '/api/news';
+
+    /**
      * The endpoint answering with what one of this product's words means.
      *
      * The one reading about lemonfiber rather than about a stack, answered
@@ -477,22 +481,20 @@ final class Api
     /**
      * The endpoint every action is asked for through.
      *
-     * One path for the whole of what this surface can be told to do: the name
-     * of the action is the last segment of it, and no action has an endpoint
-     * of its own. Named here for the reason {@see self::CHECKS_ENDPOINT} is,
-     * and {@see self::action()} beside it is what keeps a caller from spelling
-     * either half.
+     * One path for the whole of what this surface can be told to do: the name of the action is the
+     * last segment of it, and no action has an endpoint of its own. Named here for the reason
+     * {@see self::CHECKS_ENDPOINT} is, and {@see self::action()} beside it is what keeps a caller
+     * from spelling either half.
      */
     public const string ACTIONS_ENDPOINT = '/api/actions';
 
     /**
      * The endpoint work already begun is asked about through.
      *
-     * The name of the work is the last segment, as an action's name is the last
-     * segment of {@see self::ACTIONS_ENDPOINT} — and for the same reason it is
-     * named here. A name lemonfiber answered with is only an answer if it can
-     * be redeemed, and a caller that had to spell where is a caller holding a
-     * word with nothing to do with it.
+     * The name of the work is the last segment, as an action's name is the last segment of
+     * {@see self::ACTIONS_ENDPOINT} — and for the same reason it is named here. A name lemonfiber
+     * answered with is only an answer if it can be redeemed, and a caller that had to spell where
+     * is a caller holding a word with nothing to do with it.
      */
     public const string JOBS_ENDPOINT = '/api/jobs';
 
@@ -509,10 +511,9 @@ final class Api
     /**
      * Where the action of that name is asked for.
      *
-     * Composed from the name rather than written out per action, so there is
-     * one place the path is spelled and one place it moves. What names are
-     * offered is the surface's own list and not this client's to hold: a name
-     * lemonfiber does not offer is refused by name, which is an answer a
+     * Composed from the name rather than written out per action, so there is one place the path is
+     * spelled and one place it moves. What names are offered is the surface's own list and not this
+     * client's to hold: a name lemonfiber does not offer is refused by name, which is an answer a
      * caller can act on, and a list kept here would go stale silently instead.
      */
     public static function action(string $name): string
@@ -523,10 +524,9 @@ final class Api
     /**
      * Where the work of that name is asked about, and released.
      *
-     * One path for both, since asking what became of a name and letting it go
-     * are one question and one answer: releasing ends the work and reports
-     * where it now stands, which is what asking would have said. The method
-     * separates them.
+     * One path for both, since asking what became of a name and letting it go are one question and
+     * one answer: releasing ends the work and reports where it now stands, which is what asking
+     * would have said. The method separates them.
      */
     public static function job(string $name): string
     {
