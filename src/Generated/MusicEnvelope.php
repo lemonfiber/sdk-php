@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 493287299cb1d3236c6788de1bb57f0b2bf9c86f, api_version 1.
+// Source: 33ea43f663b186e38a0234e2df9745e405dd4708, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `music` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{choice: array{format: string, means: string, note: string, scope: string, size_per_hour: string, targets: string}, disposition: 'shown'|'recorded'|'rehearsed'|'held'|'reapplied'|'would-reapply', outcome?: array{state: 'started'}|array{state: 'not-started'}|array{detail: string, state: 'failed'}|null}
+ * @phpstan-type Data array{choice: array{format: string, means: string, note: string, scope: string, size_per_hour: string, targets: string}, disposition: 'shown'|'recorded'|'rehearsed'|'held'|'reapplied'|'would-reapply', outcome?: array{state: 'started'}|array{state: 'not-started'}|array{detail: string, state: 'failed'}|null, rehearsed: bool}
  */
 final class MusicEnvelope
 {

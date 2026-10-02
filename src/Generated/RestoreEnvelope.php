@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 493287299cb1d3236c6788de1bb57f0b2bf9c86f, api_version 1.
+// Source: 33ea43f663b186e38a0234e2df9745e405dd4708, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `restore` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{done?: array{from_version: string, relocated?: array{now: string, was: string}|null, scope: array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project: string, scope: 'existing', trees: list<array{archive_path: string, host_path: string}>}}|null, would: array{agreement: string, downgrade: bool, manifest: array{created_at: string, data_root: string, members: list<array{archive_path: string, label: string}>, product_version: string, schema: int, scope: array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project: string, scope: 'existing', trees: list<array{archive_path: string, host_path: string}>}, sensitive: bool}, relocation?: array{now: string, was: string}|null}}
+ * @phpstan-type Data array{done?: array{from_version: string, relocated?: array{now: string, was: string}|null, scope: array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project: string, scope: 'existing', trees: list<array{archive_path: string, host_path: string}>}}|null, rehearsed: bool, would: array{agreement: string, downgrade: bool, manifest: array{created_at: string, data_root: string, members: list<array{archive_path: string, label: string}>, product_version: string, schema: int, scope: array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project: string, scope: 'existing', trees: list<array{archive_path: string, host_path: string}>}, sensitive: bool}, relocation?: array{now: string, was: string}|null}}
  */
 final class RestoreEnvelope
 {

@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 493287299cb1d3236c6788de1bb57f0b2bf9c86f, api_version 1.
+// Source: 33ea43f663b186e38a0234e2df9745e405dd4708, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `hosting` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{caveat?: string|null, changed?: array{installed: bool, name: string, rehearsed: bool, started: bool, touched: list<string>}|null, commands: list<array{command: string, definition?: string|null, guarantees: string, missing?: string|null, name: string, output?: string|null, runs?: string|null, standing: 'not-hosted'|'hosted'|'installed-unverified'|'stopped'|'orphaned'|'unsupported'}>, instruction?: string|null, manager: 'launchd'|'systemd'|'unsupported'}
+ * @phpstan-type Data array{caveat?: string|null, changed?: array{installed: bool, name: string, rehearsed: bool, started: bool, touched: list<string>}|null, commands: list<array{command: string, definition?: string|null, guarantees: string, missing?: string|null, name: string, output?: string|null, runs?: string|null, standing: 'not-hosted'|'hosted'|'installed-unverified'|'stopped'|'orphaned'|'unsupported'}>, instruction?: string|null, manager: 'launchd'|'systemd'|'unsupported', rehearsed: bool}
  */
 final class HostingEnvelope
 {
