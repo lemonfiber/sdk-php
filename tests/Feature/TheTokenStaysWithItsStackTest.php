@@ -122,14 +122,14 @@ it('follows no answer that points away from a pinned stack, wherever it was aske
         ->and($elsewhere->heard())->toBe('');
 })->with([
     'live updates' => [static fn(AnsweringListener $stack): mixed => aPinnedClient($stack->address(), THE_TOKEN, $stack->digest)->eventSource()->open(null)],
-    'the door' => [static fn(AnsweringListener $stack): mixed => Admission::at($stack->address(), $stack->digest)->open('a-password')],
+    'the door' => [static fn(AnsweringListener $stack): mixed => Admission::at($stack->address(), $stack->digest, aWait())->open('a-password')],
 ]);
 
 it('refuses a request addressed anywhere but the stack, and sends it nowhere', function (Closure $build): void {
     /** @var array{0: AnsweringListener, 1: AnsweringListener, 2: string, 3: string} $built */
     $built = $build();
     [$stack, $elsewhere, $address, $refused] = $built;
-    $connector = new LemonfiberConnector(BaseUrl::fromString($stack->address()), RunToken::fromString(THE_TOKEN));
+    $connector = new LemonfiberConnector(BaseUrl::fromString($stack->address()), aWait(), RunToken::fromString(THE_TOKEN));
     $connector->allowBaseUrlOverride = true;
 
     $raised = whatAskingRaised(static fn(): mixed => $connector->send(askingFor($address)));
@@ -163,7 +163,7 @@ it('refuses a request addressed anywhere but the stack, and sends it nowhere', f
 it('refuses a request reshaped on its way out to go somewhere else, and names only where', function (): void {
     $stack = AnsweringListener::plain();
     $elsewhere = AnsweringListener::plain('[::1]');
-    $connector = new LemonfiberConnector(BaseUrl::fromString($stack->address()), RunToken::fromString(THE_TOKEN));
+    $connector = new LemonfiberConnector(BaseUrl::fromString($stack->address()), aWait(), RunToken::fromString(THE_TOKEN));
     $reshaped = new class ($elsewhere->port) extends Request {
         protected Method $method = Method::GET;
 
@@ -195,7 +195,7 @@ it('refuses a request reshaped on its way out to go somewhere else, and names on
 it('refuses a request addressed off the stack when it is sent without waiting too', function (): void {
     $stack = AnsweringListener::plain();
     $elsewhere = AnsweringListener::plain();
-    $connector = new LemonfiberConnector(BaseUrl::fromString($stack->address()), RunToken::fromString(THE_TOKEN));
+    $connector = new LemonfiberConnector(BaseUrl::fromString($stack->address()), aWait(), RunToken::fromString(THE_TOKEN));
     $connector->allowBaseUrlOverride = true;
 
     $raised = whatAskingRaised(static fn(): mixed => $connector->sendAsync(askingFor($elsewhere->address() . '/api/status'))->wait());
@@ -206,7 +206,7 @@ it('refuses a request addressed off the stack when it is sent without waiting to
 
 it('sends a request that waits to the stack as it sends any other', function (): void {
     $stack = AnsweringListener::plain();
-    $connector = new LemonfiberConnector(BaseUrl::fromString($stack->address()), RunToken::fromString(THE_TOKEN));
+    $connector = new LemonfiberConnector(BaseUrl::fromString($stack->address()), aWait(), RunToken::fromString(THE_TOKEN));
 
     $answer = $connector->sendAsync(new ReadRequest('/api/status'))->wait();
 
@@ -218,6 +218,7 @@ it('holds a request to the pin whatever it, the connector or anything between as
     $stack = AnsweringListener::encrypted();
     $connector = new LemonfiberConnector(
         BaseUrl::pinned($stack->address(), CertificatePin::fromSha256(A_PIN_THE_PEER_DOES_NOT_PRESENT)),
+        aWait(),
         RunToken::fromString(THE_TOKEN),
     );
     $connector->pausingFor(aMoment());
@@ -258,7 +259,7 @@ it('hands a refusal on as the stack answered it', function (): void {
 
 it('streams an answer only where the request asked for it to be streamed', function (bool $streamed): void {
     $stack = AnsweringListener::plain();
-    $connector = new LemonfiberConnector(BaseUrl::onPort($stack->port), RunToken::fromString(THE_TOKEN));
+    $connector = new LemonfiberConnector(BaseUrl::onPort($stack->port), aWait(), RunToken::fromString(THE_TOKEN));
     $request = new ReadRequest(Api::EVENTS_ENDPOINT);
 
     if ($streamed) {

@@ -17,13 +17,14 @@ function connectorPinnedTo(string $digest): LemonfiberConnector
 {
     return new LemonfiberConnector(
         BaseUrl::pinned('https://192.168.1.42:9000', CertificatePin::fromSha256($digest)),
+        aWait(),
         RunToken::fromString('a-run-token'),
     );
 }
 
 function connectorOnThisMachine(): LemonfiberConnector
 {
-    return new LemonfiberConnector(BaseUrl::onPort(9000), RunToken::fromString('a-run-token'));
+    return new LemonfiberConnector(BaseUrl::onPort(9000), aWait(), RunToken::fromString('a-run-token'));
 }
 
 /**

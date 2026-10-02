@@ -10,6 +10,14 @@ use Lemonfiber\Sdk\Http\RunToken;
 use Lemonfiber\Sdk\Time\Duration;
 
 /**
+ * A wait long enough that no test's call runs out of it, so only a test about the wait meets one.
+ */
+function aWait(): Duration
+{
+    return Duration::ofSeconds(5);
+}
+
+/**
  * A pause short enough that a test sees a read asked again without waiting for it.
  */
 function aMoment(): Duration
@@ -22,7 +30,7 @@ function aMoment(): Duration
  */
 function aClientOnPort(int $port, string $token): Client
 {
-    return pausingAMoment(new LemonfiberConnector(BaseUrl::onPort($port), RunToken::fromString($token)));
+    return pausingAMoment(new LemonfiberConnector(BaseUrl::onPort($port), aWait(), RunToken::fromString($token)));
 }
 
 /**
@@ -30,7 +38,7 @@ function aClientOnPort(int $port, string $token): Client
  */
 function aClientAt(string $address, string $token): Client
 {
-    return pausingAMoment(new LemonfiberConnector(BaseUrl::fromString($address), RunToken::fromString($token)));
+    return pausingAMoment(new LemonfiberConnector(BaseUrl::fromString($address), aWait(), RunToken::fromString($token)));
 }
 
 /**
@@ -40,6 +48,7 @@ function aPinnedClient(string $address, string $token, string $certificateDigest
 {
     return pausingAMoment(new LemonfiberConnector(
         BaseUrl::pinned($address, CertificatePin::fromSha256($certificateDigest)),
+        aWait(),
         RunToken::fromString($token),
     ));
 }

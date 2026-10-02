@@ -108,7 +108,7 @@ it('never asks an action again, whatever answered it', function (): void {
 });
 
 it('waits a quarter of a second before asking a read again, and twice that before the third time', function (): void {
-    $connector = new LemonfiberConnector(BaseUrl::onPort(9000));
+    $connector = new LemonfiberConnector(BaseUrl::onPort(9000), aWait());
     $read = new ReadRequest('/api/status');
 
     expect($connector->retryInterval)->toBe(250)
@@ -118,7 +118,7 @@ it('waits a quarter of a second before asking a read again, and twice that befor
 });
 
 it('pauses for what it is told to before asking a read again', function (): void {
-    $connector = new LemonfiberConnector(BaseUrl::onPort(9000));
+    $connector = new LemonfiberConnector(BaseUrl::onPort(9000), aWait());
     $connector->pausingFor(Duration::ofMilliseconds(40));
 
     expect($connector->retryInterval)->toBe(40);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Http;
 
+use Closure;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Handler\StreamHandler;
 use GuzzleHttp\Promise\PromiseInterface;
@@ -33,9 +34,21 @@ use function sprintf;
  *
  * An answer pointing elsewhere is not followed, and is raised as the stack not
  * answering: what was asked for did not come back from the stack.
+ *
+ * **Each attempt is bounded by what is left of its call's wait.** A request
+ * names no wait of its own, so none can wait longer than the call it belongs
+ * to. An answer that is read in full is held to the whole of what is left; a
+ * streamed one only while it is being reached, since a stream held open is
+ * read at the pace its reader asks for. That bound on reaching a stream holds
+ * on an address held to a pin; over plain HTTP the transport's own bounds
+ * apply to a stream. An attempt with nothing left is not made, and is raised
+ * as nothing answering.
  */
 final readonly class StackSender implements Sender
 {
+    /** What an attempt the call had no time left for reports. */
+    private const string OUT_OF_TIME = 'The call used all the time it was given before this attempt could be made.';
+
     /**
      * The transport, which nothing outside this sender holds.
      */
@@ -48,7 +61,10 @@ final readonly class StackSender implements Sender
      */
     private array $peerCheck;
 
-    public function __construct(private BaseUrl $baseUrl)
+    /**
+     * @param Closure(): float $secondsLeft how long the call this attempt belongs to may still take
+     */
+    public function __construct(private BaseUrl $baseUrl, private Closure $secondsLeft)
     {
         $pin = $baseUrl->pin();
 
@@ -79,11 +95,20 @@ final readonly class StackSender implements Sender
             throw ConfigurationProblem::requestLeavesTheStack($this->originIn($uri));
         }
 
+        $left = ($this->secondsLeft)();
+
+        if ($left <= 0.0) {
+            throw new FatalRequestException(new TransferException(self::OUT_OF_TIME, $request), $pendingRequest);
+        }
+
+        $streamed = $pendingRequest->config()->get(RequestOptions::STREAM) === true;
+
         try {
             $answer = $this->transport->getGuzzleClient()->send($request, [
                 RequestOptions::ALLOW_REDIRECTS => false,
                 RequestOptions::HTTP_ERRORS => false,
-                RequestOptions::STREAM => $pendingRequest->config()->get(RequestOptions::STREAM) === true,
+                RequestOptions::STREAM => $streamed,
+                ...($streamed ? [RequestOptions::READ_TIMEOUT => $left] : [RequestOptions::TIMEOUT => $left]),
                 ...$this->peerCheck,
             ]);
         } catch (TransferException $nothingAnswered) {

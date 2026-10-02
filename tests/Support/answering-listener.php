@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 // A peer that reads each request's head, writes it down, and answers every one
-// with the same answer. Started as:
+// with the same answer. Given the status 0 it holds the connection open and never
+// answers, until long after any wait a test gives a call is over; given the
+// status 1 it hangs up without answering. Started as:
 //
 //   answering-listener.php <tcp|tls> <host> <heard-file> <status> <location or -> <body>
 //
@@ -71,9 +73,24 @@ $answer = sprintf("HTTP/1.1 %s Answered\r\n", $status)
     . "Connection: close\r\n\r\n"
     . $body;
 
+// Connections it heard and will not answer, each with when it was heard.
+$held = [];
+
+// How long a connection is held without an answer, in seconds. Longer than any
+// call a test waits on, so a call that ends at all ends at its own wait; and not
+// forever, so a client that waits on nothing fails its test rather than hanging it.
+$holdsFor = 3;
+
 // Until the test that started it ends it.
 for (;;) {
-    $accepted = stream_socket_accept($listening, 60);
+    $accepted = stream_socket_accept($listening, $status === '0' ? 1 : 60);
+
+    foreach ($held as $at => [$connection, $heardAt]) {
+        if (microtime(true) - $heardAt >= $holdsFor) {
+            fclose($connection);
+            unset($held[$at]);
+        }
+    }
 
     if ($accepted === false) {
         continue;
@@ -88,6 +105,21 @@ for (;;) {
 
     if ($head !== '') {
         file_put_contents($heard, $head . "\n", FILE_APPEND);
+    }
+
+    if ($status === '0') {
+        $held[] = [$accepted, microtime(true)];
+
+        continue;
+    }
+
+    if ($status === '1') {
+        fclose($accepted);
+
+        continue;
+    }
+
+    if ($head !== '') {
         fwrite($accepted, $answer);
     }
 

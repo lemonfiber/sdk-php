@@ -22,7 +22,7 @@ const AN_ARCHIVE = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\x03\x03\x00\x00\x00\x00
 function aClientHandingOver(MockResponse $answer): array
 {
     $mock = new MockClient([ReadRequest::class => $answer]);
-    $client = Client::onPort(9000, 'a-run-token')->withMockClient($mock);
+    $client = Client::onPort(9000, 'a-run-token', aWait())->withMockClient($mock);
 
     return [$client, $mock];
 }

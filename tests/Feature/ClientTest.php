@@ -30,7 +30,7 @@ const A_RUN_TOKEN = 'a-run-token';
 function clientAnswering(array $answers): array
 {
     $mock = new MockClient($answers);
-    $client = Client::onPort(9000, A_RUN_TOKEN)->withMockClient($mock);
+    $client = Client::onPort(9000, A_RUN_TOKEN, aWait())->withMockClient($mock);
 
     return [$client, $mock];
 }
@@ -483,13 +483,13 @@ it('hands the caller the sentence a read was refused with', function (): void {
 });
 
 it('is built from a written out address', function (): void {
-    $client = Client::at('http://127.0.0.1:9000', A_RUN_TOKEN);
+    $client = Client::at('http://127.0.0.1:9000', A_RUN_TOKEN, aWait());
 
     expect($client->baseUrl()->toString())->toBe('http://127.0.0.1:9000');
 });
 
 it('refuses to be built against another machine', function (): void {
-    expect(fn(): Client => Client::at('http://example.com:9000', A_RUN_TOKEN))
+    expect(fn(): Client => Client::at('http://example.com:9000', A_RUN_TOKEN, aWait()))
         ->toThrow(ConfigurationProblem::class, 'points somewhere else');
 });
 
@@ -498,6 +498,7 @@ it('is built against another machine when a certificate digest vouches for it', 
         'https://192.168.1.42:9000',
         A_RUN_TOKEN,
         '86b25c676b761e9a398081373fec783c2bec970baa255370838aebb5c687841e',
+        aWait(),
     );
 
     expect($client->baseUrl()->toString())->toBe('https://192.168.1.42:9000')
@@ -505,24 +506,24 @@ it('is built against another machine when a certificate digest vouches for it', 
 });
 
 it('refuses to be built against another machine with a digest it cannot use', function (): void {
-    expect(fn(): Client => Client::pinnedAt('https://192.168.1.42:9000', A_RUN_TOKEN, 'not-a-digest'))
+    expect(fn(): Client => Client::pinnedAt('https://192.168.1.42:9000', A_RUN_TOKEN, 'not-a-digest', aWait()))
         ->toThrow(ConfigurationProblem::class, '64 hexadecimal characters');
 });
 
 it('refuses to be built without a token', function (): void {
-    expect(fn(): Client => Client::onPort(9000, ''))
+    expect(fn(): Client => Client::onPort(9000, '', aWait()))
         ->toThrow(ConfigurationProblem::class, 'No run token was given');
 });
 
 it('waits as long as it was told between reads, or a quarter second', function (): void {
-    $client = Client::onPort(9000, A_RUN_TOKEN);
+    $client = Client::onPort(9000, A_RUN_TOKEN, aWait());
 
     expect($client->eventSource()->wait->milliseconds)->toBe(250)
         ->and($client->eventSource(Duration::ofMilliseconds(75))->wait->milliseconds)->toBe(75);
 });
 
 it('opens a feed of live updates', function (): void {
-    $client = Client::onPort(9000, A_RUN_TOKEN);
+    $client = Client::onPort(9000, A_RUN_TOKEN, aWait());
 
     expect($client->events(Duration::ofSeconds(15)))->toBeInstanceOf(EventFeed::class)
         ->and($client->events(Duration::ofSeconds(15), Duration::ofMilliseconds(50), 2))->toBeInstanceOf(EventFeed::class);

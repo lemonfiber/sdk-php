@@ -19,7 +19,7 @@ use Saloon\Http\Faking\MockResponse;
 function sourceAnswering(MockResponse $answer): array
 {
     $mock = new MockClient([ReadRequest::class => $answer]);
-    $connector = new LemonfiberConnector(BaseUrl::onPort(9000), RunToken::fromString('a-run-token'));
+    $connector = new LemonfiberConnector(BaseUrl::onPort(9000), aWait(), RunToken::fromString('a-run-token'));
     $connector->withMockClient($mock);
 
     return [new StreamingEventSource($connector, Duration::ofMilliseconds(10)), $mock];
