@@ -118,25 +118,25 @@ final readonly class Admission
      */
     public function open(string $password): Admitted
     {
-        $response = $this->connector->send(new AdmissionRequest($password));
-        $status = $response->status();
+        return $this->offered(new AdmissionRequest($password));
+    }
 
-        if ($status === self::NOT_THE_PASSWORD) {
-            throw PasswordWasRefused::atTheDoor();
-        }
-
-        if ($status === self::TOO_MANY) {
-            /** @var array<mixed>|string|null $said */
-            $said = $response->header(self::RETRY_AFTER);
-
-            throw $this->waitOf(is_string($said) ? $said : null);
-        }
-
-        if ($response->failed()) {
-            throw RequestFailed::from(self::ENDPOINT, $status, $response->body());
-        }
-
-        return $this->admitted($this->reader->read($response->body()));
+    /**
+     * Offer a household member's name and password, and come away with a session or with a reason.
+     *
+     * The stack tries the machine's own password first, and a refusal does not say
+     * which of the two it did not recognise.
+     *
+     * @throws ApiVersionMismatch
+     * @throws PasswordWasRefused
+     * @throws RequestFailed
+     * @throws TooManyAttempts
+     * @throws Unreachable
+     * @throws UnreadableResponse
+     */
+    public function openAs(string $name, string $password): Admitted
+    {
+        return $this->offered(new AdmissionRequest($password, $name));
     }
 
     /**
@@ -155,6 +155,39 @@ final readonly class Admission
         $this->connector->withMockClient($mock);
 
         return $this;
+    }
+
+    /**
+     * Send what was offered at the door, and read what came back.
+     *
+     * @throws ApiVersionMismatch
+     * @throws PasswordWasRefused
+     * @throws RequestFailed
+     * @throws TooManyAttempts
+     * @throws Unreachable
+     * @throws UnreadableResponse
+     */
+    private function offered(AdmissionRequest $offer): Admitted
+    {
+        $response = $this->connector->send($offer);
+        $status = $response->status();
+
+        if ($status === self::NOT_THE_PASSWORD) {
+            throw PasswordWasRefused::atTheDoor();
+        }
+
+        if ($status === self::TOO_MANY) {
+            /** @var array<mixed>|string|null $said */
+            $said = $response->header(self::RETRY_AFTER);
+
+            throw $this->waitOf(is_string($said) ? $said : null);
+        }
+
+        if ($response->failed()) {
+            throw RequestFailed::from(self::ENDPOINT, $status, $response->body());
+        }
+
+        return $this->admitted($this->reader->read($response->body()));
     }
 
     /**
