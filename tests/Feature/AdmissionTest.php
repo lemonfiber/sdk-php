@@ -127,6 +127,30 @@ it('sends the password in the body, to the one endpoint, and never in the addres
         ->toBe(['password' => A_PASSWORD]);
 });
 
+it('sends a member\'s name beside the password, in the body, to the one endpoint', function (): void {
+    [$door, $mock] = doorAnswering(MockResponse::make(
+        '{"api_version":1,"kind":"admission","data":{"member":"a7f3","token":"a-session","until":"2026-09-14T10:00:00"}}',
+    ));
+
+    $admitted = $door->openAs('ada', A_PASSWORD);
+
+    $pending = $mock->getLastPendingRequest();
+    $address = (string) $pending?->getUri();
+    $body = $pending?->body();
+
+    expect($admitted->member)->toBe('a7f3')
+        ->and($address)->toBe('http://127.0.0.1:9000' . Admission::ENDPOINT)
+        ->and($address)->not->toContain('ada')
+        ->and($body instanceof BodyRepository ? $body->all() : [])
+        ->toBe(['name' => 'ada', 'password' => A_PASSWORD]);
+});
+
+it('tells a name and password the stack did not recognise apart from every other refusal', function (): void {
+    [$door] = doorAnswering(MockResponse::make('{"error":"nope"}', 401));
+
+    expect(fn(): mixed => $door->openAs('ada', A_PASSWORD))->toThrow(PasswordWasRefused::class);
+});
+
 it('carries no token, because this is the door that opens without one', function (): void {
     // The one route on the surface that answers a request carrying no token —
     // a caller with a password and nothing else is exactly who it is for. An

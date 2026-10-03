@@ -31,7 +31,13 @@ final class AdmissionRequest extends Request implements HasBody
     #[Override]
     protected Method $method = Method::POST;
 
-    public function __construct(private readonly string $password) {}
+    /**
+     * @param string|null $name who the caller says they are, which a household member gives and the operator does not
+     */
+    public function __construct(
+        private readonly string $password,
+        private readonly ?string $name = null,
+    ) {}
 
     public function resolveEndpoint(): string
     {
@@ -43,6 +49,8 @@ final class AdmissionRequest extends Request implements HasBody
      */
     protected function defaultBody(): array
     {
-        return ['password' => $this->password];
+        return $this->name === null
+            ? ['password' => $this->password]
+            : ['name' => $this->name, 'password' => $this->password];
     }
 }
