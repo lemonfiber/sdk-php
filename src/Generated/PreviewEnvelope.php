@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 33ea43f663b186e38a0234e2df9745e405dd4708, api_version 1.
+// Source: 905074462b0d8eafa2de9f9d9f259c1feb0c7bb9, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `preview` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{dropped: list<array{needs: 'usenet'|'torrent', profile: string}>, filtered: list<array{forms: list<string>, id: string, name: string, needs: 'usenet'|'torrent', profile: string}>, footprint: array{estimated_mib: int, unestimated: list<string>}, forms: list<string>, profiles: list<string>, services: list<string>}
+ * @phpstan-type Data array{dropped: list<array{needs: 'usenet'|'torrent', profile: string}>, filtered: list<array{forms: list<string>, id: string, name: string, needs: 'usenet'|'torrent', profile: string}>, footprint: array{estimated_mib: int, unestimated: list<string>}, forms: list<string>, profiles: list<string>, running?: list<string>|null, services: list<string>}
  */
 final class PreviewEnvelope
 {
