@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 60695f36d8b8af57d669571c79659e82e6a11e43, api_version 1.
+// Source: 075bf96c15736a119a549ea20291f1bf5131b539, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -149,6 +149,13 @@ enum RefusalCode: string
     case OfferMoved = 'MIGRATE-1';
 
     /**
+     * The record of what is installed cannot be read.
+     *
+     * Answered with 500.
+     */
+    case Unrecorded = 'PLUGIN-4';
+
+    /**
      * Raised where a read was given a parameter its answer has nowhere to put.
      *
      * Answered with 400.
@@ -289,6 +296,69 @@ enum RefusalCode: string
     case AnotherOffer = 'SPACE-6';
 
     /**
+     * Raised when a stack directory holds no readable manifest.
+     *
+     * Answered with 500.
+     */
+    case StackUnreadable = 'STACK-1';
+
+    /**
+     * Raised when a manifest is readable and this build cannot use it.
+     *
+     * Answered with 500.
+     */
+    case StackUnusable = 'STACK-2';
+
+    /**
+     * Raised when the embedded stack is not intact.
+     *
+     * Answered with 500.
+     */
+    case StackNotEmbedded = 'STACK-3';
+
+    /**
+     * Raised when lemonfiber has nowhere to write the stack.
+     *
+     * Answered with 500.
+     */
+    case StackNotSetUp = 'STACK-4';
+
+    /**
+     * Raised when the stack could not be written to disk.
+     *
+     * Answered with 500.
+     */
+    case StackNotWritten = 'STACK-5';
+
+    /**
+     * Raised when a manifest parses and breaks the contract.
+     *
+     * Answered with 500.
+     */
+    case StackInvalid = 'STACK-6';
+
+    /**
+     * Raised when a manifest is not TOML at all.
+     *
+     * Answered with 500.
+     */
+    case StackMalformed = 'STACK-7';
+
+    /**
+     * Raised when a manifest declares names this build does not know.
+     *
+     * Answered with 500.
+     */
+    case StackUnrecognised = 'STACK-8';
+
+    /**
+     * Raised when a stack names a newer lemonfiber than the one running.
+     *
+     * Answered with 500.
+     */
+    case StackNeedsNewer = 'STACK-9';
+
+    /**
      * The case a code names, or none where there is no code or one this list does not name.
      */
     public static function of(?string $code): ?self
@@ -321,6 +391,7 @@ enum RefusalCode: string
             self::WrongMethod => 405,
             self::AnotherReading => 400,
             self::OfferMoved => 400,
+            self::Unrecorded => 500,
             self::Unwanted => 400,
             self::Repeated => 400,
             self::NoSuchRead => 404,
@@ -341,6 +412,15 @@ enum RefusalCode: string
             self::Unrenderable => 500,
             self::NoJobName => 500,
             self::AnotherOffer => 400,
+            self::StackUnreadable => 500,
+            self::StackUnusable => 500,
+            self::StackNotEmbedded => 500,
+            self::StackNotSetUp => 500,
+            self::StackNotWritten => 500,
+            self::StackInvalid => 500,
+            self::StackMalformed => 500,
+            self::StackUnrecognised => 500,
+            self::StackNeedsNewer => 500,
         };
     }
 }
