@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: b2d3d48059e34ba6433a5bf4b31da36002735e94, api_version 1.
+// Source: 455f620b543ad0229af5236a8ed0a5d929dffdf8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -21,5 +21,5 @@ final class Contract
     /**
      * The lemonfiber revision the artefact was vendored from.
      */
-    public const string SOURCE = 'b2d3d48059e34ba6433a5bf4b31da36002735e94';
+    public const string SOURCE = '455f620b543ad0229af5236a8ed0a5d929dffdf8';
 }
