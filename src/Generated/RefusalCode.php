@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 075bf96c15736a119a549ea20291f1bf5131b539, api_version 1.
+// Source: 4eca083b55fa27b07edfdf93f69a45a4885514a6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -359,6 +359,48 @@ enum RefusalCode: string
     case StackNeedsNewer = 'STACK-9';
 
     /**
+     * A capability was named that no service in this stack provides.
+     *
+     * Answered with 404.
+     */
+    case NoSuchFiller = 'WIRE-1';
+
+    /**
+     * The service named cannot do the thing it was asked to fill.
+     *
+     * Answered with 400.
+     */
+    case CannotFill = 'WIRE-2';
+
+    /**
+     * Nothing in this stack asks for the capability, so a choice would change nothing.
+     *
+     * Answered with 400.
+     */
+    case NothingAsks = 'WIRE-3';
+
+    /**
+     * The setting recording the choice could not be written.
+     *
+     * Answered with 500.
+     */
+    case ChoiceUnwritable = 'WIRE-4';
+
+    /**
+     * Raised when a choice answers an offer that was read against a wiring that has since moved.
+     *
+     * Answered with 400.
+     */
+    case WiringMoved = 'WIRE-5';
+
+    /**
+     * Raised when the reason given for a choice is longer than a reason may be, or holds a line break or another control character.
+     *
+     * Answered with 400.
+     */
+    case Unreasonable = 'WIRE-6';
+
+    /**
      * The case a code names, or none where there is no code or one this list does not name.
      */
     public static function of(?string $code): ?self
@@ -421,6 +463,12 @@ enum RefusalCode: string
             self::StackMalformed => 500,
             self::StackUnrecognised => 500,
             self::StackNeedsNewer => 500,
+            self::NoSuchFiller => 404,
+            self::CannotFill => 400,
+            self::NothingAsks => 400,
+            self::ChoiceUnwritable => 500,
+            self::WiringMoved => 400,
+            self::Unreasonable => 400,
         };
     }
 }
