@@ -74,6 +74,8 @@ this client's to hold and its to move:
 | `Api::BACKUPS_ENDPOINT` | `archives` | nothing |
 | `Api::bundle($name)` | the bundle file itself, as `application/gzip` rather than an envelope | nothing; the name is the last segment |
 | `Api::UNINSTALL_ENDPOINT` | `uninstall` | `tier`, once; naming none removes nothing |
+| `Api::PLUGINS_ENDPOINT` | `plugins` | nothing |
+| `Api::WIRING_ENDPOINT` | `wiring` | nothing |
 
 ```php
 $client->read(Api::REQUESTS_ENDPOINT, ['member' => 'ada']);

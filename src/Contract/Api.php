@@ -67,11 +67,6 @@ final class Api
     /**
      * The endpoint answering with what the services have been saying.
      *
-     * Named here for the reason {@see self::EVENTS_ENDPOINT} is: the contract
-     * carries envelope kinds and no endpoints, so a path is knowledge this
-     * client holds on its callers' behalf, and a caller spelling one is a
-     * caller that breaks silently the day lemonfiber moves it.
-     *
      * The one read whose answer is not a single envelope. It reaches no
      * command and renders no report: it opens the scrollback and writes a `log`
      * envelope per line, one document a line, which is a body read by
@@ -82,12 +77,6 @@ final class Api
 
     /**
      * The endpoint answering with a diagnosis.
-     *
-     * Named here rather than by whoever asks, which is the same argument
-     * {@see self::EVENTS_ENDPOINT} makes: the contract carries envelope kinds
-     * and no endpoints, so a path is knowledge this client holds on its
-     * callers' behalf, and a caller spelling one is a caller that breaks
-     * silently the day lemonfiber moves it.
      *
      * It runs `doctor` and answers with the `doctor` envelope, so
      * {@see \Lemonfiber\Sdk\Generated\DoctorEnvelope} is what reads it. A
@@ -124,9 +113,6 @@ final class Api
 
     /**
      * The endpoint answering with what the whole stack is doing.
-     *
-     * Named here for the reason {@see self::CHECKS_ENDPOINT} is, as are the
-     * reads beside it.
      *
      * It answers with the `status` envelope, so
      * {@see \Lemonfiber\Sdk\Generated\StatusEnvelope} is what reads it. It
@@ -231,11 +217,10 @@ final class Api
     /**
      * The endpoint answering with where a copy stands and what moving it comes to.
      *
-     * Named here for the reason {@see self::CHECKS_ENDPOINT} is, as are the
-     * reads beside it. A read and never a replacement: what it answers with
-     * about this program is the exact command for whichever tool owns the copy
-     * that is running, which is a thing to put in front of somebody rather
-     * than a thing this surface carries out.
+     * A read and never a replacement: what it answers with about this program
+     * is the exact command for whichever tool owns the copy that is running,
+     * which is a thing to put in front of somebody rather than a thing this
+     * surface carries out.
      *
      * **It takes `what`, and naming nothing is refused.** Two things can be moved forward and the
      * endpoint serves both, so a request that does not say which is answered in prose rather than
@@ -479,12 +464,27 @@ final class Api
     public const string UNINSTALL_ENDPOINT = '/api/uninstall';
 
     /**
+     * The endpoint answering with the plugins this machine has installed, as
+     * the `plugins` envelope ({@see \Lemonfiber\Sdk\Generated\PluginsEnvelope}).
+     * It takes nothing, and a record that cannot be read is refused with a code
+     * of its own rather than answered as an empty list.
+     */
+    public const string PLUGINS_ENDPOINT = '/api/plugins';
+
+    /**
+     * The endpoint answering with what the stack wires to what, as the `wiring`
+     * envelope ({@see \Lemonfiber\Sdk\Generated\WiringEnvelope}). It takes
+     * nothing, and a wiring that cannot be read is refused with a code of its
+     * own rather than answered as an empty one.
+     */
+    public const string WIRING_ENDPOINT = '/api/wiring';
+
+    /**
      * The endpoint every action is asked for through.
      *
      * One path for the whole of what this surface can be told to do: the name of the action is the
-     * last segment of it, and no action has an endpoint of its own. Named here for the reason
-     * {@see self::CHECKS_ENDPOINT} is, and {@see self::action()} beside it is what keeps a caller
-     * from spelling either half.
+     * last segment of it, and no action has an endpoint of its own. {@see self::action()} beside it
+     * is what keeps a caller from spelling either half.
      */
     public const string ACTIONS_ENDPOINT = '/api/actions';
 
