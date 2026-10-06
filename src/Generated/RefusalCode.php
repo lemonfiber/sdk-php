@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 8dd594869d785c8db1973e96df75c967fbf111dd, api_version 1.
+// Source: 120b075276a6e2f088c7963364d3f033dcc00b65, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -170,6 +170,20 @@ enum RefusalCode: string
     case OfferMoved = 'MIGRATE-1';
 
     /**
+     * The source names no plugin this build can read.
+     *
+     * Answered with 404.
+     */
+    case Unreadable = 'PLUGIN-2';
+
+    /**
+     * The manifest is read and this build refuses what it declares.
+     *
+     * Answered with 400.
+     */
+    case Refused = 'PLUGIN-3';
+
+    /**
      * The record of what is installed cannot be read.
      *
      * Answered with 500.
@@ -177,11 +191,179 @@ enum RefusalCode: string
     case Unrecorded = 'PLUGIN-4';
 
     /**
+     * The plugin is installed already.
+     *
+     * Answered with 400.
+     */
+    case Already = 'PLUGIN-5';
+
+    /**
+     * There is no stack on this machine to put a plugin's container in.
+     *
+     * Answered with 500.
+     */
+    case Nowhere = 'PLUGIN-6';
+
+    /**
+     * A directory or a document the install decided on would not land.
+     *
+     * Answered with 500.
+     */
+    case Unwritable = 'PLUGIN-7';
+
+    /**
+     * The wiring went down and the record of what is installed did not.
+     *
+     * Answered with 500.
+     */
+    case Unrecordable = 'PLUGIN-8';
+
+    /**
+     * The plugin's own service would not start, so nothing about it could be proved.
+     *
+     * Answered with 500.
+     */
+    case Unproved = 'PLUGIN-9';
+
+    /**
+     * Nothing by that name is installed on this machine.
+     *
+     * Answered with 404.
+     */
+    case NothingToRemove = 'PLUGIN-10';
+
+    /**
+     * Nothing by that id is installed, so there is no version to replace.
+     *
+     * Answered with 404.
+     */
+    case NothingToUpdate = 'PLUGIN-11';
+
+    /**
+     * The version installed would not come off, so nothing else was touched.
+     *
+     * Answered with 500.
+     */
+    case Stuck = 'PLUGIN-12';
+
+    /**
+     * Raised when a plugin's service would answer on a label another plugin's already does.
+     *
+     * Answered with 400.
+     */
+    case Answered = 'PLUGIN-13';
+
+    /**
+     * Raised when a plugin is installed from a source other than the one its name is already installed from.
+     *
+     * Answered with 400.
+     */
+    case TwoSources = 'PLUGIN-14';
+
+    /**
+     * Raised when a plugin is named from a git source and fetching from one is switched off.
+     *
+     * Answered with 400.
+     */
+    case SourceOff = 'PLUGIN-15';
+
+    /**
+     * Raised when a git source could not be reached or would not hand over a revision.
+     *
+     * Answered with 500.
+     */
+    case Unfetched = 'PLUGIN-16';
+
+    /**
+     * Raised when a git source holds no branch, tag or commit by the name given.
+     *
+     * Answered with 404.
+     */
+    case NoRevision = 'PLUGIN-17';
+
+    /**
+     * Raised when a plugin is installed by name and asking the catalogue is switched off.
+     *
+     * Answered with 400.
+     */
+    case CatalogueOff = 'PLUGIN-18';
+
+    /**
+     * Raised when the catalogue's index or its signature could not be fetched.
+     *
+     * Answered with 500.
+     */
+    case CatalogueUnreachable = 'PLUGIN-19';
+
+    /**
+     * Raised when the catalogue's index has no signature, one that does not verify, or none this build carries a key to check.
+     *
+     * Answered with 500.
+     */
+    case SignatureUnverified = 'PLUGIN-20';
+
+    /**
+     * Raised when the catalogue's index verified and is not one this build reads.
+     *
+     * Answered with 500.
+     */
+    case CatalogueUnreadable = 'PLUGIN-21';
+
+    /**
+     * Raised when the catalogue holds no plugin by the name given.
+     *
+     * Answered with 404.
+     */
+    case NotCatalogued = 'PLUGIN-22';
+
+    /**
+     * Raised when what the catalogue's origin served is not what the catalogue reviewed.
+     *
+     * Answered with 500.
+     */
+    case NotAsReviewed = 'PLUGIN-23';
+
+    /**
+     * Raised when a plugin's service would be named, where lemonfiber keeps what a service holds, as another installed plugin's service already is.
+     *
+     * Answered with 400.
+     */
+    case SpelledAlike = 'PLUGIN-24';
+
+    /**
      * Raised when an install, an update or a removal answers an offer that was read against a plugin, a stack or a record that has since moved.
      *
      * Answered with 400.
      */
     case PluginOfferMoved = 'PLUGIN-25';
+
+    /**
+     * Raised when a value a recipe would carry to a destination was not approved as itself, or an approval names a pair the recipe does not carry.
+     *
+     * Answered with 400.
+     */
+    case Unapproved = 'PLUGIN-26';
+
+    /**
+     * Raised when the source an update names holds a different plugin from the one it was asked to update.
+     *
+     * Answered with 400.
+     */
+    case AnotherPlugin = 'PLUGIN-27';
+
+    /**
+     * Raised when the catalogue's index verifies and is older than the newest one this machine has verified.
+     *
+     * Answered with 500.
+     */
+    case CatalogueReplaced = 'PLUGIN-29';
+
+    /**
+     * Raised when the record of the newest catalogue index this machine verified cannot be read or written.
+     *
+     * Answered with 500.
+     */
+    case NewestUnkept = 'PLUGIN-30';
 
     /**
      * Raised where a read was given a parameter its answer has nowhere to put.
@@ -464,8 +646,34 @@ enum RefusalCode: string
             self::NotAKeyRequest => 400,
             self::AnotherReading => 400,
             self::OfferMoved => 400,
+            self::Unreadable => 404,
+            self::Refused => 400,
             self::Unrecorded => 500,
+            self::Already => 400,
+            self::Nowhere => 500,
+            self::Unwritable => 500,
+            self::Unrecordable => 500,
+            self::Unproved => 500,
+            self::NothingToRemove => 404,
+            self::NothingToUpdate => 404,
+            self::Stuck => 500,
+            self::Answered => 400,
+            self::TwoSources => 400,
+            self::SourceOff => 400,
+            self::Unfetched => 500,
+            self::NoRevision => 404,
+            self::CatalogueOff => 400,
+            self::CatalogueUnreachable => 500,
+            self::SignatureUnverified => 500,
+            self::CatalogueUnreadable => 500,
+            self::NotCatalogued => 404,
+            self::NotAsReviewed => 500,
+            self::SpelledAlike => 400,
             self::PluginOfferMoved => 400,
+            self::Unapproved => 400,
+            self::AnotherPlugin => 400,
+            self::CatalogueReplaced => 500,
+            self::NewestUnkept => 500,
             self::Unwanted => 400,
             self::Repeated => 400,
             self::NoSuchRead => 404,
