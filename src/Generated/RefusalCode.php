@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 3b75a54b312a9a026d416b6feb6070eaaf014856, api_version 1.
+// Source: a20047c4c38de3189f6aecd3c61dd26c9fff6646, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -16,7 +16,7 @@ namespace Lemonfiber\Sdk\Generated;
 enum RefusalCode: string
 {
     /**
-     * Raised when a request carried no token or session this run admits.
+     * Raised when a request carried no token, session or key this run admits.
      *
      * Answered with 403.
      */
@@ -63,6 +63,20 @@ enum RefusalCode: string
      * Answered with 400.
      */
     case NotAPassword = 'ADMIT-10';
+
+    /**
+     * Raised when a key arrived from another machine over a connection its pin does not verify.
+     *
+     * Answered with 403.
+     */
+    case KeyInTheClear = 'ADMIT-11';
+
+    /**
+     * Raised when a key asked for something its scope does not reach.
+     *
+     * Answered with 403.
+     */
+    case NotForAKey = 'ADMIT-12';
 
     /**
      * Raised where no action goes by the name that was asked for.
@@ -133,6 +147,13 @@ enum RefusalCode: string
      * Answered with 405.
      */
     case WrongMethod = 'ASK-10';
+
+    /**
+     * Raised where the body of a mint is not a key's name, scope, purpose and the password.
+     *
+     * Answered with 400.
+     */
+    case NotAKeyRequest = 'ASK-11';
 
     /**
      * Raised when an agreement names a reading of this machine that is not the one standing now.
@@ -421,6 +442,8 @@ enum RefusalCode: string
             self::NotThePassword => 401,
             self::TooManyAttempts => 429,
             self::NotAPassword => 400,
+            self::KeyInTheClear => 403,
+            self::NotForAKey => 403,
             self::NoSuchAction => 404,
             self::MissingArgument => 400,
             self::UnrecognisedArgument => 400,
@@ -431,6 +454,7 @@ enum RefusalCode: string
             self::NotAnAnswer => 400,
             self::NoEndpoint => 404,
             self::WrongMethod => 405,
+            self::NotAKeyRequest => 400,
             self::AnotherReading => 400,
             self::OfferMoved => 400,
             self::Unrecorded => 500,
