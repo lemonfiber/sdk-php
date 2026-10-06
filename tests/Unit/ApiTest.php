@@ -65,7 +65,10 @@ it('names the reads it holds a path for, and holds no path it has no caller for'
         ->and(Api::BUNDLE_ENDPOINT)->toBe('/api/bundle')
         ->and(Api::UNINSTALL_ENDPOINT)->toBe('/api/uninstall')
         ->and(Api::PLUGINS_ENDPOINT)->toBe('/api/plugins')
-        ->and(Api::WIRING_ENDPOINT)->toBe('/api/wiring');
+        ->and(Api::WIRING_ENDPOINT)->toBe('/api/wiring')
+        ->and(Api::CAPABILITIES_ENDPOINT)->toBe('/api/capabilities')
+        ->and(Api::KEYS_ENDPOINT)->toBe('/api/keys')
+        ->and(Api::SETUP_ENDPOINT)->toBe('/api/setup');
 });
 
 it('composes the path one action is asked for under', function (): void {

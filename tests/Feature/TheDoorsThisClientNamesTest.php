@@ -116,6 +116,20 @@ it('Q-R66 — refuses a door this client holds that the contract page does not n
         ->and($said)->toContain('/api/invented');
 });
 
+it('reads the paths held on every file of the contract folder, not only on Api', function (): void {
+    // The reads live on interfaces Api implements, so a gate reading Api alone
+    // would find a client holding almost nothing and refuse every read.
+    $reads = enoughReads();
+    $spec = aPageNaming(sys_get_temp_dir() . '/' . uniqid('spec', true), ...$reads);
+    $repo = aClientHolding(sys_get_temp_dir() . '/' . uniqid('repo', true), ...array_slice($reads, 0, -1));
+    file_put_contents($repo . '/src/Contract/MoreReads.php', "<?php\n\ninterface MoreReads\n{\n    public const string LAST_ENDPOINT = '/api/r30';\n}\n");
+
+    [$code, $said] = theGateOn($repo, $spec);
+
+    expect($said)->toContain('holds a path for each')
+        ->and($code)->toBe(0);
+});
+
 it('Q-R66 — refuses a reading that found too little to be reading the page at all', function (): void {
     // The failure a sweep has when it matches nothing: agreement, reported
     // confidently, about a page it never read. A floor under the reading is
