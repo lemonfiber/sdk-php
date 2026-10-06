@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lemonfiber\Sdk\Tests\Support;
 
 use function bin2hex;
+use function class_exists;
 use function dirname;
 use function enum_exists;
 use function file_get_contents;
@@ -14,6 +15,8 @@ use function json_decode;
 
 use Lemonfiber\Sdk\Generated\Contract;
 use Lemonfiber\Sdk\Generated\RefusalCode;
+use Lemonfiber\Sdk\Generated\RefusalDescription;
+use Lemonfiber\Sdk\Generated\RefusalStatus;
 use Lemonfiber\Sdk\Scripts\GeneratedSource;
 use Lemonfiber\Sdk\Scripts\Refusals;
 use LogicException;
@@ -22,8 +25,8 @@ use function random_bytes;
 use function unlink;
 
 /**
- * The generated refusal list, loaded with one refusal beside those the
- * vendored contract lists.
+ * The generated refusal list, and what it says of each code, loaded with one
+ * refusal beside those the vendored contract lists.
  *
  * Which codes the generated list names is whatever the vendored contract
  * lists, and that may be none. This writes the list the generator would write
@@ -44,7 +47,7 @@ final class GeneratedRefusals
      */
     public static function loadWith(string $code, array $refusal): void
     {
-        if (enum_exists(RefusalCode::class, false)) {
+        if (enum_exists(RefusalCode::class, false) || class_exists(RefusalStatus::class, false) || class_exists(RefusalDescription::class, false)) {
             throw new LogicException('The committed refusal list was loaded before one with a refusal beside it could be.');
         }
 
@@ -54,14 +57,17 @@ final class GeneratedRefusals
         $vendored = $artefact['refusals'] ?? [];
         $artefact['refusals'] = (is_array($vendored) ? $vendored : []) + [$code => $refusal];
 
-        $source = new GeneratedSource(self::ARTEFACT, 'the vendored contract and one refusal more', Contract::API_VERSION)
-            ->refusalEnum(new Refusals()->listed($artefact));
-        $path = $root . '/.refusal-code-' . bin2hex(random_bytes(6)) . '.php';
+        $source = new GeneratedSource(self::ARTEFACT, 'the vendored contract and one refusal more', Contract::API_VERSION);
+        $listed = new Refusals()->listed($artefact);
 
-        file_put_contents($path, $source);
+        foreach ([$source->refusalEnum($listed), $source->refusalStatusClass($listed), $source->refusalDescriptionClass($listed)] as $written) {
+            $path = $root . '/.refusal-code-' . bin2hex(random_bytes(6)) . '.php';
 
-        require $path;
+            file_put_contents($path, $written);
 
-        unlink($path);
+            require $path;
+
+            unlink($path);
+        }
     }
 }

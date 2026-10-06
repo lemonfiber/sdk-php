@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace Lemonfiber\Sdk\Scripts;
 
 use function is_array;
-use function preg_replace;
 use function sprintf;
-use function str_replace;
-use function trim;
 
 /**
  * The PHP source a contract's kinds are written as.
@@ -117,30 +114,25 @@ final readonly class GeneratedSource
     public function refusalEnum(array $refusals): string
     {
         $cases = '';
-        $arms = '';
 
         foreach ($refusals as $name => $refusal) {
-            $cases .= sprintf(
-                "    /**\n     * %s\n     *\n     * Answered with %d.\n     */\n    case %s = %s;\n\n",
-                $this->docLine($refusal['description']),
-                $refusal['status'],
-                $name,
-                $this->types->quoted($refusal['code']),
-            );
-            $arms .= sprintf("            self::%s => %d,\n", $name, $refusal['status']);
+            $cases .= sprintf("    case %s = %s;\n", $name, $this->types->quoted($refusal['code']));
         }
 
         return $this->header() . sprintf(
             <<<'PHP'
 
                 /**
-                 * Every code the contract lists a refusal as carrying, and the status each is answered with.
+                 * Every code the contract lists a refusal as carrying.
                  *
-                 * A code this list does not name is read by its status alone.
+                 * A code this list does not name is read by its status alone. What the
+                 * contract says of each code is in {@see RefusalStatus} and
+                 * {@see RefusalDescription}.
                  */
                 enum RefusalCode: string
                 {
-                %s    /**
+                %s
+                    /**
                      * The case a code names, or none where there is no code or one this list does not name.
                      */
                     public static function of(?string $code): ?self
@@ -153,15 +145,49 @@ final readonly class GeneratedSource
                      */
                     public function status(): int
                     {
-                        return match ($this) {
-                %s        };
+                        return RefusalStatus::of($this);
+                    }
+
+                    /**
+                     * The registry's own line about this code.
+                     */
+                    public function description(): string
+                    {
+                        return RefusalDescription::of($this);
                     }
                 }
 
                 PHP,
             $cases,
-            $arms,
         );
+    }
+
+    /**
+     * @param  array<string, array{code: string, status: int, description: string}>  $refusals  case name to the refusal it came from
+     */
+    public function refusalStatusClass(array $refusals): string
+    {
+        $arms = '';
+
+        foreach ($refusals as $name => $refusal) {
+            $arms .= sprintf("            RefusalCode::%s => %d,\n", $name, $refusal['status']);
+        }
+
+        return $this->refusalTable('RefusalStatus', 'The status each refusal code is answered with.', 'int', $arms);
+    }
+
+    /**
+     * @param  array<string, array{code: string, status: int, description: string}>  $refusals  case name to the refusal it came from
+     */
+    public function refusalDescriptionClass(array $refusals): string
+    {
+        $arms = '';
+
+        foreach ($refusals as $name => $refusal) {
+            $arms .= sprintf("            RefusalCode::%s => %s,\n", $name, $this->types->quoted($refusal['description']));
+        }
+
+        return $this->refusalTable('RefusalDescription', 'The registry\'s own line about each refusal code.', 'string', $arms);
     }
 
     public function contractClass(): string
@@ -192,11 +218,31 @@ final readonly class GeneratedSource
     }
 
     /**
-     * A sentence from the artefact as one line of a docblock, unable to close it.
+     * One thing the contract says of every refusal code, as a class answering it for a code.
      */
-    private function docLine(string $sentence): string
+    private function refusalTable(string $class, string $summary, string $type, string $arms): string
     {
-        return str_replace('*/', '*\/', trim((string) preg_replace('/\s+/', ' ', $sentence)));
+        return $this->header() . sprintf(
+            <<<'PHP'
+
+                /**
+                 * %s
+                 */
+                final class %s
+                {
+                    public static function of(RefusalCode $code): %s
+                    {
+                        return match ($code) {
+                %s        };
+                    }
+                }
+
+                PHP,
+            $summary,
+            $class,
+            $type,
+            $arms,
+        );
     }
 
     private function header(): string

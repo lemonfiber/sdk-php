@@ -361,9 +361,10 @@ no hook: it is `git config core.hooksPath .githooks`, per clone, and git cannot 
 | Mutation testing | `composer test:mutation` | 100% mutation score |
 | Backward compatibility | `composer bc` | Roave, against the newest `v*` tag. There are none yet, so the CI job skips both its steps and passes having compared nothing |
 
-`src/Generated/` is skipped by Pint, PHPStan, Rector, the guards and both test gates. Generated
-code is proved by regeneration producing no diff, not by passing a linter; everything that uses
-it is analysed as usual.
+`src/Generated/` is skipped by Pint, PHPStan, Rector and both test gates, and the guards hold it
+to the 550-line cap alone, which the generator also refuses to exceed. Generated code is proved by
+regeneration producing no diff, not by passing a linter; everything that uses it is analysed as
+usual.
 
 There is no PHPStan baseline and no `ignoreErrors`. `@phpstan-ignore`, `@codeCoverageIgnore`,
 `@SuppressWarnings` and their relatives are rejected by `scripts/guards.php`, which reads comments

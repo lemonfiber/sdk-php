@@ -12,12 +12,15 @@ something that already has one.
 |---|---|
 | `Contract.php` | The `api_version` these types were generated from, and the revision they came from |
 | `Kind.php` | Every kind the contract describes |
-| `RefusalCode.php` | Every code the contract lists a refusal as carrying, and the status each is answered with |
+| `RefusalCode.php` | Every code the contract lists a refusal as carrying |
+| `RefusalStatus.php` | The status each code is answered with, which `RefusalCode::status()` reads |
+| `RefusalDescription.php` | The registry's line about each code, which `RefusalCode::description()` reads |
 | `<Kind>Envelope.php` | One class per kind: the kind it reads, and the payload type the contract gives it |
 
-Pint, PHPStan, Rector, the repository guards and the coverage and mutation
-gates all skip this directory. Its correctness is proved by regeneration
-producing no diff — `composer contract:check`, run in CI (ARCH-R66) — not by
+Pint, PHPStan, Rector and the coverage and mutation gates skip this directory,
+and the repository guards hold it to the line cap and to nothing else; the
+generator writes nothing where a file would hold more lines than that. Its
+correctness is proved by regeneration producing no diff — `composer contract:check`, run in CI (ARCH-R66) — not by
 passing a linter. Everything that *uses* these types is analysed as usual, so a
 generated type that does not fit its callers still fails the build.
 
