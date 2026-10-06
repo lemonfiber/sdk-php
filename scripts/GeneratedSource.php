@@ -17,6 +17,9 @@ final readonly class GeneratedSource
 {
     private const string NAMESPACE = 'Lemonfiber\\Sdk\\Generated';
 
+    /** One enum case, as each generated enum writes it: its name and its value. */
+    private const string CASE = "    case %s = %s;\n";
+
     public function __construct(
         private string $artefact,
         private string $stamp,
@@ -90,7 +93,7 @@ final readonly class GeneratedSource
         $cases = '';
 
         foreach ($named as $name => $kind) {
-            $cases .= sprintf("    case %s = %s;\n", $name, $this->types->quoted($kind));
+            $cases .= sprintf(self::CASE, $name, $this->types->quoted($kind));
         }
 
         return $this->header() . sprintf(
@@ -116,7 +119,7 @@ final readonly class GeneratedSource
         $cases = '';
 
         foreach ($refusals as $name => $refusal) {
-            $cases .= sprintf("    case %s = %s;\n", $name, $this->types->quoted($refusal['code']));
+            $cases .= sprintf(self::CASE, $name, $this->types->quoted($refusal['code']));
         }
 
         return $this->header() . sprintf(
@@ -200,7 +203,7 @@ final readonly class GeneratedSource
         $rehearsal = '';
 
         foreach ($actions as $name => $action) {
-            $cases .= sprintf("    case %s = %s;\n", $name, $this->types->quoted($action['action']));
+            $cases .= sprintf(self::CASE, $name, $this->types->quoted($action['action']));
             $disturbs .= sprintf("            self::%s => %s,\n", $name, $action['disturbs'] ? 'true' : 'false');
             $rehearsal .= sprintf("            self::%s => %s,\n", $name, $action['rehearsal'] ? 'true' : 'false');
         }
