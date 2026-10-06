@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 79bb11356f6a117d14293c49cd2d154164c5f439, api_version 1.
+// Source: 3cb585e1c59f31d55f97dd4f2b09043aaeff6598, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -69,6 +69,7 @@ final class RefusalDescription
             RefusalCode::NewestUnkept => 'Raised when the record of the newest catalogue index this machine verified cannot be read or written.',
             RefusalCode::SchemeRefused => 'Raised when a git source is named over a transport other than https, before anything is asked of it.',
             RefusalCode::AddressRefused => 'Raised when a git source\'s host is, or stands for, an address on this machine or on a network of its own: loopback, private, link-local or unspecified.',
+            RefusalCode::HeaderNamed => 'Raised when a recipe substitutes a value into a header\'s name, which is a fixed identifier of the protocol and written out; the manifest\'s every other fault is listed beside it.',
             RefusalCode::Unwanted => 'Raised where a read was given a parameter its answer has nowhere to put.',
             RefusalCode::Repeated => 'Raised where a parameter carrying one value was given more than once.',
             RefusalCode::NoSuchRead => 'Raised where no read goes by the name that was asked for.',
