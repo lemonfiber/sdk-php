@@ -112,6 +112,11 @@ lemonfiber refuses a name it does not offer and a field the action does not take
 An action is sent once and never retried, because a second sending would be a
 second change.
 
+`Generated\KeyCallableAction` has a case for each action the contract lets an
+integration key call, in the contract's order. `disturbs()` says whether calling it
+disturbs the running system and `rehearsal()` whether it takes `dry_run`;
+`KeyCallableAction::of()` is null for an action a key may not call.
+
 ### Repairs
 
 `repair` has a method of its own, because the offer and the agreement are the same
