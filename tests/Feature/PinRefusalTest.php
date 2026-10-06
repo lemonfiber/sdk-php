@@ -80,6 +80,13 @@ it('reads nothing, and connects to nothing, where the call has no wait left', fu
         ->toBeNull();
 });
 
+it('reads the certificate with less than a second of the wait left', function (): void {
+    $peer = TlsListener::start();
+
+    expect(PresentedCertificate::at(BaseUrl::pinned($peer->address(), CertificatePin::fromSha256(A_PIN_NOTHING_PRESENTS)), 0.5))
+        ->toBe($peer->digest);
+});
+
 it('gives up on a peer that never answers the handshake once what is left of the wait is spent', function (): void {
     $peer = AnsweringListener::silent();
     $started = microtime(true);
