@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: a20047c4c38de3189f6aecd3c61dd26c9fff6646, api_version 1.
+// Source: 01e63d948c471e0a959ff04fdb3494af1fe9f9ab, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -175,6 +175,13 @@ enum RefusalCode: string
      * Answered with 500.
      */
     case Unrecorded = 'PLUGIN-4';
+
+    /**
+     * Raised when an install, an update or a removal answers an offer that was read against a plugin, a stack or a record that has since moved.
+     *
+     * Answered with 400.
+     */
+    case PluginOfferMoved = 'PLUGIN-25';
 
     /**
      * Raised where a read was given a parameter its answer has nowhere to put.
@@ -458,6 +465,7 @@ enum RefusalCode: string
             self::AnotherReading => 400,
             self::OfferMoved => 400,
             self::Unrecorded => 500,
+            self::PluginOfferMoved => 400,
             self::Unwanted => 400,
             self::Repeated => 400,
             self::NoSuchRead => 404,
