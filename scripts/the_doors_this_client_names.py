@@ -1,7 +1,7 @@
 """The contract page names the reads, and this client holds a path for each.
 
 The contract this package vendors carries envelope kinds and **no endpoints**, so
-every path is knowledge written by hand in `src/Contract/Api.php`. Nothing read
+every path is knowledge written by hand in `src/Contract/`. Nothing read
 the two against each other, and the gap is not hypothetical: `held` and `config`
 were both generated as envelope types, shipped, and reachable by nobody, since
 the type existed and the door did not. A caller cannot spell the path itself —
@@ -29,8 +29,9 @@ import pathlib
 import re
 import sys
 
-# Where the paths are written, relative to the repository root.
-NAMES = pathlib.Path("src/Contract/Api.php")
+# Where the paths are written, relative to the repository root: `Api` and the
+# interfaces holding its reads, which it implements.
+NAMES = pathlib.Path("src/Contract")
 
 # The page, relative to a spec checkout, and the heading the block sits under.
 PAGE = pathlib.Path("20-architecture/contracts/web-api.md")
@@ -53,12 +54,15 @@ FENCE = re.compile(r"```[a-z]*\n(.*?)```", re.DOTALL)
 TEMPLATED = re.compile(r"/\{[^}]+\}$")
 
 # Doors this client holds a path for that the reading block does not name, each
-# with what it is instead. The block is about reads; these three are not reads,
-# and each is its own section of the same page.
+# with what it is instead. Each is its own section of the same page: three are not
+# reads at all, and three are the read half of a section that also writes.
 NOT_A_READ = {
     "/api/events": "the live stream, which has its own section",
     "/api/actions": "the one door every action is asked for through",
     "/api/jobs": "where work already begun is asked about and released",
+    "/api/capabilities": "what a stack says it can do, which has its own section",
+    "/api/keys": "the listing of integration keys, under its own section beside minting and revoking",
+    "/api/setup": "where the first-run walk stands, under its own section beside the walk's writes",
 }
 
 # Below this a reading has found the wrong text rather than a smaller surface.
@@ -69,19 +73,21 @@ FEWEST = 25
 
 def held(root: pathlib.Path) -> tuple[dict[str, str], list[str]]:
     """Every path this client holds, by the constant holding it."""
-    source = root / NAMES
-    if not source.is_file():
-        return {}, [f"no contract class at {source} — this is looking in the wrong place"]
+    folder = root / NAMES
+    sources = sorted(folder.glob("*.php")) if folder.is_dir() else []
+    if not sources:
+        return {}, [f"no contract class in {folder} — this is looking in the wrong place"]
 
     found: dict[str, str] = {}
     twice: list[str] = []
-    for name, path in CONSTANT.findall(source.read_text(encoding="utf-8")):
-        if path in found.values():
-            twice.append(
-                f"{source}: `{name}` holds `{path}`, which another constant already "
-                "holds — one of the two is a door nothing will ever reach through it"
-            )
-        found[name] = path
+    for source in sources:
+        for name, path in CONSTANT.findall(source.read_text(encoding="utf-8")):
+            if path in found.values():
+                twice.append(
+                    f"{source}: `{name}` holds `{path}`, which another constant already "
+                    "holds — one of the two is a door nothing will ever reach through it"
+                )
+            found[name] = path
     return found, twice
 
 
