@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Lemonfiber\Sdk\Exception\Problem;
 use Lemonfiber\Sdk\Exception\Unreachable;
+use Lemonfiber\Sdk\WhyNothingAnswered;
 
 it('names the endpoint nothing answered for', function (): void {
     $problem = Unreachable::whenAsking('/api/clients', 'Connection refused');
@@ -54,3 +55,8 @@ it('withholds an address it cannot take apart, rather than keeping it whole', fu
     'no host' => ['failed for file:///etc/secret?token=abc'],
     'unreadable' => ['failed for http://someone:secret@:80?token=abc'],
 ]);
+
+it('says which way nothing answered, and none of them where it was not told', function (): void {
+    expect(Unreachable::whenAsking('/api/status', 'No route to host', WhyNothingAnswered::NoRoute)->why())->toBe(WhyNothingAnswered::NoRoute)
+        ->and(Unreachable::whenAsking('/api/status', 'No route to host')->why())->toBe(WhyNothingAnswered::Other);
+});

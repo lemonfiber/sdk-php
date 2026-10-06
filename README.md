@@ -142,8 +142,17 @@ try {
 } catch (Unreachable $silence) {
     $silence->endpoint(); // '/api/status'
     $silence->reason();   // what the connection reported
+    $silence->why();      // which way nothing answered, as a WhyNothingAnswered
 }
 ```
+
+`why()` says which way the request met nothing, so each can be given its own remedy: the name
+turned into no address from here (`NameNotFound`), something at the address turned the
+connection away (`Refused`), nothing on the network answers for the address (`NoRoute`, which
+is what an address a machine has moved away from looks like), the wait ran out (`TimedOut`), or
+none of those (`Other`). It is read off the type the transport raises for a wait and off the
+system's words for the rest, through either transport, and nothing of those words is kept for
+it.
 
 A pinned address whose peer presents a certificate other than the pinned one raises
 `Exception\CertificateWasRefused` instead of `Unreachable`: something answered, and it is not
@@ -331,7 +340,7 @@ Everything else in `src/` is behaviour no schema expresses:
 | `Events\HeldValues` | Values gathered before a reconnection gap are marked out of date (ARCH-R51) |
 | `Exception\RequestFailed` | A refusal carries the sentence lemonfiber answered with, read back through `said()`; an answer carrying none names the endpoint and the status instead (G4-R1). Where the answer was an `error` envelope, `refusal()` carries the whole problem document — code, severity, state, summary, meaning, remedies, detail and cause — with anything left out left absent. `detail` quotes what a service said with recognised secrets withheld, best effort, so it is fit to show and not to forward, and it is never part of the message. `code()` reads the problem's code into the generated `RefusalCode`, and is null where there is no problem document or its code is not in the list, so such a refusal is read by `status()` alone (ARCH-R138) |
 | `Exception\CertificateWasRefused` | A pinned peer presenting another certificate is told apart from silence, carrying the digest it presented and the one it was pinned to (ARCH-R99) |
-| `Exception\Unreachable` | A request nothing answered is one of this client's problems wherever it was sent, carrying the endpoint and the connection's reason with every address in it cut back to where it points |
+| `Exception\Unreachable` | A request nothing answered is one of this client's problems wherever it was sent, carrying the endpoint, the connection's reason with every address in it cut back to where it points, and which way nothing answered (`WhyNothingAnswered`) |
 | `Exception\*` | The error model, in plain language (G2, G4) |
 
 The package carries semver. `api_version` is a separate integer describing the wire

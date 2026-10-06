@@ -110,7 +110,7 @@ final class LemonfiberConnector extends Connector
         try {
             return parent::send($request, $mockClient, $handleRetry);
         } catch (FatalRequestException|TransferException $nothingAnswered) {
-            throw $this->whyNothingAnswered($request->resolveEndpoint(), $nothingAnswered->getMessage());
+            throw $this->whyNothingAnswered($request->resolveEndpoint(), $nothingAnswered);
         }
     }
 
@@ -180,18 +180,19 @@ final class LemonfiberConnector extends Connector
      * Only a pinned address is asked what it presented, and a peer that presented
      * the pinned certificate, or presented none, is silence like any other.
      */
-    private function whyNothingAnswered(string $endpoint, string $reported): CertificateWasRefused|Unreachable
+    private function whyNothingAnswered(string $endpoint, Throwable $nothingAnswered): CertificateWasRefused|Unreachable
     {
         $pin = $this->baseUrl->pin();
+        $unreachable = Unreachable::whenAsking($endpoint, $nothingAnswered->getMessage(), WhatTheTransportReported::in($nothingAnswered));
 
         if (! $pin instanceof CertificatePin) {
-            return Unreachable::whenAsking($endpoint, $reported);
+            return $unreachable;
         }
 
         $presented = PresentedCertificate::at($this->baseUrl, $this->call->secondsLeft());
 
         if ($presented === null || $presented === $pin->toString()) {
-            return Unreachable::whenAsking($endpoint, $reported);
+            return $unreachable;
         }
 
         return CertificateWasRefused::whenAsking($endpoint, $presented, $pin->toString());

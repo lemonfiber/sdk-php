@@ -6,6 +6,9 @@ namespace Lemonfiber\Sdk\Exception;
 
 use function is_int;
 use function is_string;
+
+use Lemonfiber\Sdk\WhyNothingAnswered;
+
 use function parse_url;
 use function preg_match_all;
 
@@ -48,20 +51,31 @@ final class Unreachable extends RuntimeException implements Problem
     private function __construct(
         private readonly string $endpoint,
         private readonly string $reason,
+        private readonly WhyNothingAnswered $why,
         string $message,
     ) {
         parent::__construct($message);
     }
 
     /**
-     * The request for an endpoint, met by nothing, and what the connection said of it.
+     * The request for an endpoint, met by nothing, what the connection said of
+     * it, and which way it met nothing where that is known.
      */
-    public static function whenAsking(string $endpoint, string $reported): self
+    public static function whenAsking(string $endpoint, string $reported, WhyNothingAnswered $why = WhyNothingAnswered::Other): self
     {
-        return new self($endpoint, self::withheld($reported), sprintf(
+        return new self($endpoint, self::withheld($reported), $why, sprintf(
             'No answer came back to the request for %s. lemonfiber may be stopped or asleep, or out of reach from here. Nothing was read from it.',
             $endpoint,
         ));
+    }
+
+    /**
+     * Which way the request met nothing: a name that turned into no address,
+     * a connection turned away, a wait that ran out, or none of those.
+     */
+    public function why(): WhyNothingAnswered
+    {
+        return $this->why;
     }
 
     /**
