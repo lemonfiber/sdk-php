@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 07fa30cbac80749e9b101d47adf14d191afe200c, api_version 1.
+// Source: 2112d04d879bc16f9a6f9f44aa4027613a48b803, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -373,6 +373,20 @@ enum RefusalCode: string
     case NewestUnkept = 'PLUGIN-30';
 
     /**
+     * Raised when a git source is named over a transport other than https, before anything is asked of it.
+     *
+     * Answered with 400.
+     */
+    case SchemeRefused = 'PLUGIN-31';
+
+    /**
+     * Raised when a git source's host is, or stands for, an address on this machine or on a network of its own: loopback, private, link-local or unspecified.
+     *
+     * Answered with 400.
+     */
+    case AddressRefused = 'PLUGIN-32';
+
+    /**
      * Raised where a read was given a parameter its answer has nowhere to put.
      *
      * Answered with 400.
@@ -471,11 +485,18 @@ enum RefusalCode: string
     case NotALineCount = 'READ-14';
 
     /**
-     * Raised where whether to keep reading is neither true nor false.
+     * Raised where a parameter that takes a yes or a no is neither true nor false.
      *
      * Answered with 400.
      */
     case NotAChoice = 'READ-15';
+
+    /**
+     * Raised where a household read named a member and asked for the household's defaults as well.
+     *
+     * Answered with 400.
+     */
+    case MemberAndDefaults = 'READ-16';
 
     /**
      * Raised when consent was given for an offer that no longer stands.
@@ -682,6 +703,8 @@ enum RefusalCode: string
             self::Occupied => 400,
             self::CatalogueReplaced => 500,
             self::NewestUnkept => 500,
+            self::SchemeRefused => 400,
+            self::AddressRefused => 400,
             self::Unwanted => 400,
             self::Repeated => 400,
             self::NoSuchRead => 404,
@@ -697,6 +720,7 @@ enum RefusalCode: string
             self::NoUpdateObject => 400,
             self::NotALineCount => 400,
             self::NotAChoice => 400,
+            self::MemberAndDefaults => 400,
             self::Stale => 400,
             self::MovedOn => 400,
             self::Unrenderable => 500,

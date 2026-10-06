@@ -21467,6 +21467,16 @@
       "status": 500,
       "description": "Raised when the record of the newest catalogue index this machine verified cannot be read or written."
     },
+    "PLUGIN-31": {
+      "name": "SCHEME_REFUSED",
+      "status": 400,
+      "description": "Raised when a git source is named over a transport other than https, before anything is asked of it."
+    },
+    "PLUGIN-32": {
+      "name": "ADDRESS_REFUSED",
+      "status": 400,
+      "description": "Raised when a git source's host is, or stands for, an address on this machine or on a network of its own: loopback, private, link-local or unspecified."
+    },
     "PLUGIN-4": {
       "name": "UNRECORDED",
       "status": 500,
@@ -21530,7 +21540,12 @@
     "READ-15": {
       "name": "NOT_A_CHOICE",
       "status": 400,
-      "description": "Raised where whether to keep reading is neither true nor false."
+      "description": "Raised where a parameter that takes a yes or a no is neither true nor false."
+    },
+    "READ-16": {
+      "name": "MEMBER_AND_DEFAULTS",
+      "status": 400,
+      "description": "Raised where a household read named a member and asked for the household's defaults as well."
     },
     "READ-2": {
       "name": "REPEATED",
