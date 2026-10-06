@@ -62,9 +62,10 @@ composer test     # the suite alone
 Every gate in `composer ci` is a merge gate, including 100% line coverage **and**
 a 100% mutation score — coverage that kills no mutants proves only that lines ran.
 Backward compatibility is a merge gate too, and sits outside `composer ci`: it
-needs a released tag to compare against and a checker installed on its own
-(`composer bin bc install`). There are no tags yet, so its CI job skips its steps
-and passes having compared nothing.
+needs a checker installed on its own (`composer bin bc install`). Its CI job
+compares against the commit the companion's main branch pins, and fails on a
+break the pull request adds unless the title declares it with `!`
+(`composer bc -- --from=<commit>` asks the same question locally).
 
 ## Before you open a PR
 

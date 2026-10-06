@@ -353,7 +353,7 @@ jobs:
             exit 1
           fi
 
-  # A library's promise to its consumers, checked against the last release.
+  # A library's promise to its consumers, checked against the commit its consumer pins.
   # Kept on its own because it needs the full history and a second install of
   # its own tooling.
   backward-compatibility:
@@ -385,25 +385,65 @@ jobs:
           php-version: ${{ env.PHP_VERSION }}
           coverage: none
       - uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
-      - name: Find the last released version
-        id: released
+      # Nothing is released, so what a breaking change breaks is the commit the
+      # companion pins: the one its main branch's lockfile holds, which the
+      # release train moves. That commit is what this pull request is compared
+      # against. A pin that cannot be read is a failure rather than a pass: a
+      # check that compared nothing reads exactly like one that found nothing.
+      - name: Find the commit the companion pins
+        id: pinned
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          # git sorts and stops at one itself, so no pipe can close on it
-          # early: under pipefail, `git tag | head -n 1` fails the step once
-          # the tag list outgrows the pipe buffer.
-          latest="$(git for-each-ref --count=1 --sort=-v:refname --format='%(refname:short)' 'refs/tags/v*')"
-          echo "tag=${latest}" >> "$GITHUB_OUTPUT"
-          # A job that skips its only two steps still reports success, and a green
-          # check that compared nothing reads exactly like one that compared and
-          # found nothing wrong. Say which this was.
-          if [ -z "${latest}" ]; then
-            echo "::notice::No released version to compare against, so backward compatibility is not being enforced on this run."
-          else
-            echo "Comparing against ${latest}."
+          lock="$(gh api repos/lemonfiber/lemonfiber-companion/contents/composer.lock -H 'Accept: application/vnd.github.raw')"
+          pin="$(printf '%s' "${lock}" | jq -r '[.packages[], (.["packages-dev"] // [])[]] | map(select(.name == "lemonfiber/sdk-php")) | first | .source.reference // empty')"
+          if [ -z "${pin}" ]; then
+            echo "::error::The companion's lockfile names no commit of lemonfiber/sdk-php, so there is nothing to compare against."
+            exit 1
           fi
+          if ! git cat-file -e "${pin}^{commit}" 2>/dev/null; then
+            echo "::error::The companion pins ${pin}, which is not a commit of this repository."
+            exit 1
+          fi
+          echo "Comparing against ${pin}, the commit the companion's main branch pins."
+          echo "commit=${pin}" >> "$GITHUB_OUTPUT"
       - name: Install the checker
-        if: steps.released.outputs.tag != ''
         run: composer bin bc install --no-interaction
-      - name: Compare against the last release
-        if: steps.released.outputs.tag != ''
-        run: composer bc
+      # What this pull request breaks is what its head breaks against the pin and
+      # its base does not: a break already on main is the release train's to
+      # carry to the companion, and is not this pull request's. A break the pull
+      # request declares, with `!` in its title as conventional commits write
+      # one, is reported and allowed, and the squashed commit carries the title.
+      - name: Compare against the pinned commit
+        env:
+          PINNED: ${{ steps.pinned.outputs.commit }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          check=vendor-bin/bc/vendor/bin/roave-backward-compatibility-check
+          "${check}" --from="${PINNED}" --to="${BASE}" > "${RUNNER_TEMP}/base.out" 2>&1 || true
+          "${check}" --from="${PINNED}" > "${RUNNER_TEMP}/head.out" 2>&1 || true
+          # Each run ends on its verdict. One that did not reach it compared
+          # nothing, and nothing compared is not nothing broken.
+          for run in base head; do
+            verdict="$(grep -E 'backwards-incompatible changes detected' "${RUNNER_TEMP}/${run}.out" || true)"
+            if [ -z "${verdict}" ]; then
+              cat "${RUNNER_TEMP}/${run}.out"
+              echo "::error::The comparison of the ${run} against ${PINNED} did not finish."
+              exit 1
+            fi
+            { grep '^\[BC\]' "${RUNNER_TEMP}/${run}.out" || true; } | sort -u > "${RUNNER_TEMP}/${run}.txt"
+          done
+          added="$(comm -13 "${RUNNER_TEMP}/base.txt" "${RUNNER_TEMP}/head.txt")"
+          if [ -z "${added}" ]; then
+            echo "Nothing breaks against ${PINNED} that main did not already break."
+            exit 0
+          fi
+          printf '%s\n' "${added}"
+          declared="$(printf '%s\n' "${TITLE}" | grep -E '^[a-z]+(\([a-z0-9.-]+\))?!: ' || true)"
+          if [ -n "${declared}" ]; then
+            echo "::notice::This pull request breaks what the companion pins, and its title says so."
+            exit 0
+          fi
+          echo "::error::This breaks what the companion pins. Declare it with '!' in the title (for example 'feat!: ...') and route the companion's side, or keep the old surface."
+          exit 1
