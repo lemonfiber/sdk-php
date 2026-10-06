@@ -8,7 +8,6 @@
 /.roave-backward-compatibility-check.xml export-ignore
 /AGENTS.md          export-ignore
 /CLAUDE.md          export-ignore
-/captainhook.json   export-ignore
 /cliff.toml         export-ignore
 /composer-dependency-analyser.php export-ignore
 /contract           export-ignore
