@@ -5,6 +5,7 @@
 /.github            export-ignore
 /.gitignore         export-ignore
 /.markdownlint.jsonc export-ignore
+/.roave-backward-compatibility-check.xml export-ignore
 /AGENTS.md          export-ignore
 /CLAUDE.md          export-ignore
 /captainhook.json   export-ignore

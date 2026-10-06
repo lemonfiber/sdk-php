@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    What the backward-compatibility check does not hold a pull request to.
+
+    Everything under Lemonfiber\Sdk\Generated is the contract's, and moves with
+    the artefact a contract sync vendors: a refusal code or a key-callable action
+    the core added is a case added to a generated enum, and every sync changes
+    the revision Contract::SOURCE names. Those reach the companion with the sync
+    that brings them, and a case removed or a shape changed is still a break.
+-->
+<roave-bc-check>
+    <baseline>
+        <ignored-regex>#^\[BC\] ADDED: Case Lemonfiber\\Sdk\\Generated\\[A-Za-z]+::[A-Za-z0-9]+ was added$#</ignored-regex>
+        <ignored-regex>#^\[BC\] CHANGED: Value of constant Lemonfiber\\Sdk\\Generated\\Contract::SOURCE changed from#</ignored-regex>
+    </baseline>
+</roave-bc-check>
