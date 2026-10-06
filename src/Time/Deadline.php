@@ -10,8 +10,7 @@ use function max;
  * How long one call may still take, counted from the moment it began.
  *
  * A call is every attempt at one request: a read asked again after nothing
- * answered, and an action sent again under its own key, share the wait the
- * first attempt began. The bound is how long somebody waits for an answer,
+ * answered shares the wait the first attempt began. The bound is how long somebody waits for an answer,
  * which is the whole call rather than any one attempt at it, so each attempt
  * is given what is left and a further attempt is made only while there is
  * room for it.

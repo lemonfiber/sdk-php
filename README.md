@@ -125,10 +125,10 @@ and the door. The transport's own exception never reaches a caller.
 
 Every client is built with the longest a call may wait, and there is no default. The wait is the
 whole call: a read is asked again up to twice where nothing answered or a gateway could not reach
-the stack, and an action that carries a key is sent once more under that key where nothing
-answered. All attempts share the one wait. An attempt the pause before it would not leave room
-for is not made, and a call that runs out raises `Unreachable`. An action with no key is never
-sent again.
+the stack, and all attempts share the one wait. An attempt the pause before it would not leave
+room for is not made, and a call that runs out raises `Unreachable`. An action is sent once,
+with or without a key: the stack does not read the key, so a second sending would be a second
+change.
 
 ```php
 use Lemonfiber\Sdk\Exception\RequestFailed;
@@ -176,7 +176,7 @@ server may send, has a null `code()` and is read by its status alone (ARCH-R138)
 right; `Unreachable` is no answer at all. `reason()` is the connection's own words, with every
 address in them cut back to its scheme, host, port and path, so sign-in details and a query
 never travel with it. It does not say the request went unheard: an action whose answer was lost
-on the way back may have been applied, and re-sending it under the same attempt name is one act.
+on the way back may have been applied, so read what the stack now says before acting again.
 
 ## Work that outlives the request
 

@@ -13,9 +13,9 @@ use function trim;
 /**
  * The name one attempt at an action travels under, as a header.
  *
- * A caller that lost the answer to an action re-sends it under the same key
- * and the stack recognises the second send as the first. A caller that has
- * reconnected, or that is acting again, sends a new one.
+ * The key names one attempt: a caller that has reconnected, or that is acting
+ * again, sends a new one. The stack does not read it, so this client sends an
+ * action once whatever key it carries.
  *
  * Checked here rather than at the socket, the way {@see RunToken} is: a value
  * carrying a carriage return ends the header and starts another, so a key

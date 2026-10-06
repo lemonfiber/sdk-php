@@ -48,10 +48,8 @@ final class Api implements HouseholdReads, MachineReads
     /**
      * The header an action names the single attempt it is part of in.
      *
-     * A re-send inside that attempt carries the same value, so an answer lost
-     * on the way back is not a second change to the machine. A later attempt
-     * carries a fresh one, and nothing the first attempt asked for is applied
-     * under it.
+     * A later attempt carries a fresh one. The stack does not read it, so an
+     * action is sent once whatever key it carries.
      *
      * The name the HTTP working group's draft gives it, rather than an
      * `X-Lemonfiber-` name of the sort {@see self::TOKEN_HEADER} is. That
