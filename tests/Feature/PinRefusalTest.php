@@ -9,9 +9,13 @@ use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\PresentedCertificate;
+use Lemonfiber\Sdk\Tests\Support\AnsweringListener;
 use Lemonfiber\Sdk\Tests\Support\TlsListener;
 
 const A_PIN_NOTHING_PRESENTS = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+
+/** What is left of a call's wait when the certificate is asked for, in seconds. */
+const A_PROBES_WAIT = 5.0;
 
 /**
  * What one call raised against a peer.
@@ -65,8 +69,25 @@ it('asks no certificate of an address that is not pinned', function (): void {
 it('reads the digest of the certificate a peer presents, as a pin is written', function (): void {
     $peer = TlsListener::start();
 
-    expect(PresentedCertificate::at(BaseUrl::pinned($peer->address(), CertificatePin::fromSha256(A_PIN_NOTHING_PRESENTS))))
+    expect(PresentedCertificate::at(BaseUrl::pinned($peer->address(), CertificatePin::fromSha256(A_PIN_NOTHING_PRESENTS)), A_PROBES_WAIT))
         ->toBe($peer->digest);
+});
+
+it('reads nothing, and connects to nothing, where the call has no wait left', function (): void {
+    $peer = TlsListener::start();
+
+    expect(PresentedCertificate::at(BaseUrl::pinned($peer->address(), CertificatePin::fromSha256(A_PIN_NOTHING_PRESENTS)), 0.0))
+        ->toBeNull();
+});
+
+it('gives up on a peer that never answers the handshake once what is left of the wait is spent', function (): void {
+    $peer = AnsweringListener::silent();
+    $started = microtime(true);
+
+    $presented = PresentedCertificate::at(BaseUrl::fromString($peer->address()), 0.3);
+
+    expect($presented)->toBeNull()
+        ->and(microtime(true) - $started)->toBeLessThan(2.0);
 });
 
 it('reads nothing where no encrypted connection could be set up', function (): void {
@@ -79,13 +100,13 @@ it('reads nothing where no encrypted connection could be set up', function (): v
     $name = (string) stream_socket_get_name($server, false);
     fclose($server);
 
-    expect(PresentedCertificate::at(BaseUrl::onPort((int) substr($name, (int) strrpos($name, ':') + 1))))->toBeNull();
+    expect(PresentedCertificate::at(BaseUrl::onPort((int) substr($name, (int) strrpos($name, ':') + 1)), A_PROBES_WAIT))->toBeNull();
 });
 
 it('holds back the warning a connection that could not be set up raises', function (): void {
     error_clear_last();
 
-    PresentedCertificate::at(BaseUrl::onPort(1));
+    PresentedCertificate::at(BaseUrl::onPort(1), A_PROBES_WAIT);
 
     expect(error_get_last())->toBeNull();
 });
@@ -95,7 +116,7 @@ it('puts back the error handler that was in place', function (): void {
     set_error_handler($before);
 
     try {
-        PresentedCertificate::at(BaseUrl::onPort(1));
+        PresentedCertificate::at(BaseUrl::onPort(1), A_PROBES_WAIT);
     } finally {
         $after = set_error_handler(null);
         restore_error_handler();

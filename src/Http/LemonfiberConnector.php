@@ -188,7 +188,7 @@ final class LemonfiberConnector extends Connector
             return Unreachable::whenAsking($endpoint, $reported);
         }
 
-        $presented = PresentedCertificate::at($this->baseUrl);
+        $presented = PresentedCertificate::at($this->baseUrl, $this->call->secondsLeft());
 
         if ($presented === null || $presented === $pin->toString()) {
             return Unreachable::whenAsking($endpoint, $reported);
