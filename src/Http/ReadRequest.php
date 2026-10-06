@@ -8,6 +8,7 @@ use function http_build_query;
 use function implode;
 use function in_array;
 use function is_array;
+use function is_bool;
 
 use Override;
 
@@ -27,7 +28,8 @@ use Saloon\Http\Request;
  *
  * A parameter given a list is the same key repeated once for each value, in
  * order (`form=a&form=b`), which is how a command's flag given more than once
- * is written as a read. An empty list sends nothing, as a null does.
+ * is written as a read. An empty list sends nothing, as a null does. A
+ * boolean is written `true` or `false`, the two words a stack reads as a choice.
  *
  * **A read is asked again before anything is reported**, twice, a little later
  * each time (the pause is the connector's), where nothing answered it or a gateway in front of the stack said
@@ -87,7 +89,7 @@ final class ReadRequest extends Request
 
         foreach ($this->parameters as $key => $value) {
             foreach (is_array($value) ? $value : [$value] as $one) {
-                $pair = http_build_query([$key => $one]);
+                $pair = http_build_query([$key => $this->written($one)]);
                 if ($pair !== '') {
                     $pairs[] = $pair;
                 }
@@ -114,5 +116,19 @@ final class ReadRequest extends Request
     protected function defaultQuery(): array
     {
         return $this->parameters;
+    }
+
+    /**
+     * A value as a stack reads it, a boolean as its word rather than PHP's `1` or `0`.
+     *
+     * @param scalar|null $value
+     */
+    private function written(mixed $value): int|float|string|null
+    {
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+
+        return $value;
     }
 }
