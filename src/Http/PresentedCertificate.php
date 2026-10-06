@@ -25,6 +25,9 @@ use function stream_socket_client;
  * transport during the handshake, where a peer that fails it and a peer that is
  * not there end in the same failure; the certificate read here is what tells
  * the two apart.
+ *
+ * It is part of the call whose failure it explains, so it is given what is left
+ * of that call's wait and nothing more, and reads nothing where none is left.
  */
 final readonly class PresentedCertificate
 {
@@ -37,11 +40,16 @@ final readonly class PresentedCertificate
 
     /**
      * The SHA-256 of the certificate presented at an address, in the form a pin
-     * is written in, or nothing where no encrypted connection could be set up.
+     * is written in, or nothing where no encrypted connection could be set up
+     * within `$secondsLeft`.
      */
-    public static function at(BaseUrl $address): ?string
+    public static function at(BaseUrl $address, float $secondsLeft): ?string
     {
-        $connection = self::connectedTo($address);
+        if ($secondsLeft <= 0.0) {
+            return null;
+        }
+
+        $connection = self::connectedTo($address, $secondsLeft);
 
         if ($connection === false) {
             return null;
@@ -65,7 +73,7 @@ final readonly class PresentedCertificate
      *
      * @return resource|false
      */
-    private static function connectedTo(BaseUrl $address): mixed
+    private static function connectedTo(BaseUrl $address, float $secondsLeft): mixed
     {
         set_error_handler(static fn(): bool => true);
 
@@ -74,7 +82,7 @@ final readonly class PresentedCertificate
                 sprintf('ssl://%s', $address->authority()),
                 $errorNumber,
                 $error,
-                null,
+                $secondsLeft,
                 STREAM_CLIENT_CONNECT,
                 stream_context_create(self::READ_ANY),
             );
