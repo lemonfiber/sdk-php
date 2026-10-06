@@ -350,7 +350,7 @@ The package carries semver. `api_version` is a separate integer describing the w
 
 Every gate below is a merge gate. `composer ci` runs all of them but the last. Backward
 compatibility is its own script and its own CI job: it needs a checker installed separately
-(`composer bin bc install`) and a released tag to compare against.
+(`composer bin bc install`) and a commit to compare against.
 
 `composer install` also turns on this repository's pre-push hook, which refuses a push that
 would leave a branch carrying no commit `origin/main` does not — what pushing the trunk over a
@@ -368,7 +368,7 @@ no hook: it is `git config core.hooksPath .githooks`, per clone, and git cannot 
 | Contract types | `composer contract:check` | Regeneration produces no diff |
 | Tests | `composer test:coverage` | 100% line coverage |
 | Mutation testing | `composer test:mutation` | 100% mutation score |
-| Backward compatibility | `composer bc` | Roave, against the newest `v*` tag. There are none yet, so the CI job skips both its steps and passes having compared nothing |
+| Backward compatibility | `composer bc -- --from=<commit>` | Roave, against the commit the companion's main branch pins. CI fails on a break the pull request adds beyond what main already breaks, unless its title declares it with `!` |
 
 `src/Generated/` is skipped by Pint, PHPStan, Rector and both test gates, and the guards hold it
 to the 550-line cap alone, which the generator also refuses to exceed. Generated code is proved by
