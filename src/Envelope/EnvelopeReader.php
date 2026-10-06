@@ -70,7 +70,13 @@ final readonly class EnvelopeReader
             throw UnreadableResponse::dataMissing();
         }
 
-        return new Envelope($version, $kind, $decoded['data']);
+        $host = $decoded['host'] ?? null;
+
+        if ($host !== null && ! is_string($host)) {
+            throw UnreadableResponse::hostUnreadable();
+        }
+
+        return new Envelope($version, $kind, $decoded['data'], $host);
     }
 
     /**

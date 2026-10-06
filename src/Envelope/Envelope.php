@@ -17,10 +17,12 @@ final readonly class Envelope
 {
     /**
      * @param TData $data
+     * @param string|null $host the machine this answer is about, where it is not the one lemonfiber runs on
      */
     public function __construct(
         public int $apiVersion,
         public string $kind,
         public mixed $data,
+        public ?string $host = null,
     ) {}
 }

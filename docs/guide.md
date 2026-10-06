@@ -74,6 +74,9 @@ $status->data;   // the payload
 $client->read(Api::REQUESTS_ENDPOINT, ['member' => 'ada']);
 ```
 
+Every envelope also carries `host`: the machine the answer is about, where it is
+not the one lemonfiber runs on, and null where it is.
+
 Each read is documented where it is declared, with the parameters it takes and the
 kind it answers with: the machine's reads in
 [`MachineReads`](../src/Contract/MachineReads.php) and the household's in

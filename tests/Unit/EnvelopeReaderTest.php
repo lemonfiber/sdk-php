@@ -17,6 +17,21 @@ it('reads the wrapper lemonfiber answers in', function (): void {
         ->and($envelope->data)->toBe(['health' => 'healthy']);
 });
 
+it('reads the machine an answer is about, where it names one', function (): void {
+    $beside = new EnvelopeReader()->read('{"api_version":1,"kind":"status","host":"nas.local","data":{}}');
+    $here = new EnvelopeReader()->read('{"api_version":1,"kind":"status","data":{}}');
+    $named = new EnvelopeReader()->read('{"api_version":1,"kind":"status","host":null,"data":{}}');
+
+    expect($beside->host)->toBe('nas.local')
+        ->and($here->host)->toBeNull()
+        ->and($named->host)->toBeNull();
+});
+
+it('refuses an answer naming its machine with something other than a name', function (): void {
+    expect(fn(): Envelope => new EnvelopeReader()->read('{"api_version":1,"kind":"status","host":7,"data":{}}'))
+        ->toThrow(UnreadableResponse::class, 'names the machine it is about with something other than a name');
+});
+
 it('reads a payload that is not an object', function (): void {
     $envelope = new EnvelopeReader()->read('{"api_version":1,"kind":"version","data":7}');
 

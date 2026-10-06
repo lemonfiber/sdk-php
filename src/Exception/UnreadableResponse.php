@@ -50,6 +50,13 @@ final class UnreadableResponse extends RuntimeException implements Problem
         ));
     }
 
+    public static function hostUnreadable(): self
+    {
+        return new self(
+            'The answer names the machine it is about with something other than a name.',
+        );
+    }
+
     public static function dataMissing(): self
     {
         return new self(
