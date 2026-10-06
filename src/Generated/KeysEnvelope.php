@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `preview` envelope, shaped as the contract describes it.
+ * The `keys` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{dropped: list<array{needs: 'usenet'|'torrent', profile: string}>, filtered: list<array{forms: list<string>, id: string, name: string, needs: 'usenet'|'torrent', profile: string}>, footprint: array{estimated_mib: int, unestimated: list<string>}, forms: list<string>, profiles: list<string>, running?: list<string>|null, services: list<string>}
+ * @phpstan-type Data array{keys: list<array{member_minted: bool, minted: string, name: string, purpose: 'home-assistant'|'mcp'|'other', revoked?: string|null, scope: string, state: 'active'|'revoked'|'orphaned'|'unconfirmed', used?: string|null}>, purposes: string, rehearsed: bool, revoked?: string|null}
  */
-final class PreviewEnvelope
+final class KeysEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Preview;
+    public const Kind KIND = Kind::Keys;
 
     /**
      * The same envelope with its payload typed by its kind.
