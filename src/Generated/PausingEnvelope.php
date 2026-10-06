@@ -13,16 +13,16 @@ use Lemonfiber\Sdk\Envelope\Payload;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 
 /**
- * The `import` envelope, shaped as the contract describes it.
+ * The `pausing` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{carried: list<array{kind: string, name: string, service: string}>, not_carried: list<array{because: string, what: string}>, project?: string|null, refusal?: string|null, rehearsed: bool, stance: 'unchanged'|'pending'|'blocked'|'applied', would_carry: list<array{kind: string, name: string, service: string}>}
+ * @phpstan-type Data array{asked: 'pause'|'resume', caution?: string|null, clients: list<array{client: string, now?: 'fetching'|'stopped'|null, unreached?: string|null, was?: 'fetching'|'stopped'|null}>, rehearsed: bool}
  */
-final class ImportEnvelope
+final class PausingEnvelope
 {
     /**
      * The kind an envelope must carry to be read as this one.
      */
-    public const Kind KIND = Kind::Import;
+    public const Kind KIND = Kind::Pausing;
 
     /**
      * The same envelope with its payload typed by its kind.
