@@ -7,6 +7,7 @@ use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Logs;
 use Lemonfiber\Sdk\Repair;
+use Lemonfiber\Sdk\WhyNothingAnswered;
 
 /**
  * A port on this machine that nothing is listening on.
@@ -83,4 +84,29 @@ it('says nothing of the token or the password in what the connection reported', 
 
     expect($read->getMessage() . ($read instanceof Unreachable ? $read->reason() : ''))->not->toContain('a-run-token')
         ->and($door->getMessage() . ($door instanceof Unreachable ? $door->reason() : ''))->not->toContain('a-password');
+});
+
+it('says a connection was turned away where nothing listens, through either transport', function (Closure $ask): void {
+    $raised = whatNothingAnsweringRaises(static fn(): mixed => $ask(aPortNothingListensOn()));
+
+    expect($raised)->toBeInstanceOf(Unreachable::class);
+
+    if ($raised instanceof Unreachable) {
+        expect($raised->why())->toBe(WhyNothingAnswered::Refused);
+    }
+})->with([
+    'an address on this machine' => [static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->read('/api/status')],
+    'an address held to a pin' => [static fn(int $port): mixed => aPinnedClient(sprintf('https://127.0.0.1:%d', $port), 'a-run-token', str_repeat('a', 64))->read('/api/status')],
+]);
+
+it('says the name turned into no address where it names nothing', function (): void {
+    // `.invalid` is reserved never to resolve (RFC 6761), so no name service
+    // anywhere answers for it.
+    $raised = whatNothingAnsweringRaises(static fn(): mixed => aPinnedClient('https://nothing.invalid:8443', 'a-run-token', str_repeat('a', 64))->read('/api/status'));
+
+    expect($raised)->toBeInstanceOf(Unreachable::class);
+
+    if ($raised instanceof Unreachable) {
+        expect($raised->why())->toBe(WhyNothingAnswered::NameNotFound);
+    }
 });
