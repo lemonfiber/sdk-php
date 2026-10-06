@@ -105,7 +105,14 @@ it('escapes every value in a list on its own', function (): void {
 
 it('writes a value in a list as it writes it alone', function (): void {
     expect(addressRead('/api/logs', ['tail' => [5, 10], 'follow' => [true]]))
-        ->toBe('http://127.0.0.1:9000/api/logs?tail=5&tail=10&follow=1');
+        ->toBe('http://127.0.0.1:9000/api/logs?tail=5&tail=10&follow=true');
+});
+
+it('writes a choice as the word a stack reads, true or false', function (): void {
+    expect(addressRead('/api/requests', ['defaults' => true]))
+        ->toBe('http://127.0.0.1:9000/api/requests?defaults=true')
+        ->and(addressRead('/api/logs', ['follow' => false]))
+        ->toBe('http://127.0.0.1:9000/api/logs?follow=false');
 });
 
 it('keeps a query the endpoint already carries, ahead of the parameters', function (): void {
