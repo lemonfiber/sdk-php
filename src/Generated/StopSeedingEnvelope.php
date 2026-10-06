@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 120b075276a6e2f088c7963364d3f033dcc00b65, api_version 1.
+// Source: 8254d2b85aec560a52d731a32f26b103f8ca32e1, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
