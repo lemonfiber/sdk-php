@@ -20,8 +20,7 @@ use Saloon\Http\Faking\MockResponse;
 use Saloon\Http\PendingRequest;
 
 // Every call waits at most the wait its client was given, every attempt at it
-// included, and an action is sent again only under the key that makes the two
-// sendings one act.
+// included, and an action is sent once.
 
 /** A wait short enough for a test to sit through. */
 const A_SHORT_WAIT_MS = 300;
@@ -165,24 +164,24 @@ it('makes no attempt once the call has used all of its wait', function (): void 
         ->and(howManyAsked($peer))->toBe(0);
 });
 
-it('sends an action again where nothing answered, and takes the answer that came', function (): void {
+it('sends an action under a key once where nothing answered, and reports that nothing answered', function (): void {
     $mock = new MockClient([nothingAnswers(), MockResponse::make(A_JOB, 202)]);
 
-    // Sent once, the call would have been raised as nothing answering; the
-    // envelope is what only the second sending could hand back.
-    $envelope = aClientOnPort(9000, 'a-run-token')->withMockClient($mock)->act('/api/actions/restart', [], 'one-attempt');
+    // A second sending would have been answered with the job envelope; what is
+    // raised instead is the first sending meeting nothing.
+    $raised = whatWasRaised(static fn(): mixed => aClientOnPort(9000, 'a-run-token')->withMockClient($mock)->act('/api/actions/restart', [], 'one-attempt'));
 
-    expect($envelope->kind)->toBe('job');
+    expect($raised)->toBeInstanceOf(Unreachable::class);
 });
 
-it('sends an action under a key twice in all, under that key both times, then reports that nothing answered', function (): void {
+it('sends an action under a key once, carrying the key, to a peer that hangs up', function (): void {
     $peer = AnsweringListener::hangingUp();
 
     $raised = whatWasRaised(static fn(): mixed => aClientAt($peer->address(), 'a-run-token')->act('/api/actions/restart', [], 'one-attempt'));
 
     expect($raised)->toBeInstanceOf(Unreachable::class)
-        ->and(howManyAsked($peer))->toBe(2)
-        ->and(substr_count($peer->heard(), 'Idempotency-Key: one-attempt'))->toBe(2);
+        ->and(howManyAsked($peer))->toBe(1)
+        ->and(substr_count($peer->heard(), 'Idempotency-Key: one-attempt'))->toBe(1);
 });
 
 it('never sends an action under a key again where the stack answered, a refusal included', function (): void {

@@ -37,8 +37,8 @@ use Saloon\Http\Request;
  * waking its radio, a proxy whose upstream is restarting. A read changes
  * nothing, so asking it again costs only the wait. Every other answer is the
  * stack's own and comes back on the first attempt: asking again would only
- * repeat it. An action is a different request: it is sent again only under the
- * key that makes the two sendings one act (see {@see ActionRequest}).
+ * repeat it. An action is a different request: it is sent once (see
+ * {@see ActionRequest}).
  */
 final class ReadRequest extends Request
 {

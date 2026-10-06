@@ -25,8 +25,8 @@ use function strtr;
  *
  * **It does not say the request went unheard.** A connection that breaks after
  * the request was written may leave an action applied with its answer lost on
- * the way back. An action re-sent under the same attempt name is one act, and
- * that is what makes sending it again safe (see {@see \Lemonfiber\Sdk\Client::act()}).
+ * the way back, so this client never sends an action again on its own, and a
+ * caller reads what the stack now says before acting again.
  *
  * It carries what the connection reported, as {@see reason()}, with every
  * address in it cut back to where it points: sign-in details, a query and a
