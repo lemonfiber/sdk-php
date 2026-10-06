@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Lemonfiber\Sdk\Scripts\LineCap;
+
 /**
  * The generator's refusal, exercised as the command it is.
  *
@@ -49,6 +51,7 @@ function treeWith(string $root, string $contract): string
     copy($root . '/scripts/GeneratedSource.php', $tree . '/scripts/GeneratedSource.php');
     copy($root . '/scripts/SchemaTypes.php', $tree . '/scripts/SchemaTypes.php');
     copy($root . '/scripts/Refusals.php', $tree . '/scripts/Refusals.php');
+    copy($root . '/scripts/LineCap.php', $tree . '/scripts/LineCap.php');
     file_put_contents($tree . '/contract/web-api.contract.json', $contract);
     file_put_contents($tree . '/contract/VERSION', "v9.9.9\n");
 
@@ -254,8 +257,8 @@ function contractRefusing(mixed $refusals): array
 function askTheRefusalList(string $tree, string $question): string
 {
     $script = sprintf(
-        'require %s; use Lemonfiber\\Sdk\\Generated\\RefusalCode; echo json_encode(%s);',
-        var_export($tree . '/src/Generated/RefusalCode.php', true),
+        'foreach (%s as $file) { require $file; } use Lemonfiber\\Sdk\\Generated\\RefusalCode; echo json_encode(%s);',
+        var_export(array_map(fn(string $class): string => $tree . '/src/Generated/' . $class . '.php', ['RefusalCode', 'RefusalStatus', 'RefusalDescription']), true),
         $question,
     );
 
@@ -275,11 +278,12 @@ it('writes a case per refusal the contract lists, in the order of its code', fun
         ->and($source)->toContain('enum RefusalCode: string')
         ->and($source)->toContain("case NotAdmitted = 'ADMIT-4';")
         ->and($source)->toContain("case NotAPassword = 'ADMIT-10';")
-        ->and($source)->toContain('* Raised when a request carried no token *\/ this run admits.')
-        ->and($source)->toContain('* Answered with 403.')
         ->and($source)->toMatch('/NotAdmitted = .*NotAPassword = /s')
+        ->and((string) file_get_contents($tree . '/src/Generated/RefusalStatus.php'))->toContain('RefusalCode::NotAdmitted => 403,')
         ->and(askTheRefusalList($tree, 'array_map(fn($c) => [$c->name, $c->value, $c->status()], RefusalCode::cases())'))
         ->toBe('[["NotAdmitted","ADMIT-4",403],["NotAPassword","ADMIT-10",400]]')
+        ->and(askTheRefusalList($tree, 'RefusalCode::NotAdmitted->description()'))
+        ->toBe(json_encode("Raised when a request carried\n no token */ this run admits.", JSON_THROW_ON_ERROR))
         ->and(askTheRefusalList($tree, '[RefusalCode::of("ADMIT-4")?->name, RefusalCode::of("NOBODY-1"), RefusalCode::of(null)]'))
         ->toBe('["NotAdmitted",null,null]');
 
@@ -340,6 +344,25 @@ it('refuses a malformed list of refusals, names what is wrong, and writes nothin
         'ADMIT-6' => ['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => 'Raised.'],
     ], 'would both be named NotAdmitted'],
 ]);
+
+it('writes nothing where a file would hold more lines than the cap, naming it', function () use ($root): void {
+    $refusals = [];
+
+    for ($at = 1; $at <= LineCap::MAX_LINES; ++$at) {
+        $refusals['READ-' . $at] = ['name' => 'NUMBER_' . $at, 'status' => 404, 'description' => 'Raised.'];
+    }
+
+    $tree = treeWith($root, json_encode(contractRefusing($refusals), JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+
+    expect($result['status'])->toBe(1)
+        ->and($result['stderr'])->toContain('src/Generated/RefusalCode.php would hold ')
+        ->and($result['stderr'])->toContain(sprintf('over the %d a file may hold', LineCap::MAX_LINES))
+        ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
+
+    removeTree($tree);
+});
 
 it('accepts the edges of the statuses a refusal is answered with', function (int $status) use ($root): void {
     $tree = treeWith($root, json_encode(contractRefusing([

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lemonfiber\Sdk\Scripts;
 
 require_once __DIR__ . '/GeneratedSource.php';
+require_once __DIR__ . '/LineCap.php';
 require_once __DIR__ . '/Refusals.php';
 require_once __DIR__ . '/SchemaTypes.php';
 
@@ -372,7 +373,18 @@ final readonly class ContractGenerator
         $stamp = $this->stamp();
         $planned = $this->planned($kinds, $refusals, new GeneratedSource(self::ARTEFACT, $stamp, $version));
 
-        return $planned === null ? 1 : $this->write($planned, $stamp);
+        if ($planned === null) {
+            return 1;
+        }
+
+        $over = LineCap::firstOver($planned['files']);
+
+        return $over === null ? $this->write($planned, $stamp) : $this->refuse(sprintf(
+            '%s would hold %d lines, over the %d a file may hold, so nothing was generated.',
+            $over,
+            LineCap::of($planned['files'][$over]),
+            LineCap::MAX_LINES,
+        ));
     }
 
     /**
@@ -407,6 +419,8 @@ final readonly class ContractGenerator
 
         $files[self::OUTPUT . '/Kind.php'] = $source->kindEnum($named);
         $files[self::OUTPUT . '/RefusalCode.php'] = $source->refusalEnum($refusals);
+        $files[self::OUTPUT . '/RefusalStatus.php'] = $source->refusalStatusClass($refusals);
+        $files[self::OUTPUT . '/RefusalDescription.php'] = $source->refusalDescriptionClass($refusals);
         $files[self::OUTPUT . '/Contract.php'] = $source->contractClass();
 
         return ['named' => $named, 'refusals' => count($refusals), 'files' => $files];

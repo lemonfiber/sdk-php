@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Guards;
 
+require_once __DIR__ . '/LineCap.php';
+
 use function array_any;
 use function array_filter;
 use function array_merge;
@@ -18,6 +20,9 @@ use function is_array;
 use function is_dir;
 use function is_file;
 use function json_decode;
+
+use Lemonfiber\Sdk\Scripts\LineCap;
+
 use function ltrim;
 use function preg_match;
 use function preg_match_all;
@@ -29,7 +34,6 @@ use function str_ends_with;
 use function str_replace;
 use function str_starts_with;
 use function strtolower;
-use function substr_count;
 use function token_get_all;
 use function trim;
 
@@ -41,8 +45,6 @@ use function trim;
  */
 final class Guards
 {
-    private const int MAX_LINES = 550;
-
     /**
      * @var list<string>
      */
@@ -171,7 +173,8 @@ final class Guards
 
     /**
      * Written by `composer contract:generate`, and proved by regeneration
-     * producing no diff rather than by these checks.
+     * producing no diff. Its comments carry the contract's own words, so it is
+     * held to the line cap and to none of the other checks.
      *
      * @var list<string>
      */
@@ -202,6 +205,9 @@ final class Guards
 
             foreach ($found as $file) {
                 if ($this->isGenerated($file)) {
+                    ++$read;
+                    $this->checkLength($file, (string) file_get_contents($file));
+
                     continue;
                 }
 
@@ -269,10 +275,10 @@ final class Guards
 
     private function checkLength(string $file, string $source): void
     {
-        $lines = substr_count($source, "\n") + 1;
+        $lines = LineCap::of($source);
 
-        if ($lines > self::MAX_LINES) {
-            $this->fail($file, $lines, 'holds ' . $lines . ' lines, over the limit of ' . self::MAX_LINES);
+        if ($lines > LineCap::MAX_LINES) {
+            $this->fail($file, $lines, 'holds ' . $lines . ' lines, over the limit of ' . LineCap::MAX_LINES);
         }
     }
 

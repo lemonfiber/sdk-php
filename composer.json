@@ -96,7 +96,8 @@
         ],
         "contract:check": [
             "@contract:generate",
-            "git diff --exit-code -- src/Generated contract"
+            "git diff --exit-code -- src/Generated contract",
+            "test -z \"$(git status --porcelain --untracked-files=all -- src/Generated contract)\""
         ],
         "contract:generate": "@php scripts/contract-generate.php",
         "contract:sync": "@php scripts/contract-sync.php",

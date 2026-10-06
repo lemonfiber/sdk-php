@@ -1,0 +1,110 @@
+<?php
+
+// Generated from contract/web-api.contract.json. Do not edit.
+// Source: 79bb11356f6a117d14293c49cd2d154164c5f439, api_version 1.
+// Regenerate with `composer contract:generate`.
+
+declare(strict_types=1);
+
+namespace Lemonfiber\Sdk\Generated;
+
+/**
+ * The registry's own line about each refusal code.
+ */
+final class RefusalDescription
+{
+    public static function of(RefusalCode $code): string
+    {
+        return match ($code) {
+            RefusalCode::NotAdmitted => 'Raised when a request carried no token, session or key this run admits.',
+            RefusalCode::Elsewhere => 'Raised when a request said it came from somewhere this server is not.',
+            RefusalCode::NotYours => 'Raised when an account asked for something that is not its to ask for.',
+            RefusalCode::Unconfirmed => 'Raised when the media server could not say whether an account is still one.',
+            RefusalCode::NotThePassword => 'Raised when the password offered at the door was wrong, or none is set.',
+            RefusalCode::TooManyAttempts => 'Raised when the door has been given too many wrong passwords lately.',
+            RefusalCode::NotAPassword => 'Raised when what was offered at the door is not a password.',
+            RefusalCode::KeyInTheClear => 'Raised when a key arrived from another machine over a connection its pin does not verify.',
+            RefusalCode::NotForAKey => 'Raised when a key asked for something its scope does not reach.',
+            RefusalCode::NoSuchAction => 'Raised where no action goes by the name that was asked for.',
+            RefusalCode::MissingArgument => 'Raised where an action was not given an argument it needs.',
+            RefusalCode::UnrecognisedArgument => 'Raised where an argument was given a value that names nothing.',
+            RefusalCode::UnwantedArgument => 'Raised where an action was given an argument its command has nowhere to put.',
+            RefusalCode::ArgumentsTogether => 'Raised where two arguments that each name a different request arrived together.',
+            RefusalCode::NotArguments => 'Raised where the body of an action is not arguments it can read.',
+            RefusalCode::NoSuchJob => 'Raised where a job was asked about that this run did not start.',
+            RefusalCode::NotAnAnswer => 'Raised where the body of a setup step is not an answer it can read.',
+            RefusalCode::NoEndpoint => 'Raised where a path under the endpoints is one no endpoint answers.',
+            RefusalCode::WrongMethod => 'Raised where an endpoint was asked with a method it does not answer.',
+            RefusalCode::NotAKeyRequest => 'Raised where the body of a mint is not a key\'s name, scope, purpose and the password.',
+            RefusalCode::AnotherReading => 'Raised when an agreement names a reading of this machine that is not the one standing now.',
+            RefusalCode::OfferMoved => 'Raised when a replacement was agreed to for an offer that is not the one standing now.',
+            RefusalCode::Unreadable => 'The source names no plugin this build can read.',
+            RefusalCode::Refused => 'The manifest is read and this build refuses what it declares.',
+            RefusalCode::Unrecorded => 'The record of what is installed cannot be read.',
+            RefusalCode::Already => 'The plugin is installed already.',
+            RefusalCode::Nowhere => 'There is no stack on this machine to put a plugin\'s container in.',
+            RefusalCode::Unwritable => 'A directory or a document the install decided on would not land.',
+            RefusalCode::Unrecordable => 'The wiring went down and the record of what is installed did not.',
+            RefusalCode::Unproved => 'The plugin\'s own service would not start, so nothing about it could be proved.',
+            RefusalCode::NothingToRemove => 'Nothing by that name is installed on this machine.',
+            RefusalCode::NothingToUpdate => 'Nothing by that id is installed, so there is no version to replace.',
+            RefusalCode::Stuck => 'The version installed would not come off, so nothing else was touched.',
+            RefusalCode::Answered => 'Raised when a plugin\'s service would answer on a label another plugin\'s already does.',
+            RefusalCode::TwoSources => 'Raised when a plugin is installed from a source other than the one its name is already installed from.',
+            RefusalCode::SourceOff => 'Raised when a plugin is named from a git source and fetching from one is switched off.',
+            RefusalCode::Unfetched => 'Raised when a git source could not be reached or would not hand over a revision.',
+            RefusalCode::NoRevision => 'Raised when a git source holds no branch, tag or commit by the name given.',
+            RefusalCode::CatalogueOff => 'Raised when a plugin is installed by name and asking the catalogue is switched off.',
+            RefusalCode::CatalogueUnreachable => 'Raised when the catalogue\'s index or its signature could not be fetched.',
+            RefusalCode::SignatureUnverified => 'Raised when the catalogue\'s index has no signature, one that does not verify, or none this build carries a key to check.',
+            RefusalCode::CatalogueUnreadable => 'Raised when the catalogue\'s index verified and is not one this build reads.',
+            RefusalCode::NotCatalogued => 'Raised when the catalogue holds no plugin by the name given.',
+            RefusalCode::NotAsReviewed => 'Raised when what the catalogue\'s origin served is not what the catalogue reviewed.',
+            RefusalCode::SpelledAlike => 'Raised when a plugin\'s service would be named, where lemonfiber keeps what a service holds, as another installed plugin\'s service already is.',
+            RefusalCode::PluginOfferMoved => 'Raised when an install, an update or a removal answers an offer that was read against a plugin, a stack or a record that has since moved.',
+            RefusalCode::Unapproved => 'Raised when a value a recipe would carry to a destination was not approved as itself, or an approval names a pair the recipe does not carry.',
+            RefusalCode::AnotherPlugin => 'Raised when the source an update names holds a different plugin from the one it was asked to update.',
+            RefusalCode::Occupied => 'Raised when a plugin\'s service would take a name, a port or a label something already on this machine holds: a service of the stack or of the operator\'s overlay, another plugin\'s port, or a site in the proxy\'s live configuration.',
+            RefusalCode::CatalogueReplaced => 'Raised when the catalogue\'s index verifies and is older than the newest one this machine has verified.',
+            RefusalCode::NewestUnkept => 'Raised when the record of the newest catalogue index this machine verified cannot be read or written.',
+            RefusalCode::SchemeRefused => 'Raised when a git source is named over a transport other than https, before anything is asked of it.',
+            RefusalCode::AddressRefused => 'Raised when a git source\'s host is, or stands for, an address on this machine or on a network of its own: loopback, private, link-local or unspecified.',
+            RefusalCode::Unwanted => 'Raised where a read was given a parameter its answer has nowhere to put.',
+            RefusalCode::Repeated => 'Raised where a parameter carrying one value was given more than once.',
+            RefusalCode::NoSuchRead => 'Raised where no read goes by the name that was asked for.',
+            RefusalCode::NoTerm => 'Raised where a trace was asked for and named nothing to follow.',
+            RefusalCode::NotASeason => 'Raised where the season to narrow a trace to is not a number.',
+            RefusalCode::NoSetting => 'Raised where a setting was asked for by an empty name.',
+            RefusalCode::NoMember => 'Raised where a household member was asked for by an empty name.',
+            RefusalCode::NoShelfWithoutAMember => 'Raised where a shelf was asked for and nobody was named whose it is.',
+            RefusalCode::NotACount => 'Raised where how many holdings to answer with is not a whole number.',
+            RefusalCode::TooManyAtOnce => 'Raised where more holdings were asked for than one read answers with.',
+            RefusalCode::NoSuchGroup => 'Raised where a diagnosis was narrowed to a group or check that is not one.',
+            RefusalCode::NoSuchRemoval => 'Raised where a removal was named that is none of the four there are.',
+            RefusalCode::NoUpdateObject => 'Raised where moving forward was asked about and neither stack nor self named.',
+            RefusalCode::NotALineCount => 'Raised where how many log lines to begin with is not a number within the ceiling.',
+            RefusalCode::NotAChoice => 'Raised where a parameter that takes a yes or a no is neither true nor false.',
+            RefusalCode::MemberAndDefaults => 'Raised where a household read named a member and asked for the household\'s defaults as well.',
+            RefusalCode::Stale => 'Raised when consent was given for an offer that no longer stands.',
+            RefusalCode::MovedOn => 'Raised when consent was given for a listing that no longer stands.',
+            RefusalCode::Unrenderable => 'Raised when an answer could not be rendered.',
+            RefusalCode::NoJobName => 'Raised when this machine will not supply the randomness a job is named with.',
+            RefusalCode::AnotherOffer => 'Raised when an agreement names an offer that is not the one standing now.',
+            RefusalCode::StackUnreadable => 'Raised when a stack directory holds no readable manifest.',
+            RefusalCode::StackUnusable => 'Raised when a manifest is readable and this build cannot use it.',
+            RefusalCode::StackNotEmbedded => 'Raised when the embedded stack is not intact.',
+            RefusalCode::StackNotSetUp => 'Raised when lemonfiber has nowhere to write the stack.',
+            RefusalCode::StackNotWritten => 'Raised when the stack could not be written to disk.',
+            RefusalCode::StackInvalid => 'Raised when a manifest parses and breaks the contract.',
+            RefusalCode::StackMalformed => 'Raised when a manifest is not TOML at all.',
+            RefusalCode::StackUnrecognised => 'Raised when a manifest declares names this build does not know.',
+            RefusalCode::StackNeedsNewer => 'Raised when a stack names a newer lemonfiber than the one running.',
+            RefusalCode::NoSuchFiller => 'A capability was named that no service in this stack provides.',
+            RefusalCode::CannotFill => 'The service named cannot do the thing it was asked to fill.',
+            RefusalCode::NothingAsks => 'Nothing in this stack asks for the capability, so a choice would change nothing.',
+            RefusalCode::ChoiceUnwritable => 'The setting recording the choice could not be written.',
+            RefusalCode::WiringMoved => 'Raised when a choice answers an offer that was read against a wiring that has since moved.',
+            RefusalCode::Unreasonable => 'Raised when the reason given for a choice is longer than a reason may be, or holds a line break or another control character.',
+        };
+    }
+}

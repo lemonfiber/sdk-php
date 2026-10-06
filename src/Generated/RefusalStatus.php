@@ -1,0 +1,110 @@
+<?php
+
+// Generated from contract/web-api.contract.json. Do not edit.
+// Source: 79bb11356f6a117d14293c49cd2d154164c5f439, api_version 1.
+// Regenerate with `composer contract:generate`.
+
+declare(strict_types=1);
+
+namespace Lemonfiber\Sdk\Generated;
+
+/**
+ * The status each refusal code is answered with.
+ */
+final class RefusalStatus
+{
+    public static function of(RefusalCode $code): int
+    {
+        return match ($code) {
+            RefusalCode::NotAdmitted => 403,
+            RefusalCode::Elsewhere => 403,
+            RefusalCode::NotYours => 403,
+            RefusalCode::Unconfirmed => 403,
+            RefusalCode::NotThePassword => 401,
+            RefusalCode::TooManyAttempts => 429,
+            RefusalCode::NotAPassword => 400,
+            RefusalCode::KeyInTheClear => 403,
+            RefusalCode::NotForAKey => 403,
+            RefusalCode::NoSuchAction => 404,
+            RefusalCode::MissingArgument => 400,
+            RefusalCode::UnrecognisedArgument => 400,
+            RefusalCode::UnwantedArgument => 400,
+            RefusalCode::ArgumentsTogether => 400,
+            RefusalCode::NotArguments => 400,
+            RefusalCode::NoSuchJob => 404,
+            RefusalCode::NotAnAnswer => 400,
+            RefusalCode::NoEndpoint => 404,
+            RefusalCode::WrongMethod => 405,
+            RefusalCode::NotAKeyRequest => 400,
+            RefusalCode::AnotherReading => 400,
+            RefusalCode::OfferMoved => 400,
+            RefusalCode::Unreadable => 404,
+            RefusalCode::Refused => 400,
+            RefusalCode::Unrecorded => 500,
+            RefusalCode::Already => 400,
+            RefusalCode::Nowhere => 500,
+            RefusalCode::Unwritable => 500,
+            RefusalCode::Unrecordable => 500,
+            RefusalCode::Unproved => 500,
+            RefusalCode::NothingToRemove => 404,
+            RefusalCode::NothingToUpdate => 404,
+            RefusalCode::Stuck => 500,
+            RefusalCode::Answered => 400,
+            RefusalCode::TwoSources => 400,
+            RefusalCode::SourceOff => 400,
+            RefusalCode::Unfetched => 500,
+            RefusalCode::NoRevision => 404,
+            RefusalCode::CatalogueOff => 400,
+            RefusalCode::CatalogueUnreachable => 500,
+            RefusalCode::SignatureUnverified => 500,
+            RefusalCode::CatalogueUnreadable => 500,
+            RefusalCode::NotCatalogued => 404,
+            RefusalCode::NotAsReviewed => 500,
+            RefusalCode::SpelledAlike => 400,
+            RefusalCode::PluginOfferMoved => 400,
+            RefusalCode::Unapproved => 400,
+            RefusalCode::AnotherPlugin => 400,
+            RefusalCode::Occupied => 400,
+            RefusalCode::CatalogueReplaced => 500,
+            RefusalCode::NewestUnkept => 500,
+            RefusalCode::SchemeRefused => 400,
+            RefusalCode::AddressRefused => 400,
+            RefusalCode::Unwanted => 400,
+            RefusalCode::Repeated => 400,
+            RefusalCode::NoSuchRead => 404,
+            RefusalCode::NoTerm => 400,
+            RefusalCode::NotASeason => 400,
+            RefusalCode::NoSetting => 400,
+            RefusalCode::NoMember => 400,
+            RefusalCode::NoShelfWithoutAMember => 400,
+            RefusalCode::NotACount => 400,
+            RefusalCode::TooManyAtOnce => 400,
+            RefusalCode::NoSuchGroup => 400,
+            RefusalCode::NoSuchRemoval => 400,
+            RefusalCode::NoUpdateObject => 400,
+            RefusalCode::NotALineCount => 400,
+            RefusalCode::NotAChoice => 400,
+            RefusalCode::MemberAndDefaults => 400,
+            RefusalCode::Stale => 400,
+            RefusalCode::MovedOn => 400,
+            RefusalCode::Unrenderable => 500,
+            RefusalCode::NoJobName => 500,
+            RefusalCode::AnotherOffer => 400,
+            RefusalCode::StackUnreadable => 500,
+            RefusalCode::StackUnusable => 500,
+            RefusalCode::StackNotEmbedded => 500,
+            RefusalCode::StackNotSetUp => 500,
+            RefusalCode::StackNotWritten => 500,
+            RefusalCode::StackInvalid => 500,
+            RefusalCode::StackMalformed => 500,
+            RefusalCode::StackUnrecognised => 500,
+            RefusalCode::StackNeedsNewer => 500,
+            RefusalCode::NoSuchFiller => 404,
+            RefusalCode::CannotFill => 400,
+            RefusalCode::NothingAsks => 400,
+            RefusalCode::ChoiceUnwritable => 500,
+            RefusalCode::WiringMoved => 400,
+            RefusalCode::Unreasonable => 400,
+        };
+    }
+}
