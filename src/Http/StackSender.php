@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Http;
 
-use Closure;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Handler\StreamHandler;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise\Utils;
 use GuzzleHttp\RequestOptions;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
+use LogicException;
 use Psr\Http\Message\UriInterface;
 use Saloon\Contracts\Sender;
 use Saloon\Data\FactoryCollection;
@@ -61,10 +61,7 @@ final readonly class StackSender implements Sender
      */
     private array $peerCheck;
 
-    /**
-     * @param Closure(): float $secondsLeft how long the call this attempt belongs to may still take
-     */
-    public function __construct(private BaseUrl $baseUrl, private Closure $secondsLeft)
+    public function __construct(private BaseUrl $baseUrl)
     {
         $pin = $baseUrl->pin();
 
@@ -85,6 +82,7 @@ final readonly class StackSender implements Sender
     /**
      * @throws ConfigurationProblem
      * @throws FatalRequestException
+     * @throws LogicException where the request belongs to no call
      */
     public function send(PendingRequest $pendingRequest): Response
     {
@@ -95,7 +93,7 @@ final readonly class StackSender implements Sender
             throw ConfigurationProblem::requestLeavesTheStack($this->originIn($uri));
         }
 
-        $left = ($this->secondsLeft)();
+        $left = Call::of($pendingRequest)->secondsLeft();
 
         if ($left <= 0.0) {
             throw new FatalRequestException(new TransferException(self::OUT_OF_TIME, $request), $pendingRequest);

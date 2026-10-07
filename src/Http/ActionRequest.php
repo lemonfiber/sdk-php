@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Http;
 
+use Lemonfiber\Sdk\Envelope\Envelope;
+use Lemonfiber\Sdk\Envelope\EnvelopeReader;
 use Override;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
+use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
 
 /**
@@ -21,8 +24,10 @@ use Saloon\Traits\Body\HasJsonBody;
  * action and lost its answer, and the stack does not read the key, so a second
  * sending would be a second change. Where nothing answered, the call raises
  * {@see \Lemonfiber\Sdk\Exception\Unreachable} and the caller decides.
+ *
+ * @implements ReadsItsAnswer<Envelope<mixed>>
  */
-final class ActionRequest extends Request implements HasBody
+final class ActionRequest extends Request implements HasBody, ReadsItsAnswer
 {
     use HasJsonBody;
 
@@ -41,6 +46,15 @@ final class ActionRequest extends Request implements HasBody
     public function resolveEndpoint(): string
     {
         return $this->endpoint;
+    }
+
+    /**
+     * @return Envelope<mixed>
+     */
+    #[Override]
+    public function createDtoFromResponse(Response $response): Envelope
+    {
+        return new EnvelopeReader()->read($response->body());
     }
 
     /**

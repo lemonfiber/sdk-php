@@ -7,7 +7,6 @@ namespace Lemonfiber\Sdk;
 use function is_numeric;
 use function is_string;
 
-use Lemonfiber\Sdk\Envelope\EnvelopeReader;
 use Lemonfiber\Sdk\Exception\ApiVersionMismatch;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\PasswordWasRefused;
@@ -15,7 +14,6 @@ use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\TooManyAttempts;
 use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
-use Lemonfiber\Sdk\Generated\AdmissionEnvelope;
 use Lemonfiber\Sdk\Http\AdmissionRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
@@ -66,10 +64,7 @@ final readonly class Admission
 
     private const int NOT_THE_PASSWORD = 401;
 
-    private function __construct(
-        private LemonfiberConnector $connector,
-        private EnvelopeReader $reader,
-    ) {}
+    private function __construct(private LemonfiberConnector $connector) {}
 
     /**
      * The door of a stack reached over the network, held to its certificate.
@@ -86,7 +81,6 @@ final readonly class Admission
     {
         return new self(
             new LemonfiberConnector(BaseUrl::pinned($address, CertificatePin::fromSha256($certificateDigest)), $wait),
-            new EnvelopeReader(),
         );
     }
 
@@ -101,7 +95,7 @@ final readonly class Admission
      */
     public static function onPort(int $port, Duration $wait): self
     {
-        return new self(new LemonfiberConnector(BaseUrl::onPort($port), $wait), new EnvelopeReader());
+        return new self(new LemonfiberConnector(BaseUrl::onPort($port), $wait));
     }
 
     /**
@@ -181,7 +175,7 @@ final readonly class Admission
             throw RequestFailed::from(self::ENDPOINT, $status, $response->body(), $this->waitOf(is_string($said) ? $said : null));
         }
 
-        return $this->admitted($this->reader->read($response->body()));
+        return $offer->createDtoFromResponse($response);
     }
 
     /**
@@ -202,24 +196,5 @@ final readonly class Admission
         // No null guard beside this: `is_numeric(null)` is already false, so
         // one would be a branch that cannot be told from its absence.
         return is_numeric($said) ? (int) $said : null;
-    }
-
-    /**
-     * The envelope, read as what came back.
-     *
-     * @param Envelope\Envelope<mixed> $envelope
-     *
-     * @throws UnreadableResponse
-     */
-    private function admitted(object $envelope): Admitted
-    {
-        /** @var array{member?: string|null, token: string, until: string} $data */
-        $data = AdmissionEnvelope::in($envelope)->data;
-
-        // Absent and present-and-null are one answer on this field, which is
-        // what the schema says of it: optional there, nullable in the type, and
-        // either way of leaving it out names the operator. `??` reads both
-        // without asking which of the two a stack chose to send.
-        return Admitted::of($data['token'], $data['until'], $data['member'] ?? null);
     }
 }

@@ -351,6 +351,15 @@ it('tells work that failed apart from a name nobody minted, on the same status',
         ->toThrow(RequestFailed::class, 'Nothing here declares a form called tv.');
 });
 
+it('reads the first status that is a refusal as a refusal, not as where work stands', function (): void {
+    [$client] = clientAnswering([
+        ReadRequest::class => MockResponse::make('{}', 400, ['Content-Type' => 'application/json']),
+    ]);
+
+    expect(fn(): JobStanding => $client->whatBecameOf('k3n9v2xq'))
+        ->toThrow(RequestFailed::class, 'answered 400');
+});
+
 it('reports any other refusal of a name as the request having failed', function (): void {
     [$client] = clientAnswering([
         ReadRequest::class => MockResponse::make('{}', 500, ['Content-Type' => 'application/json']),

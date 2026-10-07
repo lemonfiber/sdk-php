@@ -17,6 +17,7 @@ use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\ReadRequest;
 use Lemonfiber\Sdk\Http\RunToken;
 use Lemonfiber\Sdk\Tests\Support\AnsweringListener;
+use Lemonfiber\Sdk\Time\SystemClock;
 use Psr\Http\Message\RequestInterface;
 use Saloon\Contracts\Sender;
 use Saloon\Enums\Method;
@@ -208,7 +209,7 @@ it('sends a request that waits to the stack as it sends any other', function ():
     $stack = AnsweringListener::plain();
     $connector = new LemonfiberConnector(BaseUrl::fromString($stack->address()), aWait(), RunToken::fromString(THE_TOKEN));
 
-    $answer = $connector->sendAsync(new ReadRequest('/api/status'))->wait();
+    $answer = $connector->sendAsync(ReadRequest::envelope('/api/status'))->wait();
 
     expect($answer)->toBeInstanceOf(Response::class)
         ->and($stack->heard())->toContain(THE_TOKEN_AS_SENT);
@@ -220,13 +221,14 @@ it('holds a request to the pin whatever it, the connector or anything between as
         BaseUrl::pinned($stack->address(), CertificatePin::fromSha256(A_PIN_THE_PEER_DOES_NOT_PRESENT)),
         aWait(),
         RunToken::fromString(THE_TOKEN),
+        new SystemClock(),
+        aMoment(),
     );
-    $connector->pausingFor(aMoment());
     $connector->config()->merge(everyWayOfWeakeningIt());
     $connector->middleware()->onRequest(static function (PendingRequest $pending): void {
         $pending->config()->merge(everyWayOfWeakeningIt());
     });
-    $request = new ReadRequest('/api/status');
+    $request = ReadRequest::envelope('/api/status');
     $request->config()->merge(everyWayOfWeakeningIt());
 
     expect(whatAskingRaised(static fn(): mixed => $connector->send($request)))->toBeInstanceOf(CertificateWasRefused::class)
@@ -260,7 +262,7 @@ it('hands a refusal on as the stack answered it', function (): void {
 it('streams an answer only where the request asked for it to be streamed', function (bool $streamed): void {
     $stack = AnsweringListener::plain();
     $connector = new LemonfiberConnector(BaseUrl::onPort($stack->port), aWait(), RunToken::fromString(THE_TOKEN));
-    $request = new ReadRequest(Api::EVENTS_ENDPOINT);
+    $request = ReadRequest::envelope(Api::EVENTS_ENDPOINT);
 
     if ($streamed) {
         $request->config()->add('stream', true);
