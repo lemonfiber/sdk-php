@@ -370,6 +370,9 @@ no hook: it is `git config core.hooksPath .githooks`, per clone, and git cannot 
 | Mutation testing | `composer test:mutation` | 100% mutation score |
 | Backward compatibility | `composer bc -- --from=<commit>` | Roave, against the commit the companion's main branch pins. CI fails on a break the pull request adds beyond what main already breaks, unless its title declares it with `!` |
 
+A change that touches only documentation runs none of these: `scripts/the_code_a_change_touches.py`
+decides which paths are code, and `docs/`, Markdown and `LICENSE` are not.
+
 `src/Generated/` is skipped by Pint, PHPStan, Rector and both test gates, and the guards hold it
 to the 550-line cap alone, which the generator also refuses to exceed. Generated code is proved by
 regeneration producing no diff, not by passing a linter; everything that uses it is analysed as
