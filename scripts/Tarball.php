@@ -77,6 +77,39 @@ final readonly class Tarball
      */
     public function filesUnder(string $gzipped, string $directory): array
     {
+        $files = [];
+        $named = null;
+
+        foreach ($this->entries($this->inflated($gzipped)) as $entry) {
+            if ($entry['type'] === self::PAX) {
+                $named = $this->paxPath($entry['body']) ?? $named;
+
+                continue;
+            }
+
+            if ($entry['type'] === self::GNU_LONG_NAME) {
+                $named = rtrim($entry['body'], "\0");
+
+                continue;
+            }
+
+            $path = $named ?? $entry['path'];
+            $named = null;
+            $relative = in_array($entry['type'], self::REGULAR, true) ? $this->under($path, $directory) : null;
+
+            if ($relative !== null) {
+                $files[$relative] = $entry['body'];
+            }
+        }
+
+        return $files;
+    }
+
+    /**
+     * @throws UnexpectedValueException
+     */
+    private function inflated(string $gzipped): string
+    {
         set_error_handler(static fn(): bool => true);
 
         try {
@@ -89,8 +122,19 @@ final readonly class Tarball
             throw new UnexpectedValueException('What was fetched is not a gzipped archive.');
         }
 
-        $files = [];
-        $named = null;
+        return $archive;
+    }
+
+    /**
+     * Every entry the archive holds up to its end, with the type flag and the path its header gives.
+     *
+     * @return list<array{type: string, path: string, body: string}>
+     *
+     * @throws UnexpectedValueException
+     */
+    private function entries(string $archive): array
+    {
+        $entries = [];
         $at = 0;
 
         while (true) {
@@ -101,7 +145,7 @@ final readonly class Tarball
             }
 
             if ($header === str_repeat("\0", self::BLOCK)) {
-                return $files;
+                return $entries;
             }
 
             $size = $this->size($header);
@@ -111,28 +155,8 @@ final readonly class Tarball
                 throw new UnexpectedValueException('The archive ends partway through an entry.');
             }
 
+            $entries[] = ['type' => $header[self::TYPE_AT], 'path' => $this->headerPath($header), 'body' => $body];
             $at += self::BLOCK + intdiv($size + self::BLOCK - 1, self::BLOCK) * self::BLOCK;
-            $type = $header[self::TYPE_AT];
-
-            if ($type === self::PAX) {
-                $named = $this->paxPath($body) ?? $named;
-
-                continue;
-            }
-
-            if ($type === self::GNU_LONG_NAME) {
-                $named = rtrim($body, "\0");
-
-                continue;
-            }
-
-            $path = $named ?? $this->headerPath($header);
-            $named = null;
-            $relative = in_array($type, self::REGULAR, true) ? $this->under($path, $directory) : null;
-
-            if ($relative !== null) {
-                $files[$relative] = $body;
-            }
         }
     }
 

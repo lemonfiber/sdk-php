@@ -73,4 +73,4 @@ jobs:
           # The verdict is written to the run page as well as printed, because a
           # required check is read from the pull request, where the log is one
           # click further away than the summary.
-          python3 scripts/contract_drift.py --served lemonfiber.tar.gz --head "$head" --report
+          python3 scripts/contract_drift.py --head "$head" --report

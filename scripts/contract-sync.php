@@ -73,16 +73,24 @@ final readonly class ContractSync
             return $this->refuse('contract:sync needs a release tag or a full 40-character commit hash, as in `composer contract:sync -- v1.0.0`.');
         }
 
+        return $this->vendorAt($revision);
+    }
+
+    /**
+     * Fetches the revision and vendors the contract it holds.
+     */
+    private function vendorAt(string $revision): int
+    {
         $archive = $this->fetch($revision);
 
-        if ($archive === null) {
-            return 1;
-        }
-
         try {
-            $vendored = new ContractVendor($this->root)->vendor($archive, $revision);
+            $vendored = $archive === null ? null : new ContractVendor($this->root)->vendor($archive, $revision);
         } catch (UnexpectedValueException $refused) {
             return $this->refuse($refused->getMessage() . ' Nothing was vendored.');
+        }
+
+        if ($vendored === null) {
+            return 1;
         }
 
         echo ContractVendor::summary($revision, $vendored);

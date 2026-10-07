@@ -8,8 +8,11 @@ the directory `contract/web-api/` where it has an index, the single file
 same files and each file parses to the same JSON, so a copy in the other
 layout differs in every file.
 
-  python3 scripts/contract_drift.py --served core.tar.gz
-  python3 scripts/contract_drift.py --served core.tar.gz --head <sha> --report
+Run from the root of the tree holding the copy, with the revision's archive
+beside it as `lemonfiber.tar.gz`:
+
+  python3 scripts/contract_drift.py
+  python3 scripts/contract_drift.py --head <sha> --report
 
 Exits 0 when the copies agree, 1 when they differ, naming each file that does,
 and 2 when either cannot be read.
@@ -28,6 +31,7 @@ FILE = "contract/web-api.contract.json"
 DIRECTORY = "contract/web-api"
 INDEX = "index.json"
 STAMP = "contract/VERSION"
+SERVED = "lemonfiber.tar.gz"
 
 
 class Unreadable(Exception):
@@ -172,15 +176,15 @@ def report(repo: pathlib.Path, head: str, ours: dict[str, object], theirs: dict[
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--served", required=True, type=pathlib.Path, help="the archive of lemonfiber's tree at the revision compared")
-    parser.add_argument("--repo", default=pathlib.Path("."), type=pathlib.Path, help="the tree holding the vendored copy")
     parser.add_argument("--head", default="", help="the revision the archive is of, for the report")
     parser.add_argument("--report", action="store_true", help="say what contract-drift found, with the remedy")
     arguments = parser.parse_args()
 
+    repo = pathlib.Path.cwd()
+
     try:
-        ours = vendored_in(arguments.repo)
-        theirs = served_by(arguments.served)
+        ours = vendored_in(repo)
+        theirs = served_by(repo / SERVED)
     except Unreadable as error:
         print(f"::error::{error}")
         return 2
@@ -188,7 +192,7 @@ def main() -> int:
     changed = differing(ours, theirs)
 
     if arguments.report:
-        report(arguments.repo, arguments.head, ours, theirs, changed)
+        report(repo, arguments.head, ours, theirs, changed)
     elif changed:
         print(f"{len(changed)} files differ:")
         for path in changed:

@@ -98,7 +98,7 @@ jobs:
           # Exit 0 is the same contract, 1 a different one, and anything else
           # a copy that could not be read, which is neither.
           compared=0
-          python3 scripts/contract_drift.py --served lemonfiber.tar.gz || compared=$?
+          python3 scripts/contract_drift.py || compared=$?
           rm -f lemonfiber.tar.gz
 
           case "$compared" in
