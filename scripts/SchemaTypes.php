@@ -17,10 +17,10 @@ use function is_float;
 use function is_int;
 use function is_string;
 use function preg_match;
+use function sprintf;
 use function str_replace;
-use function str_starts_with;
-use function strlen;
-use function substr;
+
+use UnexpectedValueException;
 
 /**
  * A JSON Schema written as the PHPStan type it describes.
@@ -29,7 +29,7 @@ use function substr;
  * array. An array shape is what says which keys that array holds and what each
  * one is, so a shape is what a schema becomes here. Anything the schema leaves
  * open becomes `mixed`. A reference to a definition the plan names is that
- * definition's alias.
+ * definition's alias, and a reference to anything else is refused.
  */
 final readonly class SchemaTypes
 {
@@ -48,15 +48,16 @@ final readonly class SchemaTypes
      *
      * @param  array<mixed, mixed>  $schema
      * @param  string|null  $within  the definition whose alias this schema is part of, if any
+     *
+     * @throws UnexpectedValueException naming the reference, where one resolves to no definition the plan names
      */
     public function typeOf(array $schema, ?string $within = null): string
     {
-        $reference = $schema['$ref'] ?? null;
         $enum = $schema['enum'] ?? null;
         $combined = $this->combined($schema);
 
         return match (true) {
-            is_string($reference) => $this->typeOfReference($reference, $within),
+            array_key_exists('$ref', $schema) => $this->typeOfReference($schema['$ref'], $within),
             array_key_exists('const', $schema) => $this->literal($schema['const']),
             is_array($enum) && $enum !== [] => $this->union(array_map($this->literal(...), array_values($enum))),
             $combined !== null => $this->union($this->typesOf($combined, $within)),
@@ -120,15 +121,22 @@ final readonly class SchemaTypes
     }
 
     /**
+     * The alias a reference names, or `mixed` where it closes a cycle.
+     *
+     * @throws UnexpectedValueException naming the reference, where it resolves to no definition the plan names
      */
-    private function typeOfReference(string $reference, ?string $within): string
+    private function typeOfReference(mixed $reference, ?string $within): string
     {
-        $prefix = '#/$defs/';
-        $name = str_starts_with($reference, $prefix) ? substr($reference, strlen($prefix)) : null;
+        $name = ShapePlan::definitionIn($reference);
 
-        return $name === null || ! $this->plan->names($name) || $this->plan->closesACycle($within, $name)
-            ? self::UNKNOWN
-            : $name;
+        if ($name === null || ! $this->plan->names($name)) {
+            throw new UnexpectedValueException(sprintf(
+                'The reference %s resolves to no definition the schema carries.',
+                References::written($reference),
+            ));
+        }
+
+        return $this->plan->closesACycle($within, $name) ? self::UNKNOWN : $name;
     }
 
     /**

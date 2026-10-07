@@ -331,5 +331,6 @@ needs with `@phpstan-import-type`. A reference inside a cycle of definitions is
 `mixed`, since an alias may not be defined through itself.
 
 Generation refuses a contract whose `api_version` this package does not speak, a
-definition named like a generated class, and a definition two kinds carry as two
-different shapes. It names what it refused and writes nothing.
+`$ref` that resolves to no definition the contract carries, a definition named
+like a generated class, and a definition two kinds carry as two different shapes.
+It names what it refused, a `$ref` with the file it is in, and writes nothing.

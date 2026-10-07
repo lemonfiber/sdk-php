@@ -189,10 +189,12 @@ final readonly class ContractGenerator
         $dangling = $references->pointingAtNothing($kinds);
 
         if ($dangling !== []) {
-            $this->refuse(
-                'The vendored contract points at definitions it does not carry, and every one of them '
-                . 'would have been generated as mixed: ' . implode(', ', $dangling),
-            );
+            $this->refuse(sprintf(
+                'The vendored contract holds references that resolve to no definition it carries, and every one of them '
+                . 'would have been generated as mixed. In %s: %s. Nothing was generated.',
+                self::ARTEFACT,
+                implode(', ', $dangling),
+            ));
 
             return null;
         }
@@ -270,7 +272,12 @@ final readonly class ContractGenerator
     private function emit(array $kinds, array $refusals, array $keyCallable, int $version): int
     {
         $stamp = $this->stamp();
-        $planned = $this->planned($kinds, $refusals, $keyCallable, $stamp, $version);
+
+        try {
+            $planned = $this->planned($kinds, $refusals, $keyCallable, $stamp, $version);
+        } catch (UnexpectedValueException $unresolvable) {
+            return $this->refuse(sprintf('In %s: %s Nothing was generated.', self::ARTEFACT, $unresolvable->getMessage()));
+        }
 
         if ($planned === null) {
             return 1;
@@ -294,6 +301,8 @@ final readonly class ContractGenerator
      * @param  array<string, array{code: string, status: int, description: string}>  $refusals
      * @param  array<string, array{action: string, disturbs: bool, rehearsal: bool}>  $keyCallable
      * @return array{named: array<string, string>, refusals: int, files: array<string, string>}|null
+     *
+     * @throws UnexpectedValueException naming the reference, where a kind holds one that resolves to no definition
      */
     private function planned(array $kinds, array $refusals, array $keyCallable, string $stamp, int $version): ?array
     {

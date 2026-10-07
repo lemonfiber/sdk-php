@@ -8,6 +8,8 @@ use function array_values;
 use function is_array;
 use function sprintf;
 
+use UnexpectedValueException;
+
 /**
  * The PHP source a contract's kinds are written as.
  *
@@ -34,6 +36,8 @@ final readonly class GeneratedSource
 
     /**
      * @param  array<mixed, mixed>  $schema
+     *
+     * @throws UnexpectedValueException naming the reference, where the kind holds one that resolves to no definition
      */
     public function envelopeClass(string $kind, string $name, array $schema): string
     {
@@ -89,6 +93,8 @@ final readonly class GeneratedSource
 
     /**
      * The class every shape more than one kind carries is named on, once.
+     *
+     * @throws UnexpectedValueException naming the reference, where a shape holds one that resolves to no definition
      */
     public function shapesClass(): string
     {
