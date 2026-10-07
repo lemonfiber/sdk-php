@@ -11,7 +11,7 @@ use function sprintf;
 /**
  * The answer speaks a different version of the API than this client.
  */
-final class ApiVersionMismatch extends RuntimeException implements Problem
+final class ApiVersionMismatch extends RuntimeException implements AnswerUnusable
 {
     private function __construct(
         private readonly int $spoken,

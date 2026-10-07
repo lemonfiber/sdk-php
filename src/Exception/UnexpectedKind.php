@@ -11,7 +11,7 @@ use function sprintf;
 /**
  * An envelope was read as a kind it does not carry.
  */
-final class UnexpectedKind extends RuntimeException implements Problem
+final class UnexpectedKind extends RuntimeException implements AnswerUnusable
 {
     private function __construct(
         private readonly string $wanted,

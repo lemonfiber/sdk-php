@@ -3,7 +3,19 @@
 declare(strict_types=1);
 
 use Lemonfiber\Sdk\Contract\Api;
+use Lemonfiber\Sdk\Exception\AnswerUnusable;
+use Lemonfiber\Sdk\Exception\ApiVersionMismatch;
+use Lemonfiber\Sdk\Exception\Busy;
+use Lemonfiber\Sdk\Exception\Declined;
+use Lemonfiber\Sdk\Exception\Failed;
+use Lemonfiber\Sdk\Exception\Misasked;
+use Lemonfiber\Sdk\Exception\Missing;
+use Lemonfiber\Sdk\Exception\NotAdmitted;
+use Lemonfiber\Sdk\Exception\Problem;
 use Lemonfiber\Sdk\Exception\RequestFailed;
+use Lemonfiber\Sdk\Exception\TooManyAttempts;
+use Lemonfiber\Sdk\Exception\UnexpectedKind;
+use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Generated\Kind;
 use Lemonfiber\Sdk\Generated\RefusalCode;
 use Lemonfiber\Sdk\Tests\Support\GeneratedRefusals;
@@ -184,3 +196,64 @@ it('carries no code where the answer carried no problem document', function (str
     'a sentence' => ['This needs the run token.'],
     'an error missing what the contract requires' => [wentWrong(['code' => A_CODE_THE_LIST_NAMES])],
 ]);
+
+it('makes a refusal the family its status names', function (int $status, string $family): void {
+    $refused = RequestFailed::from('/api/status', $status, 'Not like that.');
+
+    expect($refused::class)->toBe($family)
+        ->and($refused->status())->toBe($status)
+        ->and($refused->getMessage())->toBe('Not like that.');
+})->with([
+    'asked wrongly' => [400, Misasked::class],
+    'not there' => [404, Missing::class],
+    'in the way of other work' => [409, Busy::class],
+    'failed' => [500, Failed::class],
+    'unavailable' => [503, Failed::class],
+    'a status nothing else claims' => [418, Failed::class],
+]);
+
+it('reads a request turned away for its credential as not admitted', function (int $status, string $body): void {
+    expect(RequestFailed::from('/api/status', $status, $body))->toBeInstanceOf(NotAdmitted::class);
+})->with([
+    'the credential\'s own code' => [403, refusedWith(RefusalCode::NotAdmitted->value)],
+    'a code this client does not know' => [403, refusedWith('NOBODY-1')],
+    'no document at all' => [401, ''],
+    'a document with no sentence' => [403, wentWrong(['code' => A_CODE_THE_LIST_NAMES, 'summary' => '  '])],
+]);
+
+it('reads a request turned away with any other code as declined', function (int $status): void {
+    $declined = RequestFailed::from('/api/actions/restart', $status, refusedWith(A_CODE_THE_LIST_NAMES));
+
+    expect($declined)->toBeInstanceOf(Declined::class)
+        ->and($declined->code())->toBe(RefusalCode::of(A_CODE_THE_LIST_NAMES));
+})->with([401, 403]);
+
+it('reads too many attempts with the wait the answer named', function (): void {
+    $waiting = RequestFailed::from('/api/session', 429, refusedWith(RefusalCode::TooManyAttempts->value), 45);
+
+    expect($waiting)->toBeInstanceOf(TooManyAttempts::class)
+        ->and($waiting instanceof TooManyAttempts ? $waiting->seconds() : 0)->toBe(45)
+        ->and($waiting->getMessage())->toContain('45 more seconds')
+        ->and($waiting->code())->toBe(RefusalCode::TooManyAttempts)
+        ->and($waiting->endpoint())->toBe('/api/session');
+});
+
+it('reads too many attempts with no wait as no wait, not as a guessed one', function (): void {
+    $waiting = RequestFailed::from('/api/session', 429, '');
+
+    expect($waiting)->toBeInstanceOf(TooManyAttempts::class)
+        ->and($waiting instanceof TooManyAttempts ? $waiting->seconds() : 0)->toBeNull()
+        ->and($waiting->getMessage())->toContain('did not say for how long');
+});
+
+it('counts every answer that cannot be used as one thing', function (Problem $problem): void {
+    expect($problem)->toBeInstanceOf(AnswerUnusable::class);
+})->with([
+    'another version' => [ApiVersionMismatch::between(1, 2)],
+    'not an envelope' => [UnreadableResponse::notAnEnvelope()],
+    'another kind' => [UnexpectedKind::between('status', 'doctor')],
+]);
+
+it('counts no refusal as an answer that cannot be used', function (): void {
+    expect(RequestFailed::from('/api/status', 500, 'Broke.'))->not->toBeInstanceOf(AnswerUnusable::class);
+});

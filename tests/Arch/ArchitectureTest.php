@@ -7,7 +7,9 @@ use Lemonfiber\Sdk\Client;
 use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Events\HeldValue;
 use Lemonfiber\Sdk\Events\ServerEvent;
+use Lemonfiber\Sdk\Exception\AnswerUnusable;
 use Lemonfiber\Sdk\Exception\Problem;
+use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\IdempotencyKey;
@@ -22,7 +24,11 @@ arch('every class is final')
     ->expect('Lemonfiber\Sdk')
     ->classes()
     ->toBeFinal()
-    ->ignoring('Lemonfiber\Sdk\Tests');
+    ->ignoring(['Lemonfiber\Sdk\Tests', RequestFailed::class]);
+
+arch('a refusal is one of its families')
+    ->expect(RequestFailed::class)
+    ->toBeAbstract();
 
 arch('nothing prints or halts')
     ->expect(['dd', 'dump', 'var_dump', 'die', 'exit', 'print_r', 'var_export', 'sleep', 'usleep'])
@@ -64,7 +70,7 @@ arch('telling the time knows nothing of transport')
 arch('every failure is one of ours')
     ->expect('Lemonfiber\Sdk\Exception')
     ->toImplement(Problem::class)
-    ->ignoring(Problem::class);
+    ->ignoring([Problem::class, AnswerUnusable::class]);
 
 arch('nothing outside the transport speaks to Saloon')
     ->expect('Saloon')

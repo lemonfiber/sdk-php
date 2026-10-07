@@ -33,6 +33,7 @@ parameters:
         noExtends:
             classesAllowedToBeExtended:
                 - InvalidArgumentException
+                - Lemonfiber\Sdk\Exception\RequestFailed
                 - RuntimeException
                 - Saloon\Http\Connector
                 - Saloon\Http\Request

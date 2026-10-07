@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Exception;
 
+use function in_array;
 use function is_array;
 use function is_string;
 
@@ -21,8 +22,14 @@ use function trim;
 
 /**
  * lemonfiber turned the request down.
+ *
+ * Every refusal is one of its families, chosen by the status it was answered
+ * with and, where the request was turned away, by its code: {@see NotAdmitted},
+ * {@see Declined}, {@see Misasked}, {@see Missing}, {@see Busy},
+ * {@see TooManyAttempts} and {@see Failed}. A caller catching this catches
+ * every one of them.
  */
-final class RequestFailed extends RuntimeException implements Problem
+abstract class RequestFailed extends RuntimeException implements Problem
 {
     /**
      * A body that opens something other than a sentence: an envelope, or markup
@@ -30,7 +37,18 @@ final class RequestFailed extends RuntimeException implements Problem
      */
     private const string OPENS_A_STRUCTURE = '/^[<\[{]/';
 
-    private function __construct(
+    /** The statuses a request is turned away with, for who is asking or from where. */
+    private const array TURNED_AWAY = [401, 403];
+
+    private const int MISASKED = 400;
+
+    private const int MISSING = 404;
+
+    private const int BUSY = 409;
+
+    private const int TOO_MANY = 429;
+
+    protected function __construct(
         private readonly string $endpoint,
         private readonly int $status,
         private readonly ?string $said,
@@ -41,27 +59,43 @@ final class RequestFailed extends RuntimeException implements Problem
     }
 
     /**
-     * The refusal, carrying whatever lemonfiber wrote in the body it answered
-     * with. A body holding no sentence this client can read leaves the message
-     * naming the endpoint and the status instead.
+     * The refusal, as the family its status and code make it, carrying whatever
+     * lemonfiber wrote in the body it answered with. A body holding no sentence
+     * this client can read leaves the message naming the endpoint and the status
+     * instead.
+     *
+     * A request turned away is {@see NotAdmitted} where the credential itself
+     * was refused: its code says so, it carries no code this client knows, or
+     * it carries no sentence. Turned away with any other code is
+     * {@see Declined}. `$retryAfter` is the wait a `Retry-After` header named,
+     * which only {@see TooManyAttempts} carries.
      */
-    public static function from(string $endpoint, int $status, string $body): self
+    final public static function from(string $endpoint, int $status, string $body, ?int $retryAfter = null): self
     {
         $words = trim($body);
         $problem = self::problemIn($words);
         $said = self::saidIn($words, $problem);
-
-        return new self($endpoint, $status, $said, Refusal::from($problem), $said ?? sprintf(
+        $refusal = Refusal::from($problem);
+        $message = $said ?? sprintf(
             'lemonfiber turned down the request for %s and answered %d. Nothing was taken from that answer.',
             $endpoint,
             $status,
-        ));
+        );
+
+        return match (true) {
+            $status === self::TOO_MANY => new TooManyAttempts($endpoint, $status, $said, $refusal, $retryAfter),
+            in_array($status, self::TURNED_AWAY, true) => self::turnedAway($endpoint, $status, $said, $refusal, $message),
+            $status === self::MISASKED => new Misasked($endpoint, $status, $said, $refusal, $message),
+            $status === self::MISSING => new Missing($endpoint, $status, $said, $refusal, $message),
+            $status === self::BUSY => new Busy($endpoint, $status, $said, $refusal, $message),
+            default => new Failed($endpoint, $status, $said, $refusal, $message),
+        };
     }
 
     /**
      * The endpoint that was asked.
      */
-    public function endpoint(): string
+    final public function endpoint(): string
     {
         return $this->endpoint;
     }
@@ -69,7 +103,7 @@ final class RequestFailed extends RuntimeException implements Problem
     /**
      * The status lemonfiber answered with.
      */
-    public function status(): int
+    final public function status(): int
     {
         return $this->status;
     }
@@ -78,7 +112,7 @@ final class RequestFailed extends RuntimeException implements Problem
      * The sentence lemonfiber refused with, or nothing where the answer carried
      * none.
      */
-    public function said(): ?string
+    final public function said(): ?string
     {
         return $this->said;
     }
@@ -93,7 +127,7 @@ final class RequestFailed extends RuntimeException implements Problem
      * asked and not to forward. The message, which loggers and reporters take
      * by default, carries the one plain sentence and nothing else.
      */
-    public function refusal(): ?Refusal
+    final public function refusal(): ?Refusal
     {
         return $this->refusal;
     }
@@ -108,9 +142,21 @@ final class RequestFailed extends RuntimeException implements Problem
      * What a refusal means is read from its code, never from `said()`, which
      * is written for a person and may be reworded.
      */
-    public function code(): ?RefusalCode
+    final public function code(): ?RefusalCode
     {
         return RefusalCode::of($this->refusal?->code());
+    }
+
+    /**
+     * The family of a request turned away: the credential, or something else.
+     */
+    private static function turnedAway(string $endpoint, int $status, ?string $said, ?Refusal $refusal, string $message): self
+    {
+        $code = RefusalCode::of($refusal?->code());
+
+        return !$code instanceof RefusalCode || $code === RefusalCode::NotAdmitted || $said === null
+            ? new NotAdmitted($endpoint, $status, $said, $refusal, $message)
+            : new Declined($endpoint, $status, $said, $refusal, $message);
     }
 
     /**
