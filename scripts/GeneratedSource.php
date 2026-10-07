@@ -17,6 +17,9 @@ final readonly class GeneratedSource
 {
     private const string NAMESPACE = 'Lemonfiber\\Sdk\\Generated';
 
+    /** One enum case, as each generated enum writes it: its name and its value. */
+    private const string CASE = "    case %s = %s;\n";
+
     public function __construct(
         private string $artefact,
         private string $stamp,
@@ -90,7 +93,7 @@ final readonly class GeneratedSource
         $cases = '';
 
         foreach ($named as $name => $kind) {
-            $cases .= sprintf("    case %s = %s;\n", $name, $this->types->quoted($kind));
+            $cases .= sprintf(self::CASE, $name, $this->types->quoted($kind));
         }
 
         return $this->header() . sprintf(
@@ -116,7 +119,7 @@ final readonly class GeneratedSource
         $cases = '';
 
         foreach ($refusals as $name => $refusal) {
-            $cases .= sprintf("    case %s = %s;\n", $name, $this->types->quoted($refusal['code']));
+            $cases .= sprintf(self::CASE, $name, $this->types->quoted($refusal['code']));
         }
 
         return $this->header() . sprintf(
@@ -188,6 +191,64 @@ final readonly class GeneratedSource
         }
 
         return $this->refusalTable('RefusalDescription', 'The registry\'s own line about each refusal code.', 'string', $arms);
+    }
+
+    /**
+     * @param  array<string, array{action: string, disturbs: bool, rehearsal: bool}>  $actions  case name to the action it came from
+     */
+    public function keyCallableEnum(array $actions): string
+    {
+        $cases = '';
+        $disturbs = '';
+        $rehearsal = '';
+
+        foreach ($actions as $name => $action) {
+            $cases .= sprintf(self::CASE, $name, $this->types->quoted($action['action']));
+            $disturbs .= sprintf("            self::%s => %s,\n", $name, $action['disturbs'] ? 'true' : 'false');
+            $rehearsal .= sprintf("            self::%s => %s,\n", $name, $action['rehearsal'] ? 'true' : 'false');
+        }
+
+        return $this->header() . sprintf(
+            <<<'PHP'
+
+                /**
+                 * Every action an integration key may call, in the contract's order; any other is refused to a key.
+                 */
+                enum KeyCallableAction: string
+                {
+                %s
+                    /**
+                     * The case an action names, or none where a key may not call it.
+                     */
+                    public static function of(string $action): ?self
+                    {
+                        return self::tryFrom($action);
+                    }
+
+                    /**
+                     * Whether calling it disturbs the running system.
+                     */
+                    public function disturbs(): bool
+                    {
+                        return match ($this) {
+                %s        };
+                    }
+
+                    /**
+                     * Whether it takes `dry_run`, so it can be rehearsed before the real call is offered.
+                     */
+                    public function rehearsal(): bool
+                    {
+                        return match ($this) {
+                %s        };
+                    }
+                }
+
+                PHP,
+            $cases,
+            $disturbs,
+            $rehearsal,
+        );
     }
 
     public function contractClass(): string

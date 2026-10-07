@@ -51,6 +51,7 @@ function treeWith(string $root, string $contract): string
     copy($root . '/scripts/GeneratedSource.php', $tree . '/scripts/GeneratedSource.php');
     copy($root . '/scripts/SchemaTypes.php', $tree . '/scripts/SchemaTypes.php');
     copy($root . '/scripts/Refusals.php', $tree . '/scripts/Refusals.php');
+    copy($root . '/scripts/KeyCallable.php', $tree . '/scripts/KeyCallable.php');
     copy($root . '/scripts/LineCap.php', $tree . '/scripts/LineCap.php');
     file_put_contents($tree . '/contract/web-api.contract.json', $contract);
     file_put_contents($tree . '/contract/VERSION', "v9.9.9\n");
@@ -374,3 +375,72 @@ it('accepts the edges of the statuses a refusal is answered with', function (int
 
     removeTree($tree);
 })->with([400, 599]);
+
+/**
+ * What the generated list of actions a key may call answers when it is loaded
+ * and asked, in a process of its own.
+ */
+function askTheKeyCallableList(string $tree, string $question): string
+{
+    $script = sprintf(
+        'require %s; use Lemonfiber\\Sdk\\Generated\\KeyCallableAction; echo json_encode(%s);',
+        var_export($tree . '/src/Generated/KeyCallableAction.php', true),
+        $question,
+    );
+
+    return (string) shell_exec(escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($script));
+}
+
+it('writes a case per action a key may call, in the contract\'s order, with what it says of each', function () use ($root): void {
+    $tree = treeWith($root, json_encode(contractOf(1) + ['key_callable' => [
+        ['action' => 'restart', 'disturbs' => true, 'rehearsal' => true],
+        ['action' => 'diagnose', 'disturbs' => true, 'rehearsal' => false],
+        ['action' => 'downloads-pause', 'disturbs' => false, 'rehearsal' => true],
+    ]], JSON_THROW_ON_ERROR));
+
+    expect(generateIn($tree)['status'])->toBe(0)
+        ->and(askTheKeyCallableList($tree, 'array_map(fn($a) => [$a->name, $a->value, $a->disturbs(), $a->rehearsal()], KeyCallableAction::cases())'))
+        ->toBe('[["Restart","restart",true,true],["Diagnose","diagnose",true,false],["DownloadsPause","downloads-pause",false,true]]')
+        ->and(askTheKeyCallableList($tree, '[KeyCallableAction::of("diagnose")?->name, KeyCallableAction::of("uninstall")]'))
+        ->toBe('["Diagnose",null]');
+
+    removeTree($tree);
+});
+
+it('writes a list with no cases where the contract lists no action a key may call', function (array $contract) use ($root): void {
+    $tree = treeWith($root, json_encode($contract, JSON_THROW_ON_ERROR));
+
+    expect(generateIn($tree)['status'])->toBe(0)
+        ->and(askTheKeyCallableList($tree, '[KeyCallableAction::cases(), KeyCallableAction::of("restart")]'))->toBe('[[],null]');
+
+    removeTree($tree);
+})->with([
+    'the list left out' => [contractOf(1)],
+    'the list empty' => [contractOf(1) + ['key_callable' => []]],
+]);
+
+it('refuses a malformed list of actions a key may call, names what is wrong, and writes nothing', function (mixed $listed, string $named) use ($root): void {
+    $tree = treeWith($root, json_encode(contractOf(1) + ['key_callable' => $listed], JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+
+    expect($result['status'])->toBe(1)
+        ->and($result['stderr'])->toContain($named)
+        ->and($result['stderr'])->toContain('Nothing was generated.')
+        ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
+
+    removeTree($tree);
+})->with([
+    'not a list' => [['restart' => ['disturbs' => true, 'rehearsal' => true]], 'something other than a list'],
+    'nothing at all' => [null, 'something other than a list'],
+    'an entry that is not an object' => [['restart'], 'Entry 0 of the actions a key may call is not an object'],
+    'no action' => [[['disturbs' => true, 'rehearsal' => true]], 'Entry 0 of the actions a key may call names no action'],
+    'an action in another case' => [[['action' => 'Restart', 'disturbs' => true, 'rehearsal' => true]], 'names no action'],
+    'an action with an empty word' => [[['action' => 'downloads--pause', 'disturbs' => true, 'rehearsal' => true]], 'names no action'],
+    'no disturbs' => [[['action' => 'restart', 'rehearsal' => true]], '`restart` does not say both'],
+    'a rehearsal in words' => [[['action' => 'restart', 'disturbs' => true, 'rehearsal' => 'yes']], '`restart` does not say both'],
+    'one action twice' => [[
+        ['action' => 'restart', 'disturbs' => true, 'rehearsal' => true],
+        ['action' => 'restart', 'disturbs' => false, 'rehearsal' => true],
+    ], '`restart` is listed twice'],
+]);

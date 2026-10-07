@@ -15,6 +15,7 @@ something that already has one.
 | `RefusalCode.php` | Every code the contract lists a refusal as carrying |
 | `RefusalStatus.php` | The status each code is answered with, which `RefusalCode::status()` reads |
 | `RefusalDescription.php` | The registry's line about each code, which `RefusalCode::description()` reads |
+| `KeyCallableAction.php` | Every action an integration key may call, with whether it disturbs the running system and whether it can be rehearsed |
 | `<Kind>Envelope.php` | One class per kind: the kind it reads, and the payload type the contract gives it |
 
 Pint, PHPStan, Rector and the coverage and mutation gates skip this directory,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lemonfiber\Sdk\Scripts;
 
 require_once __DIR__ . '/GeneratedSource.php';
+require_once __DIR__ . '/KeyCallable.php';
 require_once __DIR__ . '/LineCap.php';
 require_once __DIR__ . '/Refusals.php';
 require_once __DIR__ . '/SchemaTypes.php';
@@ -113,11 +114,12 @@ final readonly class ContractGenerator
     {
         try {
             $refusals = new Refusals()->listed($artefact);
+            $keyCallable = new KeyCallable()->listed($artefact);
         } catch (UnexpectedValueException $malformed) {
             return $this->refuse($malformed->getMessage() . ' Nothing was generated.');
         }
 
-        return $this->emit($kinds, $refusals, $version);
+        return $this->emit($kinds, $refusals, $keyCallable, $version);
     }
 
     /**
@@ -367,11 +369,12 @@ final readonly class ContractGenerator
     /**
      * @param  array<mixed, mixed>  $kinds
      * @param  array<string, array{code: string, status: int, description: string}>  $refusals
+     * @param  array<string, array{action: string, disturbs: bool, rehearsal: bool}>  $keyCallable
      */
-    private function emit(array $kinds, array $refusals, int $version): int
+    private function emit(array $kinds, array $refusals, array $keyCallable, int $version): int
     {
         $stamp = $this->stamp();
-        $planned = $this->planned($kinds, $refusals, new GeneratedSource(self::ARTEFACT, $stamp, $version));
+        $planned = $this->planned($kinds, $refusals, $keyCallable, new GeneratedSource(self::ARTEFACT, $stamp, $version));
 
         if ($planned === null) {
             return 1;
@@ -393,9 +396,10 @@ final readonly class ContractGenerator
      *
      * @param  array<mixed, mixed>  $kinds
      * @param  array<string, array{code: string, status: int, description: string}>  $refusals
+     * @param  array<string, array{action: string, disturbs: bool, rehearsal: bool}>  $keyCallable
      * @return array{named: array<string, string>, refusals: int, files: array<string, string>}|null
      */
-    private function planned(array $kinds, array $refusals, GeneratedSource $source): ?array
+    private function planned(array $kinds, array $refusals, array $keyCallable, GeneratedSource $source): ?array
     {
         $named = [];
         $files = [];
@@ -421,6 +425,7 @@ final readonly class ContractGenerator
         $files[self::OUTPUT . '/RefusalCode.php'] = $source->refusalEnum($refusals);
         $files[self::OUTPUT . '/RefusalStatus.php'] = $source->refusalStatusClass($refusals);
         $files[self::OUTPUT . '/RefusalDescription.php'] = $source->refusalDescriptionClass($refusals);
+        $files[self::OUTPUT . '/KeyCallableAction.php'] = $source->keyCallableEnum($keyCallable);
         $files[self::OUTPUT . '/Contract.php'] = $source->contractClass();
 
         return ['named' => $named, 'refusals' => count($refusals), 'files' => $files];
