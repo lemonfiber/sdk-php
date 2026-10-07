@@ -1,0 +1,11 @@
+# What this repository has built against the specification, one row per
+# requirement (OPS-R74). Change a row in the pull request that changes whether
+# its requirement is met. The format and the checks are in the specification's
+# scripts/status_check.py; the release gate reads this file.
+
+requirement = [
+  { id = "ARCH-R60", state = "done", evidence = ["sdk-ts:src/address.ts", "src/Http/BaseUrl.php", "tests/Unit/BaseUrlTest.php"] },
+  { id = "ARCH-R99", state = "done", evidence = ["tests/Feature/PinRefusalTest.php", "tests/Unit/BaseUrlTest.php", "src/Http/BaseUrl.php", "src/Http/StackSender.php"] },
+  { id = "N1-R8", state = "done", evidence = ["src/Http/RunToken.php", "tests/Feature/ClientTest.php", "lemonfiber-companion:tests/Feature/AValueWithOneDestinationTest.php"] },
+  { id = "N1-R19", state = "done", evidence = ["src/Http/StackSender.php", "lemonfiber-companion:app-modules/sdk/src/Api/PinnedClients.php", "tests/Feature/PinRefusalTest.php", "lemonfiber-companion:app-modules/sdk/tests/Api/PinnedClientsTest.php"] },
+]
