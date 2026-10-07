@@ -55,11 +55,10 @@ function compared(string $tree, string $archive, string ...$flags): array
     $said = [];
     $code = 0;
     exec(sprintf(
-        'GITHUB_STEP_SUMMARY=%s python3 %s --repo %s --served %s %s 2>&1',
-        escapeshellarg($summary),
-        escapeshellarg(DRIFT),
+        'cd %s && GITHUB_STEP_SUMMARY=%s python3 %s %s 2>&1',
         escapeshellarg($tree),
-        escapeshellarg($served),
+        escapeshellarg($summary),
+        escapeshellarg((string) realpath(DRIFT)),
         implode(' ', array_map(escapeshellarg(...), $flags)),
     ), $said, $code);
 
