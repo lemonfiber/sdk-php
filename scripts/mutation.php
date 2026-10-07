@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Mutation;
 
+require_once __DIR__ . '/MutationRunners.php';
+
 use function array_diff;
 use function array_diff_assoc;
 use function array_filter;
-use function array_key_exists;
 use function array_keys;
 use function array_merge;
 use function array_slice;
@@ -17,6 +18,7 @@ use function chdir;
 use function count;
 use function dirname;
 use function escapeshellarg;
+use function explode;
 use function fwrite;
 use function implode;
 use function in_array;
@@ -66,8 +68,12 @@ use function substr;
  * cannot, and from the outside it looks like success: every runner green, over
  * fewer files.
  *
- * Three ways in, two of them for CI. `--list` prints the shard names as JSON,
- * which is what a workflow matrix reads; `--shard=<name>` runs one of them. No
+ * A runner is a shard, or several small ones packed together by `Runners`; at
+ * a floor of 100, a runner scoring 100 over two shards is each scoring 100.
+ *
+ * Three ways in, two of them for CI. `--list` prints the runners as JSON, each
+ * named by its shards joined with `+`, which is what a workflow matrix reads;
+ * `--shard=<name>` runs one of them, or a single shard by its own name. No
  * argument runs the whole of `src` in one process, which is what `composer ci`
  * and anybody running this by hand gets, and it is the set the shards partition.
  */
@@ -124,6 +130,11 @@ final class Mutation
     private const string OR_NO_MUTANT = ' --ignore-min-score-on-zero-mutations';
 
     /**
+     * What joins the shards one runner mutates, in its name and in `--shard=`.
+     */
+    private const string TOGETHER = '+';
+
+    /**
      * @var list<string>
      */
     private array $problems = [];
@@ -174,34 +185,63 @@ final class Mutation
     private function asked(array $shards): int
     {
         if (in_array('--list', $this->given, true)) {
-            return $this->listShards(array_keys($shards));
+            return $this->listShards($this->runners($shards));
         }
 
         $named = $this->argument('--shard=');
 
         return $named === null
             ? $this->mutate(self::SOURCE, $this->mutable(), self::EVERY_MUTANT)
-            : $this->oneShard($shards, $named);
+            : $this->oneRunner($shards, $named);
     }
 
     /**
+     * The files one runner mutates: every shard its name joins, once each.
+     *
      * @param array<string, list<string>> $shards
      */
-    private function oneShard(array $shards, string $named): int
+    private function oneRunner(array $shards, string $named): int
     {
-        if (array_key_exists($named, $shards)) {
-            return $this->mutate($named, $shards[$named], self::OR_NO_MUTANT);
+        $parts = array_values(array_unique(explode(self::TOGETHER, $named)));
+        $unknown = array_values(array_diff($parts, array_keys($shards)));
+
+        if ($unknown !== []) {
+            $this->problems[] = sprintf(
+                'there is no shard called %s. A runner naming one that is gone is a runner that passes '
+                . 'having mutated nothing, and the matrix is built by `--list` on this same commit, so the '
+                . 'two disagree. The shards here are: %s.',
+                implode(', ', $unknown),
+                implode(', ', array_keys($shards)),
+            );
+
+            return 1;
         }
 
-        $this->problems[] = sprintf(
-            'there is no shard called %s. A runner naming one that is gone is a runner that passes '
-            . 'having mutated nothing, and the matrix is built by `--list` on this same commit, so the '
-            . 'two disagree. The shards here are: %s.',
-            $named,
-            implode(', ', array_keys($shards)),
-        );
+        $files = [];
 
-        return 1;
+        foreach ($parts as $part) {
+            $files = array_merge($files, $shards[$part]);
+        }
+
+        return $this->mutate($named, $files, self::OR_NO_MUTANT);
+    }
+
+    /**
+     * The shards packed into runners, each weighed by the source it holds.
+     *
+     * @param array<string, list<string>> $shards
+     *
+     * @return list<string>
+     */
+    private function runners(array $shards): array
+    {
+        [$weights, $unreadable] = Runners::weigh($shards);
+
+        foreach ($unreadable as $file) {
+            $this->problems[] = sprintf('%s could not be read, so its shard cannot be weighed.', $file);
+        }
+
+        return Runners::pack($weights, self::TOGETHER);
     }
 
     /**
@@ -375,7 +415,7 @@ final class Mutation
     }
 
     /**
-     * The shard names, as the JSON a workflow matrix reads.
+     * The runners, as the JSON a workflow matrix reads.
      *
      * @param list<string> $names
      */

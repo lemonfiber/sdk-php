@@ -118,6 +118,6 @@
         "contract:generate": "Regenerate src/Generated from the vendored contract artefact, offline.",
         "contract:sync": "Vendor lemonfiber's contract artefact at one revision: composer contract:sync -- v1.0.0.",
         "guards": "Fail on suppressions, oversized files, remote addresses and reasoning in comments.",
-        "test:mutation": "Mutate every file under src at a floor of 100%; `-- --list` names the shards CI runs a runner each for, `-- --shard=<name>` runs one."
+        "test:mutation": "Mutate every file under src at a floor of 100%; `-- --list` names the runners CI starts, each a shard or several small ones joined by `+`, `-- --shard=<name>` runs one."
     }
 }
