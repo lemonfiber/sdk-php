@@ -1,0 +1,33 @@
+# What this repository implements, one row per requirement (OPS-R74).
+#
+# `done` means the requirement is met in full by what is here, `partial` that this
+# repository holds its part and the rest lives elsewhere, `open` that nothing here
+# meets it yet. The release gate and the no-stubs gate read this file; a pull
+# request that changes whether a requirement is met changes its row.
+#
+# These are the client's requirements of the web API contract. Where a requirement
+# also binds the server or the artefact the core publishes (the heartbeat, event
+# ids, publishing the artefact, listing refusal codes, the names a definition may
+# take), this client's half is here and the row is partial.
+
+requirement = [
+  { id = "ARCH-R51", state = "done", evidence = ["src/Events/HeldValues.php", "tests/Unit/EventFeedTest.php::marks everything held before a break as out of date"] },
+  { id = "ARCH-R52", state = "partial", evidence = ["src/Http/RunToken.php", "tests/Feature/ClientTest.php::sends the token as a header and never in the address"] },
+  { id = "ARCH-R55", state = "done", evidence = ["src/Envelope/EnvelopeReader.php", "tests/Unit/EnvelopeReaderTest.php::refuses an answer speaking another version, naming both"] },
+  { id = "ARCH-R58", state = "done", evidence = ["src/Generated", "tests/Unit/PayloadTest.php::generates from the vendored artefact, and from the revision it came from"] },
+  { id = "ARCH-R59", state = "done", evidence = ["src/Http/RunToken.php", "tests/Unit/RunTokenTest.php::puts the token in the agreed header"] },
+  { id = "ARCH-R60", state = "done", evidence = ["src/Http/BaseUrl.php", "tests/Unit/BaseUrlTest.php::accepts a name that resolves to loopback", "tests/Unit/BaseUrlTest.php::refuses an address off this machine when no pin vouches for it"] },
+  { id = "ARCH-R61", state = "partial", evidence = ["src/Events/EventStream.php", "tests/Unit/EventStreamTest.php::reports a silence longer than twice the agreed sign of life"] },
+  { id = "ARCH-R62", state = "partial", evidence = ["src/Events/EventFeed.php", "tests/Unit/EventFeedTest.php::asks to resume from the last event it saw"] },
+  { id = "ARCH-R63", state = "done", evidence = ["src/Envelope/Payload.php", "tests/Unit/PayloadTest.php::reaches a payload typed by its kind"] },
+  { id = "ARCH-R64", state = "partial", evidence = ["contract/VERSION", "scripts/contract-sync.php"] },
+  { id = "ARCH-R65", state = "done", evidence = ["scripts/contract-generate.php", "tests/Unit/PayloadTest.php::generates from the vendored artefact, and from the revision it came from"] },
+  { id = "ARCH-R66", state = "done", evidence = ["composer.json::contract:check", "scripts/contract-generate.php"] },
+  { id = "ARCH-R67", state = "done", evidence = ["scripts/contract-generate.php", "tests/Feature/ContractGeneratorTest.php::refuses a version it does not implement, and names both", "tests/Feature/ContractGeneratorTest.php::writes nothing when it refuses"] },
+  { id = "ARCH-R73", state = "partial", evidence = ["scripts/contract-generate.php", "tests/Feature/ContractGeneratorTest.php::refuses a reference with a constraint beside it, and names where"] },
+  { id = "ARCH-R99", state = "done", evidence = ["src/Http/CertificatePin.php", "tests/Feature/TheTokenStaysWithItsStackTest.php::writes nothing to a peer the pin does not name", "tests/Feature/PinRefusalTest.php::refuses a peer presenting a certificate the pin does not name"] },
+  { id = "ARCH-R129", state = "partial", evidence = ["scripts/ShapePlan.php", "tests/Feature/ContractGeneratorTest.php::refuses a definition named like a generated class, names it, and writes nothing"] },
+  { id = "ARCH-R138", state = "partial", evidence = ["src/Exception/RequestFailed.php", "tests/Unit/RequestFailedTest.php::reads the code a refusal carries into the generated list"] },
+  { id = "ARCH-R139", state = "partial", evidence = ["scripts/Refusals.php", "tests/Feature/ContractGeneratorTest.php::writes a case per refusal the contract lists, in the order of its code"] },
+  { id = "ARCH-R170", state = "done", evidence = ["scripts/contract-generate.php", "tests/Feature/ContractGeneratorTest.php::refuses a reference to a definition the kind does not carry, and names it"] },
+]
