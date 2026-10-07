@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace Lemonfiber\Sdk\Http;
 
 use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Promise\PromiseInterface;
 use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Exception\CertificateWasRefused;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
+use Lemonfiber\Sdk\Exception\Problem;
+use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Time\Clock;
-use Lemonfiber\Sdk\Time\Deadline;
 use Lemonfiber\Sdk\Time\Duration;
 use Lemonfiber\Sdk\Time\SystemClock;
 use Override;
 use Saloon\Contracts\Authenticator;
 use Saloon\Contracts\Sender;
 use Saloon\Exceptions\Request\FatalRequestException;
-use Saloon\Exceptions\Request\RequestException;
 use Saloon\Http\Connector;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Request;
@@ -58,24 +59,20 @@ final class LemonfiberConnector extends Connector
      */
     public const int FIRST_PAUSE_MS = 250;
 
-    private const int MILLISECONDS_PER_SECOND = 1000;
-
     #[Override]
-    public ?int $retryInterval = self::FIRST_PAUSE_MS;
+    public ?int $retryInterval;
 
-    /** The call in flight, and how long it may still take. */
-    private Deadline $call;
-
-    /** How many times the call in flight has been asked again. */
-    private int $askedAgain = 0;
-
+    /**
+     * @param  Duration|null  $firstPause  how long before a read is first asked again; {@see FIRST_PAUSE_MS} where none is given
+     */
     public function __construct(
         private readonly BaseUrl $baseUrl,
         private readonly Duration $wait,
         private readonly ?RunToken $token = null,
         private readonly Clock $clock = new SystemClock(),
+        ?Duration $firstPause = null,
     ) {
-        $this->call = Deadline::after($wait, $clock);
+        $this->retryInterval = $firstPause->milliseconds ?? self::FIRST_PAUSE_MS;
     }
 
     /**
@@ -104,40 +101,57 @@ final class LemonfiberConnector extends Connector
     #[Override]
     public function send(Request $request, ?MockClient $mockClient = null, ?callable $handleRetry = null): Response
     {
-        $this->call = Deadline::after($this->wait, $this->clock);
-        $this->askedAgain = 0;
+        $call = Call::on($request, $this->wait, $this->clock);
+        $firstPause = $request->retryInterval ?? $this->retryInterval ?? self::FIRST_PAUSE_MS;
+
+        // Reached only where the request itself would ask again, so this decides
+        // nothing about which failures are worth another attempt; only whether
+        // there is time for one.
+        $askAgain = static fn(Throwable $failed, Request $asked): bool => ($handleRetry === null || $handleRetry($failed, $asked))
+            && $call->hasRoomToAskAgain($firstPause);
 
         try {
-            return parent::send($request, $mockClient, $handleRetry);
+            return parent::send($request, $mockClient, $askAgain);
         } catch (FatalRequestException|TransferException $nothingAnswered) {
-            throw $this->whyNothingAnswered($request->resolveEndpoint(), $nothingAnswered);
+            throw $this->whyNothingAnswered($request->resolveEndpoint(), $nothingAnswered, $call);
         }
     }
 
     /**
-     * Ask again only where the pause before it leaves room within the call's wait.
-     *
-     * Reached only where the request itself would ask again, so this decides
-     * nothing about which failures are worth another attempt; only whether there
-     * is time for one. The pause doubles with each attempt, as the requests that
-     * ask again are told to.
+     * Send a request later, as one call with the wait every call is given.
      */
     #[Override]
-    public function handleRetry(FatalRequestException|RequestException $exception, Request $request): bool
+    public function sendAsync(Request $request, ?MockClient $mockClient = null): PromiseInterface
     {
-        $first = $request->retryInterval ?? $this->retryInterval ?? self::FIRST_PAUSE_MS;
-        $pause = $first * (2 ** $this->askedAgain) / self::MILLISECONDS_PER_SECOND;
-        $this->askedAgain++;
+        Call::on($request, $this->wait, $this->clock);
 
-        return $this->call->hasRoomFor($pause);
+        return parent::sendAsync($request, $mockClient);
     }
 
     /**
-     * Pause this long before the first time a read is asked again; each retry after it waits twice as long.
+     * The answer to a request, read as the request reads it, or the refusal it
+     * arrived as instead.
+     *
+     * @template T
+     *
+     * @param  Request&ReadsItsAnswer<T>  $request
+     * @return T
+     *
+     * @throws CertificateWasRefused
+     * @throws ConfigurationProblem
+     * @throws Problem
+     * @throws RequestFailed
+     * @throws Unreachable
      */
-    public function pausingFor(Duration $first): void
+    public function answer(Request&ReadsItsAnswer $request): mixed
     {
-        $this->retryInterval = $first->milliseconds;
+        $response = $this->send($request);
+
+        if ($response->failed()) {
+            throw RequestFailed::from($request->resolveEndpoint(), $response->status(), $response->body());
+        }
+
+        return $request->createDtoFromResponse($response);
     }
 
     /**
@@ -171,7 +185,7 @@ final class LemonfiberConnector extends Connector
      */
     protected function defaultSender(): Sender
     {
-        return new StackSender($this->baseUrl, fn(): float => $this->call->secondsLeft());
+        return new StackSender($this->baseUrl);
     }
 
     /**
@@ -180,7 +194,7 @@ final class LemonfiberConnector extends Connector
      * Only a pinned address is asked what it presented, and a peer that presented
      * the pinned certificate, or presented none, is silence like any other.
      */
-    private function whyNothingAnswered(string $endpoint, Throwable $nothingAnswered): CertificateWasRefused|Unreachable
+    private function whyNothingAnswered(string $endpoint, Throwable $nothingAnswered, Call $call): CertificateWasRefused|Unreachable
     {
         $pin = $this->baseUrl->pin();
         $unreachable = Unreachable::whenAsking($endpoint, $nothingAnswered->getMessage(), WhatTheTransportReported::in($nothingAnswered));
@@ -189,7 +203,7 @@ final class LemonfiberConnector extends Connector
             return $unreachable;
         }
 
-        $presented = PresentedCertificate::at($this->baseUrl, $this->call->secondsLeft());
+        $presented = PresentedCertificate::at($this->baseUrl, $call->secondsLeft());
 
         if ($presented === null || $presented === $pin->toString()) {
             return $unreachable;

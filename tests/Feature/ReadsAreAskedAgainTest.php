@@ -9,6 +9,7 @@ use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\ReadRequest;
 use Lemonfiber\Sdk\Time\Duration;
+use Lemonfiber\Sdk\Time\SystemClock;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
@@ -109,7 +110,7 @@ it('never asks an action again, whatever answered it', function (): void {
 
 it('waits a quarter of a second before asking a read again, and twice that before the third time', function (): void {
     $connector = new LemonfiberConnector(BaseUrl::onPort(9000), aWait());
-    $read = new ReadRequest('/api/status');
+    $read = ReadRequest::envelope('/api/status');
 
     expect($connector->retryInterval)->toBe(250)
         ->and($read->tries)->toBe(3)
@@ -118,8 +119,7 @@ it('waits a quarter of a second before asking a read again, and twice that befor
 });
 
 it('pauses for what it is told to before asking a read again', function (): void {
-    $connector = new LemonfiberConnector(BaseUrl::onPort(9000), aWait());
-    $connector->pausingFor(Duration::ofMilliseconds(40));
+    $connector = new LemonfiberConnector(BaseUrl::onPort(9000), aWait(), null, new SystemClock(), Duration::ofMilliseconds(40));
 
     expect($connector->retryInterval)->toBe(40);
 });

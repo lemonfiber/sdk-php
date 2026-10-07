@@ -86,8 +86,7 @@ it('gives up on a peer that never answers once the wait is over, however many at
 
 it('does not ask again where the pause before it would outlast the wait', function (): void {
     $peer = AnsweringListener::hangingUp();
-    $connector = new LemonfiberConnector(BaseUrl::fromString($peer->address()), Duration::ofMilliseconds(300), RunToken::fromString('a-run-token'));
-    $connector->pausingFor(Duration::ofMilliseconds(400));
+    $connector = new LemonfiberConnector(BaseUrl::fromString($peer->address()), Duration::ofMilliseconds(300), RunToken::fromString('a-run-token'), new SystemClock(), Duration::ofMilliseconds(400));
 
     [, $raised] = timed(static fn(): mixed => new Client($connector)->read('/api/status'));
 
@@ -109,9 +108,8 @@ it('asks a read again only where the doubling pause before it leaves room in the
     // and only the pauses decide: 40 ms then 80 ms both fit, 60 ms then 120 ms
     // leaves room for the first alone, and 120 ms leaves room for none.
     $peer = AnsweringListener::hangingUp();
-    $connector = new LemonfiberConnector(BaseUrl::fromString($peer->address()), Duration::ofMilliseconds(100), RunToken::fromString('a-run-token'), new FakeClock([0.0]));
-    $connector->pausingFor(Duration::ofMilliseconds($firstPause));
-    $read = new ReadRequest('/api/status');
+    $connector = new LemonfiberConnector(BaseUrl::fromString($peer->address()), Duration::ofMilliseconds(100), RunToken::fromString('a-run-token'), new FakeClock([0.0]), Duration::ofMilliseconds($firstPause));
+    $read = ReadRequest::envelope('/api/status');
     $read->retryInterval = $readsOwn;
 
     [, $raised] = timed(static fn(): mixed => $connector->send($read));
@@ -127,8 +125,7 @@ it('asks a read again only where the doubling pause before it leaves room in the
 
 it('gives every call its own wait and its own attempts, however many calls came before it', function (): void {
     $peer = AnsweringListener::hangingUp();
-    $connector = new LemonfiberConnector(BaseUrl::fromString($peer->address()), Duration::ofMilliseconds(100), RunToken::fromString('a-run-token'), new FakeClock([0.0]));
-    $connector->pausingFor(Duration::ofMilliseconds(60));
+    $connector = new LemonfiberConnector(BaseUrl::fromString($peer->address()), Duration::ofMilliseconds(100), RunToken::fromString('a-run-token'), new FakeClock([0.0]), Duration::ofMilliseconds(60));
     $client = new Client($connector);
 
     timed(static fn(): mixed => $client->read('/api/status'));
@@ -149,13 +146,13 @@ it('gives up reaching live updates on a peer that never answers once the wait is
 
 it('makes no attempt once the call has used all of its wait', function (): void {
     $peer = AnsweringListener::plain();
-    // Built at 0, the call begins at 0, and by the time the attempt would be
-    // sent the clock reads past the one second the call was given.
+    // The call begins at 0, and by the time the attempt would be sent the
+    // clock reads past the one second the call was given.
     $connector = new LemonfiberConnector(
         BaseUrl::fromString($peer->address()),
         Duration::ofSeconds(1),
         RunToken::fromString('a-run-token'),
-        new FakeClock([0.0, 0.0, 2.0]),
+        new FakeClock([0.0, 2.0]),
     );
 
     [, $raised] = timed(static fn(): mixed => new Client($connector)->read('/api/status'));

@@ -8,6 +8,7 @@ use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\RunToken;
 use Lemonfiber\Sdk\Time\Duration;
+use Lemonfiber\Sdk\Time\SystemClock;
 
 /**
  * A wait long enough that no test's call runs out of it, so only a test about the wait meets one.
@@ -30,7 +31,7 @@ function aMoment(): Duration
  */
 function aClientOnPort(int $port, string $token): Client
 {
-    return pausingAMoment(new LemonfiberConnector(BaseUrl::onPort($port), aWait(), RunToken::fromString($token)));
+    return new Client(new LemonfiberConnector(BaseUrl::onPort($port), aWait(), RunToken::fromString($token), new SystemClock(), aMoment()));
 }
 
 /**
@@ -38,7 +39,7 @@ function aClientOnPort(int $port, string $token): Client
  */
 function aClientAt(string $address, string $token): Client
 {
-    return pausingAMoment(new LemonfiberConnector(BaseUrl::fromString($address), aWait(), RunToken::fromString($token)));
+    return new Client(new LemonfiberConnector(BaseUrl::fromString($address), aWait(), RunToken::fromString($token), new SystemClock(), aMoment()));
 }
 
 /**
@@ -46,17 +47,11 @@ function aClientAt(string $address, string $token): Client
  */
 function aPinnedClient(string $address, string $token, string $certificateDigest): Client
 {
-    return pausingAMoment(new LemonfiberConnector(
+    return new Client(new LemonfiberConnector(
         BaseUrl::pinned($address, CertificatePin::fromSha256($certificateDigest)),
         aWait(),
         RunToken::fromString($token),
+        new SystemClock(),
+        aMoment(),
     ));
-}
-
-/** A client over this connector, told to pause only a moment. */
-function pausingAMoment(LemonfiberConnector $connector): Client
-{
-    $connector->pausingFor(aMoment());
-
-    return new Client($connector);
 }

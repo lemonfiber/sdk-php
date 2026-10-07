@@ -13,7 +13,7 @@ use Saloon\Http\PendingRequest;
 it('puts the token in the agreed header', function (): void {
     $token = RunToken::fromString('a-run-token');
     $connector = new LemonfiberConnector(BaseUrl::onPort(9000), aWait(), $token);
-    $pending = new PendingRequest($connector, new ReadRequest('/api/status'));
+    $pending = new PendingRequest($connector, ReadRequest::envelope('/api/status'));
 
     $token->set($pending);
 

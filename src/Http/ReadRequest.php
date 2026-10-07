@@ -4,12 +4,23 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Http;
 
+use Closure;
+
 use function http_build_query;
 use function implode;
 use function in_array;
 use function is_array;
 use function is_bool;
 
+use Iterator;
+use Lemonfiber\Sdk\BundleFile;
+use Lemonfiber\Sdk\Contract\Api;
+use Lemonfiber\Sdk\Envelope\Envelope;
+use Lemonfiber\Sdk\Envelope\EnvelopeReader;
+use Lemonfiber\Sdk\JobStanding;
+use Lemonfiber\Sdk\Logs;
+use Lemonfiber\Sdk\LogWindow;
+use Lemonfiber\Sdk\Time\Duration;
 use Override;
 
 use function parse_url;
@@ -22,6 +33,7 @@ use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Exceptions\Request\RequestException;
 use Saloon\Http\PendingRequest;
 use Saloon\Http\Request;
+use Saloon\Http\Response;
 
 /**
  * A request that reads, mirroring a command's machine-readable output.
@@ -39,8 +51,15 @@ use Saloon\Http\Request;
  * stack's own and comes back on the first attempt: asking again would only
  * repeat it. An action is a different request: it is sent once (see
  * {@see ActionRequest}).
+ *
+ * Each read is made by what its answer is: an envelope, the scrollback, a
+ * file, the stream, or where a piece of work stands.
+ *
+ * @template-covariant T
+ *
+ * @implements ReadsItsAnswer<T>
  */
-final class ReadRequest extends Request
+final class ReadRequest extends Request implements ReadsItsAnswer
 {
     /** How many times a read is attempted in all: once, and twice more. */
     private const int ATTEMPTS = 3;
@@ -66,11 +85,108 @@ final class ReadRequest extends Request
 
     /**
      * @param array<string, scalar|list<scalar>|null> $parameters
+     * @param Closure(Response): T $reading what the answer is read as
+     * @param (Closure(Response): bool)|null $refusedWhen which answers are refusals, where that is not every status from 400
      */
-    public function __construct(
+    private function __construct(
         private readonly string $endpoint,
-        private readonly array $parameters = [],
+        private readonly array $parameters,
+        private readonly Closure $reading,
+        private readonly ?Closure $refusedWhen = null,
     ) {}
+
+    /**
+     * A read answered with one envelope.
+     *
+     * @param array<string, scalar|list<scalar>|null> $parameters
+     *
+     * @return self<Envelope<mixed>>
+     */
+    public static function envelope(string $endpoint, array $parameters = []): self
+    {
+        return new self($endpoint, $parameters, static fn(Response $answer): Envelope => new EnvelopeReader()->read($answer->body()));
+    }
+
+    /**
+     * The scrollback, answered with an envelope per line, of the size asked for.
+     *
+     * @return self<LogWindow>
+     */
+    public static function logs(Logs $asked): self
+    {
+        return new self(
+            Api::LOGS_ENDPOINT,
+            $asked->parameters(),
+            static fn(Response $answer): LogWindow => LogWindow::of($asked, new EnvelopeReader()->readEach($answer->body())),
+        );
+    }
+
+    /**
+     * One support bundle, handed over as its bytes beside what the transport said about them.
+     *
+     * @return self<BundleFile>
+     */
+    public static function bundle(string $name): self
+    {
+        return new self(Api::bundle($name), [], static fn(Response $answer): BundleFile => BundleFile::handedOver(
+            $name,
+            $answer->body(),
+            Header::in($answer, Header::CONTENT_TYPE),
+            Header::in($answer, Header::CONTENT_LENGTH),
+        ));
+    }
+
+    /**
+     * Where the work one name stands for got to.
+     *
+     * @return self<JobStanding>
+     */
+    public static function job(string $job): self
+    {
+        return new self(
+            Api::job($job),
+            [],
+            static fn(Response $answer): JobStanding => JobAnswer::standing($job, $answer),
+            JobAnswer::refused(...),
+        );
+    }
+
+    /**
+     * The stream of live updates, read a chunk at a time and waiting at most `$wait` for each.
+     *
+     * @return self<Iterator<int, string>>
+     */
+    public static function events(?string $lastEventId, Duration $wait): self
+    {
+        $request = new self(
+            Api::EVENTS_ENDPOINT,
+            [],
+            static fn(Response $answer): Iterator => ChunkedReader::from(StreamHandle::beneath($answer->stream()), $wait),
+        );
+        $request->headers()->add('Accept', Api::EVENT_STREAM_MEDIA_TYPE);
+        $request->config()->add('stream', true);
+
+        if ($lastEventId !== null) {
+            $request->headers()->add(Api::RESUME_HEADER, $lastEventId);
+        }
+
+        return $request;
+    }
+
+    /**
+     * @return T
+     */
+    #[Override]
+    public function createDtoFromResponse(Response $response): mixed
+    {
+        return ($this->reading)($response);
+    }
+
+    #[Override]
+    public function hasRequestFailed(Response $response): ?bool
+    {
+        return $this->refusedWhen instanceof Closure ? ($this->refusedWhen)($response) : null;
+    }
 
     public function resolveEndpoint(): string
     {

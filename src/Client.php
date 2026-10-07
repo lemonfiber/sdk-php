@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk;
 
-use function is_string;
-
-use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Envelope\EnvelopeReader;
 use Lemonfiber\Sdk\Events\EventFeed;
@@ -31,10 +28,6 @@ use Lemonfiber\Sdk\Http\StreamingEventSource;
 use Lemonfiber\Sdk\Time\Duration;
 use Lemonfiber\Sdk\Time\SystemClock;
 use Saloon\Http\Faking\MockClient;
-use Saloon\Http\Request;
-use Saloon\Http\Response;
-
-use function str_contains;
 
 /**
  * The client: reads, actions and live updates against one running lemonfiber.
@@ -44,21 +37,6 @@ final readonly class Client
     private const int DEFAULT_RECONNECT_LIMIT = 5;
 
     private const int DEFAULT_WAIT_MILLISECONDS = 250;
-
-    /**
-     * What a name this run never handed out is answered with.
-     */
-    private const int NO_SUCH_NAME = 404;
-
-    /**
-     * The header an answer names its type in.
-     */
-    private const string CONTENT_TYPE = 'Content-Type';
-
-    /**
-     * The header an answer states its length in.
-     */
-    private const string CONTENT_LENGTH = 'Content-Length';
 
     public function __construct(
         private LemonfiberConnector $connector,
@@ -114,7 +92,7 @@ final readonly class Client
      */
     public function read(string $endpoint, array $query = []): Envelope
     {
-        return $this->envelopeFrom(new ReadRequest($endpoint, $query), $endpoint);
+        return $this->connector->answer(ReadRequest::envelope($endpoint, $query));
     }
 
     /**
@@ -138,7 +116,7 @@ final readonly class Client
     {
         $attempt = $idempotencyKey === null ? null : IdempotencyKey::fromString($idempotencyKey);
 
-        return $this->envelopeFrom(new ActionRequest($endpoint, $body, $attempt), $endpoint);
+        return $this->connector->answer(new ActionRequest($endpoint, $body, $attempt));
     }
 
     /**
@@ -190,7 +168,7 @@ final readonly class Client
      */
     public function whatBecameOf(string $job): JobStanding
     {
-        return $this->standingOf(new ReadRequest(Api::job($job)), $job);
+        return $this->connector->answer(ReadRequest::job($job));
     }
 
     /**
@@ -213,7 +191,7 @@ final readonly class Client
      */
     public function letGoOf(string $job): JobStanding
     {
-        return $this->standingOf(new ReleaseRequest(Api::job($job)), $job);
+        return $this->connector->answer(new ReleaseRequest($job));
     }
 
     /**
@@ -235,12 +213,7 @@ final readonly class Client
      */
     public function logs(Logs $asked): LogWindow
     {
-        $body = $this->answerTo(
-            new ReadRequest(Api::LOGS_ENDPOINT, $asked->parameters()),
-            Api::LOGS_ENDPOINT,
-        )->body();
-
-        return LogWindow::of($asked, $this->reader->readEach($body));
+        return $this->connector->answer(ReadRequest::logs($asked));
     }
 
     /**
@@ -257,15 +230,7 @@ final readonly class Client
      */
     public function bundle(string $name): BundleFile
     {
-        $endpoint = Api::bundle($name);
-        $response = $this->answerTo(new ReadRequest($endpoint), $endpoint);
-
-        return BundleFile::handedOver(
-            $name,
-            $response->body(),
-            $this->stated($response, self::CONTENT_TYPE),
-            $this->stated($response, self::CONTENT_LENGTH),
-        );
+        return $this->connector->answer(ReadRequest::bundle($name));
     }
 
     /**
@@ -313,89 +278,5 @@ final readonly class Client
         $this->connector->withMockClient($mock);
 
         return $this;
-    }
-
-    /**
-     * @return Envelope<mixed>
-     *
-     * @throws ApiVersionMismatch
-     * @throws RequestFailed
-     * @throws Unreachable
-     * @throws UnreadableResponse
-     */
-    private function envelopeFrom(Request $request, string $endpoint): Envelope
-    {
-        return $this->reader->read($this->answerTo($request, $endpoint)->body());
-    }
-
-    /**
-     * The answer, or the refusal it arrived as instead.
-     *
-     * @throws RequestFailed
-     * @throws Unreachable
-     */
-    private function answerTo(Request $request, string $endpoint): Response
-    {
-        $response = $this->connector->send($request);
-
-        if ($response->failed()) {
-            throw RequestFailed::from($endpoint, $response->status(), $response->body());
-        }
-
-        return $response;
-    }
-
-    /**
-     * The one value an answer gave a header, or none where it gave none or
-     * gave several.
-     */
-    private function stated(Response $response, string $header): ?string
-    {
-        /** @var array<mixed>|string|null $value */
-        $value = $response->header($header);
-
-        return is_string($value) ? $value : null;
-    }
-
-    /**
-     * Where the work a name stands for got to, or why the name answered nothing.
-     *
-     * @throws ApiVersionMismatch
-     * @throws NoSuchJob
-     * @throws RequestFailed
-     * @throws Unreachable
-     * @throws UnreadableResponse
-     */
-    private function standingOf(Request $request, string $job): JobStanding
-    {
-        $response = $this->connector->send($request);
-        $status = $response->status();
-
-        if ($status === self::NO_SUCH_NAME && $this->saidInProse($response)) {
-            throw NoSuchJob::inThisRun($job);
-        }
-
-        if ($response->failed()) {
-            throw RequestFailed::from($request->resolveEndpoint(), $status, $response->body());
-        }
-
-        return JobStanding::of($job, $status, $this->reader->read($response->body()));
-    }
-
-    /**
-     * Whether the answer is this surface speaking in its own words.
-     *
-     * lemonfiber labels a sentence as prose and an envelope as JSON, so that a
-     * caller parsing what it was told it was given is not handed a sentence to
-     * parse as an envelope. That label is what separates the two `404`s this
-     * endpoint has: a name nobody minted is said in prose, and work that
-     * stopped on a problem is the `error` envelope at the status that problem
-     * warrants.
-     */
-    private function saidInProse(Response $response): bool
-    {
-        $type = $this->stated($response, self::CONTENT_TYPE);
-
-        return $type === null || ! str_contains($type, Api::JSON_MEDIA_TYPE);
     }
 }
