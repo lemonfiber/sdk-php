@@ -11,7 +11,7 @@ use function sprintf;
 /**
  * An answer arrived in a shape this client cannot read.
  */
-final class UnreadableResponse extends RuntimeException implements Problem
+final class UnreadableResponse extends RuntimeException implements AnswerUnusable
 {
     public static function notJson(string $detail): self
     {

@@ -254,6 +254,25 @@ acting again.
 A read is retried up to twice when nothing answered or a gateway could not reach
 the stack, within the one wait the client was built with.
 
+### Refusal families
+
+Every refusal is one of `RequestFailed`'s families, so you can catch the one you
+have a remedy for and let the rest go to a `catch (RequestFailed)`:
+
+| Family | Answered with | What it says |
+| --- | --- | --- |
+| `NotAdmitted` | `401` or `403`, with the credential's own code, a code this package does not know, or no sentence | The credential was not admitted: use the token the run printed, sign in again, or use a key the operator minted |
+| `Declined` | `401` or `403`, with any other code | The credential works, and this request is not one it may make |
+| `Misasked` | `400` | The request was not one lemonfiber can act on as asked |
+| `Missing` | `404` | What the request named is not there |
+| `Busy` | `409` | Other work holds what this needs, or the stack is already as asked |
+| `TooManyAttempts` | `429` | The door has stopped answering for a while; `seconds()` is the wait it named, or null |
+| `Failed` | anything else | The command ran and stopped on a problem |
+
+`AnswerUnusable` covers `ApiVersionMismatch`, `UnreadableResponse` and
+`UnexpectedKind`: something answered, and not with an envelope this client reads
+as the one asked for.
+
 ### Refusal codes
 
 Decide what a refusal means from `code()`, never from `said()`: the sentence is

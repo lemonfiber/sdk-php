@@ -66,8 +66,6 @@ final readonly class Admission
 
     private const int NOT_THE_PASSWORD = 401;
 
-    private const int TOO_MANY = 429;
-
     private function __construct(
         private LemonfiberConnector $connector,
         private EnvelopeReader $reader,
@@ -176,22 +174,18 @@ final readonly class Admission
             throw PasswordWasRefused::atTheDoor();
         }
 
-        if ($status === self::TOO_MANY) {
+        if ($response->failed()) {
             /** @var array<mixed>|string|null $said */
             $said = $response->header(self::RETRY_AFTER);
 
-            throw $this->waitOf(is_string($said) ? $said : null);
-        }
-
-        if ($response->failed()) {
-            throw RequestFailed::from(self::ENDPOINT, $status, $response->body());
+            throw RequestFailed::from(self::ENDPOINT, $status, $response->body(), $this->waitOf(is_string($said) ? $said : null));
         }
 
         return $this->admitted($this->reader->read($response->body()));
     }
 
     /**
-     * The wait the answer named, or that it named none.
+     * The seconds the answer said to wait, or none where it named no wait.
      *
      * `Retry-After` may also carry a date rather than a count of seconds, and
      * this reads only the count — a date read wrong is a countdown that ends
@@ -200,18 +194,14 @@ final readonly class Admission
      *
      * A header may arrive repeated, which the client hands over as a list. That
      * is not a wait this can read either, and it takes the same road as an
-     * absent one: {@see TooManyAttempts::forAWhile()} says the door is shut and
-     * declines to guess for how long.
+     * absent one: {@see TooManyAttempts::seconds()} is null, which says the door
+     * is shut and declines to guess for how long.
      */
-    private function waitOf(?string $said): TooManyAttempts
+    private function waitOf(?string $said): ?int
     {
         // No null guard beside this: `is_numeric(null)` is already false, so
-        // one would be a branch that cannot be told from its absence — an
-        // absent header and an unreadable one both mean the same thing here,
-        // and that is the answer either way.
-        return is_numeric($said)
-            ? TooManyAttempts::forAnother((int) $said)
-            : TooManyAttempts::forAWhile();
+        // one would be a branch that cannot be told from its absence.
+        return is_numeric($said) ? (int) $said : null;
     }
 
     /**

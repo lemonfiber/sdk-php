@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Exception;
 
-use RuntimeException;
+use Lemonfiber\Sdk\Refusal;
 
 use function sprintf;
 
@@ -21,7 +21,7 @@ use function sprintf;
  * the server sends for exactly this, and the seconds are what a screen needs in
  * order to say something better than "try again later".
  */
-final class TooManyAttempts extends RuntimeException implements Problem
+final class TooManyAttempts extends RequestFailed
 {
     /**
      * What a developer reads where the answer named a wait.
@@ -35,27 +35,17 @@ final class TooManyAttempts extends RuntimeException implements Problem
     /** Likewise, where it named none. */
     private const string FOR_SOME_UNSAID_TIME = 'This machine has stopped answering password attempts, after too many wrong ones, and did not say for how long. Nothing was opened. Waiting is what clears it; another attempt is what extends it.';
 
-    private function __construct(private readonly ?int $seconds, string $message)
+    protected function __construct(string $endpoint, int $status, ?string $said, ?Refusal $refusal, private readonly ?int $seconds)
     {
-        parent::__construct($message);
-    }
-
-    /** Where the answer said how long is left. */
-    public static function forAnother(int $seconds): self
-    {
-        return new self($seconds, sprintf(self::FOR_THIS_LONG, $seconds));
-    }
-
-    /**
-     * Where it did not.
-     *
-     * Separate from the above rather than defaulted to a number, because a
-     * made-up wait is worse than none: a screen counting down from a guess is a
-     * screen that tells the operator to try at a moment the door is still shut.
-     */
-    public static function forAWhile(): self
-    {
-        return new self(null, self::FOR_SOME_UNSAID_TIME);
+        // A made-up wait is worse than none: a screen counting down from a guess
+        // tells the operator to try at a moment the door is still shut.
+        parent::__construct(
+            $endpoint,
+            $status,
+            $said,
+            $refusal,
+            $seconds === null ? self::FOR_SOME_UNSAID_TIME : sprintf(self::FOR_THIS_LONG, $seconds),
+        );
     }
 
     /**
