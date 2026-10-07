@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 9b0a1674c40c22a453816cf6f0cbed3227047526, api_version 1.
+// Source: 3902d3ed91cb34b34ae6ba94c660f308539115c5, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -52,6 +52,7 @@ enum Kind: string
     case Outbound = 'outbound';
     case Pairing = 'pairing';
     case Pausing = 'pausing';
+    case Playing = 'playing';
     case Plugins = 'plugins';
     case Preview = 'preview';
     case Provenance = 'provenance';

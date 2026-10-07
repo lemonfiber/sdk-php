@@ -47,6 +47,19 @@ interface HouseholdReads
     public const string HELD_ENDPOINT = '/api/held';
 
     /**
+     * The endpoint answering with what the media server is playing now: who is
+     * watching what, on which device, and whether it is paused.
+     *
+     * It answers with the `playing` envelope, so
+     * {@see \Lemonfiber\Sdk\Generated\PlayingEnvelope} is what reads it.
+     *
+     * It takes `member`, once, by name or id, to narrow to one of them; naming
+     * none is every session in the house. A member, or a key scoped to one, is
+     * answered with their own sessions whatever the request named.
+     */
+    public const string PLAYING_ENDPOINT = '/api/playing';
+
+    /**
      * The endpoint answering with the items whose downloads have stopped.
      *
      * It answers with the `stuck` envelope, so
