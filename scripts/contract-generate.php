@@ -370,7 +370,12 @@ final readonly class ContractGenerator
     private function emit(array $kinds, array $refusals, int $version): int
     {
         $stamp = $this->stamp();
-        $planned = $this->planned($kinds, $refusals, new GeneratedSource(self::ARTEFACT, $stamp, $version, $this->types));
+
+        try {
+            $planned = $this->planned($kinds, $refusals, new GeneratedSource(self::ARTEFACT, $stamp, $version, $this->types));
+        } catch (UnexpectedValueException $unresolvable) {
+            return $this->refuse($unresolvable->getMessage() . ' Nothing was generated.');
+        }
 
         if ($planned === null) {
             return 1;
@@ -393,6 +398,8 @@ final readonly class ContractGenerator
      * @param  array<mixed, mixed>  $kinds
      * @param  array<string, array{code: string, status: int, description: string}>  $refusals
      * @return array{named: array<string, string>, refusals: int, files: array<string, string>}|null
+     *
+     * @throws UnexpectedValueException naming the kind, where its payload holds a reference that resolves to no definition
      */
     private function planned(array $kinds, array $refusals, GeneratedSource $source): ?array
     {
@@ -415,9 +422,7 @@ final readonly class ContractGenerator
             try {
                 $files[self::OUTPUT . '/' . $name . 'Envelope.php'] = $source->envelopeClass($kind, $name, $schema);
             } catch (UnexpectedValueException $unresolvable) {
-                $this->refuse(sprintf('In %s, kind `%s`: %s Nothing was generated.', self::ARTEFACT, $kind, $unresolvable->getMessage()));
-
-                return null;
+                throw new UnexpectedValueException(sprintf('In %s, kind `%s`: %s', self::ARTEFACT, $kind, $unresolvable->getMessage()), 0, $unresolvable);
             }
 
             $named[$name] = $kind;
