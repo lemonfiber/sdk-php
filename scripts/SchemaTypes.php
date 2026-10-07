@@ -16,11 +16,15 @@ use function is_bool;
 use function is_float;
 use function is_int;
 use function is_string;
+use function json_encode;
 use function preg_match;
+use function sprintf;
 use function str_replace;
 use function str_starts_with;
 use function strlen;
 use function substr;
+
+use UnexpectedValueException;
 
 /**
  * A JSON Schema written as the PHPStan type it describes.
@@ -28,7 +32,8 @@ use function substr;
  * The contract artefact is JSON Schema, and PHP carries a decoded payload as an
  * array. An array shape is what says which keys that array holds and what each
  * one is, so a shape is what a schema becomes here. Anything the schema leaves
- * open becomes `mixed`.
+ * open becomes `mixed`. A reference to a definition already being expanded is
+ * one of those: an array shape cannot hold itself.
  */
 final class SchemaTypes
 {
@@ -38,25 +43,55 @@ final class SchemaTypes
     public const string UNKNOWN = 'mixed';
 
     /**
+     * What every reference this resolves opens with, before the definition's name.
+     */
+    public const string DEFINITIONS = '#/$defs/';
+
+    /**
      * The PHPStan type a schema describes.
      *
      * @param  array<mixed, mixed>  $schema
      * @param  array<mixed, mixed>  $defs
      * @param  list<string>  $seen  the definitions already being expanded
+     *
+     * @throws UnexpectedValueException naming the reference, where one resolves to no definition in `$defs`
      */
     public function typeOf(array $schema, array $defs, array $seen = []): string
     {
-        $reference = $schema['$ref'] ?? null;
         $enum = $schema['enum'] ?? null;
         $combined = $this->combined($schema);
 
         return match (true) {
-            is_string($reference) => $this->typeOfReference($reference, $defs, $seen),
+            array_key_exists('$ref', $schema) => $this->typeOfReference($schema['$ref'], $defs, $seen),
             array_key_exists('const', $schema) => $this->literal($schema['const']),
             is_array($enum) && $enum !== [] => $this->union(array_map($this->literal(...), array_values($enum))),
             $combined !== null => $this->union($this->typesOf($combined, $defs, $seen)),
             default => $this->typeOfNamed($schema['type'] ?? null, $schema, $defs, $seen),
         };
+    }
+
+    /**
+     * The name of the definition in `$defs` a reference points at, or nothing where it points at none.
+     *
+     * @param  array<mixed, mixed>  $defs
+     */
+    public function definitionNamed(mixed $reference, array $defs): ?string
+    {
+        if (! is_string($reference) || ! str_starts_with($reference, self::DEFINITIONS)) {
+            return null;
+        }
+
+        $name = substr($reference, strlen(self::DEFINITIONS));
+
+        return is_array($defs[$name] ?? null) ? $name : null;
+    }
+
+    /**
+     * A reference as the contract writes it, for a refusal to name.
+     */
+    public function written(mixed $reference): string
+    {
+        return json_encode($reference, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
     }
 
     public function quoted(string $value): string
@@ -119,19 +154,22 @@ final class SchemaTypes
     /**
      * @param  array<mixed, mixed>  $defs
      * @param  list<string>  $seen
+     *
+     * @throws UnexpectedValueException
      */
-    private function typeOfReference(string $reference, array $defs, array $seen): string
+    private function typeOfReference(mixed $reference, array $defs, array $seen): string
     {
-        $prefix = '#/$defs/';
+        $name = $this->definitionNamed($reference, $defs);
+        $target = $name === null ? null : $defs[$name];
 
-        if (! str_starts_with($reference, $prefix)) {
-            return self::UNKNOWN;
+        if ($name === null || ! is_array($target)) {
+            throw new UnexpectedValueException(sprintf(
+                'The reference %s resolves to no definition the schema carries.',
+                $this->written($reference),
+            ));
         }
 
-        $name = substr($reference, strlen($prefix));
-        $target = $defs[$name] ?? null;
-
-        if (in_array($name, $seen, true) || ! is_array($target)) {
+        if (in_array($name, $seen, true)) {
             return self::UNKNOWN;
         }
 

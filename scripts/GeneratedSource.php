@@ -7,6 +7,8 @@ namespace Lemonfiber\Sdk\Scripts;
 use function is_array;
 use function sprintf;
 
+use UnexpectedValueException;
+
 /**
  * The PHP source a contract's kinds are written as.
  *
@@ -26,6 +28,8 @@ final readonly class GeneratedSource
 
     /**
      * @param  array<mixed, mixed>  $schema
+     *
+     * @throws UnexpectedValueException naming the reference, where the payload holds one that resolves to no definition the kind carries
      */
     public function envelopeClass(string $kind, string $name, array $schema): string
     {

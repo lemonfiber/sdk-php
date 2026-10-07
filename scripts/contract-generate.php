@@ -36,11 +36,8 @@ use function mkdir;
 use function preg_match;
 use function preg_split;
 use function sprintf;
-use function str_starts_with;
-use function strlen;
 use function strtolower;
 use function strval;
-use function substr;
 use function trim;
 use function ucfirst;
 
@@ -82,7 +79,10 @@ final readonly class ContractGenerator
      */
     private const array ANNOTATIONS = ['description', 'title', 'default', 'examples'];
 
-    public function __construct(private string $root) {}
+    public function __construct(
+        private string $root,
+        private SchemaTypes $types = new SchemaTypes(),
+    ) {}
 
     public function run(): int
     {
@@ -193,13 +193,15 @@ final readonly class ContractGenerator
             return null;
         }
 
-        $dangling = $this->pointingAtNothing($kinds);
+        $dangling = $this->unresolved($kinds);
 
         if ($dangling !== []) {
-            $this->refuse(
-                'The vendored contract points at definitions it does not carry, and every one of them '
-                . 'would have been generated as mixed: ' . implode(', ', $dangling),
-            );
+            $this->refuse(sprintf(
+                'The vendored contract holds references that resolve to no definition it carries, and every one of them '
+                . 'would have been generated as mixed. In %s: %s. Nothing was generated.',
+                self::ARTEFACT,
+                implode(', ', $dangling),
+            ));
 
             return null;
         }
@@ -241,17 +243,15 @@ final readonly class ContractGenerator
     }
 
     /**
-     * Every reference pointing at a definition the kind carrying it does not hold.
+     * Every reference, in whatever form, that resolves to no definition the kind carrying it holds.
      *
-     * An unresolvable reference is not an error anywhere below this. `SchemaTypes`
-     * answers one with `mixed`, and `union()` collapses any union holding a `mixed`
-     * to `mixed` entire — so a contract that moved its definitions somewhere this
-     * does not look would generate a whole surface of `mixed`, exit nought, and be
-     * committed by the bump that fetched it. Nothing else would notice: `src/Generated`
-     * is excluded from PHPStan, and the suite checks kind names rather than shapes.
-     *
-     * Hoisting `$defs` to the document root is exactly that change, and is a thing
-     * somebody may reasonably try. This is what makes it fail loudly and say where.
+     * `SchemaTypes` refuses such a reference too, but only one it reaches from a
+     * payload; this reads every reference a kind holds, reached or not, and names
+     * them all at once. An unresolvable reference is one that would otherwise be
+     * typed `mixed`, and `union()` collapses any union holding a `mixed` to `mixed`
+     * entire, so it would turn a whole surface to `mixed` with nothing else to
+     * notice: `src/Generated` is excluded from PHPStan, and the suite checks kind
+     * names rather than shapes.
      *
      * A cycle needs no exception: a definition pointing back at one already being
      * expanded still points at a definition this holds, and `SchemaTypes` stops that
@@ -260,7 +260,7 @@ final readonly class ContractGenerator
      * @param  array<mixed, mixed>  $kinds
      * @return list<string>
      */
-    private function pointingAtNothing(array $kinds): array
+    private function unresolved(array $kinds): array
     {
         $dangling = [];
 
@@ -272,9 +272,9 @@ final readonly class ContractGenerator
             $defs = $schema['$defs'] ?? null;
             $carried = is_array($defs) ? $defs : [];
 
-            foreach ($this->referenced($schema) as $name) {
-                if (! array_key_exists($name, $carried)) {
-                    $dangling[] = sprintf('%s -> %s', strval($kind), $name);
+            foreach ($this->referenced($schema) as $reference) {
+                if ($this->types->definitionNamed($reference, $carried) === null) {
+                    $dangling[] = sprintf('kind `%s` -> %s', strval($kind), $this->types->written($reference));
                 }
             }
         }
@@ -283,19 +283,18 @@ final readonly class ContractGenerator
     }
 
     /**
-     * The name of every definition a schema points at, however deeply, in order.
+     * Every reference a schema holds, however deeply, in order.
      *
      * @param  array<mixed, mixed>  $node
-     * @return list<string>
+     * @return list<mixed>
      */
     private function referenced(array $node): array
     {
-        $prefix = '#/$defs/';
         $found = [];
 
         foreach ($node as $key => $value) {
-            if ($key === '$ref' && is_string($value) && str_starts_with($value, $prefix)) {
-                $found[] = substr($value, strlen($prefix));
+            if ($key === '$ref') {
+                $found[] = $value;
             } elseif (is_array($value)) {
                 $found = [...$found, ...$this->referenced($value)];
             }
@@ -371,7 +370,7 @@ final readonly class ContractGenerator
     private function emit(array $kinds, array $refusals, int $version): int
     {
         $stamp = $this->stamp();
-        $planned = $this->planned($kinds, $refusals, new GeneratedSource(self::ARTEFACT, $stamp, $version));
+        $planned = $this->planned($kinds, $refusals, new GeneratedSource(self::ARTEFACT, $stamp, $version, $this->types));
 
         if ($planned === null) {
             return 1;
@@ -413,8 +412,15 @@ final readonly class ContractGenerator
                 return null;
             }
 
+            try {
+                $files[self::OUTPUT . '/' . $name . 'Envelope.php'] = $source->envelopeClass($kind, $name, $schema);
+            } catch (UnexpectedValueException $unresolvable) {
+                $this->refuse(sprintf('In %s, kind `%s`: %s Nothing was generated.', self::ARTEFACT, $kind, $unresolvable->getMessage()));
+
+                return null;
+            }
+
             $named[$name] = $kind;
-            $files[self::OUTPUT . '/' . $name . 'Envelope.php'] = $source->envelopeClass($kind, $name, $schema);
         }
 
         $files[self::OUTPUT . '/Kind.php'] = $source->kindEnum($named);

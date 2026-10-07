@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Lemonfiber\Sdk\Scripts\LineCap;
+use Lemonfiber\Sdk\Scripts\SchemaTypes;
 
 /**
  * The generator's refusal, exercised as the command it is.
@@ -208,11 +209,114 @@ it('refuses a reference to a definition the kind does not carry, and names it', 
     // Nought with a surface of `mixed` in it is the outcome this exists to stop,
     // so the status matters as much as the words.
     expect($result['status'])->toBe(1)
-        ->and($result['stderr'])->toContain('word -> Word')
+        ->and($result['stderr'])->toContain('contract/web-api.contract.json')
+        ->and($result['stderr'])->toContain('kind `word` -> "#/$defs/Word"')
         ->and($result['stderr'])->toContain('mixed')
+        ->and($result['stderr'])->toContain('Nothing was generated.')
         ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
 
     removeTree($tree);
+});
+
+/**
+ * A contract whose one kind carries the definitions given and describes its payload as given.
+ *
+ * @param  array<string, mixed>  $data
+ * @param  array<string, mixed>  $defs
+ * @return array<string, mixed>
+ */
+function contractCarrying(array $data, array $defs): array
+{
+    return [
+        'api_version' => 1,
+        'kinds' => [
+            'word' => [
+                'type' => 'object',
+                '$defs' => $defs,
+                'properties' => [
+                    'api_version' => ['type' => 'integer'],
+                    'kind' => ['type' => 'string'],
+                    'data' => $data,
+                ],
+                'required' => ['api_version', 'kind', 'data'],
+            ],
+        ],
+    ];
+}
+
+/**
+ * A contract whose one kind carries `Word` and describes its payload with the reference given.
+ *
+ * @return array<string, mixed>
+ */
+function contractReferring(mixed $reference): array
+{
+    return contractCarrying(['$ref' => $reference], ['Word' => ['type' => 'object']]);
+}
+
+it('refuses a reference it cannot resolve to a definition, names it and the file, and writes nothing', function (mixed $reference, string $named) use ($root): void {
+    $tree = treeWith($root, json_encode(contractReferring($reference), JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+
+    expect($result['status'])->toBe(1)
+        ->and($result['stderr'])->toContain('contract/web-api.contract.json')
+        ->and($result['stderr'])->toContain('kind `word` -> ' . $named)
+        ->and($result['stderr'])->toContain('Nothing was generated.')
+        ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
+
+    removeTree($tree);
+})->with([
+    'a path to a file' => ['../defs/Word.json', '"../defs/Word.json"'],
+    'a pointer under another keyword' => ['#/definitions/Word', '"#/definitions/Word"'],
+    'a pointer into another document' => ['other.json#/$defs/Word', '"other.json#/$defs/Word"'],
+    'a definition not carried' => ['#/$defs/Phrase', '"#/$defs/Phrase"'],
+    'the definitions themselves' => ['#/$defs/', '"#/$defs/"'],
+    'a reference that is not text' => [7, '7'],
+]);
+
+it('refuses an unresolvable reference no payload reaches', function () use ($root): void {
+    $contract = contractCarrying(['$ref' => '#/$defs/Word'], [
+        'Word' => ['type' => 'object'],
+        'Unused' => ['$ref' => '#/$defs/Gone'],
+    ]);
+    $tree = treeWith($root, json_encode($contract, JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+
+    expect($result['status'])->toBe(1)
+        ->and($result['stderr'])->toContain('kind `word` -> "#/$defs/Gone"')
+        ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
+
+    removeTree($tree);
+});
+
+it('writes a definition that holds itself, typing the recursion as mixed', function () use ($root): void {
+    $contract = contractCarrying(['$ref' => '#/$defs/Word'], [
+        'Word' => ['type' => 'object', 'properties' => ['inner' => ['$ref' => '#/$defs/Word']]],
+    ]);
+    $tree = treeWith($root, json_encode($contract, JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+
+    expect($result['status'])->toBe(0)
+        ->and((string) file_get_contents($tree . '/src/Generated/WordEnvelope.php'))->toContain('@phpstan-type Data array{inner?: mixed}');
+
+    removeTree($tree);
+});
+
+it('refuses rather than types as mixed a reference it cannot resolve', function (mixed $reference, array $defs): void {
+    expect(fn(): string => new SchemaTypes()->typeOf(['$ref' => $reference], $defs))
+        ->toThrow(UnexpectedValueException::class, 'The reference ' . json_encode($reference, JSON_UNESCAPED_SLASHES) . ' resolves to no definition');
+})->with([
+    'a path to a file' => ['../defs/Word.json', ['Word' => ['type' => 'string']]],
+    'a definition not carried' => ['#/$defs/Phrase', ['Word' => ['type' => 'string']]],
+    'a definition that is not a schema' => ['#/$defs/Word', ['Word' => 'string']],
+    'a reference that is not text' => [null, []],
+]);
+
+it('types a reference to a definition it carries as that definition', function (): void {
+    expect(new SchemaTypes()->typeOf(['$ref' => '#/$defs/Word'], ['Word' => ['type' => 'string']]))->toBe('string');
 });
 
 it('accepts a reference to a definition the kind carries', function () use ($root): void {
