@@ -41,6 +41,7 @@ it('names the reads it holds a path for, and holds no path it has no caller for'
         ->and(Api::STORAGE_ENDPOINT)->toBe('/api/storage')
         ->and(Api::REQUESTS_ENDPOINT)->toBe('/api/requests')
         ->and(Api::HELD_ENDPOINT)->toBe('/api/held')
+        ->and(Api::PLAYING_ENDPOINT)->toBe('/api/playing')
         ->and(Api::CONFIG_ENDPOINT)->toBe('/api/config')
         ->and(Api::QUALITY_ENDPOINT)->toBe('/api/quality')
         ->and(Api::TRACE_ENDPOINT)->toBe('/api/trace')

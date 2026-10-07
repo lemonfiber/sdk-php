@@ -52,6 +52,7 @@ this client's to hold and its to move:
 | `Api::LOGS_ENDPOINT` | `log`, one a line | `form` and `service`, each more than once, plus `tail` and `follow` |
 | `Api::REQUESTS_ENDPOINT` | `household` | `member`, once |
 | `Api::HELD_ENDPOINT` | `held` | `member`, whose shelf, and `most`, how many |
+| `Api::PLAYING_ENDPOINT` | `playing` | `member`, once; naming none is the whole house |
 | `Api::CONFIG_ENDPOINT` | `config` | `key`, once; naming none is every setting |
 | `Api::QUALITY_ENDPOINT` | `quality` | nothing |
 | `Api::TRACE_ENDPOINT` | `trace` | `term`, what is followed, and `season` |
