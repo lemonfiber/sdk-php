@@ -11,6 +11,7 @@ use Lemonfiber\Sdk\Generated\Kind;
 use Lemonfiber\Sdk\Generated\NewsEnvelope;
 use Lemonfiber\Sdk\Generated\NewsItemsEnvelope;
 use Lemonfiber\Sdk\Generated\WordEnvelope;
+use Lemonfiber\Sdk\Scripts\VendoredContract;
 
 it('hands over what an envelope of the named kind holds', function (): void {
     $envelope = new Envelope(Api::VERSION, 'word', 'pelican');
@@ -61,8 +62,7 @@ it('names every kind the contract describes, and one class each', function (): v
 
 it('generates from the vendored artefact, and from the revision it came from', function (): void {
     $root = dirname(__DIR__, 2);
-    $decoded = json_decode((string) file_get_contents($root . '/contract/web-api.contract.json'), true, 64, JSON_THROW_ON_ERROR);
-    $artefact = is_array($decoded) ? $decoded : [];
+    $artefact = new VendoredContract($root)->artefact();
     $kinds = $artefact['kinds'] ?? null;
 
     $vendored = is_array($kinds) ? array_keys($kinds) : [];

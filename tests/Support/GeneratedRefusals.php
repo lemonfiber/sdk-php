@@ -8,10 +8,8 @@ use function bin2hex;
 use function class_exists;
 use function dirname;
 use function enum_exists;
-use function file_get_contents;
 use function file_put_contents;
 use function is_array;
-use function json_decode;
 
 use Lemonfiber\Sdk\Generated\Contract;
 use Lemonfiber\Sdk\Generated\RefusalCode;
@@ -19,6 +17,7 @@ use Lemonfiber\Sdk\Generated\RefusalDescription;
 use Lemonfiber\Sdk\Generated\RefusalStatus;
 use Lemonfiber\Sdk\Scripts\GeneratedSource;
 use Lemonfiber\Sdk\Scripts\Refusals;
+use Lemonfiber\Sdk\Scripts\VendoredContract;
 use LogicException;
 
 use function random_bytes;
@@ -36,8 +35,6 @@ use function unlink;
  */
 final class GeneratedRefusals
 {
-    private const string ARTEFACT = 'contract/web-api.contract.json';
-
     /**
      * Loads the list with the given refusal beside the vendored ones.
      *
@@ -52,12 +49,11 @@ final class GeneratedRefusals
         }
 
         $root = dirname(__DIR__, 2);
-        $artefact = json_decode((string) file_get_contents($root . '/' . self::ARTEFACT), true, 64, JSON_THROW_ON_ERROR);
-        $artefact = is_array($artefact) ? $artefact : [];
+        $artefact = new VendoredContract($root)->artefact();
         $vendored = $artefact['refusals'] ?? [];
         $artefact['refusals'] = (is_array($vendored) ? $vendored : []) + [$code => $refusal];
 
-        $source = new GeneratedSource(self::ARTEFACT, 'the vendored contract and one refusal more', Contract::API_VERSION);
+        $source = new GeneratedSource('the vendored contract and one refusal more', Contract::API_VERSION);
         $listed = new Refusals()->listed($artefact);
 
         foreach ([$source->refusalEnum($listed), $source->refusalStatusClass($listed), $source->refusalDescriptionClass($listed)] as $written) {

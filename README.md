@@ -301,9 +301,16 @@ foreach ($feed->follow() as $envelope) {
 
 ## Where the contract comes from
 
-Shapes are generated. `src/Generated/` holds types produced from `web-api.contract.json`, the
-artefact lemonfiber builds from the `serde` types it serialises with (ADR-0014, ARCH-R56,
-ARCH-R58). Nothing in that directory is edited by hand.
+Shapes are generated. `src/Generated/` holds types produced from the contract artefact
+lemonfiber builds from the `serde` types it serialises with (ADR-0014, ARCH-R56, ARCH-R58).
+Nothing in that directory is edited by hand.
+
+A revision of lemonfiber holds the artefact in one of two layouts: the directory
+`contract/web-api/`, an index with a file per kind and a file per definition and each `$ref` a
+path to a definition's file, or the single file `contract/web-api.contract.json`. It is vendored
+in the layout the revision holds, and the same content in either generates the same files. A `$ref` that resolves to no
+definition in the vendored copy is refused, naming it and the file it is in, and nothing is
+written (ARCH-R170).
 
 A copy of the artefact is vendored here, beside the revision it came from, so generation
 needs no network and a contract change arrives as a diff somebody reads (ARCH-R65). Three
@@ -311,7 +318,7 @@ commands, and only the first touches the network:
 
 | Command | Network | What it does |
 |---|---|---|
-| `composer contract:sync -- v1.0.0` | yes | Fetches the artefact at that revision — a release tag or a full commit hash — checks it is one, and vendors it into `contract/` beside the revision it came from |
+| `composer contract:sync -- v1.0.0` | yes | Fetches the archive of that revision — a release tag or a full commit hash — checks the artefact in it is one, and vendors it into `contract/` beside the revision it came from, replacing the copy there in either layout |
 | `composer contract:generate` | no | Writes `src/Generated/` from the vendored copy. Deterministic; its output is committed |
 | `composer contract:check` | no | Regenerates and fails on any diff. Part of `composer ci`, so CI fails on a stale `src/Generated` (ARCH-R66) |
 

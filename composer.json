@@ -28,6 +28,7 @@
     "require-dev": {
         "ext-curl": "*",
         "ext-tokenizer": "*",
+        "ext-zlib": "*",
         "bamarni/composer-bin-plugin": "^1.9",
         "captainhook/captainhook": "^5.29",
         "ergebnis/composer-normalize": "^2.52",

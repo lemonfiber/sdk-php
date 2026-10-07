@@ -4,17 +4,11 @@ declare(strict_types=1);
 
 use Lemonfiber\Sdk\Scripts\LineCap;
 use Lemonfiber\Sdk\Scripts\SchemaTypes;
+use Lemonfiber\Sdk\Tests\Support\ContractTree;
 
 /**
- * The generator's refusal, exercised as the command it is.
- *
- * The script resolves its paths from its own directory, so a copy of it and
- * its helper inside a temporary tree reads that tree's contract and writes
- * into that tree.
+ * The generator's refusals, exercised as the command it is, in a tree of its own.
  */
-$root = dirname(__DIR__, 2);
-
-const GENERATOR = '/scripts/contract-generate.php';
 
 /**
  * A contract with one kind, so only the version is ever what is wrong.
@@ -39,85 +33,37 @@ function contractOf(int $apiVersion): array
     ];
 }
 
-/**
- * A tree holding the generator, its helpers, and the contract given to it.
- */
-function treeWith(string $root, string $contract): string
-{
-    $tree = $root . '/.contract-test-' . bin2hex(random_bytes(6));
+it('refuses a version it does not implement, and names both', function (): void {
+    $tree = ContractTree::withFile(json_encode(contractOf(2), JSON_THROW_ON_ERROR));
 
-    mkdir($tree . '/scripts', 0o755, true);
-    mkdir($tree . '/contract', 0o755, true);
-    copy($root . GENERATOR, $tree . GENERATOR);
-    copy($root . '/scripts/GeneratedSource.php', $tree . '/scripts/GeneratedSource.php');
-    copy($root . '/scripts/SchemaTypes.php', $tree . '/scripts/SchemaTypes.php');
-    copy($root . '/scripts/Refusals.php', $tree . '/scripts/Refusals.php');
-    copy($root . '/scripts/LineCap.php', $tree . '/scripts/LineCap.php');
-    file_put_contents($tree . '/contract/web-api.contract.json', $contract);
-    file_put_contents($tree . '/contract/VERSION', "v9.9.9\n");
-
-    return $tree;
-}
-
-/**
- * @return array{status: int, stderr: string}
- */
-function generateIn(string $tree): array
-{
-    $pipes = [];
-    $process = proc_open(
-        [PHP_BINARY, $tree . GENERATOR],
-        [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
-        $pipes,
-    );
-
-    if ($process === false) {
-        return ['status' => -1, 'stderr' => 'The generator could not be started.'];
-    }
-
-    $stderr = stream_get_contents($pipes[2]);
-    fclose($pipes[1]);
-    fclose($pipes[2]);
-
-    return ['status' => proc_close($process), 'stderr' => is_string($stderr) ? $stderr : ''];
-}
-
-function removeTree(string $tree): void
-{
-    exec('rm -rf ' . escapeshellarg($tree));
-}
-
-it('refuses a version it does not implement, and names both', function () use ($root): void {
-    $tree = treeWith($root, json_encode(contractOf(2), JSON_THROW_ON_ERROR));
-
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     expect($result['status'])->toBe(1)
         ->and($result['stderr'])->toContain('2')
         ->and($result['stderr'])->toContain('1');
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 });
 
-it('writes nothing when it refuses', function () use ($root): void {
-    $tree = treeWith($root, json_encode(contractOf(2), JSON_THROW_ON_ERROR));
+it('writes nothing when it refuses', function (): void {
+    $tree = ContractTree::withFile(json_encode(contractOf(2), JSON_THROW_ON_ERROR));
 
-    generateIn($tree);
+    ContractTree::generate($tree);
 
     expect(is_dir($tree . '/src/Generated'))->toBeFalse();
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 });
 
-it('writes when the version is the one it implements', function () use ($root): void {
-    $tree = treeWith($root, json_encode(contractOf(1), JSON_THROW_ON_ERROR));
+it('writes when the version is the one it implements', function (): void {
+    $tree = ContractTree::withFile(json_encode(contractOf(1), JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     expect($result['status'])->toBe(0)
         ->and(is_file($tree . '/src/Generated/Contract.php'))->toBeTrue();
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 });
 
 /**
@@ -145,32 +91,32 @@ function contractPointingAt(array $beside): array
     ];
 }
 
-it('refuses a reference with a constraint beside it, and names where', function () use ($root): void {
+it('refuses a reference with a constraint beside it, and names where', function (): void {
     $constrained = contractPointingAt([
         'type' => 'object',
         'properties' => ['kind' => ['const' => 'word']],
     ]);
-    $tree = treeWith($root, json_encode($constrained, JSON_THROW_ON_ERROR));
+    $tree = ContractTree::withFile(json_encode($constrained, JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     expect($result['status'])->toBe(1)
         ->and($result['stderr'])->toContain('/word/properties/data')
         ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 });
 
-it('accepts a reference described but not constrained', function () use ($root): void {
+it('accepts a reference described but not constrained', function (): void {
     $described = contractPointingAt(['description' => 'The payload.']);
-    $tree = treeWith($root, json_encode($described, JSON_THROW_ON_ERROR));
+    $tree = ContractTree::withFile(json_encode($described, JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     expect($result['status'])->toBe(0)
         ->and(is_file($tree . '/src/Generated/Contract.php'))->toBeTrue();
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 });
 
 /**
@@ -200,11 +146,11 @@ function contractHoistedToTheRoot(): array
     ];
 }
 
-it('refuses a reference to a definition the kind does not carry, and names it', function () use ($root): void {
+it('refuses a reference to a definition the kind does not carry, and names it', function (): void {
     $hoisted = contractHoistedToTheRoot();
-    $tree = treeWith($root, json_encode($hoisted, JSON_THROW_ON_ERROR));
+    $tree = ContractTree::withFile(json_encode($hoisted, JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     // Nought with a surface of `mixed` in it is the outcome this exists to stop,
     // so the status matters as much as the words.
@@ -215,7 +161,7 @@ it('refuses a reference to a definition the kind does not carry, and names it', 
         ->and($result['stderr'])->toContain('Nothing was generated.')
         ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 });
 
 /**
@@ -254,10 +200,10 @@ function contractReferring(mixed $reference): array
     return contractCarrying(['$ref' => $reference], ['Word' => ['type' => 'object']]);
 }
 
-it('refuses a reference it cannot resolve to a definition, names it and the file, and writes nothing', function (mixed $reference, string $named) use ($root): void {
-    $tree = treeWith($root, json_encode(contractReferring($reference), JSON_THROW_ON_ERROR));
+it('refuses a reference it cannot resolve to a definition, names it and the file, and writes nothing', function (mixed $reference, string $named): void {
+    $tree = ContractTree::withFile(json_encode(contractReferring($reference), JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     expect($result['status'])->toBe(1)
         ->and($result['stderr'])->toContain('contract/web-api.contract.json')
@@ -265,7 +211,7 @@ it('refuses a reference it cannot resolve to a definition, names it and the file
         ->and($result['stderr'])->toContain('Nothing was generated.')
         ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 })->with([
     'a path to a file' => ['../defs/Word.json', '"../defs/Word.json"'],
     'a pointer under another keyword' => ['#/definitions/Word', '"#/definitions/Word"'],
@@ -275,34 +221,34 @@ it('refuses a reference it cannot resolve to a definition, names it and the file
     'a reference that is not text' => [7, '7'],
 ]);
 
-it('refuses an unresolvable reference no payload reaches', function () use ($root): void {
+it('refuses an unresolvable reference no payload reaches', function (): void {
     $contract = contractCarrying(['$ref' => '#/$defs/Word'], [
         'Word' => ['type' => 'object'],
         'Unused' => ['$ref' => '#/$defs/Gone'],
     ]);
-    $tree = treeWith($root, json_encode($contract, JSON_THROW_ON_ERROR));
+    $tree = ContractTree::withFile(json_encode($contract, JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     expect($result['status'])->toBe(1)
         ->and($result['stderr'])->toContain('kind `word` -> "#/$defs/Gone"')
         ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 });
 
-it('writes a definition that holds itself, typing the recursion as mixed', function () use ($root): void {
+it('writes a definition that holds itself, typing the recursion as mixed', function (): void {
     $contract = contractCarrying(['$ref' => '#/$defs/Word'], [
         'Word' => ['type' => 'object', 'properties' => ['inner' => ['$ref' => '#/$defs/Word']]],
     ]);
-    $tree = treeWith($root, json_encode($contract, JSON_THROW_ON_ERROR));
+    $tree = ContractTree::withFile(json_encode($contract, JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     expect($result['status'])->toBe(0)
         ->and((string) file_get_contents($tree . '/src/Generated/WordEnvelope.php'))->toContain('@phpstan-type Data array{inner?: mixed}');
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 });
 
 it('refuses rather than types as mixed a reference it cannot resolve', function (mixed $reference, array $defs): void {
@@ -319,27 +265,27 @@ it('types a reference to a definition it carries as that definition', function (
     expect(new SchemaTypes()->typeOf(['$ref' => '#/$defs/Word'], ['Word' => ['type' => 'string']]))->toBe('string');
 });
 
-it('accepts a reference to a definition the kind carries', function () use ($root): void {
+it('accepts a reference to a definition the kind carries', function (): void {
     $carried = contractPointingAt([]);
-    $tree = treeWith($root, json_encode($carried, JSON_THROW_ON_ERROR));
+    $tree = ContractTree::withFile(json_encode($carried, JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     expect($result['status'])->toBe(0)
         ->and(is_file($tree . '/src/Generated/Contract.php'))->toBeTrue();
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 });
 
-it('refuses a contract describing no kinds', function () use ($root): void {
-    $tree = treeWith($root, json_encode(['api_version' => 1, 'kinds' => []], JSON_THROW_ON_ERROR));
+it('refuses a contract describing no kinds', function (): void {
+    $tree = ContractTree::withFile(json_encode(['api_version' => 1, 'kinds' => []], JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     expect($result['status'])->toBe(1)
         ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 });
 
 /**
@@ -369,13 +315,13 @@ function askTheRefusalList(string $tree, string $question): string
     return (string) shell_exec(escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($script));
 }
 
-it('writes a case per refusal the contract lists, in the order of its code', function () use ($root): void {
-    $tree = treeWith($root, json_encode(contractRefusing([
+it('writes a case per refusal the contract lists, in the order of its code', function (): void {
+    $tree = ContractTree::withFile(json_encode(contractRefusing([
         'ADMIT-10' => ['name' => 'NOT_A_PASSWORD', 'status' => 400, 'description' => 'Raised when what was offered is not a password.'],
         'ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => "Raised when a request carried\n no token */ this run admits."],
     ]), JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
     $source = (string) file_get_contents($tree . '/src/Generated/RefusalCode.php');
 
     expect($result['status'])->toBe(0)
@@ -391,35 +337,35 @@ it('writes a case per refusal the contract lists, in the order of its code', fun
         ->and(askTheRefusalList($tree, '[RefusalCode::of("ADMIT-4")?->name, RefusalCode::of("NOBODY-1"), RefusalCode::of(null)]'))
         ->toBe('["NotAdmitted",null,null]');
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 });
 
-it('writes a list with no cases where the contract lists no refusals', function (array $contract) use ($root): void {
-    $tree = treeWith($root, json_encode($contract, JSON_THROW_ON_ERROR));
+it('writes a list with no cases where the contract lists no refusals', function (array $contract): void {
+    $tree = ContractTree::withFile(json_encode($contract, JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     expect($result['status'])->toBe(0)
         ->and((string) file_get_contents($tree . '/src/Generated/RefusalCode.php'))->not->toMatch('/^\s*case /m')
         ->and(askTheRefusalList($tree, '[RefusalCode::cases(), RefusalCode::of("ADMIT-4")]'))->toBe('[[],null]');
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 })->with([
     'the list left out' => [contractOf(1)],
     'the list empty' => [contractRefusing([])],
 ]);
 
-it('refuses a malformed list of refusals, names what is wrong, and writes nothing', function (mixed $refusals, string $named) use ($root): void {
-    $tree = treeWith($root, json_encode(contractRefusing($refusals), JSON_THROW_ON_ERROR));
+it('refuses a malformed list of refusals, names what is wrong, and writes nothing', function (mixed $refusals, string $named): void {
+    $tree = ContractTree::withFile(json_encode(contractRefusing($refusals), JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     expect($result['status'])->toBe(1)
         ->and($result['stderr'])->toContain($named)
         ->and($result['stderr'])->toContain('Nothing was generated.')
         ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 })->with([
     'not an object' => ['ADMIT-4', 'object keyed by code'],
     'nothing at all' => [null, 'object keyed by code'],
@@ -449,32 +395,32 @@ it('refuses a malformed list of refusals, names what is wrong, and writes nothin
     ], 'would both be named NotAdmitted'],
 ]);
 
-it('writes nothing where a file would hold more lines than the cap, naming it', function () use ($root): void {
+it('writes nothing where a file would hold more lines than the cap, naming it', function (): void {
     $refusals = [];
 
     for ($at = 1; $at <= LineCap::MAX_LINES; ++$at) {
         $refusals['READ-' . $at] = ['name' => 'NUMBER_' . $at, 'status' => 404, 'description' => 'Raised.'];
     }
 
-    $tree = treeWith($root, json_encode(contractRefusing($refusals), JSON_THROW_ON_ERROR));
+    $tree = ContractTree::withFile(json_encode(contractRefusing($refusals), JSON_THROW_ON_ERROR));
 
-    $result = generateIn($tree);
+    $result = ContractTree::generate($tree);
 
     expect($result['status'])->toBe(1)
         ->and($result['stderr'])->toContain('src/Generated/RefusalCode.php would hold ')
         ->and($result['stderr'])->toContain(sprintf('over the %d a file may hold', LineCap::MAX_LINES))
         ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 });
 
-it('accepts the edges of the statuses a refusal is answered with', function (int $status) use ($root): void {
-    $tree = treeWith($root, json_encode(contractRefusing([
+it('accepts the edges of the statuses a refusal is answered with', function (int $status): void {
+    $tree = ContractTree::withFile(json_encode(contractRefusing([
         'ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => $status, 'description' => 'Raised.'],
     ]), JSON_THROW_ON_ERROR));
 
-    expect(generateIn($tree)['status'])->toBe(0)
+    expect(ContractTree::generate($tree)['status'])->toBe(0)
         ->and(askTheRefusalList($tree, 'RefusalCode::NotAdmitted->status()'))->toBe((string) $status);
 
-    removeTree($tree);
+    ContractTree::remove($tree);
 })->with([400, 599]);
