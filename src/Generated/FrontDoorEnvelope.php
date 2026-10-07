@@ -37,6 +37,6 @@ final class FrontDoorEnvelope
         /** @var Data $data */
         $data = Payload::under(self::KIND, $envelope);
 
-        return new Envelope($envelope->apiVersion, $envelope->kind, $data);
+        return new Envelope($envelope->apiVersion, $envelope->kind, $data, $envelope->host);
     }
 }

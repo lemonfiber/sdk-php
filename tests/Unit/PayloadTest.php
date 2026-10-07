@@ -44,6 +44,17 @@ it('reaches a payload typed by its kind', function (): void {
         ->and($word->data['also_called'])->toBe(['link']);
 });
 
+it('keeps the machine an answer is about when the payload is typed by its kind', function (): void {
+    $beside = WordEnvelope::in(new Envelope(Api::VERSION, 'word', [
+        'word' => 'hardlink',
+        'short' => 'Two names for one set of bytes.',
+        'deep' => null,
+        'also_called' => [],
+    ], 'nas.local'));
+
+    expect($beside->host)->toBe('nas.local');
+});
+
 it('refuses to read an envelope as a kind it does not carry', function (): void {
     $envelope = new Envelope(Api::VERSION, 'log', 'pelican');
 
