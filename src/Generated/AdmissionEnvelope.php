@@ -15,7 +15,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `admission` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{member?: string|null, token: string, until: string}
+ * @phpstan-type Admitted array{member?: string|null, token: string, until: string}
+ * @phpstan-type Data Admitted
  */
 final class AdmissionEnvelope
 {

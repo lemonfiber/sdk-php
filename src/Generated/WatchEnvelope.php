@@ -15,7 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `watch` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{forms: list<string>, reason: string, rehearsed: bool, stopped: bool, would?: array{command: list<string>, every: int, root: string}|null}
+ * @phpstan-type SupervisionReport array{forms: list<string>, reason: string, rehearsed: bool, stopped: bool, would?: Vigil|null}
+ * @phpstan-type Vigil array{command: list<string>, every: int, root: string}
+ * @phpstan-type Data SupervisionReport
  */
 final class WatchEnvelope
 {

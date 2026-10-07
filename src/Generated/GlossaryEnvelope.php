@@ -15,7 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `glossary` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{words: list<array{also_called: list<string>, deep?: string|null, forms: list<string>, short: string, word: string}>}
+ * @phpstan-import-type Term from Shapes
+ * @phpstan-type Vocabulary array{words: list<Term>}
+ * @phpstan-type Data Vocabulary
  */
 final class GlossaryEnvelope
 {

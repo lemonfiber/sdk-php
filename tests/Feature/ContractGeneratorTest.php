@@ -50,8 +50,10 @@ function treeWith(string $root, string $contract): string
     copy($root . GENERATOR, $tree . GENERATOR);
     copy($root . '/scripts/GeneratedSource.php', $tree . '/scripts/GeneratedSource.php');
     copy($root . '/scripts/SchemaTypes.php', $tree . '/scripts/SchemaTypes.php');
+    copy($root . '/scripts/References.php', $tree . '/scripts/References.php');
     copy($root . '/scripts/Refusals.php', $tree . '/scripts/Refusals.php');
     copy($root . '/scripts/KeyCallable.php', $tree . '/scripts/KeyCallable.php');
+    copy($root . '/scripts/ShapePlan.php', $tree . '/scripts/ShapePlan.php');
     copy($root . '/scripts/LineCap.php', $tree . '/scripts/LineCap.php');
     file_put_contents($tree . '/contract/web-api.contract.json', $contract);
     file_put_contents($tree . '/contract/VERSION', "v9.9.9\n");
@@ -444,3 +446,53 @@ it('refuses a malformed list of actions a key may call, names what is wrong, and
         ['action' => 'restart', 'disturbs' => false, 'rehearsal' => true],
     ], '`restart` is listed twice'],
 ]);
+
+/**
+ * A contract whose two kinds carry the definition `$name` as their payload.
+ *
+ * @return array<string, mixed>
+ */
+function contractSharing(string $name): array
+{
+    $kind = static fn(): array => [
+        'type' => 'object',
+        '$defs' => [$name => ['type' => 'object', 'properties' => ['word' => ['type' => 'string']]]],
+        'properties' => [
+            'api_version' => ['type' => 'integer'],
+            'kind' => ['type' => 'string'],
+            'data' => ['$ref' => '#/$defs/' . $name],
+        ],
+        'required' => ['api_version', 'kind', 'data'],
+    ];
+
+    return ['api_version' => 1, 'kinds' => ['word' => $kind(), 'phrase' => $kind()]];
+}
+
+it('names a shape two kinds carry once, and imports it into both', function () use ($root): void {
+    $tree = treeWith($root, json_encode(contractSharing('Said'), JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+    $shapes = (string) file_get_contents($tree . '/src/Generated/Shapes.php');
+    $word = (string) file_get_contents($tree . '/src/Generated/WordEnvelope.php');
+    $phrase = (string) file_get_contents($tree . '/src/Generated/PhraseEnvelope.php');
+
+    expect($result['status'])->toBe(0)
+        ->and($shapes)->toContain('@phpstan-type Said array{word?: string}')
+        ->and($word)->toContain('@phpstan-import-type Said from Shapes')
+        ->and($word)->toContain('@phpstan-type Data Said')
+        ->and($phrase)->toContain('@phpstan-import-type Said from Shapes');
+
+    removeTree($tree);
+});
+
+it('refuses a definition named like a generated class, names it, and writes nothing', function () use ($root): void {
+    $tree = treeWith($root, json_encode(contractSharing('Kind'), JSON_THROW_ON_ERROR));
+
+    $result = generateIn($tree);
+
+    expect($result['status'])->toBe(1)
+        ->and($result['stderr'])->toContain('`Kind`')
+        ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
+
+    removeTree($tree);
+});

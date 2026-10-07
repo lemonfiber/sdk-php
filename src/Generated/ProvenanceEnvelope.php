@@ -15,7 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `provenance` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{services: list<array{digest?: string|null, id: string, image: string, license: string, name: string, pinned: string, upstream: string}>}
+ * @phpstan-type ProvenanceReport array{services: list<ServiceProvenance>}
+ * @phpstan-type ServiceProvenance array{digest?: string|null, id: string, image: string, license: string, name: string, pinned: string, upstream: string}
+ * @phpstan-type Data ProvenanceReport
  */
 final class ProvenanceEnvelope
 {

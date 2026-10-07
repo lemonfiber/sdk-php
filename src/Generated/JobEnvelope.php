@@ -15,7 +15,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `job` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{action: string, job: string}
+ * @phpstan-type Started array{action: string, job: string}
+ * @phpstan-type Data Started
  */
 final class JobEnvelope
 {

@@ -15,7 +15,14 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `wiring` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{unfilled: list<array{by: string, capability: string}>, wired: list<array{by: string, reaches: array{capability: string, how: 'asked', origins: array<string, array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}|array{named: string, origin: 'overridden', replaced: array{from: mixed, value?: string|null, withheld: bool}}|array{named: string, origin: 'orphaned'}>, services: list<string>, settled: array{settled: 'outright'}|array{settled: 'each'}|array{claimants: list<string>, settled: 'contested'}|array{over: list<string>, settled: 'chosen', whose: 'stack'|'operator', why?: string|null}|array{settled: 'unfilled'}}|array{how: 'by-name', service: string, why: string}}>}
+ * @phpstan-import-type Unfilled from Shapes
+ * @phpstan-import-type ValueOrigin from Shapes
+ * @phpstan-type Reaches array{capability: string, how: 'asked', origins: array<string, ValueOrigin>, services: list<string>, settled: WiringSettled}|array{how: 'by-name', service: string, why: string}
+ * @phpstan-type Whose 'stack'|'operator'
+ * @phpstan-type Wired array{by: string, reaches: Reaches}
+ * @phpstan-type WiringReport array{unfilled: list<Unfilled>, wired: list<Wired>}
+ * @phpstan-type WiringSettled array{settled: 'outright'}|array{settled: 'each'}|array{claimants: list<string>, settled: 'contested'}|array{over: list<string>, settled: 'chosen', whose: Whose, why?: string|null}|array{settled: 'unfilled'}
+ * @phpstan-type Data WiringReport
  */
 final class WiringEnvelope
 {

@@ -15,7 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `reset` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{confirmed: bool, rehearsed: bool, reverted: list<array{diff: string, path: string}>, reverted_connections: list<string>}
+ * @phpstan-import-type StackEdit from Shapes
+ * @phpstan-type ResetReport array{confirmed: bool, rehearsed: bool, reverted: list<StackEdit>, reverted_connections: list<string>}
+ * @phpstan-type Data ResetReport
  */
 final class ResetEnvelope
 {

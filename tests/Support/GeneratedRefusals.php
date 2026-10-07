@@ -19,6 +19,7 @@ use Lemonfiber\Sdk\Generated\RefusalDescription;
 use Lemonfiber\Sdk\Generated\RefusalStatus;
 use Lemonfiber\Sdk\Scripts\GeneratedSource;
 use Lemonfiber\Sdk\Scripts\Refusals;
+use Lemonfiber\Sdk\Scripts\ShapePlan;
 use LogicException;
 
 use function random_bytes;
@@ -57,7 +58,7 @@ final class GeneratedRefusals
         $vendored = $artefact['refusals'] ?? [];
         $artefact['refusals'] = (is_array($vendored) ? $vendored : []) + [$code => $refusal];
 
-        $source = new GeneratedSource(self::ARTEFACT, 'the vendored contract and one refusal more', Contract::API_VERSION);
+        $source = new GeneratedSource(self::ARTEFACT, 'the vendored contract and one refusal more', Contract::API_VERSION, new ShapePlan([], []));
         $listed = new Refusals()->listed($artefact);
 
         foreach ([$source->refusalEnum($listed), $source->refusalStatusClass($listed), $source->refusalDescriptionClass($listed)] as $written) {

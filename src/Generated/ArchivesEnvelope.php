@@ -15,7 +15,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `archives` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{archives: list<string>}
+ * @phpstan-type Listing array{archives: list<string>}
+ * @phpstan-type Data Listing
  */
 final class ArchivesEnvelope
 {

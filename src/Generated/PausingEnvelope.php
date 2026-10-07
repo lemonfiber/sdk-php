@@ -15,7 +15,11 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `pausing` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{asked: 'pause'|'resume', caution?: string|null, clients: list<array{client: string, now?: 'fetching'|'stopped'|null, unreached?: string|null, was?: 'fetching'|'stopped'|null}>, rehearsed: bool}
+ * @phpstan-import-type Pulling from Shapes
+ * @phpstan-type PausedClient array{client: string, now?: Pulling|null, unreached?: string|null, was?: Pulling|null}
+ * @phpstan-type Pausing 'pause'|'resume'
+ * @phpstan-type PausingReport array{asked: Pausing, caution?: string|null, clients: list<PausedClient>, rehearsed: bool}
+ * @phpstan-type Data PausingReport
  */
 final class PausingEnvelope
 {

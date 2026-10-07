@@ -15,7 +15,13 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `clients` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{devices: list<array{caution?: string|null, client: string, deep_link?: string|null, device: string, instead?: string|null, open_source: bool, support: 'good'|'workable'|'poor'|'fallback'}>, nothing_is_installed: string, only_at_home: string, straining?: array{caution: string, instead: string, preset: string}|null, trouble: list<array{causes: list<array{because: string, fix: string, tell: string}>, symptom: string}>}
+ * @phpstan-type Cause array{because: string, fix: string, tell: string}
+ * @phpstan-type Device array{caution?: string|null, client: string, deep_link?: string|null, device: string, instead?: string|null, open_source: bool, support: Support}
+ * @phpstan-type Guidance array{devices: list<Device>, nothing_is_installed: string, only_at_home: string, straining?: Straining|null, trouble: list<Trouble>}
+ * @phpstan-type Straining array{caution: string, instead: string, preset: string}
+ * @phpstan-type Support 'good'|'workable'|'poor'|'fallback'
+ * @phpstan-type Trouble array{causes: list<Cause>, symptom: string}
+ * @phpstan-type Data Guidance
  */
 final class ClientsEnvelope
 {

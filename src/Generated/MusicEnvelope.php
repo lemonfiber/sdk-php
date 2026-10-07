@@ -15,7 +15,11 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `music` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{choice: array{format: string, means: string, note: string, scope: string, size_per_hour: string, targets: string}, disposition: 'shown'|'recorded'|'rehearsed'|'held'|'reapplied'|'would-reapply', outcome?: array{state: 'started'}|array{state: 'not-started'}|array{detail: string, state: 'failed'}|null, rehearsed: bool}
+ * @phpstan-import-type Disposition from Shapes
+ * @phpstan-import-type MusicChoice from Shapes
+ * @phpstan-import-type Triggered from Shapes
+ * @phpstan-type MusicReport array{choice: MusicChoice, disposition: Disposition, outcome?: Triggered|null, rehearsed: bool}
+ * @phpstan-type Data MusicReport
  */
 final class MusicEnvelope
 {

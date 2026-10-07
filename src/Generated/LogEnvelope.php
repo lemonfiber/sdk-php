@@ -15,7 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `log` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{at?: string|null, level?: 'trace'|'debug'|'info'|'warn'|'error'|'fatal'|null, line: string, service: string, stream: 'stdout'|'stderr'}
+ * @phpstan-type LogLevel 'trace'|'debug'|'info'|'warn'|'error'|'fatal'
+ * @phpstan-type LogLine array{at?: string|null, level?: LogLevel|null, line: string, service: string, stream: Stream}
+ * @phpstan-type Stream 'stdout'|'stderr'
+ * @phpstan-type Data LogLine
  */
 final class LogEnvelope
 {

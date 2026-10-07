@@ -15,7 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `backup` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{pace: array{brisk: bool, budget: int, moved: int}, path: string, pruned: list<string>, rehearsed: bool, scope: array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project: string, scope: 'existing', trees: list<array{archive_path: string, host_path: string}>}, sensitive: bool}
+ * @phpstan-import-type Scope from Shapes
+ * @phpstan-type BackupReport array{pace: Pace, path: string, pruned: list<string>, rehearsed: bool, scope: Scope, sensitive: bool}
+ * @phpstan-type Pace array{brisk: bool, budget: int, moved: int}
+ * @phpstan-type Data BackupReport
  */
 final class BackupEnvelope
 {

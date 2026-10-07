@@ -15,7 +15,12 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `news-items` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{problems: list<array{check: string, onset: string, summary: string}>, requests: list<array{by: string, number: int, title?: string|null}>, unread: list<'updates'|'requests'|'problems'>, updates: list<array{delivers?: string|null, version: string}>}
+ * @phpstan-import-type NewsKind from Shapes
+ * @phpstan-type News array{problems: list<NewsProblem>, requests: list<NewsRequest>, unread: list<NewsKind>, updates: list<NewsUpdate>}
+ * @phpstan-type NewsProblem array{check: string, onset: string, summary: string}
+ * @phpstan-type NewsRequest array{by: string, number: int, title?: string|null}
+ * @phpstan-type NewsUpdate array{delivers?: string|null, version: string}
+ * @phpstan-type Data News
  */
 final class NewsItemsEnvelope
 {

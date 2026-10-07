@@ -15,7 +15,12 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `hosting` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{caveat?: string|null, changed?: array{installed: bool, name: string, rehearsed: bool, started: bool, touched: list<string>}|null, commands: list<array{command: string, definition?: string|null, guarantees: string, missing?: string|null, name: string, output?: string|null, runs?: string|null, standing: 'not-hosted'|'hosted'|'installed-unverified'|'stopped'|'orphaned'|'unsupported'}>, instruction?: string|null, manager: 'launchd'|'systemd'|'unsupported', rehearsed: bool}
+ * @phpstan-type Changed array{installed: bool, name: string, rehearsed: bool, started: bool, touched: list<string>}
+ * @phpstan-type HostedCommand array{command: string, definition?: string|null, guarantees: string, missing?: string|null, name: string, output?: string|null, runs?: string|null, standing: Hosting}
+ * @phpstan-type Hosting 'not-hosted'|'hosted'|'installed-unverified'|'stopped'|'orphaned'|'unsupported'
+ * @phpstan-type HostingReport array{caveat?: string|null, changed?: Changed|null, commands: list<HostedCommand>, instruction?: string|null, manager: Manager, rehearsed: bool}
+ * @phpstan-type Manager 'launchd'|'systemd'|'unsupported'
+ * @phpstan-type Data HostingReport
  */
 final class HostingEnvelope
 {

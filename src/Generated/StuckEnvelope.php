@@ -15,7 +15,11 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `stuck` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{incomplete: bool, items: list<array{service: string, stage: 'not-monitored'|'monitored'|'searching'|'found'|'grabbed'|'downloading'|'downloaded'|'importing'|'imported'|'available', title: string}>, unsupported?: list<array{because: string, what: string}>}
+ * @phpstan-import-type Stage from Shapes
+ * @phpstan-import-type UnsupportedReport from Shapes
+ * @phpstan-type StuckEntry array{service: string, stage: Stage, title: string}
+ * @phpstan-type StuckReport array{incomplete: bool, items: list<StuckEntry>, unsupported?: list<UnsupportedReport>}
+ * @phpstan-type Data StuckReport
  */
 final class StuckEnvelope
 {

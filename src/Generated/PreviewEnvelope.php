@@ -15,7 +15,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `preview` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{dropped: list<array{needs: 'usenet'|'torrent', profile: string}>, filtered: list<array{forms: list<string>, id: string, name: string, needs: 'usenet'|'torrent', profile: string}>, footprint: array{estimated_mib: int, unestimated: list<string>}, forms: list<string>, profiles: list<string>, running?: list<string>|null, services: list<string>}
+ * @phpstan-import-type Plan from Shapes
+ * @phpstan-type Data Plan
  */
 final class PreviewEnvelope
 {

@@ -15,7 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `adoption` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{back_up: list<string>, backed_up?: string|null, project?: string|null, refusal?: string|null, rehearsed: bool, stance: 'unchanged'|'pending'|'blocked'|'applied', upgrades: list<array{backup_first: bool, because: string, existing: string, ours: string, refused: bool, service: string, verdict: string}>}
+ * @phpstan-import-type CarryingReport from Shapes
+ * @phpstan-import-type Stance from Shapes
+ * @phpstan-type AdoptReport array{back_up: list<string>, backed_up?: string|null, project?: string|null, refusal?: string|null, rehearsed: bool, stance: Stance, upgrades: list<CarryingReport>}
+ * @phpstan-type Data AdoptReport
  */
 final class AdoptionEnvelope
 {

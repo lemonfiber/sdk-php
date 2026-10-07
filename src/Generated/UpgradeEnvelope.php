@@ -15,7 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `upgrade` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{confirmed: bool, media: list<array{media_type: string, outcome?: array{state: 'started'}|array{state: 'not-started'}|array{detail: string, state: 'failed'}|null, preset: string, size_per_hour: string}>, rehearsed: bool}
+ * @phpstan-import-type Triggered from Shapes
+ * @phpstan-type UpgradeMedia array{media_type: string, outcome?: Triggered|null, preset: string, size_per_hour: string}
+ * @phpstan-type UpgradeReport array{confirmed: bool, media: list<UpgradeMedia>, rehearsed: bool}
+ * @phpstan-type Data UpgradeReport
  */
 final class UpgradeEnvelope
 {

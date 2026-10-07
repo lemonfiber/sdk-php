@@ -15,7 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `substitution` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{agreement: string, applied: bool, rehearsed: bool, substitution: array{asked_by: list<string>, capability: string, leaves_unfilled: list<array{by: string, capability: string}>, now: string, setting: string, was?: string|null, why?: string|null}}
+ * @phpstan-import-type Unfilled from Shapes
+ * @phpstan-type Substitution array{asked_by: list<string>, capability: string, leaves_unfilled: list<Unfilled>, now: string, setting: string, was?: string|null, why?: string|null}
+ * @phpstan-type SubstitutionReport array{agreement: string, applied: bool, rehearsed: bool, substitution: Substitution}
+ * @phpstan-type Data SubstitutionReport
  */
 final class SubstitutionEnvelope
 {

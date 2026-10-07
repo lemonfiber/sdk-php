@@ -15,7 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `capabilities` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{capabilities: array<string, 'available'|'unconfigured'|'unpermitted'>}
+ * @phpstan-type Capabilities array{capabilities: array<string, CapabilityState>}
+ * @phpstan-type CapabilityState 'available'|'unconfigured'|'unpermitted'
+ * @phpstan-type Data Capabilities
  */
 final class CapabilitiesEnvelope
 {

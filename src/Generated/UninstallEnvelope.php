@@ -15,7 +15,18 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `uninstall` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{manifest: array{agreement: string, backup?: string|null, bytes: int, coming: list<array{name: string, progress: int}>, confidence: array{complete: bool, unread: list<string>}, foreign: list<array{at: string, bytes: int, files: int}>, items: list<array{bytes?: int|null, kept?: string|null, name: string, secret: bool, sort: 'container'|'network'|'image'|'path', what: string}>, keeps: string, outside: list<array{by_hand: string, found: bool, what: string, why: string}>, removes: string, tier: 'stop'|'services'|'configuration'|'media', volume?: string|null}, rehearsed: bool, removal: array{state: 'surveyed'}|array{state: 'confirmed'}|array{credentials: list<string>, gone: list<string>, state: 'complete'}|array{credentials: list<string>, gone: list<string>, left: list<array{by_hand: string, name: string, why: string}>, state: 'partial'}}
+ * @phpstan-type Coming array{name: string, progress: int}
+ * @phpstan-type Foreign array{at: string, bytes: int, files: int}
+ * @phpstan-type Item array{bytes?: int|null, kept?: string|null, name: string, secret: bool, sort: Sort, what: string}
+ * @phpstan-type Outside array{by_hand: string, found: bool, what: string, why: string}
+ * @phpstan-type Sort 'container'|'network'|'image'|'path'
+ * @phpstan-type Tier 'stop'|'services'|'configuration'|'media'
+ * @phpstan-type Uninstall array{manifest: UninstallManifest, rehearsed: bool, removal: UninstallRemoval}
+ * @phpstan-type UninstallConfidence array{complete: bool, unread: list<string>}
+ * @phpstan-type UninstallLeft array{by_hand: string, name: string, why: string}
+ * @phpstan-type UninstallManifest array{agreement: string, backup?: string|null, bytes: int, coming: list<Coming>, confidence: UninstallConfidence, foreign: list<Foreign>, items: list<Item>, keeps: string, outside: list<Outside>, removes: string, tier: Tier, volume?: string|null}
+ * @phpstan-type UninstallRemoval array{state: 'surveyed'}|array{state: 'confirmed'}|array{credentials: list<string>, gone: list<string>, state: 'complete'}|array{credentials: list<string>, gone: list<string>, left: list<UninstallLeft>, state: 'partial'}
+ * @phpstan-type Data Uninstall
  */
 final class UninstallEnvelope
 {

@@ -15,7 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `stop-seeding` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{agreement: string, download: array{bytes: int, consequence?: string|null, name: string, standing: array{standing: 'never_imported'}|array{ratio: int, standing: 'seeding'}|array{standing: 'left_alone'}}, goes: string, gone?: array{bytes: int, name: string, rehearsed: bool}|null, rehearsed: bool}
+ * @phpstan-import-type Candidate from Shapes
+ * @phpstan-type Gone array{bytes: int, name: string, rehearsed: bool}
+ * @phpstan-type Letting array{agreement: string, download: Candidate, goes: string, gone?: Gone|null, rehearsed: bool}
+ * @phpstan-type Data Letting
  */
 final class StopSeedingEnvelope
 {

@@ -15,7 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `setup` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{data_root?: string|null, outcome: 'applied'|'abandoned'|'already-set-up', protocols: array{torrent: bool, usenet: bool}, service_user?: string|null}
+ * @phpstan-type Protocols array{torrent: bool, usenet: bool}
+ * @phpstan-type SetupOutcome 'applied'|'abandoned'|'already-set-up'
+ * @phpstan-type SetupReport array{data_root?: string|null, outcome: SetupOutcome, protocols: Protocols, service_user?: string|null}
+ * @phpstan-type Data SetupReport
  */
 final class SetupEnvelope
 {
