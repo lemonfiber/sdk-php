@@ -15,7 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `playing` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{available: bool, findings: list<string>, member: string, sessions: list<array{device: string, episode?: int|null, medium: 'film'|'series'|'other', member: string, member_id: string, paused: bool, season?: int|null, series?: string|null, title: string}>}
+ * @phpstan-import-type Medium from Shapes
+ * @phpstan-type Playback array{device: string, episode?: int|null, medium: Medium, member: string, member_id: string, paused: bool, season?: int|null, series?: string|null, title: string}
+ * @phpstan-type PlayingReport array{available: bool, findings: list<string>, member: string, sessions: list<Playback>}
+ * @phpstan-type Data PlayingReport
  */
 final class PlayingEnvelope
 {

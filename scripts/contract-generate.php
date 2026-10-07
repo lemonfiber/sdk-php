@@ -297,6 +297,40 @@ final readonly class ContractGenerator
      */
     private function planned(array $kinds, array $refusals, array $keyCallable, string $stamp, int $version): ?array
     {
+        $found = $this->classesOf($kinds);
+        $plan = $found === null ? null : $this->planOf($found['classes']);
+
+        if ($found === null || ! $plan instanceof ShapePlan) {
+            return null;
+        }
+
+        ['named' => $named, 'classes' => $classes] = $found;
+        $source = new GeneratedSource(self::ARTEFACT, $stamp, $version, $plan);
+        $files = [self::OUTPUT . '/' . ShapePlan::SHARED . '.php' => $source->shapesClass()];
+
+        foreach ($named as $name => $kind) {
+            $files[self::OUTPUT . '/' . $name . 'Envelope.php'] = $source->envelopeClass($kind, $name, $classes[$name . 'Envelope']);
+        }
+
+        $files[self::OUTPUT . '/Kind.php'] = $source->kindEnum($named);
+        $files[self::OUTPUT . '/RefusalCode.php'] = $source->refusalEnum($refusals);
+        $files[self::OUTPUT . '/RefusalStatus.php'] = $source->refusalStatusClass($refusals);
+        $files[self::OUTPUT . '/RefusalDescription.php'] = $source->refusalDescriptionClass($refusals);
+        $files[self::OUTPUT . '/KeyCallableAction.php'] = $source->keyCallableEnum($keyCallable);
+        $files[self::OUTPUT . '/Contract.php'] = $source->contractClass();
+
+        return ['named' => $named, 'refusals' => count($refusals), 'files' => $files];
+    }
+
+    /**
+     * Each kind's envelope class and the kind each class name came from, or
+     * nothing when a kind cannot be written at all.
+     *
+     * @param  array<mixed, mixed>  $kinds
+     * @return array{named: array<string, string>, classes: array<string, array<mixed, mixed>>}|null
+     */
+    private function classesOf(array $kinds): ?array
+    {
         $named = [];
         $classes = [];
 
@@ -317,29 +351,23 @@ final readonly class ContractGenerator
             $classes[$name . 'Envelope'] = $schema;
         }
 
+        return ['named' => $named, 'classes' => $classes];
+    }
+
+    /**
+     * Where each shape the envelope classes reach is named, or nothing when one cannot be named.
+     *
+     * @param  array<string, array<mixed, mixed>>  $classes
+     */
+    private function planOf(array $classes): ?ShapePlan
+    {
         try {
-            $plan = new ShapePlan($classes, [...array_keys($classes), ...self::CLASSES]);
+            return new ShapePlan($classes, [...array_keys($classes), ...self::CLASSES]);
         } catch (UnexpectedValueException $unnamed) {
             $this->refuse($unnamed->getMessage() . ' Nothing was generated.');
 
             return null;
         }
-
-        $source = new GeneratedSource(self::ARTEFACT, $stamp, $version, $plan);
-        $files = [self::OUTPUT . '/' . ShapePlan::SHARED . '.php' => $source->shapesClass()];
-
-        foreach ($named as $name => $kind) {
-            $files[self::OUTPUT . '/' . $name . 'Envelope.php'] = $source->envelopeClass($kind, $name, $classes[$name . 'Envelope']);
-        }
-
-        $files[self::OUTPUT . '/Kind.php'] = $source->kindEnum($named);
-        $files[self::OUTPUT . '/RefusalCode.php'] = $source->refusalEnum($refusals);
-        $files[self::OUTPUT . '/RefusalStatus.php'] = $source->refusalStatusClass($refusals);
-        $files[self::OUTPUT . '/RefusalDescription.php'] = $source->refusalDescriptionClass($refusals);
-        $files[self::OUTPUT . '/KeyCallableAction.php'] = $source->keyCallableEnum($keyCallable);
-        $files[self::OUTPUT . '/Contract.php'] = $source->contractClass();
-
-        return ['named' => $named, 'refusals' => count($refusals), 'files' => $files];
     }
 
     /**

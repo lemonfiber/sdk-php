@@ -93,7 +93,11 @@ final class ShapePlan
     {
         $users = $this->users[$name] ?? [];
 
-        return count($users) === 1 ? $users[0] : ($users === [] ? null : self::SHARED);
+        if ($users === []) {
+            return null;
+        }
+
+        return count($users) === 1 ? $users[0] : self::SHARED;
     }
 
     /**
@@ -170,6 +174,8 @@ final class ShapePlan
     }
 
     /**
+     * Takes in a kind's definitions, and counts the kind as a user of each its payload reaches.
+     *
      * @param  array<mixed, mixed>  $schema
      * @param  list<string>  $taken
      *
@@ -181,24 +187,51 @@ final class ShapePlan
         $defs = is_array($defs) ? $defs : [];
 
         foreach ($defs as $name => $definition) {
-            if (! is_string($name) || ! is_array($definition)) {
-                continue;
+            if (is_string($name) && is_array($definition)) {
+                $this->define($kind, $name, $definition, $taken);
             }
-
-            if (in_array($name, $taken, true) || $name === self::PAYLOAD || $name === self::SHARED) {
-                throw new UnexpectedValueException(sprintf('The definition `%s`, carried by `%s`, takes a name a generated class or alias already holds.', $name, $kind));
-            }
-
-            if (array_key_exists($name, $this->schemas) && json_encode($this->schemas[$name]) !== json_encode($definition)) {
-                throw new UnexpectedValueException(sprintf('The definition `%s` is carried by more than one kind as two different shapes.', $name));
-            }
-
-            $this->schemas[$name] = $definition;
-            $this->refers[$name] = $this->referencesIn($definition);
         }
 
         $properties = $schema['properties'] ?? null;
         $payload = is_array($properties) && is_array($properties['data'] ?? null) ? $properties['data'] : [];
+
+        foreach ($this->reached($payload, $defs) as $name) {
+            $this->users[$name][] = $kind;
+            sort($this->users[$name]);
+        }
+    }
+
+    /**
+     * Takes in one definition a kind carries.
+     *
+     * @param  array<mixed, mixed>  $definition
+     * @param  list<string>  $taken
+     *
+     * @throws UnexpectedValueException naming a definition that takes a name already held, or one carried as two shapes
+     */
+    private function define(string $kind, string $name, array $definition, array $taken): void
+    {
+        if (in_array($name, $taken, true) || $name === self::PAYLOAD || $name === self::SHARED) {
+            throw new UnexpectedValueException(sprintf('The definition `%s`, carried by `%s`, takes a name a generated class or alias already holds.', $name, $kind));
+        }
+
+        if (array_key_exists($name, $this->schemas) && json_encode($this->schemas[$name]) !== json_encode($definition)) {
+            throw new UnexpectedValueException(sprintf('The definition `%s` is carried by more than one kind as two different shapes.', $name));
+        }
+
+        $this->schemas[$name] = $definition;
+        $this->refers[$name] = $this->referencesIn($definition);
+    }
+
+    /**
+     * Every definition a payload reaches, through the definitions it refers to.
+     *
+     * @param  array<mixed, mixed>  $payload
+     * @param  array<mixed, mixed>  $defs
+     * @return list<string>
+     */
+    private function reached(array $payload, array $defs): array
+    {
         $pending = $this->referencesIn($payload);
         $reached = [];
 
@@ -214,10 +247,7 @@ final class ShapePlan
             $pending = [...$pending, ...(is_array($definition) ? $this->referencesIn($definition) : [])];
         }
 
-        foreach ($reached as $name) {
-            $this->users[$name][] = $kind;
-            sort($this->users[$name]);
-        }
+        return $reached;
     }
 
     /**

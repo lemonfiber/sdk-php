@@ -15,9 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `held` envelope, shaped as the contract describes it.
  *
+ * @phpstan-import-type Medium from Shapes
  * @phpstan-type Held array{id: string, medium: Medium, title: string, year?: int|null}
  * @phpstan-type HeldReport array{available: bool, findings: list<string>, holdings: list<Held>, id: string, member: string, rehearsed: bool}
- * @phpstan-type Medium 'film'|'series'|'other'
  * @phpstan-type Data HeldReport
  */
 final class HeldEnvelope

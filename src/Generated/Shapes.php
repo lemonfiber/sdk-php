@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 9b0a1674c40c22a453816cf6f0cbed3227047526, api_version 1.
+// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -41,6 +41,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type HouseholdReport array{allows?: string|null, available: bool, filtering?: string|null, findings: list<string>, members: list<HouseholdMember>, policy?: Policy|null, rehearsed: bool}
  * @phpstan-type KeyPurpose 'home-assistant'|'mcp'|'other'
  * @phpstan-type Line array{detail: string, said: string, step: WalkthroughStep}
+ * @phpstan-type Medium 'film'|'series'|'other'
  * @phpstan-type MemberAccess array{administrator: bool, age_limit?: int|null, disabled: bool, every_library: bool, libraries: list<string>, rated?: Rated|null, restriction: Restriction, unrated: Unrated}
  * @phpstan-type MemberAsking array{films: Counted, frees_up?: string|null, policy: Policy, standing: AskingStanding, television: Counted}
  * @phpstan-type MemberRequest array{estimate?: Estimate|null, id: int, media?: string|null, refused?: Refused|null, state?: RequestState|null, title?: string|null, waiting_days?: int|null}
