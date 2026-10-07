@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Source: 3ab93b3552404d8ac7227b81bdca7cbed17f3bb8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,18 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `credentials` envelope, shaped as the contract describes it.
  *
- * @phpstan-import-type ValueOrigin from Shapes
- * @phpstan-type CredentialHeld array{advisory?: string|null, consumers: list<string>, fingerprint?: string|null, from: ValueOrigin, location: string, name: string, origin: Origin, setting: string, state: CredentialState}
- * @phpstan-type CredentialReach array{reach: 'updated'}|array{detail: string, reach: 'pending'}|array{detail: string, reach: 'failed'}
- * @phpstan-type CredentialState 'absent'|'active'|'stale'|'invalid'|'rotating'|'superseded'
- * @phpstan-type Inventory array{held: list<CredentialHeld>, protection: Protection, rehearsed: bool, revealed?: Revealed|null, rotated?: Rotation|null}
- * @phpstan-type Origin 'operator'|'service'|'lemonfiber'
- * @phpstan-type Propagation array{consumer: string, reach: CredentialReach}
- * @phpstan-type Protection array{against: list<string>, not_against: list<string>, summary: string}
- * @phpstan-type Revealed array{name: string, value?: string|null, warning: string}
- * @phpstan-type Rotation array{consumers: list<Propagation>, credential: string, settled: Settled}
- * @phpstan-type Settled array{observed: string, settled: 'replaced'}|array{detail: string, settled: 'refused'}|array{detail: string, settled: 'unproven'}|array{detail: string, settled: 'replaced-unproven'}|array{afterwards: list<string>, detail: string, location: string, settled: 'rehearsed'}|array{known: list<string>, settled: 'unknown'}|array{detail: string, settled: 'elsewhere'}
- * @phpstan-type Data Inventory
+ * @phpstan-type Data array{held: list<array{advisory?: string|null, consumers: list<string>, fingerprint?: string|null, from: array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}|array{named: string, origin: 'overridden', replaced: array{from: mixed, value?: string|null, withheld: bool}}|array{named: string, origin: 'orphaned'}, location: string, name: string, origin: 'operator'|'service'|'lemonfiber', setting: string, state: 'absent'|'active'|'stale'|'invalid'|'rotating'|'superseded'}>, protection: array{against: list<string>, not_against: list<string>, summary: string}, rehearsed: bool, revealed?: array{name: string, value?: string|null, warning: string}|null, rotated?: array{consumers: list<array{consumer: string, reach: array{reach: 'updated'}|array{detail: string, reach: 'pending'}|array{detail: string, reach: 'failed'}}>, credential: string, settled: array{observed: string, settled: 'replaced'}|array{detail: string, settled: 'refused'}|array{detail: string, settled: 'unproven'}|array{detail: string, settled: 'replaced-unproven'}|array{afterwards: list<string>, detail: string, location: string, settled: 'rehearsed'}|array{known: list<string>, settled: 'unknown'}|array{detail: string, settled: 'elsewhere'}}|null}
  */
 final class CredentialsEnvelope
 {

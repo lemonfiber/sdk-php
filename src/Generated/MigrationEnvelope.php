@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Source: 3ab93b3552404d8ac7227b81bdca7cbed17f3bb8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,16 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `migration` envelope, shaped as the contract describes it.
  *
- * @phpstan-import-type CarryingReport from Shapes
- * @phpstan-import-type ConflictReport from Shapes
- * @phpstan-import-type MovedReport from Shapes
- * @phpstan-import-type UnsupportedReport from Shapes
- * @phpstan-type LinkingReport array{because: string, cost: string, filesystems: list<string>, forced: bool, links: bool, remedy: string}
- * @phpstan-type MigrationReport array{beside: list<MovedReport>, carrying: list<CarryingReport>, conflicts: list<ConflictReport>, linking?: LinkingReport|null, modes: list<ModeReport>, not_carried: list<UnsupportedReport>, read: bool, standing: list<StandingReport>, unsupported: list<UnsupportedReport>}
- * @phpstan-type ModeReport array{disturbs: bool, mode: string, preselected: bool, what: string}
- * @phpstan-type OccupantReport array{adoptable: bool, ports: list<int>, running: bool, service: string}
- * @phpstan-type StandingReport array{project: string, services: list<OccupantReport>}
- * @phpstan-type Data MigrationReport
+ * @phpstan-type Data array{beside: list<array{from: int, service: string, to: int}>, carrying: list<array{backup_first: bool, because: string, existing: string, ours: string, refused: bool, service: string, verdict: string}>, conflicts: list<array{held_by: string, port: int, wanted_by: string}>, linking?: array{because: string, cost: string, filesystems: list<string>, forced: bool, links: bool, remedy: string}|null, modes: list<array{disturbs: bool, mode: string, preselected: bool, what: string}>, not_carried: list<array{because: string, what: string}>, read: bool, standing: list<array{project: string, services: list<array{adoptable: bool, ports: list<int>, running: bool, service: string}>}>, unsupported: list<array{because: string, what: string}>}
  */
 final class MigrationEnvelope
 {

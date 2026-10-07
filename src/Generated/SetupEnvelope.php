@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Source: 3ab93b3552404d8ac7227b81bdca7cbed17f3bb8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,10 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `setup` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Protocols array{torrent: bool, usenet: bool}
- * @phpstan-type SetupOutcome 'applied'|'abandoned'|'already-set-up'
- * @phpstan-type SetupReport array{data_root?: string|null, outcome: SetupOutcome, protocols: Protocols, service_user?: string|null}
- * @phpstan-type Data SetupReport
+ * @phpstan-type Data array{data_root?: string|null, outcome: 'applied'|'abandoned'|'already-set-up', protocols: array{torrent: bool, usenet: bool}, service_user?: string|null}
  */
 final class SetupEnvelope
 {

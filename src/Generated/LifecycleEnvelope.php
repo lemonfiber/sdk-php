@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Source: 3ab93b3552404d8ac7227b81bdca7cbed17f3bb8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,14 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `lifecycle` envelope, shaped as the contract describes it.
  *
- * @phpstan-import-type Condition from Shapes
- * @phpstan-import-type ConflictReport from Shapes
- * @phpstan-import-type Plan from Shapes
- * @phpstan-import-type Service from Shapes
- * @phpstan-import-type StackEdit from Shapes
- * @phpstan-type LifecycleReport array{action: string, command: list<string>, condition?: Condition|null, forwarding?: string|null, held?: string|null, plan: Plan, port_conflicts?: list<ConflictReport>, rehearsed: bool, services: list<Service>, stack_edits: list<StackEdit>, status?: int|null, switched?: Switched|null}
- * @phpstan-type Switched array{kept: list<string>, started: list<string>, stop_command?: list<string>|null, stopped: list<string>}
- * @phpstan-type Data LifecycleReport
+ * @phpstan-type Data array{action: string, command: list<string>, condition?: 'inactive'|'degraded'|'partial'|'active'|null, forwarding?: string|null, held?: string|null, plan: array{dropped: list<array{needs: 'usenet'|'torrent', profile: string}>, filtered: list<array{forms: list<string>, id: string, name: string, needs: 'usenet'|'torrent', profile: string}>, footprint: array{estimated_mib: int, unestimated: list<string>}, forms: list<string>, profiles: list<string>, running?: list<string>|null, services: list<string>}, port_conflicts?: list<array{held_by: string, port: int, wanted_by: string}>, rehearsed: bool, services: list<array{criticality: 'critical'|'core'|'important'|'enhancing'|'optional', depends_on: list<string>, describes: string, exit?: int|null, forms: list<string>, id: string, name: string, profile: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>, stack_edits: list<array{diff: string, path: string}>, status?: int|null, switched?: array{kept: list<string>, started: list<string>, stop_command?: list<string>|null, stopped: list<string>}|null}
  */
 final class LifecycleEnvelope
 {

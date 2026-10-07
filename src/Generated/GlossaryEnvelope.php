@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Source: 3ab93b3552404d8ac7227b81bdca7cbed17f3bb8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,9 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `glossary` envelope, shaped as the contract describes it.
  *
- * @phpstan-import-type Term from Shapes
- * @phpstan-type Vocabulary array{words: list<Term>}
- * @phpstan-type Data Vocabulary
+ * @phpstan-type Data array{words: list<array{also_called: list<string>, deep?: string|null, forms: list<string>, short: string, word: string}>}
  */
 final class GlossaryEnvelope
 {

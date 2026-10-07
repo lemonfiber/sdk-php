@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Source: 3ab93b3552404d8ac7227b81bdca7cbed17f3bb8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,9 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `watch` envelope, shaped as the contract describes it.
  *
- * @phpstan-type SupervisionReport array{forms: list<string>, reason: string, rehearsed: bool, stopped: bool, would?: Vigil|null}
- * @phpstan-type Vigil array{command: list<string>, every: int, root: string}
- * @phpstan-type Data SupervisionReport
+ * @phpstan-type Data array{forms: list<string>, reason: string, rehearsed: bool, stopped: bool, would?: array{command: list<string>, every: int, root: string}|null}
  */
 final class WatchEnvelope
 {

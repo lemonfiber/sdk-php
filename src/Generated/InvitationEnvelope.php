@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Source: 3ab93b3552404d8ac7227b81bdca7cbed17f3bb8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,12 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `invitation` envelope, shaped as the contract describes it.
  *
- * @phpstan-import-type Unrated from Shapes
- * @phpstan-type Invitation array{address: string, applied?: InvitationApplied|null, caution?: string|null, decline?: string|null, hours: int, linked: Linked, name: string, rehearsed: bool, standing: InvitationStanding, suspended: list<string>, withdrawn: list<string>}
- * @phpstan-type InvitationApplied array{filtering: string, libraries: list<string>, limit?: string|null, requesting: Linked, unrated: Unrated}
- * @phpstan-type InvitationStanding 'made'|'waiting'|'joined'|'reset'
- * @phpstan-type Linked 'made'|'not-yet'|'not-tried'
- * @phpstan-type Data Invitation
+ * @phpstan-type Data array{address: string, applied?: array{filtering: string, libraries: list<string>, limit?: string|null, requesting: 'made'|'not-yet'|'not-tried', unrated: 'held-back'|'let-through'}|null, caution?: string|null, decline?: string|null, hours: int, linked: 'made'|'not-yet'|'not-tried', name: string, rehearsed: bool, standing: 'made'|'waiting'|'joined'|'reset', suspended: list<string>, withdrawn: list<string>}
  */
 final class InvitationEnvelope
 {

@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Source: 3ab93b3552404d8ac7227b81bdca7cbed17f3bb8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,11 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `import` envelope, shaped as the contract describes it.
  *
- * @phpstan-import-type Stance from Shapes
- * @phpstan-import-type UnsupportedReport from Shapes
- * @phpstan-type ImportReport array{carried: list<RecordReport>, not_carried: list<UnsupportedReport>, project?: string|null, refusal?: string|null, rehearsed: bool, stance: Stance, would_carry: list<RecordReport>}
- * @phpstan-type RecordReport array{kind: string, name: string, service: string}
- * @phpstan-type Data ImportReport
+ * @phpstan-type Data array{carried: list<array{kind: string, name: string, service: string}>, not_carried: list<array{because: string, what: string}>, project?: string|null, refusal?: string|null, rehearsed: bool, stance: 'unchanged'|'pending'|'blocked'|'applied', would_carry: list<array{kind: string, name: string, service: string}>}
  */
 final class ImportEnvelope
 {

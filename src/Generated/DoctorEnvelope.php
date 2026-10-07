@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Source: 3ab93b3552404d8ac7227b81bdca7cbed17f3bb8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,10 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `doctor` envelope, shaped as the contract describes it.
  *
- * @phpstan-import-type Finding from Shapes
- * @phpstan-type DoctorReport array{findings: list<Finding>, overall: Overall, rehearsed: bool}
- * @phpstan-type Overall 'healthy'|'degraded'|'broken'|'unknown'
- * @phpstan-type Data DoctorReport
+ * @phpstan-type Data array{findings: list<array{category: 'environment'|'storage'|'network'|'vpn'|'credentials'|'services'|'providers'|'queue'|'config', caused_by?: string|null, check: string, onset?: string|null, origin: array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}|array{named: string, origin: 'overridden', replaced: array{from: mixed, value?: string|null, withheld: bool}}|array{named: string, origin: 'orphaned'}, said?: string|null, service?: string|null, service_name?: string|null, title: string, verdict: array{note?: string|null, outcome: 'pass'}|array{cause?: array{cause?: mixed, code: string, detail?: string|null, meaning: string, remedies: list<array{action: string, detail?: string|null}>, severity: 'advisory'|'warning'|'error'|'critical', state: 'actionable'|'guided'|'remediable'|'unknown'|'suppressed', summary: string}|null, code: string, detail?: string|null, meaning: string, outcome: 'warn', remedies: list<array{action: string, detail?: string|null}>, severity: 'advisory'|'warning'|'error'|'critical', state: 'actionable'|'guided'|'remediable'|'unknown'|'suppressed', summary: string}|array{cause?: array{cause?: mixed, code: string, detail?: string|null, meaning: string, remedies: list<array{action: string, detail?: string|null}>, severity: 'advisory'|'warning'|'error'|'critical', state: 'actionable'|'guided'|'remediable'|'unknown'|'suppressed', summary: string}|null, code: string, detail?: string|null, meaning: string, outcome: 'fail', remedies: list<array{action: string, detail?: string|null}>, severity: 'advisory'|'warning'|'error'|'critical', state: 'actionable'|'guided'|'remediable'|'unknown'|'suppressed', summary: string}|array{outcome: 'unverified', reason: string, remedy: array{action: string, detail?: string|null}}|array{outcome: 'skipped', reason: string}}>, overall: 'healthy'|'degraded'|'broken'|'unknown', rehearsed: bool}
  */
 final class DoctorEnvelope
 {

@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Source: 3ab93b3552404d8ac7227b81bdca7cbed17f3bb8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,16 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `update` envelope, shaped as the contract describes it.
  *
- * @phpstan-import-type Notes from Shapes
- * @phpstan-import-type StackEdit from Shapes
- * @phpstan-type Ending 'updated'|'not-fetched'|'not-started'|'not-reached'
- * @phpstan-type Jump 'major'|'minor'|'patch'|'untellable'
- * @phpstan-type StackUpdateReport array{applied: list<UpdateApplied>, backup?: string|null, changelog: Notes, changes: list<UpdateChange>, confirmed: bool, halted?: string|null, in_flight: list<string>, rehearsed: bool, stack_edits: list<StackEdit>, state: UpdateState}
- * @phpstan-type UpdateApplied array{detail?: string|null, ending: Ending, from: string, reversal: UpdateReversal, service: string, to: string}
- * @phpstan-type UpdateChange array{because: string, current: string, irreversible: bool, jump: Jump, refused: bool, service: string, target: string}
- * @phpstan-type UpdateReversal 'rollback'|'restore'
- * @phpstan-type UpdateState 'current'|'updates-available'|'updated'|'partial'|'failed'
- * @phpstan-type Data StackUpdateReport
+ * @phpstan-type Data array{applied: list<array{detail?: string|null, ending: 'updated'|'not-fetched'|'not-started'|'not-reached', from: string, reversal: 'rollback'|'restore', service: string, to: string}>, backup?: string|null, changelog: array{releases: list<array{delivers?: string|null, patches?: string|null, released_on?: string|null, user_facing: bool, version: string, withdrawn?: string|null}>, requirements: array<string, array{feature: string, shipped_in: list<string>, url?: string|null, withdrawn?: bool}>, running?: array{carried?: string|null, delivers?: string|null, groups: list<array{entries: list<array{reference?: string|null, requirements: list<string>, summary: string}>, title: string}>, patches?: string|null, released_on?: string|null, tag: string, user_facing: bool, version: string, withdrawn?: string|null}|null, state: 'current'|'pending'|'stale'}, changes: list<array{because: string, current: string, irreversible: bool, jump: 'major'|'minor'|'patch'|'untellable', refused: bool, service: string, target: string}>, confirmed: bool, halted?: string|null, in_flight: list<string>, rehearsed: bool, stack_edits: list<array{diff: string, path: string}>, state: 'current'|'updates-available'|'updated'|'partial'|'failed'}
  */
 final class UpdateEnvelope
 {

@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Source: 3ab93b3552404d8ac7227b81bdca7cbed17f3bb8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,11 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `stuck` envelope, shaped as the contract describes it.
  *
- * @phpstan-import-type Stage from Shapes
- * @phpstan-import-type UnsupportedReport from Shapes
- * @phpstan-type StuckEntry array{service: string, stage: Stage, title: string}
- * @phpstan-type StuckReport array{incomplete: bool, items: list<StuckEntry>, unsupported?: list<UnsupportedReport>}
- * @phpstan-type Data StuckReport
+ * @phpstan-type Data array{incomplete: bool, items: list<array{service: string, stage: 'not-monitored'|'monitored'|'searching'|'found'|'grabbed'|'downloading'|'downloaded'|'importing'|'imported'|'available', title: string}>, unsupported?: list<array{because: string, what: string}>}
  */
 final class StuckEnvelope
 {

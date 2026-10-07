@@ -1,7 +1,7 @@
 <?php
 
 // Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Source: 3ab93b3552404d8ac7227b81bdca7cbed17f3bb8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,17 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `walkthrough` envelope, shaped as the contract describes it.
  *
- * @phpstan-import-type Line from Shapes
- * @phpstan-import-type WalkthroughStep from Shapes
- * @phpstan-type Handover array{next: list<Next>}
- * @phpstan-type Link 'hardlinked'|'copied'
- * @phpstan-type Next 'more-content'|'household'|'client-apps'
- * @phpstan-type Reason 'no-indexers'|'indexers-failed'|'nothing-matched'|'none-met-the-preset'|'tunnel-down'|'not-grabbed'|'stalled'|'import-failed'|'no-media-server'|'not-visible'
- * @phpstan-type Shape 'pipeline'|'library-only'
- * @phpstan-type Stopped array{logs: list<string>, reason: Reason, remedy: string, step: WalkthroughStep}
- * @phpstan-type WalkthroughReport array{already_here: bool, handover?: Handover|null, in_background: bool, item?: string|null, lines: list<Line>, link?: Link|null, proves: string, shape: Shape, state: WalkthroughState, stopped?: Stopped|null, suggestions: list<string>}
- * @phpstan-type WalkthroughState 'offered'|'skipped'|'searching'|'grabbing'|'downloading'|'importing'|'complete'|'failed'|'abandoned'
- * @phpstan-type Data WalkthroughReport
+ * @phpstan-type Data array{already_here: bool, handover?: array{next: list<'more-content'|'household'|'client-apps'>}|null, in_background: bool, item?: string|null, lines: list<array{detail: string, said: string, step: 'choosing'|'searching'|'grabbing'|'downloading'|'importing'|'scanning'|'available'}>, link?: 'hardlinked'|'copied'|null, proves: string, shape: 'pipeline'|'library-only', state: 'offered'|'skipped'|'searching'|'grabbing'|'downloading'|'importing'|'complete'|'failed'|'abandoned', stopped?: array{logs: list<string>, reason: 'no-indexers'|'indexers-failed'|'nothing-matched'|'none-met-the-preset'|'tunnel-down'|'not-grabbed'|'stalled'|'import-failed'|'no-media-server'|'not-visible', remedy: string, step: 'choosing'|'searching'|'grabbing'|'downloading'|'importing'|'scanning'|'available'}|null, suggestions: list<string>}
  */
 final class WalkthroughEnvelope
 {
