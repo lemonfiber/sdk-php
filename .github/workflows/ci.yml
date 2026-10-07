@@ -273,11 +273,12 @@ jobs:
   # and only once the tests have passed. Mutating code whose tests already fail
   # measures nothing.
   #
-  # A runner per shard, which is a top-level directory of `src`. The work
+  # A runner per entry `what to mutate` lists: a top-level directory of `src`,
+  # or several small ones packed together so they share one start-up. The work
   # separates because the floor is 100: a score of 100 over a set of files is a
   # score of 100 over every part of it, so a shard is judged exactly as it would
-  # have been inside a whole run, and no shard can carry another. What was the
-  # sum of every file's mutants in one process is now the slowest single shard.
+  # have been inside a whole run, and no shard can carry another. No runner holds
+  # more source than the largest shard alone, so the slowest runner is that one.
   #
   # `fail-fast: false`, since the point of a shard is to learn about all of
   # them: cancelling six runners over one escaped mutant means another push to
