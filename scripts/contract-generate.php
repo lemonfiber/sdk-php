@@ -11,6 +11,7 @@ require_once __DIR__ . '/References.php';
 require_once __DIR__ . '/Refusals.php';
 require_once __DIR__ . '/SchemaTypes.php';
 require_once __DIR__ . '/ShapePlan.php';
+require_once __DIR__ . '/VendoredContract.php';
 
 use function array_key_exists;
 use function array_keys;
@@ -23,13 +24,8 @@ use function glob;
 use function implode;
 use function is_array;
 use function is_dir;
-use function is_file;
 use function is_int;
 use function is_string;
-use function json_decode;
-
-use JsonException;
-
 use function ksort;
 use function mkdir;
 use function preg_match;
@@ -47,7 +43,8 @@ use function unlink;
  * Writes this package's contract types from the vendored artefact.
  *
  * Offline and deterministic: the same artefact in, the same files out, so CI
- * regenerates and fails on any difference.
+ * regenerates and fails on any difference. The artefact is read in either
+ * layout, and the same content in either generates the same files.
  *
  * Each kind's schema is the whole envelope and carries the title `Envelope`,
  * which is the Rust type's name. The class is named from the kind instead, so
@@ -62,18 +59,17 @@ final readonly class ContractGenerator
      */
     private const int SPOKEN_VERSION = 1;
 
-    private const string ARTEFACT = 'contract/web-api.contract.json';
-
-    private const string STAMP = 'contract/VERSION';
-
     private const string OUTPUT = 'src/Generated';
 
     /** The classes generated beside the envelopes, whose names no definition may take. */
     private const array CLASSES = ['Kind', 'RefusalCode', 'RefusalStatus', 'RefusalDescription', 'KeyCallableAction', 'Contract'];
 
-    private const int MAX_DEPTH = 64;
+    private VendoredContract $vendored;
 
-    public function __construct(private string $root) {}
+    public function __construct(private string $root)
+    {
+        $this->vendored = new VendoredContract($root);
+    }
 
     public function run(): int
     {
@@ -192,7 +188,7 @@ final readonly class ContractGenerator
             $this->refuse(sprintf(
                 'The vendored contract holds references that resolve to no definition it carries, and every one of them '
                 . 'would have been generated as mixed. In %s: %s. Nothing was generated.',
-                self::ARTEFACT,
+                $this->vendored->source(),
                 implode(', ', $dangling),
             ));
 
@@ -211,57 +207,13 @@ final readonly class ContractGenerator
      */
     private function vendored(): ?array
     {
-        $text = $this->read();
-
-        return $text === null ? null : $this->decoded($text);
-    }
-
-    /**
-     * The vendored file's text, or nothing when there is none to read.
-     */
-    private function read(): ?string
-    {
-        $path = $this->root . '/' . self::ARTEFACT;
-
-        if (! is_file($path)) {
-            $this->refuse('There is no vendored contract at ' . self::ARTEFACT . '. Run `composer contract:sync -- <tag>` first.');
-
-            return null;
-        }
-
-        $text = file_get_contents($path);
-
-        if ($text === false) {
-            $this->refuse(self::ARTEFACT . ' could not be read.');
-
-            return null;
-        }
-
-        return $text;
-    }
-
-    /**
-     * What the vendored text describes, or nothing when it is not an artefact.
-     *
-     * @return array<mixed, mixed>|null
-     */
-    private function decoded(string $text): ?array
-    {
         try {
-            $decoded = json_decode($text, true, self::MAX_DEPTH, JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
-            $this->refuse(self::ARTEFACT . ' is not JSON: ' . $exception->getMessage());
+            return $this->vendored->artefact();
+        } catch (UnexpectedValueException $unreadable) {
+            $this->refuse($unreadable->getMessage());
 
             return null;
         }
-
-        if (! is_array($decoded)) {
-            $this->refuse(self::ARTEFACT . ' is not a contract artefact.');
-
-            return null;
-        }
-
-        return $decoded;
     }
 
     /**
@@ -276,7 +228,7 @@ final readonly class ContractGenerator
         try {
             $planned = $this->planned($kinds, $refusals, $keyCallable, $stamp, $version);
         } catch (UnexpectedValueException $unresolvable) {
-            return $this->refuse(sprintf('In %s: %s Nothing was generated.', self::ARTEFACT, $unresolvable->getMessage()));
+            return $this->refuse(sprintf('In %s: %s Nothing was generated.', $this->vendored->source(), $unresolvable->getMessage()));
         }
 
         if ($planned === null) {
@@ -314,7 +266,7 @@ final readonly class ContractGenerator
         }
 
         ['named' => $named, 'classes' => $classes] = $found;
-        $source = new GeneratedSource(self::ARTEFACT, $stamp, $version, $plan);
+        $source = new GeneratedSource($stamp, $version, $plan);
         $files = [self::OUTPUT . '/' . ShapePlan::SHARED . '.php' => $source->shapesClass()];
 
         foreach ($named as $name => $kind) {
@@ -438,7 +390,7 @@ final readonly class ContractGenerator
      */
     private function stamp(): string
     {
-        $text = file_get_contents($this->root . '/' . self::STAMP);
+        $text = file_get_contents($this->root . '/' . VendoredContract::STAMP);
 
         return $text === false ? 'an unrecorded revision' : trim($text);
     }

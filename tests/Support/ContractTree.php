@@ -13,7 +13,9 @@ use function exec;
 use function fclose;
 use function file_put_contents;
 use function glob;
+use function is_dir;
 use function is_string;
+use function json_encode;
 use function mkdir;
 use function proc_close;
 use function proc_open;
@@ -38,6 +40,28 @@ final class ContractTree
         $tree = self::make();
 
         file_put_contents($tree . '/contract/web-api.contract.json', $contract);
+
+        return $tree;
+    }
+
+    /**
+     * A tree whose contract is the directory holding the files given, each by its path in it.
+     *
+     * @param  array<string, mixed>  $files  a path's contents, written as JSON where they are not text
+     */
+    public static function withDirectory(array $files): string
+    {
+        $tree = self::make();
+
+        foreach ($files as $path => $contents) {
+            $target = $tree . '/contract/web-api/' . $path;
+
+            if (! is_dir(dirname($target))) {
+                mkdir(dirname($target), 0o755, true);
+            }
+
+            file_put_contents($target, is_string($contents) ? $contents : json_encode($contents, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        }
 
         return $tree;
     }

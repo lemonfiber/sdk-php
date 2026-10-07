@@ -313,16 +313,22 @@ package versions can speak the same one. See
 
 ## Where the types come from
 
-Everything under `src/Generated/` is generated from
-`contract/web-api.contract.json`, which lemonfiber builds from the Rust types
-that produce its answers. Nothing there is edited by hand.
-`contract/VERSION` names the lemonfiber commit the copy came from.
+Everything under `src/Generated/` is generated from the contract lemonfiber
+builds from the Rust types that produce its answers, vendored under `contract/`.
+Nothing there is edited by hand. `contract/VERSION` names the lemonfiber commit
+the copy came from.
 
-| Command                                     | Network | What it does                                                         |
-| ------------------------------------------- | ------- | -------------------------------------------------------------------- |
-| `composer contract:sync -- <tag-or-commit>` | yes     | Vendors the contract at that revision of lemonfiber into `contract/` |
-| `composer contract:generate`                | no      | Rewrites `src/Generated/` from the vendored copy                     |
-| `composer contract:check`                   | no      | Regenerates and fails on any difference                              |
+A revision of lemonfiber holds the contract in one of two layouts: the directory
+`contract/web-api/`, an index with a file per kind and a file per definition and
+each `$ref` a path to a definition's file, or the single file
+`contract/web-api.contract.json`. It is vendored in the layout the revision
+holds, and the same content in either generates the same files.
+
+| Command                                     | Network | What it does                                                                                                    |
+| ------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------- |
+| `composer contract:sync -- <tag-or-commit>` | yes     | Vendors the contract at that revision of lemonfiber into `contract/`, replacing the copy there in either layout |
+| `composer contract:generate`                | no      | Rewrites `src/Generated/` from the vendored copy                                                                |
+| `composer contract:check`                   | no      | Regenerates and fails on any difference                                                                         |
 
 Each shape the contract defines is named once, as a PHPStan type alias. A shape
 one kind carries is an alias on that kind's envelope class; one several kinds carry

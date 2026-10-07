@@ -14,7 +14,9 @@ use UnexpectedValueException;
  * The PHP source a contract's kinds are written as.
  *
  * Every file opens with the same header naming where it came from, so a reader
- * who finds one of these knows the artefact and the revision behind it.
+ * who finds one of these knows the artefact and the revision behind it. The
+ * header names the vendored copy without its layout, so the same content in
+ * either layout is written as the same bytes.
  */
 final readonly class GeneratedSource
 {
@@ -26,7 +28,6 @@ final readonly class GeneratedSource
     private SchemaTypes $types;
 
     public function __construct(
-        private string $artefact,
         private string $stamp,
         private int $version,
         private ShapePlan $plan,
@@ -362,7 +363,7 @@ final readonly class GeneratedSource
             <<<'PHP'
                 <?php
 
-                // Generated from %s. Do not edit.
+                // Generated from the contract vendored under contract/. Do not edit.
                 // Source: %s, api_version %d.
                 // Regenerate with `composer contract:generate`.
 
@@ -371,7 +372,6 @@ final readonly class GeneratedSource
                 namespace %s;
 
                 PHP,
-            $this->artefact,
             $this->stamp,
             $this->version,
             self::NAMESPACE,
