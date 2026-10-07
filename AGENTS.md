@@ -2,9 +2,13 @@
 
 Guidance for any AI agent working in this repo.
 
-> **Common rules for every lemonfiber repo are canonical in the spec:**
-> [50-governance/ai-contributors.md](https://github.com/lemonfiber/spec/blob/main/50-governance/ai-contributors.md).
-> Read them. This file is the `sdk-php`-specific header only.
+> **Start at the report** of where every unreleased version stands: the summary
+> of the newest run of the spec's [`state` workflow](https://github.com/lemonfiber/spec/actions/workflows/state.yml),
+> or `just goals <version>` in a spec checkout.
+> **Then the rules every repository shares:**
+> [working in the repositories](https://github.com/lemonfiber/spec/blob/main/50-governance/working-in-the-repositories.md)
+> and [the rules for agents](https://github.com/lemonfiber/spec/blob/main/50-governance/ai-contributors.md).
+> This file holds only what is true of `sdk-php`.
 
 ## What this repo is
 
@@ -70,6 +74,3 @@ break the pull request adds unless the title declares it with `!`
 ## Before you open a PR
 
 - `composer ci` is clean.
-- Cite a spec identifier in a commit `Spec:` trailer and the PR body.
-- Sign off every commit (`git commit -s`); the DCO gate fails without it.
-- No AI attribution in commits, PR bodies, or comments.
