@@ -16,7 +16,8 @@ something that already has one.
 | `RefusalStatus.php` | The status each code is answered with, which `RefusalCode::status()` reads |
 | `RefusalDescription.php` | The registry's line about each code, which `RefusalCode::description()` reads |
 | `KeyCallableAction.php` | Every action an integration key may call, with whether it disturbs the running system and whether it can be rehearsed |
-| `<Kind>Envelope.php` | One class per kind: the kind it reads, and the payload type the contract gives it |
+| `<Kind>Envelope.php` | One class per kind: the kind it reads, the payload type the contract gives it as `Data`, and an alias for each shape only that kind carries |
+| `Shapes.php` | An alias for each shape more than one kind carries, which the envelopes using it import |
 
 Pint, PHPStan, Rector and the coverage and mutation gates skip this directory,
 and the repository guards hold it to the line cap and to nothing else; the

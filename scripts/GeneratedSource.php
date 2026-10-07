@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Scripts;
 
+use function array_values;
 use function is_array;
 use function sprintf;
 
@@ -20,12 +21,16 @@ final readonly class GeneratedSource
     /** One enum case, as each generated enum writes it: its name and its value. */
     private const string CASE = "    case %s = %s;\n";
 
+    private SchemaTypes $types;
+
     public function __construct(
         private string $artefact,
         private string $stamp,
         private int $version,
-        private SchemaTypes $types = new SchemaTypes(),
-    ) {}
+        private ShapePlan $plan,
+    ) {
+        $this->types = new SchemaTypes($plan);
+    }
 
     /**
      * @param  array<mixed, mixed>  $schema
@@ -34,12 +39,8 @@ final readonly class GeneratedSource
     {
         $properties = $schema['properties'] ?? null;
         $payload = is_array($properties) ? $properties['data'] ?? null : null;
-        $defs = $schema['$defs'] ?? null;
-        $named = is_array($defs) ? $defs : [];
-
-        $type = is_array($payload)
-            ? $this->types->typeOf($payload, $named)
-            : SchemaTypes::UNKNOWN;
+        $type = is_array($payload) ? $this->types->typeOf($payload) : SchemaTypes::UNKNOWN;
+        $aliases = $this->aliases($name . 'Envelope', is_array($payload) ? [$payload] : []);
 
         return $this->header() . sprintf(
             <<<'PHP'
@@ -51,7 +52,7 @@ final readonly class GeneratedSource
                 /**
                  * The `%s` envelope, shaped as the contract describes it.
                  *
-                 * @phpstan-type Data %s
+                %s * @phpstan-type Data %s
                  */
                 final class %sEnvelope
                 {
@@ -79,9 +80,30 @@ final readonly class GeneratedSource
 
                 PHP,
             $kind,
+            $aliases,
             $type,
             $name,
             $name,
+        );
+    }
+
+    /**
+     * The class every shape more than one kind carries is named on, once.
+     */
+    public function shapesClass(): string
+    {
+        return $this->header() . sprintf(
+            <<<'PHP'
+
+                /**
+                 * Every shape more than one kind carries, each named once and imported where it is used.
+                 *
+                %s */
+                final class %s {}
+
+                PHP,
+            $this->aliases(ShapePlan::SHARED, []),
+            ShapePlan::SHARED,
         );
     }
 
@@ -276,6 +298,28 @@ final readonly class GeneratedSource
             $this->version,
             $this->types->quoted($this->stamp),
         );
+    }
+
+    /**
+     * The docblock lines naming what an owner names and importing what it uses
+     * from elsewhere, each ending in a line break.
+     *
+     * @param  list<array<mixed, mixed>>  $also  schemas beside the class's own definitions whose references it imports
+     */
+    private function aliases(string $class, array $also): string
+    {
+        $own = $this->plan->namedOn($class);
+        $lines = '';
+
+        foreach ($this->plan->importsFor($class, [...array_values($own), ...$also]) as $alias => $from) {
+            $lines .= sprintf(" * @phpstan-import-type %s from %s\n", $alias, $from);
+        }
+
+        foreach ($own as $alias => $schema) {
+            $lines .= sprintf(" * @phpstan-type %s %s\n", $alias, $this->types->typeOf($schema, $alias));
+        }
+
+        return $lines;
     }
 
     /**

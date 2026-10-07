@@ -28,9 +28,10 @@ use function substr;
  * The contract artefact is JSON Schema, and PHP carries a decoded payload as an
  * array. An array shape is what says which keys that array holds and what each
  * one is, so a shape is what a schema becomes here. Anything the schema leaves
- * open becomes `mixed`.
+ * open becomes `mixed`. A reference to a definition the plan names is that
+ * definition's alias.
  */
-final class SchemaTypes
+final readonly class SchemaTypes
 {
     /**
      * The type given to anything the schema does not describe.
@@ -38,24 +39,28 @@ final class SchemaTypes
     public const string UNKNOWN = 'mixed';
 
     /**
+     * @param  ShapePlan  $plan  where each definition the payloads reach is named
+     */
+    public function __construct(private ShapePlan $plan) {}
+
+    /**
      * The PHPStan type a schema describes.
      *
      * @param  array<mixed, mixed>  $schema
-     * @param  array<mixed, mixed>  $defs
-     * @param  list<string>  $seen  the definitions already being expanded
+     * @param  string|null  $within  the definition whose alias this schema is part of, if any
      */
-    public function typeOf(array $schema, array $defs, array $seen = []): string
+    public function typeOf(array $schema, ?string $within = null): string
     {
         $reference = $schema['$ref'] ?? null;
         $enum = $schema['enum'] ?? null;
         $combined = $this->combined($schema);
 
         return match (true) {
-            is_string($reference) => $this->typeOfReference($reference, $defs, $seen),
+            is_string($reference) => $this->typeOfReference($reference, $within),
             array_key_exists('const', $schema) => $this->literal($schema['const']),
             is_array($enum) && $enum !== [] => $this->union(array_map($this->literal(...), array_values($enum))),
-            $combined !== null => $this->union($this->typesOf($combined, $defs, $seen)),
-            default => $this->typeOfNamed($schema['type'] ?? null, $schema, $defs, $seen),
+            $combined !== null => $this->union($this->typesOf($combined, $within)),
+            default => $this->typeOfNamed($schema['type'] ?? null, $schema, $within),
         };
     }
 
@@ -85,10 +90,8 @@ final class SchemaTypes
 
     /**
      * @param  array<mixed, mixed>  $schema
-     * @param  array<mixed, mixed>  $defs
-     * @param  list<string>  $seen
      */
-    private function typeOfNamed(mixed $named, array $schema, array $defs, array $seen): string
+    private function typeOfNamed(mixed $named, array $schema, ?string $within): string
     {
         if (is_string($named)) {
             return match ($named) {
@@ -97,8 +100,8 @@ final class SchemaTypes
                 'number' => 'float',
                 'boolean' => 'bool',
                 'null' => 'null',
-                'array' => $this->listType($schema, $defs, $seen),
-                'object' => $this->objectType($schema, $defs, $seen),
+                'array' => $this->listType($schema, $within),
+                'object' => $this->objectType($schema, $within),
                 default => self::UNKNOWN,
             };
         }
@@ -107,7 +110,7 @@ final class SchemaTypes
             $types = [];
 
             foreach ($named as $one) {
-                $types[] = $this->typeOfNamed(is_string($one) ? $one : null, $schema, $defs, $seen);
+                $types[] = $this->typeOfNamed(is_string($one) ? $one : null, $schema, $within);
             }
 
             return $this->union($types);
@@ -117,62 +120,48 @@ final class SchemaTypes
     }
 
     /**
-     * @param  array<mixed, mixed>  $defs
-     * @param  list<string>  $seen
      */
-    private function typeOfReference(string $reference, array $defs, array $seen): string
+    private function typeOfReference(string $reference, ?string $within): string
     {
         $prefix = '#/$defs/';
+        $name = str_starts_with($reference, $prefix) ? substr($reference, strlen($prefix)) : null;
 
-        if (! str_starts_with($reference, $prefix)) {
-            return self::UNKNOWN;
-        }
-
-        $name = substr($reference, strlen($prefix));
-        $target = $defs[$name] ?? null;
-
-        if (in_array($name, $seen, true) || ! is_array($target)) {
-            return self::UNKNOWN;
-        }
-
-        return $this->typeOf($target, $defs, [...$seen, $name]);
+        return $name === null || ! $this->plan->names($name) || $this->plan->closesACycle($within, $name)
+            ? self::UNKNOWN
+            : $name;
     }
 
     /**
      * @param  array<mixed, mixed>  $schema
-     * @param  array<mixed, mixed>  $defs
-     * @param  list<string>  $seen
      */
-    private function listType(array $schema, array $defs, array $seen): string
+    private function listType(array $schema, ?string $within): string
     {
         $fixed = $schema['prefixItems'] ?? null;
 
         if (is_array($fixed) && $fixed !== []) {
-            return 'array{' . implode(', ', $this->typesOf($fixed, $defs, $seen)) . '}';
+            return 'array{' . implode(', ', $this->typesOf($fixed, $within)) . '}';
         }
 
         $items = $schema['items'] ?? null;
 
-        return 'list<' . (is_array($items) ? $this->typeOf($items, $defs, $seen) : self::UNKNOWN) . '>';
+        return 'list<' . (is_array($items) ? $this->typeOf($items, $within) : self::UNKNOWN) . '>';
     }
 
     /**
      * @param  array<mixed, mixed>  $schema
-     * @param  array<mixed, mixed>  $defs
-     * @param  list<string>  $seen
      */
-    private function objectType(array $schema, array $defs, array $seen): string
+    private function objectType(array $schema, ?string $within): string
     {
         $properties = $schema['properties'] ?? null;
 
         if (is_array($properties) && $properties !== []) {
-            return $this->shape($properties, $this->requiredIn($schema), $defs, $seen);
+            return $this->shape($properties, $this->requiredIn($schema), $within);
         }
 
         $additional = $schema['additionalProperties'] ?? null;
 
         if (is_array($additional)) {
-            return 'array<string, ' . $this->typeOf($additional, $defs, $seen) . '>';
+            return 'array<string, ' . $this->typeOf($additional, $within) . '>';
         }
 
         return $additional === false ? 'array{}' : 'array<string, ' . self::UNKNOWN . '>';
@@ -181,10 +170,8 @@ final class SchemaTypes
     /**
      * @param  array<mixed, mixed>  $properties
      * @param  list<string>  $required
-     * @param  array<mixed, mixed>  $defs
-     * @param  list<string>  $seen
      */
-    private function shape(array $properties, array $required, array $defs, array $seen): string
+    private function shape(array $properties, array $required, ?string $within): string
     {
         $fields = [];
 
@@ -196,7 +183,7 @@ final class SchemaTypes
             $fields[] = $this->key($name)
                 . (in_array($name, $required, true) ? '' : '?')
                 . ': '
-                . (is_array($property) ? $this->typeOf($property, $defs, $seen) : self::UNKNOWN);
+                . (is_array($property) ? $this->typeOf($property, $within) : self::UNKNOWN);
         }
 
         return $fields === [] ? 'array{}' : 'array{' . implode(', ', $fields) . '}';
@@ -222,16 +209,14 @@ final class SchemaTypes
 
     /**
      * @param  array<mixed, mixed>  $schemas
-     * @param  array<mixed, mixed>  $defs
-     * @param  list<string>  $seen
      * @return list<string>
      */
-    private function typesOf(array $schemas, array $defs, array $seen): array
+    private function typesOf(array $schemas, ?string $within): array
     {
         $types = [];
 
         foreach ($schemas as $schema) {
-            $types[] = is_array($schema) ? $this->typeOf($schema, $defs, $seen) : self::UNKNOWN;
+            $types[] = is_array($schema) ? $this->typeOf($schema, $within) : self::UNKNOWN;
         }
 
         return $types;

@@ -15,7 +15,12 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `handoff` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{address?: string|null, caution?: string|null, clients: list<array{client: string, code: string, deep_link: bool, device: string, open_source: bool}>, issued?: string|null, name: string, quick_connect: bool, reason?: string|null, rehearsed: bool, remedy?: 'invite'|'ask-again'|'start-server'|'record-address'|null, sessions: list<array{client: string, device: string, last_seen?: string|null}>, state: 'unprovisioned'|'ready'|'pending'|'connected'|'failed', steps: list<string>}
+ * @phpstan-type HandoffClient array{client: string, code: string, deep_link: bool, device: string, open_source: bool}
+ * @phpstan-type HandoffRemedy 'invite'|'ask-again'|'start-server'|'record-address'
+ * @phpstan-type HandoffReport array{address?: string|null, caution?: string|null, clients: list<HandoffClient>, issued?: string|null, name: string, quick_connect: bool, reason?: string|null, rehearsed: bool, remedy?: HandoffRemedy|null, sessions: list<HandoffSession>, state: HandoffState, steps: list<string>}
+ * @phpstan-type HandoffSession array{client: string, device: string, last_seen?: string|null}
+ * @phpstan-type HandoffState 'unprovisioned'|'ready'|'pending'|'connected'|'failed'
+ * @phpstan-type Data HandoffReport
  */
 final class HandoffEnvelope
 {

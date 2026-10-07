@@ -15,7 +15,11 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `catalogue` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{removed: list<array{id: string, reason: string, removed_in: string, replaced_by?: string|null}>, services: list<array{criticality: 'critical'|'core'|'important'|'enhancing'|'optional', describes: string, id: string, name: string, without_it: string}>}
+ * @phpstan-import-type Criticality from Shapes
+ * @phpstan-type CatalogueReport array{removed: list<RemovedService>, services: list<CataloguedService>}
+ * @phpstan-type CataloguedService array{criticality: Criticality, describes: string, id: string, name: string, without_it: string}
+ * @phpstan-type RemovedService array{id: string, reason: string, removed_in: string, replaced_by?: string|null}
+ * @phpstan-type Data CatalogueReport
  */
 final class CatalogueEnvelope
 {

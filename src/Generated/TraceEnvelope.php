@@ -15,7 +15,16 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `trace` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{confidence: 'certain'|'uncertain', coverage?: array{have: int, seasons: list<array{have: int, outstanding: list<array{number: int, season: int, stage: 'not-monitored'|'monitored'|'searching'|'found'|'grabbed'|'downloading'|'downloaded'|'importing'|'imported'|'available', title: string}>, season: int, unmonitored: int, wanted: int}>, unmonitored: int, wanted: int}|null, findings: list<string>, furthest: 'not-monitored'|'monitored'|'searching'|'found'|'grabbed'|'downloading'|'downloaded'|'importing'|'imported'|'available', history: list<array{at: string, outcome: 'grabbed'|'download-failed'|'imported'|'removed'}>, item: string, matched: bool, stages: list<array{at?: string|null, service: string, stage: 'not-monitored'|'monitored'|'searching'|'found'|'grabbed'|'downloading'|'downloaded'|'importing'|'imported'|'available'}>, stall?: string|null}
+ * @phpstan-import-type Stage from Shapes
+ * @phpstan-type Coverage array{have: int, seasons: list<SeasonCoverage>, unmonitored: int, wanted: int}
+ * @phpstan-type Part array{number: int, season: int, stage: Stage, title: string}
+ * @phpstan-type SeasonCoverage array{have: int, outstanding: list<Part>, season: int, unmonitored: int, wanted: int}
+ * @phpstan-type TraceConfidence 'certain'|'uncertain'
+ * @phpstan-type TraceMoment array{at: string, outcome: TraceOutcome}
+ * @phpstan-type TraceOutcome 'grabbed'|'download-failed'|'imported'|'removed'
+ * @phpstan-type TraceReport array{confidence: TraceConfidence, coverage?: Coverage|null, findings: list<string>, furthest: Stage, history: list<TraceMoment>, item: string, matched: bool, stages: list<TraceStage>, stall?: string|null}
+ * @phpstan-type TraceStage array{at?: string|null, service: string, stage: Stage}
+ * @phpstan-type Data TraceReport
  */
 final class TraceEnvelope
 {

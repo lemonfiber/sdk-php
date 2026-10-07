@@ -305,5 +305,12 @@ that produce its answers. Nothing there is edited by hand.
 | `composer contract:generate`                | no      | Rewrites `src/Generated/` from the vendored copy                     |
 | `composer contract:check`                   | no      | Regenerates and fails on any difference                              |
 
-Generation refuses a contract whose `api_version` this package does not speak,
-and writes nothing.
+Each shape the contract defines is named once, as a PHPStan type alias. A shape
+one kind carries is an alias on that kind's envelope class; one several kinds carry
+is an alias on `Generated\Shapes`. Code reading a payload imports the alias it
+needs with `@phpstan-import-type`. A reference inside a cycle of definitions is
+`mixed`, since an alias may not be defined through itself.
+
+Generation refuses a contract whose `api_version` this package does not speak, a
+definition named like a generated class, and a definition two kinds carry as two
+different shapes. It names what it refused and writes nothing.

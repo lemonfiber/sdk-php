@@ -15,7 +15,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `word` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{also_called: list<string>, deep?: string|null, forms: list<string>, short: string, word: string}
+ * @phpstan-import-type Term from Shapes
+ * @phpstan-type Data Term
  */
 final class WordEnvelope
 {

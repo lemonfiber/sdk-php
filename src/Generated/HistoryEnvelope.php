@@ -15,7 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `history` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{changes: list<array{alongside: int, at: string, because?: string|null, did: string, instead?: string|null, operation: string, reversal: 'whole'|'partial'|'none', target: string}>, horizon: string}
+ * @phpstan-type ChangeReport array{alongside: int, at: string, because?: string|null, did: string, instead?: string|null, operation: string, reversal: ChangeReversal, target: string}
+ * @phpstan-type ChangeReversal 'whole'|'partial'|'none'
+ * @phpstan-type HistoryReport array{changes: list<ChangeReport>, horizon: string}
+ * @phpstan-type Data HistoryReport
  */
 final class HistoryEnvelope
 {

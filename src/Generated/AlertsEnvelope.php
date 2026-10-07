@@ -15,7 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `alerts` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{changed: bool, exceptions: list<array{kind: string, wanted: bool}>, means: string, preset: string, rehearsed: bool}
+ * @phpstan-type AlertReport array{changed: bool, exceptions: list<ExceptionReport>, means: string, preset: string, rehearsed: bool}
+ * @phpstan-type ExceptionReport array{kind: string, wanted: bool}
+ * @phpstan-type Data AlertReport
  */
 final class AlertsEnvelope
 {

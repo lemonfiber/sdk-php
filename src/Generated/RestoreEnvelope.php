@@ -15,7 +15,14 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `restore` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{done?: array{from_version: string, relocated?: array{now: string, was: string}|null, scope: array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project: string, scope: 'existing', trees: list<array{archive_path: string, host_path: string}>}}|null, rehearsed: bool, would: array{agreement: string, downgrade: bool, manifest: array{created_at: string, data_root: string, members: list<array{archive_path: string, label: string}>, product_version: string, schema: int, scope: array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project: string, scope: 'existing', trees: list<array{archive_path: string, host_path: string}>}, sensitive: bool}, relocation?: array{now: string, was: string}|null}}
+ * @phpstan-import-type Scope from Shapes
+ * @phpstan-type BackupManifest array{created_at: string, data_root: string, members: list<Member>, product_version: string, schema: int, scope: Scope, sensitive: bool}
+ * @phpstan-type Member array{archive_path: string, label: string}
+ * @phpstan-type Preview array{agreement: string, downgrade: bool, manifest: BackupManifest, relocation?: Relocation|null}
+ * @phpstan-type Relocation array{now: string, was: string}
+ * @phpstan-type Restoration array{done?: RestoreReport|null, rehearsed: bool, would: Preview}
+ * @phpstan-type RestoreReport array{from_version: string, relocated?: Relocation|null, scope: Scope}
+ * @phpstan-type Data Restoration
  */
 final class RestoreEnvelope
 {

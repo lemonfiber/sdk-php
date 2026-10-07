@@ -15,7 +15,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `certificate` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{consequence: string, fingerprint?: string|null, rehearsed: bool, replaced: bool}
+ * @phpstan-type CertificateReport array{consequence: string, fingerprint?: string|null, rehearsed: bool, replaced: bool}
+ * @phpstan-type Data CertificateReport
  */
 final class CertificateEnvelope
 {

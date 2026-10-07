@@ -15,7 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `self-update` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{afterwards: string, asked?: string|null, at?: string|null, carries: string, changed?: string|null, command?: string|null, configuration?: string|null, installed: 'homebrew'|'scoop'|'winget'|'cargo'|'distribution'|'installer'|'elsewhere'|'image'|'untellable', instead?: string|null, offered?: string|null, owner?: string|null, replaceable?: bool|null, running: string, standing: 'current'|'update-available'|'managed-externally'|'check-failed', untold?: string|null}
+ * @phpstan-type Installed 'homebrew'|'scoop'|'winget'|'cargo'|'distribution'|'installer'|'elsewhere'|'image'|'untellable'
+ * @phpstan-type SelfUpdateStanding 'current'|'update-available'|'managed-externally'|'check-failed'
+ * @phpstan-type UpdateReport array{afterwards: string, asked?: string|null, at?: string|null, carries: string, changed?: string|null, command?: string|null, configuration?: string|null, installed: Installed, instead?: string|null, offered?: string|null, owner?: string|null, replaceable?: bool|null, running: string, standing: SelfUpdateStanding, untold?: string|null}
+ * @phpstan-type Data UpdateReport
  */
 final class SelfUpdateEnvelope
 {

@@ -15,7 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `removal` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{'asks-through-the-request-service': bool, confirmed: bool, findings: list<string>, name: string, rehearsed: bool, requests: int, revoked: 'everywhere'|'media-server-only'|'nothing'}
+ * @phpstan-type HouseholdRemoval array{'asks-through-the-request-service': bool, confirmed: bool, findings: list<string>, name: string, rehearsed: bool, requests: int, revoked: Revoked}
+ * @phpstan-type Revoked 'everywhere'|'media-server-only'|'nothing'
+ * @phpstan-type Data HouseholdRemoval
  */
 final class RemovalEnvelope
 {

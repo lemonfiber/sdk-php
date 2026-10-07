@@ -15,7 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `beside` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{ports: list<array{from: int, service: string, to: int}>, refusal?: string|null, rehearsed: bool, stance: 'unchanged'|'pending'|'blocked'|'applied', written?: string|null}
+ * @phpstan-import-type MovedReport from Shapes
+ * @phpstan-import-type Stance from Shapes
+ * @phpstan-type BesideReport array{ports: list<MovedReport>, refusal?: string|null, rehearsed: bool, stance: Stance, written?: string|null}
+ * @phpstan-type Data BesideReport
  */
 final class BesideEnvelope
 {

@@ -15,7 +15,11 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `keys` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{keys: list<array{member_minted: bool, minted: string, name: string, purpose: 'home-assistant'|'mcp'|'other', revoked?: string|null, scope: string, state: 'active'|'revoked'|'orphaned'|'unconfirmed', used?: string|null}>, purposes: string, rehearsed: bool, revoked?: string|null}
+ * @phpstan-import-type KeyPurpose from Shapes
+ * @phpstan-type KeyListing array{keys: list<ListedKey>, purposes: string, rehearsed: bool, revoked?: string|null}
+ * @phpstan-type KeyState 'active'|'revoked'|'orphaned'|'unconfirmed'
+ * @phpstan-type ListedKey array{member_minted: bool, minted: string, name: string, purpose: KeyPurpose, revoked?: string|null, scope: string, state: KeyState, used?: string|null}
+ * @phpstan-type Data KeyListing
  */
 final class KeysEnvelope
 {

@@ -15,7 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `minted-key` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{address?: string|null, caution?: string|null, name: string, pin?: string|null, purpose: 'home-assistant'|'mcp'|'other', scope: string, secret: string}
+ * @phpstan-import-type KeyPurpose from Shapes
+ * @phpstan-type MintedKey array{address?: string|null, caution?: string|null, name: string, pin?: string|null, purpose: KeyPurpose, scope: string, secret: Secret}
+ * @phpstan-type Secret string
+ * @phpstan-type Data MintedKey
  */
 final class MintedKeyEnvelope
 {

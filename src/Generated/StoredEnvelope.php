@@ -15,7 +15,13 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `stored` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{beside: list<array{what: string, why: string}>, kept: list<array{at: string, secret: bool, what: string, why: string}>, rehearsed: bool, removal: array{state: 'not-asked'}|array{state: 'unconfirmed'}|array{gone: list<string>, left: list<array{at: string, why: string}>, state: 'done'}, roots: list<array{at: string, what: string}>}
+ * @phpstan-type Kept array{at: string, secret: bool, what: string, why: string}
+ * @phpstan-type Root array{at: string, what: string}
+ * @phpstan-type Stored array{beside: list<StoredBeside>, kept: list<Kept>, rehearsed: bool, removal: StoredRemoval, roots: list<Root>}
+ * @phpstan-type StoredBeside array{what: string, why: string}
+ * @phpstan-type StoredLeft array{at: string, why: string}
+ * @phpstan-type StoredRemoval array{state: 'not-asked'}|array{state: 'unconfirmed'}|array{gone: list<string>, left: list<StoredLeft>, state: 'done'}
+ * @phpstan-type Data Stored
  */
 final class StoredEnvelope
 {

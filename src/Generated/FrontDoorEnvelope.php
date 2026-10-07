@@ -15,7 +15,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `front-door` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{address?: array{caution?: string|null, url: string}|null, beside: list<array{address?: array{caution?: string|null, url: string}|null, because: string, facing: 'asking'|'watching'|'shelf'|'operators'|'carriage'|'unstated', service: string}>, chosen: array{chosen: 'derived'}|array{chosen: 'named', door: string}|array{chosen: 'refused', door: array{because: string, named: string}}, facing?: 'asking'|'watching'|'shelf'|'operators'|'carriage'|'unstated'|null, meaning: string, service?: string|null, standing: 'established'|'library-only'|'unreachable'|'stranded'|'none'}
+ * @phpstan-import-type FrontDoorReport from Shapes
+ * @phpstan-type Data FrontDoorReport
  */
 final class FrontDoorEnvelope
 {

@@ -15,7 +15,11 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `import` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{carried: list<array{kind: string, name: string, service: string}>, not_carried: list<array{because: string, what: string}>, project?: string|null, refusal?: string|null, rehearsed: bool, stance: 'unchanged'|'pending'|'blocked'|'applied', would_carry: list<array{kind: string, name: string, service: string}>}
+ * @phpstan-import-type Stance from Shapes
+ * @phpstan-import-type UnsupportedReport from Shapes
+ * @phpstan-type ImportReport array{carried: list<RecordReport>, not_carried: list<UnsupportedReport>, project?: string|null, refusal?: string|null, rehearsed: bool, stance: Stance, would_carry: list<RecordReport>}
+ * @phpstan-type RecordReport array{kind: string, name: string, service: string}
+ * @phpstan-type Data ImportReport
  */
 final class ImportEnvelope
 {

@@ -15,7 +15,13 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `wizard` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{asks: bool, at: 'welcome'|'preflight'|'prerequisites'|'protocols'|'vpn'|'data-location'|'credentials'|'provider'|'service-user'|'library'|'household'|'notifications'|'autostart'|'review', offered: bool, phase: 'in-progress'|'reviewing'|'applying'|'applied', plan: list<array{key: string, origin: array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}|array{named: string, origin: 'overridden', replaced: array{from: mixed, value?: string|null, withheld: bool}}|array{named: string, origin: 'orphaned'}, secret: bool, value: string}>, proof?: array{observed: string, outcome: 'valid'}|array{detail: string, outcome: 'rejected'}|array{detail: string, outcome: 'unreachable'}|array{detail: string, outcome: 'degraded'}|null, ready_for_review: bool, rehearsed: bool, unanswered: list<'welcome'|'preflight'|'prerequisites'|'protocols'|'vpn'|'data-location'|'credentials'|'provider'|'service-user'|'library'|'household'|'notifications'|'autostart'|'review'>, written: list<string>}
+ * @phpstan-import-type SettingReport from Shapes
+ * @phpstan-import-type Validation from Shapes
+ * @phpstan-type Phase 'in-progress'|'reviewing'|'applying'|'applied'
+ * @phpstan-type Ran bool
+ * @phpstan-type WizardReport array{asks: bool, at: WizardStep, offered: bool, phase: Phase, plan: list<SettingReport>, proof?: Validation|null, ready_for_review: bool, rehearsed: Ran, unanswered: list<WizardStep>, written: list<string>}
+ * @phpstan-type WizardStep 'welcome'|'preflight'|'prerequisites'|'protocols'|'vpn'|'data-location'|'credentials'|'provider'|'service-user'|'library'|'household'|'notifications'|'autostart'|'review'
+ * @phpstan-type Data WizardReport
  */
 final class WizardEnvelope
 {

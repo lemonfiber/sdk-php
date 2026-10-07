@@ -15,7 +15,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `step` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{detail: string, said: string, step: 'choosing'|'searching'|'grabbing'|'downloading'|'importing'|'scanning'|'available'}
+ * @phpstan-import-type Line from Shapes
+ * @phpstan-type Data Line
  */
 final class StepEnvelope
 {

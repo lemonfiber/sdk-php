@@ -15,7 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `replacement` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{agreement: string, project?: string|null, refusal?: string|null, rehearsed: bool, stance: 'unchanged'|'pending'|'blocked'|'applied', still_running: list<string>, stopped: list<string>, would_stop: list<string>}
+ * @phpstan-import-type Stance from Shapes
+ * @phpstan-type ReplaceReport array{agreement: string, project?: string|null, refusal?: string|null, rehearsed: bool, stance: Stance, still_running: list<string>, stopped: list<string>, would_stop: list<string>}
+ * @phpstan-type Data ReplaceReport
  */
 final class ReplacementEnvelope
 {

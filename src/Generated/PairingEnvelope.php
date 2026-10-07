@@ -15,7 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `pairing` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{caution?: string|null, compare: string, material: array{address: string, expires: int, fingerprint: string, stack: string}, replacing: string, until: string, written: string}
+ * @phpstan-type Pairing array{caution?: string|null, compare: string, material: PairingMaterial, replacing: string, until: string, written: string}
+ * @phpstan-type PairingMaterial array{address: string, expires: int, fingerprint: string, stack: string}
+ * @phpstan-type Data Pairing
  */
 final class PairingEnvelope
 {

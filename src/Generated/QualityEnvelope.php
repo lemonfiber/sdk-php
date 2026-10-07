@@ -15,7 +15,12 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `quality` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{choices: list<array{means: string, needs_transcoding_here: bool, preset: string, resolution: string, scope: string, size_per_hour: string, transcoding: string}>, customised: bool, disposition: 'shown'|'recorded'|'rehearsed'|'held'|'reapplied'|'would-reapply', music?: array{format: string, means: string, note: string, scope: string, size_per_hour: string, targets: string}|null, overwritten?: array{diff: string, path: string}|null, rehearsed: bool}
+ * @phpstan-import-type Disposition from Shapes
+ * @phpstan-import-type MusicChoice from Shapes
+ * @phpstan-import-type StackEdit from Shapes
+ * @phpstan-type PresetChoice array{means: string, needs_transcoding_here: bool, preset: string, resolution: string, scope: string, size_per_hour: string, transcoding: string}
+ * @phpstan-type QualityReport array{choices: list<PresetChoice>, customised: bool, disposition: Disposition, music?: MusicChoice|null, overwritten?: StackEdit|null, rehearsed: bool}
+ * @phpstan-type Data QualityReport
  */
 final class QualityEnvelope
 {

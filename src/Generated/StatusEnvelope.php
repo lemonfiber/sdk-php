@@ -15,7 +15,17 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `status` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{active_forms: list<string>, condition: 'inactive'|'degraded'|'partial'|'active', disturbs: array{restarting: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, starting: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, stopping: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, stopping_after_downloads: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}, switching: array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: 'downloads'}}, filtered: list<array{forms: list<string>, id: string, name: string, needs: 'usenet'|'torrent', profile: string}>, forms: list<string>, services: list<array{criticality: 'critical'|'core'|'important'|'enhancing'|'optional', depends_on: list<string>, describes: string, exit?: int|null, forms: list<string>, id: string, name: string, profile: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>, undeclared: list<array{describes: string, id: string, state: 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'}>, unsupported?: list<array{because: string, what: string}>}
+ * @phpstan-import-type Condition from Shapes
+ * @phpstan-import-type Filtered from Shapes
+ * @phpstan-import-type Service from Shapes
+ * @phpstan-import-type ServiceState from Shapes
+ * @phpstan-import-type UnsupportedReport from Shapes
+ * @phpstan-type Awaiting 'downloads'
+ * @phpstan-type Disturbances array{restarting: TakesAway, starting: TakesAway, stopping: TakesAway, stopping_after_downloads: TakesAway, switching: TakesAway}
+ * @phpstan-type StatusReport array{active_forms: list<string>, condition: Condition, disturbs: Disturbances, filtered: list<Filtered>, forms: list<string>, services: list<Service>, undeclared: list<Undeclared>, unsupported?: list<UnsupportedReport>}
+ * @phpstan-type TakesAway array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: Awaiting}
+ * @phpstan-type Undeclared array{describes: string, id: string, state: ServiceState}
+ * @phpstan-type Data StatusReport
  */
 final class StatusEnvelope
 {

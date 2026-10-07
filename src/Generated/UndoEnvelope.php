@@ -15,7 +15,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `undo` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{left: list<array{because: string, target: string}>, noted?: list<array{because: string, target: string}>, rehearsed: bool, reversed: list<array{action: array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'withdraw', key: string, owner: string, path: string, written: int}|array{does: 'rewind', path: string, previous: string, written: int}|array{current: string, does: 'repin', previous: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}|array{does: 'revoke', name: string}|array{does: 'reinstate', name: string}, target: string}>}
+ * @phpstan-import-type UndoReversal from Shapes
+ * @phpstan-type Data UndoReversal
  */
 final class UndoEnvelope
 {

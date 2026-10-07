@@ -15,7 +15,19 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `config` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{changed: bool, consequence?: string|null, rehearsed: bool, review?: array{change: array{cost: 'cheap'|'consequential', from?: string|null, key: string, to: string}, findings?: array{active: list<array{name: string, progress: int, protocol: string}>, edited?: array{found: string, secret: bool, wrote: string}|null, keeps: list<string>, library: list<array{because: string, carried: bool, host?: string|null, path: string, service: string}>, opens: list<array{because: string, setting?: string|null, what: string}>, stops: list<string>}, proof?: array{observed: string, outcome: 'valid'}|array{detail: string, outcome: 'rejected'}|array{detail: string, outcome: 'unreachable'}|array{detail: string, outcome: 'degraded'}|null, refusal?: string|null, stance: 'unchanged'|'pending'|'blocked'|'applied'}|null, settings: list<array{key: string, origin: array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}|array{named: string, origin: 'overridden', replaced: array{from: mixed, value?: string|null, withheld: bool}}|array{named: string, origin: 'orphaned'}, secret: bool, value: string}>}
+ * @phpstan-import-type SettingReport from Shapes
+ * @phpstan-import-type Stance from Shapes
+ * @phpstan-import-type Validation from Shapes
+ * @phpstan-type Active array{name: string, progress: int, protocol: string}
+ * @phpstan-type ConfigChange array{cost: Cost, from?: string|null, key: string, to: string}
+ * @phpstan-type ConfigReport array{changed: bool, consequence?: string|null, rehearsed: bool, review?: Review|null, settings: list<SettingReport>}
+ * @phpstan-type Cost 'cheap'|'consequential'
+ * @phpstan-type Edited array{found: string, secret: bool, wrote: string}
+ * @phpstan-type Findings array{active: list<Active>, edited?: Edited|null, keeps: list<string>, library: list<LibraryPath>, opens: list<Opening>, stops: list<string>}
+ * @phpstan-type LibraryPath array{because: string, carried: bool, host?: string|null, path: string, service: string}
+ * @phpstan-type Opening array{because: string, setting?: string|null, what: string}
+ * @phpstan-type Review array{change: ConfigChange, findings?: Findings, proof?: Validation|null, refusal?: string|null, stance: Stance}
+ * @phpstan-type Data ConfigReport
  */
 final class ConfigEnvelope
 {

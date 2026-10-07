@@ -15,7 +15,13 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `bundle` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{bytes: int, contents: array{missing: list<string>, pieces: list<array{body: string, name: string}>, taken: array{at: string, lemonfiber: string, stack: string}, terms: array{filenames: bool, revealed: list<string>, window: string}}, path?: string|null, rehearsed: bool, would_go?: string|null}
+ * @phpstan-type Bundle array{bytes: int, contents: Contents, path?: string|null, rehearsed: bool, would_go?: string|null}
+ * @phpstan-type Contents array{missing: list<string>, pieces: list<Piece>, taken: Taken, terms: Terms}
+ * @phpstan-type Filenames bool
+ * @phpstan-type Piece array{body: string, name: string}
+ * @phpstan-type Taken array{at: string, lemonfiber: string, stack: string}
+ * @phpstan-type Terms array{filenames: Filenames, revealed: list<string>, window: string}
+ * @phpstan-type Data Bundle
  */
 final class BundleEnvelope
 {

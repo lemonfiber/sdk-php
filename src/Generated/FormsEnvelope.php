@@ -15,7 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `forms` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{forms: list<array{composable: bool, description: string, id: string, name: string}>}
+ * @phpstan-type FormReport array{composable: bool, description: string, id: string, name: string}
+ * @phpstan-type FormsReport array{forms: list<FormReport>}
+ * @phpstan-type Data FormsReport
  */
 final class FormsEnvelope
 {

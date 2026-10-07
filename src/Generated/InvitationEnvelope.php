@@ -15,7 +15,12 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `invitation` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Data array{address: string, applied?: array{filtering: string, libraries: list<string>, limit?: string|null, requesting: 'made'|'not-yet'|'not-tried', unrated: 'held-back'|'let-through'}|null, caution?: string|null, decline?: string|null, hours: int, linked: 'made'|'not-yet'|'not-tried', name: string, rehearsed: bool, standing: 'made'|'waiting'|'joined'|'reset', suspended: list<string>, withdrawn: list<string>}
+ * @phpstan-import-type Unrated from Shapes
+ * @phpstan-type Invitation array{address: string, applied?: InvitationApplied|null, caution?: string|null, decline?: string|null, hours: int, linked: Linked, name: string, rehearsed: bool, standing: InvitationStanding, suspended: list<string>, withdrawn: list<string>}
+ * @phpstan-type InvitationApplied array{filtering: string, libraries: list<string>, limit?: string|null, requesting: Linked, unrated: Unrated}
+ * @phpstan-type InvitationStanding 'made'|'waiting'|'joined'|'reset'
+ * @phpstan-type Linked 'made'|'not-yet'|'not-tried'
+ * @phpstan-type Data Invitation
  */
 final class InvitationEnvelope
 {
