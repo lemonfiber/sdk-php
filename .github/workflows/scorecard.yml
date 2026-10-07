@@ -3,8 +3,8 @@
 # The check itself is lemonfiber/spec's, called rather than copied — `Q-R56`
 # asks for that, and six byte-identical copies of a 29-line file were what it
 # had instead. Only the triggers live here, because only they are about this
-# repository: `branch_protection_rule` and `push` are events that arrive at a
-# repository, and a reusable workflow is not a place events arrive.
+# repository: `branch_protection_rule` and the schedule are events that arrive at
+# a repository, and a reusable workflow is not a place events arrive.
 #
 # The call passes `SCORECARD_TOKEN` by name, the one secret the check reads,
 # rather than every secret this repository can see. It is an org secret with no
@@ -17,10 +17,12 @@ on:
   # A change to this repository's protection is a change to its posture, and it
   # is the one event that says so without waiting for the week to turn.
   branch_protection_rule:
+  # Weekly on the default branch, which is where the score is read from. A push
+  # to `main` is not a trigger: what Scorecard scores is settings and policy a
+  # commit rarely moves, and a run on every merge holds a runner to publish the
+  # same number again.
   schedule:
     - cron: "0 6 * * 1"
-  push:
-    branches: [main]
 
 permissions:
   contents: read
@@ -37,4 +39,4 @@ jobs:
       actions: read
     secrets:
       SCORECARD_TOKEN: ${{ secrets.SCORECARD_TOKEN }}
-    uses: lemonfiber/spec/.github/workflows/scorecard.yml@d7f5d8d7e0c6fbbd8022f94ea48abcd59a518989 # v1.0.34
+    uses: lemonfiber/spec/.github/workflows/scorecard.yml@c26ed83df4ecfeb0b1a2d4e565011605b67c648b # v1.0.38
