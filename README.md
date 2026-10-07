@@ -77,6 +77,10 @@ this client's to hold and its to move:
 | `Api::UNINSTALL_ENDPOINT` | `uninstall` | `tier`, once; naming none removes nothing |
 | `Api::PLUGINS_ENDPOINT` | `plugins` | nothing |
 | `Api::WIRING_ENDPOINT` | `wiring` | nothing |
+| `Api::NEWS_ENDPOINT` | `news` | nothing |
+| `Api::CAPABILITIES_ENDPOINT` | `capabilities`, scoped to the credential that asked | nothing |
+| `Api::SETUP_ENDPOINT` | `setup` | nothing |
+| `Api::KEYS_ENDPOINT` | `keys`, without their secrets | nothing |
 
 ```php
 $client->read(Api::REQUESTS_ENDPOINT, ['member' => 'ada']);
@@ -346,6 +350,9 @@ Everything else in `src/` is behaviour no schema expresses:
 
 The package carries semver. `api_version` is a separate integer describing the wire
 (ARCH-R46). Many package versions may speak one wire version.
+
+Changes are recorded in [CHANGELOG.md](CHANGELOG.md), generated from the commit history by
+`composer changelog` ([git-cliff](https://git-cliff.org)) rather than kept by hand.
 
 ## Quality bar
 
