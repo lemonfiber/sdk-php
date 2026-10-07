@@ -10,6 +10,7 @@ use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise\Utils;
 use GuzzleHttp\RequestOptions;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
+use LogicException;
 use Psr\Http\Message\UriInterface;
 use Saloon\Contracts\Sender;
 use Saloon\Data\FactoryCollection;
@@ -81,6 +82,7 @@ final readonly class StackSender implements Sender
     /**
      * @throws ConfigurationProblem
      * @throws FatalRequestException
+     * @throws LogicException where the request belongs to no call
      */
     public function send(PendingRequest $pendingRequest): Response
     {
@@ -91,9 +93,7 @@ final readonly class StackSender implements Sender
             throw ConfigurationProblem::requestLeavesTheStack($this->originIn($uri));
         }
 
-        // A request sent some way other than through the connector belongs to
-        // no call, and so has no time to be made in.
-        $left = Call::of($pendingRequest)?->secondsLeft() ?? 0.0;
+        $left = Call::of($pendingRequest)->secondsLeft();
 
         if ($left <= 0.0) {
             throw new FatalRequestException(new TransferException(self::OUT_OF_TIME, $request), $pendingRequest);

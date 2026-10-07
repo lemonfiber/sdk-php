@@ -10,15 +10,20 @@ use Lemonfiber\Sdk\Tests\Support\FakeClock;
 use Lemonfiber\Sdk\Time\Duration;
 use Saloon\Http\PendingRequest;
 
-it('carries a call on the request it is a call to, and no other', function (): void {
+it('carries a call on the request it is a call to', function (): void {
     $connector = new LemonfiberConnector(BaseUrl::onPort(9000), aWait());
     $asked = ReadRequest::envelope('/api/status');
-    $other = ReadRequest::envelope('/api/status');
 
     $call = Call::on($asked, Duration::ofSeconds(1), new FakeClock([0.0]));
 
-    expect(Call::of(new PendingRequest($connector, $asked)))->toBe($call)
-        ->and(Call::of(new PendingRequest($connector, $other)))->toBeNull();
+    expect(Call::of(new PendingRequest($connector, $asked)))->toBe($call);
+});
+
+it('refuses a request that reached the transport belonging to no call', function (): void {
+    $connector = new LemonfiberConnector(BaseUrl::onPort(9000), aWait());
+    $stray = new PendingRequest($connector, ReadRequest::envelope('/api/status'));
+
+    expect(static fn(): Call => Call::of($stray))->toThrow(LogicException::class, 'without the call it belongs to');
 });
 
 it('gives what is left of its wait, and nothing once it is over', function (): void {

@@ -7,6 +7,7 @@ namespace Lemonfiber\Sdk\Http;
 use Lemonfiber\Sdk\Time\Clock;
 use Lemonfiber\Sdk\Time\Deadline;
 use Lemonfiber\Sdk\Time\Duration;
+use LogicException;
 use Saloon\Http\PendingRequest;
 use Saloon\Http\Request;
 
@@ -42,14 +43,20 @@ final class Call
     }
 
     /**
-     * The call a request about to be sent belongs to, or none where it was sent
-     * some way other than through the connector.
+     * The call a request about to be sent belongs to.
+     *
+     * @throws LogicException where the request was sent some way other than
+     *                        through the connector, and so belongs to no call
      */
-    public static function of(PendingRequest $pendingRequest): ?self
+    public static function of(PendingRequest $pendingRequest): self
     {
         $call = $pendingRequest->config()->get(self::KEY);
 
-        return $call instanceof self ? $call : null;
+        if (! $call instanceof self) {
+            throw new LogicException('A request reached the transport without the call it belongs to; send it through LemonfiberConnector.');
+        }
+
+        return $call;
     }
 
     /**
