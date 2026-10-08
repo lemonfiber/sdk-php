@@ -94,14 +94,14 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: lemonfiber/spec/.github/workflows/spec-check.yml@c26ed83df4ecfeb0b1a2d4e565011605b67c648b # v1.0.38
+    uses: lemonfiber/spec/.github/workflows/spec-check.yml@4562180c9f974bf03aa9be34610f83bb6eb06029 # v1.0.61
 
   commitlint:
     if: github.event_name == 'pull_request'
     uses: lemonfiber/spec/.github/workflows/commitlint.yml@c26ed83df4ecfeb0b1a2d4e565011605b67c648b # v1.0.38
 
   hygiene:
-    uses: lemonfiber/spec/.github/workflows/hygiene.yml@c26ed83df4ecfeb0b1a2d4e565011605b67c648b # v1.0.38
+    uses: lemonfiber/spec/.github/workflows/hygiene.yml@4562180c9f974bf03aa9be34610f83bb6eb06029 # v1.0.61
 
   # Every pin this repository holds on a shared workflow, against what the spec's
   # default branch holds now. It fails naming the commits a pin has not taken; a
@@ -110,7 +110,7 @@ jobs:
     uses: lemonfiber/spec/.github/workflows/workflow-pins.yml@c26ed83df4ecfeb0b1a2d4e565011605b67c648b # v1.0.38
 
   security:
-    uses: lemonfiber/spec/.github/workflows/security.yml@c26ed83df4ecfeb0b1a2d4e565011605b67c648b # v1.0.38
+    uses: lemonfiber/spec/.github/workflows/security.yml@4562180c9f974bf03aa9be34610f83bb6eb06029 # v1.0.61
 
   labeler:
     if: github.event_name == 'pull_request'
@@ -141,7 +141,7 @@ jobs:
       contents: read
       pull-requests: write
       issues: write
-    uses: lemonfiber/spec/.github/workflows/goal-automations.yml@c26ed83df4ecfeb0b1a2d4e565011605b67c648b # v1.0.38
+    uses: lemonfiber/spec/.github/workflows/goal-automations.yml@4562180c9f974bf03aa9be34610f83bb6eb06029 # v1.0.61
 
   # Formatting, static analysis, dead idioms, the repository's guards, the
   # contract diff and dependency hygiene. One checkout, one PHP, one install.
