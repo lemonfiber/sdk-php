@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: a1ca5f05d410c09480bf901a4c442e5b141aa1b7, api_version 1.
+// Source: ad4e5f20666a8a10e0d0ed61f6a1a6a118614162, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -108,6 +108,7 @@ final class RefusalDescription
             RefusalCode::StackMalformed => 'Raised when a manifest is not TOML at all.',
             RefusalCode::StackUnrecognised => 'Raised when a manifest declares names this build does not know.',
             RefusalCode::StackNeedsNewer => 'Raised when a stack names a newer lemonfiber than the one running.',
+            RefusalCode::StackUnassembled => 'Raised when a manifest\'s files are not laid out as the contract says.',
             RefusalCode::NoSuchFiller => 'A capability was named that no service in this stack provides.',
             RefusalCode::CannotFill => 'The service named cannot do the thing it was asked to fill.',
             RefusalCode::NothingAsks => 'Nothing in this stack asks for the capability, so a choice would change nothing.',
