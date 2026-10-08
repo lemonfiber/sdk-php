@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: d9679f541083537834005ea1994bd4f4135a60a3, api_version 1.
+// Source: c8b5ffb1983acf50ff270be8a1a930a1c98cfb2c, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -72,6 +72,11 @@ final class RefusalStatus
             RefusalCode::SchemeRefused => 400,
             RefusalCode::AddressRefused => 400,
             RefusalCode::HeaderNamed => 400,
+            RefusalCode::InputUnmatched => 400,
+            RefusalCode::CallRefused => 500,
+            RefusalCode::StepFailed => 500,
+            RefusalCode::PathNotPlain => 400,
+            RefusalCode::ValueWithheld => 400,
             RefusalCode::Unwanted => 400,
             RefusalCode::Repeated => 400,
             RefusalCode::NoSuchRead => 404,
