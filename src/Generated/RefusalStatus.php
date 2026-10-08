@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 34570aa127f59a0c54d79ab5bf1c3022e39f89a9, api_version 1.
+// Source: 65103564328269478a863ae41bbf527f6f6c5f1e, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -36,6 +36,8 @@ final class RefusalStatus
             RefusalCode::NoEndpoint => 404,
             RefusalCode::WrongMethod => 405,
             RefusalCode::NotAKeyRequest => 400,
+            RefusalCode::NotAnIdempotencyKey => 400,
+            RefusalCode::IdempotencyKeyReused => 400,
             RefusalCode::AnotherReading => 400,
             RefusalCode::OfferMoved => 400,
             RefusalCode::Unreadable => 404,
@@ -90,6 +92,7 @@ final class RefusalStatus
             RefusalCode::MovedOn => 400,
             RefusalCode::Unrenderable => 500,
             RefusalCode::NoJobName => 500,
+            RefusalCode::Unanswered => 500,
             RefusalCode::AnotherOffer => 400,
             RefusalCode::StackUnreadable => 500,
             RefusalCode::StackUnusable => 500,
