@@ -66,6 +66,11 @@ final readonly class VendoredContract
     public const array LISTS = ['key_callable', 'reads', 'refusals'];
 
     /**
+     * The map the index gives from each action to the file describing it, read into the artefact under the same key.
+     */
+    public const string ACTIONS = 'actions';
+
+    /**
      * How deeply a vendored file may nest.
      */
     public const int MAX_DEPTH = 64;
@@ -156,6 +161,16 @@ final readonly class VendoredContract
                 $read = $this->resolved($this->object($named), $named);
                 $unresolved = [...$unresolved, ...$read['unresolved']];
                 $artefact['kinds'][$kind] = $this->carrying($read['schema'], $read['reached'], $pool['defs']);
+            }
+        }
+
+        $actions = $index[self::ACTIONS] ?? null;
+
+        if (is_array($actions)) {
+            $artefact[self::ACTIONS] = [];
+
+            foreach ($actions as $action => $path) {
+                $artefact[self::ACTIONS][$action] = $this->object($this->named($path, sprintf('the action `%s`', $action)));
             }
         }
 

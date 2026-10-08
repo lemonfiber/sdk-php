@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Scripts;
 
+require_once __DIR__ . '/ActionArgument.php';
+require_once __DIR__ . '/Actions.php';
+require_once __DIR__ . '/ActionSource.php';
 require_once __DIR__ . '/GeneratedSource.php';
 require_once __DIR__ . '/KeyCallable.php';
 require_once __DIR__ . '/LineCap.php';
@@ -13,6 +16,7 @@ require_once __DIR__ . '/SchemaTypes.php';
 require_once __DIR__ . '/ShapePlan.php';
 require_once __DIR__ . '/VendoredContract.php';
 
+use function array_intersect;
 use function array_key_exists;
 use function array_keys;
 use function count;
@@ -51,6 +55,11 @@ use function unlink;
  * every kind is a class of its own rather than one more collision.
  *
  * Spec: 20-architecture/contracts/web-api.md
+ *
+ * @phpstan-import-type Action from Actions
+ *
+ * @phpstan-type Listed array{refusals: array<string, array{code: string, status: int, description: string}>, keyCallable: array<string, array{action: string, disturbs: bool, rehearsal: bool}>, actions: array<string, Action>}
+ * @phpstan-type Planned array{named: array<string, string>, refusals: int, actions: int, files: array<string, string>}
  */
 final readonly class ContractGenerator
 {
@@ -99,13 +108,16 @@ final readonly class ContractGenerator
     private function generate(array $artefact, array $kinds, int $version): int
     {
         try {
-            $refusals = new Refusals()->listed($artefact);
-            $keyCallable = new KeyCallable()->listed($artefact);
+            $listed = [
+                'refusals' => new Refusals()->listed($artefact),
+                'keyCallable' => new KeyCallable()->listed($artefact),
+                'actions' => new Actions()->listed($artefact),
+            ];
         } catch (UnexpectedValueException $malformed) {
             return $this->refuse($malformed->getMessage() . ' Nothing was generated.');
         }
 
-        return $this->emit($kinds, $refusals, $keyCallable, $version);
+        return $this->emit($kinds, $listed, $version);
     }
 
     /**
@@ -218,15 +230,14 @@ final readonly class ContractGenerator
 
     /**
      * @param  array<mixed, mixed>  $kinds
-     * @param  array<string, array{code: string, status: int, description: string}>  $refusals
-     * @param  array<string, array{action: string, disturbs: bool, rehearsal: bool}>  $keyCallable
+     * @param  Listed  $listed
      */
-    private function emit(array $kinds, array $refusals, array $keyCallable, int $version): int
+    private function emit(array $kinds, array $listed, int $version): int
     {
         $stamp = $this->stamp();
 
         try {
-            $planned = $this->planned($kinds, $refusals, $keyCallable, $stamp, $version);
+            $planned = $this->planned($kinds, $listed, $stamp, $version);
         } catch (UnexpectedValueException $unresolvable) {
             return $this->refuse(sprintf('In %s: %s Nothing was generated.', $this->vendored->source(), $unresolvable->getMessage()));
         }
@@ -250,16 +261,15 @@ final readonly class ContractGenerator
      * from, or nothing when a kind cannot be written at all.
      *
      * @param  array<mixed, mixed>  $kinds
-     * @param  array<string, array{code: string, status: int, description: string}>  $refusals
-     * @param  array<string, array{action: string, disturbs: bool, rehearsal: bool}>  $keyCallable
-     * @return array{named: array<string, string>, refusals: int, files: array<string, string>}|null
+     * @param  Listed  $listed
+     * @return Planned|null
      *
      * @throws UnexpectedValueException naming the reference, where a kind holds one that resolves to no definition
      */
-    private function planned(array $kinds, array $refusals, array $keyCallable, string $stamp, int $version): ?array
+    private function planned(array $kinds, array $listed, string $stamp, int $version): ?array
     {
         $found = $this->classesOf($kinds);
-        $plan = $found === null ? null : $this->planOf($found['classes']);
+        $plan = $found === null ? null : $this->planOf($found['classes'], array_keys($listed['actions']));
 
         if ($found === null || ! $plan instanceof ShapePlan) {
             return null;
@@ -274,13 +284,18 @@ final readonly class ContractGenerator
         }
 
         $files[self::OUTPUT . '/Kind.php'] = $source->kindEnum($named);
-        $files[self::OUTPUT . '/RefusalCode.php'] = $source->refusalEnum($refusals);
-        $files[self::OUTPUT . '/RefusalStatus.php'] = $source->refusalStatusClass($refusals);
-        $files[self::OUTPUT . '/RefusalDescription.php'] = $source->refusalDescriptionClass($refusals);
-        $files[self::OUTPUT . '/KeyCallableAction.php'] = $source->keyCallableEnum($keyCallable);
+        $files[self::OUTPUT . '/RefusalCode.php'] = $source->refusalEnum($listed['refusals']);
+        $files[self::OUTPUT . '/RefusalStatus.php'] = $source->refusalStatusClass($listed['refusals']);
+        $files[self::OUTPUT . '/RefusalDescription.php'] = $source->refusalDescriptionClass($listed['refusals']);
+        $files[self::OUTPUT . '/KeyCallableAction.php'] = $source->keyCallableEnum($listed['keyCallable']);
+
+        foreach ($listed['actions'] as $class => $action) {
+            $files[self::OUTPUT . '/' . $class . '.php'] = $source->actionClass($class, $action);
+        }
+
         $files[self::OUTPUT . '/Contract.php'] = $source->contractClass();
 
-        return ['named' => $named, 'refusals' => count($refusals), 'files' => $files];
+        return ['named' => $named, 'refusals' => count($listed['refusals']), 'actions' => count($listed['actions']), 'files' => $files];
     }
 
     /**
@@ -316,14 +331,24 @@ final readonly class ContractGenerator
     }
 
     /**
-     * Where each shape the envelope classes reach is named, or nothing when one cannot be named.
+     * Where each shape the envelope classes reach is named, or nothing when one
+     * cannot be named, or an action would be written as a class already written.
      *
      * @param  array<string, array<mixed, mixed>>  $classes
+     * @param  list<string>  $actions  the class each action is written as
      */
-    private function planOf(array $classes): ?ShapePlan
+    private function planOf(array $classes, array $actions): ?ShapePlan
     {
+        $taken = array_intersect($actions, self::CLASSES);
+
+        if ($taken !== []) {
+            $this->refuse(sprintf('An action would be written as %s, a class this already writes. Nothing was generated.', implode(', ', $taken)));
+
+            return null;
+        }
+
         try {
-            return new ShapePlan($classes, [...array_keys($classes), ...self::CLASSES]);
+            return new ShapePlan($classes, [...array_keys($classes), ...self::CLASSES, ...$actions]);
         } catch (UnexpectedValueException $unnamed) {
             $this->refuse($unnamed->getMessage() . ' Nothing was generated.');
 
@@ -356,7 +381,7 @@ final readonly class ContractGenerator
     }
 
     /**
-     * @param  array{named: array<string, string>, refusals: int, files: array<string, string>}  $planned
+     * @param  Planned  $planned
      */
     private function write(array $planned, string $stamp): int
     {
@@ -375,9 +400,10 @@ final readonly class ContractGenerator
         }
 
         echo sprintf(
-            "contract: %d kinds and %d refusal codes generated from %s into %s\n",
+            "contract: %d kinds, %d refusal codes and %d actions generated from %s into %s\n",
             count($planned['named']),
             $planned['refusals'],
+            $planned['actions'],
             $stamp,
             self::OUTPUT,
         );

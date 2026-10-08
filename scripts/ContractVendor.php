@@ -120,8 +120,9 @@ final readonly class ContractVendor
         $index = $this->object($files[VendoredContract::INDEX], $named, $revision);
         $described = $this->described($index, $named, $revision);
         $kinds = is_array($index['kinds'] ?? null) ? $index['kinds'] : [];
+        $actions = is_array($index[VendoredContract::ACTIONS] ?? null) ? $index[VendoredContract::ACTIONS] : [];
 
-        foreach ([...$kinds, ...$this->lists($index)] as $path) {
+        foreach ([...$kinds, ...$actions, ...$this->lists($index)] as $path) {
             if (! is_string($path) || ! array_key_exists($path, $files)) {
                 throw new UnexpectedValueException(sprintf(
                     '%s at %s names %s, which the revision does not hold under %s/.',

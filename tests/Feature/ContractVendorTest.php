@@ -140,6 +140,10 @@ it('refuses an archive it cannot vendor, names what is wrong, and leaves the cop
         [...aServedDirectory(), 'contract/web-api/index.json' => '{"api_version": 1, "kinds": {"word": "kinds/word.json"}, "reads": "gone.json"}'],
         'names "gone.json"',
     ],
+    'an index naming an action file not there' => [
+        [...aServedDirectory(), 'contract/web-api/index.json' => '{"api_version": 1, "kinds": {"word": "kinds/word.json"}, "actions": {"restart": "actions/gone.json"}}'],
+        'names "actions/gone.json"',
+    ],
     'a file in the directory that is not JSON' => [[...aServedDirectory(), 'contract/web-api/defs/Broken.json' => '{'], 'contract/web-api/defs/Broken.json at ' . REVISION . ' is not JSON'],
     'a single file that is not JSON' => [['contract/web-api.contract.json' => 'nope'], 'contract/web-api.contract.json at ' . REVISION . ' is not JSON'],
     'a single file naming no kinds' => [['contract/web-api.contract.json' => '{"api_version": 1}'], 'is not a contract artefact'],

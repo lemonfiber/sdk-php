@@ -33,6 +33,7 @@ parameters:
         noExtends:
             classesAllowedToBeExtended:
                 - InvalidArgumentException
+                - Lemonfiber\Sdk\ActionRequest
                 - Lemonfiber\Sdk\Exception\RequestFailed
                 - RuntimeException
                 - Saloon\Http\Connector
@@ -47,4 +48,7 @@ parameters:
             enabled: false
         # A nullable return is the difference between a held value and none.
         noNullableReturnTypeDeclaration:
+            enabled: false
+        # Each generated action takes its arguments by name; that is its surface.
+        noNamedArgument:
             enabled: false

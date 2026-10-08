@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
-use Lemonfiber\Sdk\Http\ActionRequest;
+use Lemonfiber\Sdk\Generated\DownAction;
+use Lemonfiber\Sdk\Http\ActRequest;
 use Lemonfiber\Sdk\Http\IdempotencyKey;
 
 it('travels in the agreed header', function (): void {
@@ -42,7 +43,7 @@ it('refuses a key carrying characters that cannot travel in a request', function
 ]);
 
 it('puts the key on the one request it was given to', function (): void {
-    $request = new ActionRequest('/api/actions/down', ['services' => ['sonarr']], IdempotencyKey::fromString('01J8Z3'));
+    $request = new ActRequest(new DownAction(services: ['sonarr']), IdempotencyKey::fromString('01J8Z3'));
 
     expect($request->headers()->get(Api::IDEMPOTENCY_HEADER))->toBe('01J8Z3');
 });
@@ -51,7 +52,7 @@ it('carries no such header where no key was given', function (): void {
     // The absence is asserted rather than assumed. A default key would be one
     // value every action this client ever sent arrived under, which reads to a
     // stack as every one of them being a re-send of the first.
-    $request = new ActionRequest('/api/actions/down');
+    $request = new ActRequest(new DownAction());
 
     expect($request->headers()->get(Api::IDEMPOTENCY_HEADER))->toBeNull();
 });

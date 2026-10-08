@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk;
 
-use Lemonfiber\Sdk\Contract\Api;
+use function array_values;
+
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
+use Lemonfiber\Sdk\Generated\RepairAction;
 
 use function trim;
 
@@ -45,21 +47,20 @@ use function trim;
 final readonly class Repair
 {
     /**
-     * The name lemonfiber offers this action under.
+     * @param list<string> $agreed
      */
-    public const string ACTION = 'repair';
-
-    /**
-     * @param array<string, mixed> $arguments
-     */
-    private function __construct(private array $arguments) {}
+    private function __construct(
+        private bool $confirm,
+        private ?string $offer = null,
+        private array $agreed = [],
+    ) {}
 
     /**
      * Ask what could be put right, and put none of it right.
      */
     public static function offer(): self
     {
-        return new self(['confirm' => false]);
+        return new self(confirm: false);
     }
 
     /**
@@ -82,11 +83,7 @@ final readonly class Repair
             throw ConfigurationProblem::agreementNamesNoOffer();
         }
 
-        return new self([
-            'confirm' => true,
-            'offer' => $offer,
-            'agreed' => [$check, ...$more],
-        ]);
+        return new self(confirm: true, offer: $offer, agreed: array_values([$check, ...$more]));
     }
 
     /**
@@ -94,24 +91,14 @@ final readonly class Repair
      */
     public static function agreedInAdvance(): self
     {
-        return new self(['confirm' => true]);
+        return new self(confirm: true);
     }
 
     /**
-     * Where this is asked for.
+     * The request this asks for, as the action the contract lists.
      */
-    public function endpoint(): string
+    public function request(): RepairAction
     {
-        return Api::action(self::ACTION);
-    }
-
-    /**
-     * What this asks the action for.
-     *
-     * @return array<string, mixed>
-     */
-    public function arguments(): array
-    {
-        return $this->arguments;
+        return new RepairAction(offer: $this->offer, agreed: $this->agreed, confirm: $this->confirm);
     }
 }

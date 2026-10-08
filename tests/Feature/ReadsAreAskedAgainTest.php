@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 use Lemonfiber\Sdk\Client;
 use Lemonfiber\Sdk\Exception\RequestFailed;
-use Lemonfiber\Sdk\Http\ActionRequest;
+use Lemonfiber\Sdk\Generated\RestartAction;
+use Lemonfiber\Sdk\Http\ActRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\ReadRequest;
@@ -102,10 +103,10 @@ it('opens live updates again where a gateway could not reach the stack', functio
 it('never asks an action again, whatever answered it', function (): void {
     $mock = new MockClient([MockResponse::make('', 503), MockResponse::make('{"api_version":1,"kind":"job","data":{"job":"j","action":"restart"}}', 202)]);
 
-    $raised = whatTheCallRaised(static fn(): mixed => aClientAnsweredInTurn($mock)->act('/api/actions/restart'));
+    $raised = whatTheCallRaised(static fn(): mixed => aClientAnsweredInTurn($mock)->act(new RestartAction()));
 
     expect($raised)->toBeInstanceOf(RequestFailed::class);
-    $mock->assertSentCount(1, ActionRequest::class);
+    $mock->assertSentCount(1, ActRequest::class);
 });
 
 it('waits a quarter of a second before asking a read again, and twice that before the third time', function (): void {

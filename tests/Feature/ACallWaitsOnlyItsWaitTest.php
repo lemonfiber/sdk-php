@@ -5,7 +5,8 @@ declare(strict_types=1);
 use Lemonfiber\Sdk\Client;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\Unreachable;
-use Lemonfiber\Sdk\Http\ActionRequest;
+use Lemonfiber\Sdk\Generated\RestartAction;
+use Lemonfiber\Sdk\Http\ActRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\ReadRequest;
@@ -166,7 +167,7 @@ it('sends an action under a key once where nothing answered, and reports that no
 
     // A second sending would have been answered with the job envelope; what is
     // raised instead is the first sending meeting nothing.
-    $raised = whatWasRaised(static fn(): mixed => aClientOnPort(9000, 'a-run-token')->withMockClient($mock)->act('/api/actions/restart', [], 'one-attempt'));
+    $raised = whatWasRaised(static fn(): mixed => aClientOnPort(9000, 'a-run-token')->withMockClient($mock)->act(new RestartAction(), 'one-attempt'));
 
     expect($raised)->toBeInstanceOf(Unreachable::class);
 });
@@ -174,7 +175,7 @@ it('sends an action under a key once where nothing answered, and reports that no
 it('sends an action under a key once, carrying the key, to a peer that hangs up', function (): void {
     $peer = AnsweringListener::hangingUp();
 
-    $raised = whatWasRaised(static fn(): mixed => aClientAt($peer->address(), 'a-run-token')->act('/api/actions/restart', [], 'one-attempt'));
+    $raised = whatWasRaised(static fn(): mixed => aClientAt($peer->address(), 'a-run-token')->act(new RestartAction(), 'one-attempt'));
 
     expect($raised)->toBeInstanceOf(Unreachable::class)
         ->and(howManyAsked($peer))->toBe(1)
@@ -184,16 +185,16 @@ it('sends an action under a key once, carrying the key, to a peer that hangs up'
 it('never sends an action under a key again where the stack answered, a refusal included', function (): void {
     $mock = new MockClient([MockResponse::make('', 503), MockResponse::make(A_JOB, 202)]);
 
-    $raised = whatWasRaised(static fn(): mixed => aClientOnPort(9000, 'a-run-token')->withMockClient($mock)->act('/api/actions/restart', [], 'one-attempt'));
+    $raised = whatWasRaised(static fn(): mixed => aClientOnPort(9000, 'a-run-token')->withMockClient($mock)->act(new RestartAction(), 'one-attempt'));
 
     expect($raised)->toBeInstanceOf(RequestFailed::class);
-    $mock->assertSentCount(1, ActionRequest::class);
+    $mock->assertSentCount(1, ActRequest::class);
 });
 
 it('never sends an action carrying no key again, even where nothing answered', function (): void {
     $peer = AnsweringListener::hangingUp();
 
-    $raised = whatWasRaised(static fn(): mixed => aClientAt($peer->address(), 'a-run-token')->act('/api/actions/restart'));
+    $raised = whatWasRaised(static fn(): mixed => aClientAt($peer->address(), 'a-run-token')->act(new RestartAction()));
 
     expect($raised)->toBeInstanceOf(Unreachable::class)
         ->and(howManyAsked($peer))->toBe(1);

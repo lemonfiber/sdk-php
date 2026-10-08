@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Http;
 
+use Lemonfiber\Sdk\ActionRequest;
 use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Envelope\EnvelopeReader;
 use Override;
@@ -14,38 +15,34 @@ use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
 
 /**
- * A request that acts, mirroring a command.
+ * An action, as the request that asks for it.
  *
  * The key naming the attempt is held per request rather than on the
  * connection. One client sends many actions, and a key set once for all of
  * them would tell a stack that every one of them was a re-send of the first.
  *
  * **Sent once, key or no key.** A connection that broke may have carried the
- * action and lost its answer, and the stack does not read the key, so a second
- * sending would be a second change. Where nothing answered, the call raises
+ * action and lost its answer, so this client never sends one again on its own.
+ * Where nothing answered, the call raises
  * {@see \Lemonfiber\Sdk\Exception\Unreachable} and the caller decides.
  *
  * @implements ReadsItsAnswer<Envelope<mixed>>
  */
-final class ActionRequest extends Request implements HasBody, ReadsItsAnswer
+final class ActRequest extends Request implements HasBody, ReadsItsAnswer
 {
     use HasJsonBody;
 
     #[Override]
     protected Method $method = Method::POST;
 
-    /**
-     * @param array<string, mixed> $payload
-     */
     public function __construct(
-        private readonly string $endpoint,
-        private readonly array $payload = [],
+        private readonly ActionRequest $action,
         private readonly ?IdempotencyKey $attempt = null,
     ) {}
 
     public function resolveEndpoint(): string
     {
-        return $this->endpoint;
+        return $this->action->endpoint();
     }
 
     /**
@@ -62,7 +59,7 @@ final class ActionRequest extends Request implements HasBody, ReadsItsAnswer
      */
     protected function defaultBody(): array
     {
-        return $this->payload;
+        return $this->action->payload();
     }
 
     /**
