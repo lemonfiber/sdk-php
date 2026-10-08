@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: d9679f541083537834005ea1994bd4f4135a60a3, api_version 1.
+// Source: c8b5ffb1983acf50ff270be8a1a930a1c98cfb2c, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -72,6 +72,11 @@ final class RefusalDescription
             RefusalCode::SchemeRefused => 'Raised when a git source is named over a transport other than https, before anything is asked of it.',
             RefusalCode::AddressRefused => 'Raised when a git source\'s host is, or stands for, an address on this machine or on a network of its own: loopback, private, link-local or unspecified.',
             RefusalCode::HeaderNamed => 'Raised when a recipe substitutes a value into a header\'s name, which is a fixed identifier of the protocol and written out; the manifest\'s every other fault is listed beside it.',
+            RefusalCode::InputUnmatched => 'Raised when a recipe of the act asks the operator for a value that was not given, or a value was given that no recipe of the act asks for.',
+            RefusalCode::CallRefused => 'Raised when a recipe\'s call was not sent because its host stands for an address not out on the internet; the install or update was put back.',
+            RefusalCode::StepFailed => 'Raised when a recipe\'s step failed any other way — nothing answered, the answer was not the one it expects, a capture found nothing, or the answer was larger than a recipe reads; the install or update was put back.',
+            RefusalCode::PathNotPlain => 'Raised when a recipe\'s call path is not a plain absolute path; the manifest\'s every other fault is listed beside it.',
+            RefusalCode::ValueWithheld => 'Raised when a recipe\'s call was not sent because a value it carries may not go where it was going: not where its pairs say, not back to the service a credential belongs to, or outside without its approval; the install or update was put back.',
             RefusalCode::Unwanted => 'Raised where a read was given a parameter its answer has nowhere to put.',
             RefusalCode::Repeated => 'Raised where a parameter carrying one value was given more than once.',
             RefusalCode::NoSuchRead => 'Raised where no read goes by the name that was asked for.',

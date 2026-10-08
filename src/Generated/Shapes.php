@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: d9679f541083537834005ea1994bd4f4135a60a3, api_version 1.
+// Source: c8b5ffb1983acf50ff270be8a1a930a1c98cfb2c, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -26,7 +26,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Criticality 'critical'|'core'|'important'|'enhancing'|'optional'
  * @phpstan-type Disposition 'shown'|'recorded'|'rehearsed'|'held'|'reapplied'|'would-reapply'
  * @phpstan-type DoctorCategory 'environment'|'storage'|'network'|'vpn'|'credentials'|'services'|'providers'|'queue'|'config'
- * @phpstan-type DoctorVerdict array{note?: string|null, outcome: 'pass'}|array{cause?: Problem|null, code: Code, detail?: string|null, meaning: string, outcome: 'warn', remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, summary: string}|array{cause?: Problem|null, code: Code, detail?: string|null, meaning: string, outcome: 'fail', remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, summary: string}|array{outcome: 'unverified', reason: string, remedy: Remedy}|array{outcome: 'skipped', reason: string}
+ * @phpstan-type DoctorVerdict array{note?: string|null, outcome: 'pass'}|array{cause?: Problem|null, code: Code, detail?: string|null, meaning: string, outcome: 'warn', remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}|array{cause?: Problem|null, code: Code, detail?: string|null, meaning: string, outcome: 'fail', remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}|array{outcome: 'unverified', reason: string, remedy: Remedy}|array{outcome: 'skipped', reason: string}
  * @phpstan-type Dropped array{needs: StackProtocol, profile: string}
  * @phpstan-type Entry array{reference?: string|null, requirements: list<string>, summary: string}
  * @phpstan-type Estimate array{bytes: int, measured: bool}
@@ -55,9 +55,10 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Passed array{at?: string|null, to: list<string>}
  * @phpstan-type Plan array{dropped: list<Dropped>, filtered: list<Filtered>, footprint: Footprint, forms: list<string>, profiles: list<string>, running?: list<string>|null, services: list<string>}
  * @phpstan-type Policy 'trusted'|'within-a-limit'|'everything-waits'
- * @phpstan-type Problem array{cause?: mixed, code: Code, detail?: string|null, meaning: string, remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, summary: string}
+ * @phpstan-type Problem array{cause?: mixed, code: Code, detail?: string|null, meaning: string, remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}
  * @phpstan-type ProblemSeverity 'advisory'|'warning'|'error'|'critical'
  * @phpstan-type ProblemState 'actionable'|'guided'|'remediable'|'unknown'|'suppressed'
+ * @phpstan-type ProblemStep array{came: StepCame, landed: bool, recipe: string, step: string}
  * @phpstan-type Pulling 'fetching'|'stopped'
  * @phpstan-type Rated array{allows: list<string>, fell_back: bool, holds_back: list<string>}
  * @phpstan-type Refusal array{because: string, named: string}
@@ -77,6 +78,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type StackProtocol 'usenet'|'torrent'
  * @phpstan-type Stage 'not-monitored'|'monitored'|'searching'|'found'|'grabbed'|'downloading'|'downloaded'|'importing'|'imported'|'available'
  * @phpstan-type Stance 'unchanged'|'pending'|'blocked'|'applied'
+ * @phpstan-type StepCame 'answered'|'skipped'|'not-reached'|'unreachable'|'refused'|'withheld'|'unexpected'|'uncaptured'|'oversized'
  * @phpstan-type Term array{also_called: list<string>, deep?: string|null, forms: list<string>, short: string, word: string}
  * @phpstan-type Tree array{archive_path: string, host_path: string}
  * @phpstan-type Triggered array{state: 'started'}|array{state: 'not-started'}|array{detail: string, state: 'failed'}
