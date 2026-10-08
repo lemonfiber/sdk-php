@@ -33,6 +33,14 @@ it('carries every repair that was picked, in the order they were named', functio
     expect($request->agreed)->toBe(['vpn.killswitch', 'media.permissions', 'disk.space']);
 });
 
+it('carries the picked repairs as a list, however they were passed', function (): void {
+    // A variadic collects a named argument under its name; the yes travels as
+    // the list the offer's checks are named in, not as an object.
+    $named = ['also' => 'disk.space'];
+
+    expect(Repair::agreedTo(AN_OFFER, 'vpn.killswitch', ...$named)->request()->agreed)->toBe(['vpn.killswitch', 'disk.space']);
+});
+
 it('carries a yes given before there was an offer to read', function (): void {
     // Standing consent, which the command line spells `--yes`. It is here and
     // it is spelled out, so that a call carrying it says so at the call site.
