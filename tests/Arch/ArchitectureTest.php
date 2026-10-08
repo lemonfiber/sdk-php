@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Lemonfiber\Sdk\ActionRequest;
 use Lemonfiber\Sdk\Admission;
 use Lemonfiber\Sdk\Client;
 use Lemonfiber\Sdk\Envelope\Envelope;
@@ -24,10 +25,14 @@ arch('every class is final')
     ->expect('Lemonfiber\Sdk')
     ->classes()
     ->toBeFinal()
-    ->ignoring(['Lemonfiber\Sdk\Tests', RequestFailed::class]);
+    ->ignoring(['Lemonfiber\Sdk\Tests', RequestFailed::class, ActionRequest::class]);
 
 arch('a refusal is one of its families')
     ->expect(RequestFailed::class)
+    ->toBeAbstract();
+
+arch('an action is one the contract lists')
+    ->expect(ActionRequest::class)
     ->toBeAbstract();
 
 arch('nothing prints or halts')

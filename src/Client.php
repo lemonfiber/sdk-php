@@ -16,7 +16,7 @@ use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
-use Lemonfiber\Sdk\Http\ActionRequest;
+use Lemonfiber\Sdk\Http\ActRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\IdempotencyKey;
@@ -98,12 +98,14 @@ final readonly class Client
     /**
      * Ask a stack to change something, as one attempt at it.
      *
+     * Each action lemonfiber offers is a generated {@see ActionRequest}
+     * taking its arguments by name.
+     *
      * The key names that attempt; a caller acting again, or acting after the
      * connection came back, mints a new one. The action is sent once, key or no
      * key. A key is given per call and this client keeps none of them, so there
      * is no value here for a later request to pick up.
      *
-     * @param  array<string, mixed>  $body
      * @return Envelope<mixed>
      *
      * @throws ApiVersionMismatch
@@ -112,11 +114,11 @@ final readonly class Client
      * @throws Unreachable
      * @throws UnreadableResponse
      */
-    public function act(string $endpoint, array $body = [], ?string $idempotencyKey = null): Envelope
+    public function act(ActionRequest $action, ?string $idempotencyKey = null): Envelope
     {
         $attempt = $idempotencyKey === null ? null : IdempotencyKey::fromString($idempotencyKey);
 
-        return $this->connector->answer(new ActionRequest($endpoint, $body, $attempt));
+        return $this->connector->answer(new ActRequest($action, $attempt));
     }
 
     /**
@@ -141,7 +143,7 @@ final readonly class Client
      */
     public function repair(Repair $asked, ?string $idempotencyKey = null): Envelope
     {
-        return $this->act($asked->endpoint(), $asked->arguments(), $idempotencyKey);
+        return $this->act($asked->request(), $idempotencyKey);
     }
 
     /**

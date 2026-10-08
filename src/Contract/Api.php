@@ -97,9 +97,8 @@ final class Api implements HouseholdReads, MachineReads
      * Where the action of that name is asked for.
      *
      * Composed from the name rather than written out per action, so there is one place the path is
-     * spelled and one place it moves. What names are offered is the surface's own list and not this
-     * client's to hold: a name lemonfiber does not offer is refused by name, which is an answer a
-     * caller can act on, and a list kept here would go stale silently instead.
+     * spelled and one place it moves. The names come from the contract's list of actions, each of
+     * which is a generated {@see \Lemonfiber\Sdk\ActionRequest} asking here under its own name.
      */
     public static function action(string $name): string
     {

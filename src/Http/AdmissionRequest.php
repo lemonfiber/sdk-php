@@ -21,7 +21,7 @@ use Saloon\Traits\Body\HasJsonBody;
 /**
  * The one request that carries a password rather than a token.
  *
- * Separate from {@see ActionRequest}, which is the shape every *other* command
+ * Separate from {@see ActRequest}, which is the shape every *other* command
  * takes, because this one is not a command: it is the exchange that produces
  * the credential every command afterwards carries. Sharing the shape would put
  * a password one argument away from every endpoint on the surface.

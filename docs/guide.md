@@ -104,16 +104,29 @@ $status->data['active_forms'];   // list<string>
 
 ## Acting
 
-An action's name and its arguments are the command line's own. `Api::action()`
-builds the path:
+Each action lemonfiber offers is a class of its own, generated from the
+contract's list of actions: `Generated\RestartAction` for `restart`,
+`Generated\StopSeedingAction` for `stop-seeding`. Its constructor takes the
+action's arguments by name, with the type and default the contract gives each, so
+an argument the action does not take, or a value of the wrong type, fails before
+anything is sent:
 
 ```php
-$client->act(Api::action('restart'), ['forms' => ['tv'], 'services' => ['sonarr']]);
+use Lemonfiber\Sdk\Generated\RestartAction;
+
+$client->act(new RestartAction(forms: ['tv'], services: ['sonarr']));
 ```
 
-lemonfiber refuses a name it does not offer and a field the action does not take.
-An action is sent once and never retried, because a second sending would be a
-second change.
+An action that can be rehearsed has `rehearsed()`, which asks what it would do
+and does none of it:
+
+```php
+$client->act(new RestartAction(forms: ['tv'])->rehearsed());
+```
+
+`consent()` names the arguments that carry the operator's yes to what an action
+would cost, such as `confirm`. An action is sent once and never retried, because
+a second sending would be a second change.
 
 `Generated\KeyCallableAction` has a case for each action the contract lets an
 integration key call, in the contract's order. `disturbs()` says whether calling it

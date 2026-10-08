@@ -17,6 +17,8 @@ use UnexpectedValueException;
  * who finds one of these knows the artefact and the revision behind it. The
  * header names the vendored copy without its layout, so the same content in
  * either layout is written as the same bytes.
+ *
+ * @phpstan-import-type Action from Actions
  */
 final readonly class GeneratedSource
 {
@@ -278,6 +280,14 @@ final readonly class GeneratedSource
             $disturbs,
             $rehearsal,
         );
+    }
+
+    /**
+     * @param  Action  $action
+     */
+    public function actionClass(string $class, array $action): string
+    {
+        return $this->header() . new ActionSource($this->types)->written($class, $action);
     }
 
     public function contractClass(): string

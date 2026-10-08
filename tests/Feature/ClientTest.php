@@ -9,7 +9,10 @@ use Lemonfiber\Sdk\Events\EventFeed;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\NoSuchJob;
 use Lemonfiber\Sdk\Exception\RequestFailed;
-use Lemonfiber\Sdk\Http\ActionRequest;
+use Lemonfiber\Sdk\Generated\BackupAction;
+use Lemonfiber\Sdk\Generated\DownAction;
+use Lemonfiber\Sdk\Generated\RestartAction;
+use Lemonfiber\Sdk\Http\ActRequest;
 use Lemonfiber\Sdk\Http\ReadRequest;
 use Lemonfiber\Sdk\Http\ReleaseRequest;
 use Lemonfiber\Sdk\JobStanding;
@@ -145,27 +148,27 @@ it('asks for the answer as json', function (): void {
     expect($mock->getLastPendingRequest()?->headers()->get('Accept'))->toBe('application/json');
 });
 
-it('acts on an endpoint, carrying its payload as json', function (): void {
+it('acts where the action is asked for, carrying its arguments as json', function (): void {
     [$client, $mock] = clientAnswering([
-        ActionRequest::class => MockResponse::make('{"api_version":1,"kind":"job","data":{"id":"j1"}}'),
+        ActRequest::class => MockResponse::make('{"api_version":1,"kind":"job","data":{"id":"j1"}}'),
     ]);
 
-    $envelope = $client->act('/api/actions/retry-import', ['service' => 'sonarr']);
+    $envelope = $client->act(new BackupAction(service: 'sonarr'));
 
     $pending = $mock->getLastPendingRequest();
 
     expect($envelope->kind)->toBe('job')
         ->and($pending?->body()?->all())->toBe(['service' => 'sonarr'])
         ->and($pending?->headers()->get(Api::TOKEN_HEADER))->toBe(A_RUN_TOKEN)
-        ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/actions/retry-import');
+        ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/actions/backup');
 });
 
 it('names the attempt an action is part of, in a header and never in the body', function (): void {
     [$client, $mock] = clientAnswering([
-        ActionRequest::class => MockResponse::make('{"api_version":1,"kind":"job","data":{"id":"j1"}}'),
+        ActRequest::class => MockResponse::make('{"api_version":1,"kind":"job","data":{"id":"j1"}}'),
     ]);
 
-    $client->act('/api/actions/down', ['services' => ['sonarr']], 'an-attempt');
+    $client->act(new DownAction(services: ['sonarr']), 'an-attempt');
 
     $pending = $mock->getLastPendingRequest();
 
@@ -173,31 +176,31 @@ it('names the attempt an action is part of, in a header and never in the body', 
     // action's arguments against a closed list and refuses a field it does not
     // offer, so a key put there would turn every action into a refusal.
     expect($pending?->headers()->get(Api::IDEMPOTENCY_HEADER))->toBe('an-attempt')
-        ->and($pending?->body()?->all())->toBe(['services' => ['sonarr']]);
+        ->and($pending?->body()?->all())->toBe(['forms' => [], 'services' => ['sonarr'], 'wait' => false]);
 });
 
 it('sends no attempt header where a caller named no attempt', function (): void {
     [$client, $mock] = clientAnswering([
-        ActionRequest::class => MockResponse::make('{"api_version":1,"kind":"job","data":{"id":"j1"}}'),
+        ActRequest::class => MockResponse::make('{"api_version":1,"kind":"job","data":{"id":"j1"}}'),
     ]);
 
-    $client->act('/api/actions/down');
+    $client->act(new DownAction());
 
     expect($mock->getLastPendingRequest()?->headers()->get(Api::IDEMPOTENCY_HEADER))->toBeNull();
 });
 
 it('refuses to send an action under a key that cannot travel', function (): void {
     [$client] = clientAnswering([
-        ActionRequest::class => MockResponse::make('{"api_version":1,"kind":"job","data":{"id":"j1"}}'),
+        ActRequest::class => MockResponse::make('{"api_version":1,"kind":"job","data":{"id":"j1"}}'),
     ]);
 
-    expect(fn(): Envelope => $client->act('/api/actions/down', [], "key\r\nIdempotency-Key: theirs"))
+    expect(fn(): Envelope => $client->act(new DownAction(), "key\r\nIdempotency-Key: theirs"))
         ->toThrow(ConfigurationProblem::class, 'cannot travel in a request');
 });
 
 it('carries an attempt through a repair, which is the action it changes most with', function (): void {
     [$client, $mock] = clientAnswering([
-        ActionRequest::class => MockResponse::make(
+        ActRequest::class => MockResponse::make(
             '{"api_version":1,"kind":"job","data":{"job":"j1","action":"repair"}}',
         ),
     ]);
@@ -212,7 +215,7 @@ it('asks what could be put right, at the endpoint it never asked a caller for', 
     // caller that goes on spelling it the day lemonfiber moves it, so the
     // path is composed here and the body is a shape rather than an array.
     [$client, $mock] = clientAnswering([
-        ActionRequest::class => MockResponse::make(
+        ActRequest::class => MockResponse::make(
             '{"api_version":1,"kind":"job","data":{"job":"j1","action":"repair"}}',
             202,
         ),
@@ -224,7 +227,7 @@ it('asks what could be put right, at the endpoint it never asked a caller for', 
 
     expect($envelope->kind)->toBe('job')
         ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/actions/repair')
-        ->and($pending?->body()?->all())->toBe(['confirm' => false]);
+        ->and($pending?->body()?->all())->toBe(['disruptive' => false, 'offer' => null, 'agreed' => [], 'confirm' => false]);
 });
 
 it('carries the yes as every other request carries what it says', function (): void {
@@ -232,7 +235,7 @@ it('carries the yes as every other request carries what it says', function (): v
     // action that travelled differently would be a second transport, and the
     // repair is the one where a request going astray carries out work.
     [$client, $mock] = clientAnswering([
-        ActionRequest::class => MockResponse::make(
+        ActRequest::class => MockResponse::make(
             '{"api_version":1,"kind":"job","data":{"job":"j1","action":"repair"}}',
             202,
         ),
@@ -244,9 +247,7 @@ it('carries the yes as every other request carries what it says', function (): v
     $address = (string) $pending?->getUri();
 
     expect($pending?->body()?->all())->toBe([
-        'confirm' => true,
-        'offer' => 'a4f1c0e9',
-        'agreed' => ['vpn.killswitch', 'media.permissions'],
+        'disruptive' => false, 'offer' => 'a4f1c0e9', 'agreed' => ['vpn.killswitch', 'media.permissions'], 'confirm' => true,
     ])
         ->and($pending?->headers()->get(Api::TOKEN_HEADER))->toBe(A_RUN_TOKEN)
         ->and($pending?->headers()->get('Accept'))->toBe(Api::JSON_MEDIA_TYPE)
@@ -470,10 +471,10 @@ it('reports an endpoint that was turned down, reading nothing from it', function
 
 it('reports an action that was turned down', function (): void {
     [$client] = clientAnswering([
-        ActionRequest::class => MockResponse::make('{}', 500),
+        ActRequest::class => MockResponse::make('{}', 500),
     ]);
 
-    expect(fn(): Envelope => $client->act('/api/actions/repair'))
+    expect(fn(): Envelope => $client->act(new RestartAction()))
         ->toThrow(RequestFailed::class, 'answered 500');
 });
 

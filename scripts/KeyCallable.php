@@ -6,13 +6,11 @@ namespace Lemonfiber\Sdk\Scripts;
 
 use function array_is_list;
 use function array_key_exists;
-use function explode;
 use function is_array;
 use function is_bool;
 use function is_string;
 use function preg_match;
 use function sprintf;
-use function ucfirst;
 
 use UnexpectedValueException;
 
@@ -26,9 +24,6 @@ use UnexpectedValueException;
 final readonly class KeyCallable
 {
     private const string KEY = 'key_callable';
-
-    /** An action's name, as the command line spells one. */
-    private const string ACTION = '/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/';
 
     /**
      * Every action the artefact lists, keyed by the case name it is written under, in its order.
@@ -54,7 +49,7 @@ final readonly class KeyCallable
 
         foreach ($listed as $at => $entry) {
             $read = $this->entry($at, $entry);
-            $case = $this->caseName($read['action']);
+            $case = Actions::pascal($read['action']);
 
             if (array_key_exists($case, $named)) {
                 throw new UnexpectedValueException(sprintf('The action `%s` is listed twice among those a key may call.', $read['action']));
@@ -81,7 +76,7 @@ final readonly class KeyCallable
 
         $action = $entry['action'] ?? null;
 
-        if (! is_string($action) || preg_match(self::ACTION, $action) !== 1) {
+        if (! is_string($action) || preg_match(Actions::NAME, $action) !== 1) {
             throw new UnexpectedValueException(sprintf('Entry %d of the actions a key may call names no action.', $at));
         }
 
@@ -93,19 +88,5 @@ final readonly class KeyCallable
         }
 
         return ['action' => $action, 'disturbs' => $disturbs, 'rehearsal' => $rehearsal];
-    }
-
-    /**
-     * The enum case an action is written under: its name in PascalCase.
-     */
-    private function caseName(string $action): string
-    {
-        $case = '';
-
-        foreach (explode('-', $action) as $word) {
-            $case .= ucfirst($word);
-        }
-
-        return $case;
     }
 }

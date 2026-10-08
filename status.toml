@@ -27,6 +27,7 @@ requirement = [
   { id = "ARCH-R73", state = "partial", evidence = ["scripts/contract-generate.php", "tests/Feature/ContractGeneratorTest.php::refuses a reference with a constraint beside it, and names where"] },
   { id = "ARCH-R99", state = "done", evidence = ["src/Http/CertificatePin.php", "tests/Feature/TheTokenStaysWithItsStackTest.php::writes nothing to a peer the pin does not name", "tests/Feature/PinRefusalTest.php::refuses a peer presenting a certificate the pin does not name"] },
   { id = "ARCH-R129", state = "partial", evidence = ["scripts/ShapePlan.php", "tests/Feature/ContractGeneratorTest.php::refuses a definition named like a generated class, names it, and writes nothing"] },
+  { id = "ARCH-R134", state = "partial", evidence = ["scripts/Actions.php", "tests/Feature/ContractActionsTest.php::writes a class per action, taking each argument by name with its type and default"] },
   { id = "ARCH-R138", state = "partial", evidence = ["src/Exception/RequestFailed.php", "tests/Unit/RequestFailedTest.php::reads the code a refusal carries into the generated list"] },
   { id = "ARCH-R139", state = "partial", evidence = ["scripts/Refusals.php", "tests/Feature/ContractGeneratorTest.php::writes a case per refusal the contract lists, in the order of its code"] },
   { id = "ARCH-R170", state = "done", evidence = ["scripts/contract-generate.php", "tests/Feature/ContractGeneratorTest.php::refuses a reference to a definition the kind does not carry, and names it"] },

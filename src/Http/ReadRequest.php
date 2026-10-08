@@ -50,7 +50,7 @@ use Saloon\Http\Response;
  * nothing, so asking it again costs only the wait. Every other answer is the
  * stack's own and comes back on the first attempt: asking again would only
  * repeat it. An action is a different request: it is sent once (see
- * {@see ActionRequest}).
+ * {@see ActRequest}).
  *
  * Each read is made by what its answer is: an envelope, the scrollback, a
  * file, the stream, or where a piece of work stands.

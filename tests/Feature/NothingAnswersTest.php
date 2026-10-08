@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Lemonfiber\Sdk\Admission;
 use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Exception\Unreachable;
+use Lemonfiber\Sdk\Generated\RestartAction;
 use Lemonfiber\Sdk\Logs;
 use Lemonfiber\Sdk\Repair;
 use Lemonfiber\Sdk\WhyNothingAnswered;
@@ -57,8 +58,8 @@ it('raises one of its own problems wherever nothing answers', function (string $
     }
 })->with([
     'a read' => ['/api/clients', static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->read('/api/clients')],
-    'an action' => ['/api/actions/restart', static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->act('/api/actions/restart')],
-    'a repair' => [Repair::offer()->endpoint(), static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->repair(Repair::offer())],
+    'an action' => ['/api/actions/restart', static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->act(new RestartAction())],
+    'a repair' => [Repair::offer()->request()->endpoint(), static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->repair(Repair::offer())],
     'asking after work' => [Api::job('a-job'), static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->whatBecameOf('a-job')],
     'letting work go' => [Api::job('a-job'), static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->letGoOf('a-job')],
     'the logs' => [Api::LOGS_ENDPOINT, static fn(int $port): mixed => aClientOnPort($port, 'a-run-token')->logs(Logs::ofService('sonarr', 5))],

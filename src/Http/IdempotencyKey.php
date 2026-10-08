@@ -26,7 +26,7 @@ use function trim;
  * travels with everything sent over it, which is right for a credential and
  * wrong for this: a key that outlives one request is a key that names two
  * attempts, and the second of them is a change the operator did not ask for
- * twice. It reaches a single {@see ActionRequest} and goes no further.
+ * twice. It reaches a single {@see ActRequest} and goes no further.
  */
 final readonly class IdempotencyKey
 {

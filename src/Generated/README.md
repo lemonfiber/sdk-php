@@ -16,6 +16,7 @@ something that already has one.
 | `RefusalStatus.php` | The status each code is answered with, which `RefusalCode::status()` reads |
 | `RefusalDescription.php` | The registry's line about each code, which `RefusalCode::description()` reads |
 | `KeyCallableAction.php` | Every action an integration key may call, with whether it disturbs the running system and whether it can be rehearsed |
+| `<Action>Action.php` | One class per action: its arguments by name with their types and defaults, the arguments carrying consent, and `rehearsed()` where it takes `dry_run` |
 | `<Kind>Envelope.php` | One class per kind: the kind it reads, the payload type the contract gives it as `Data`, and an alias for each shape only that kind carries |
 | `Shapes.php` | An alias for each shape more than one kind carries, which the envelopes using it import |
 
