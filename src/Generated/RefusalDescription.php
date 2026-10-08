@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 34570aa127f59a0c54d79ab5bf1c3022e39f89a9, api_version 1.
+// Source: 65103564328269478a863ae41bbf527f6f6c5f1e, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -36,6 +36,8 @@ final class RefusalDescription
             RefusalCode::NoEndpoint => 'Raised where a path under the endpoints is one no endpoint answers.',
             RefusalCode::WrongMethod => 'Raised where an endpoint was asked with a method it does not answer.',
             RefusalCode::NotAKeyRequest => 'Raised where the body of a mint is not a key\'s name, scope, purpose and the password.',
+            RefusalCode::NotAnIdempotencyKey => 'Raised where an action\'s `Idempotency-Key` is not one to 255 visible characters, or is given more than once.',
+            RefusalCode::IdempotencyKeyReused => 'Raised where an `Idempotency-Key` already sent with one action and its arguments is sent with another.',
             RefusalCode::AnotherReading => 'Raised when an agreement names a reading of this machine that is not the one standing now.',
             RefusalCode::OfferMoved => 'Raised when a replacement was agreed to for an offer that is not the one standing now.',
             RefusalCode::Unreadable => 'The source names no plugin this build can read.',
@@ -90,6 +92,7 @@ final class RefusalDescription
             RefusalCode::MovedOn => 'Raised when consent was given for a listing that no longer stands.',
             RefusalCode::Unrenderable => 'Raised when an answer could not be rendered.',
             RefusalCode::NoJobName => 'Raised when this machine will not supply the randomness a job is named with.',
+            RefusalCode::Unanswered => 'Raised when an action\'s work ended before it had an answer to give.',
             RefusalCode::AnotherOffer => 'Raised when an agreement names an offer that is not the one standing now.',
             RefusalCode::StackUnreadable => 'Raised when a stack directory holds no readable manifest.',
             RefusalCode::StackUnusable => 'Raised when a manifest is readable and this build cannot use it.',

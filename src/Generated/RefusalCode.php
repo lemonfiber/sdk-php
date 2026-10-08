@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 34570aa127f59a0c54d79ab5bf1c3022e39f89a9, api_version 1.
+// Source: 65103564328269478a863ae41bbf527f6f6c5f1e, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -37,6 +37,8 @@ enum RefusalCode: string
     case NoEndpoint = 'ASK-9';
     case WrongMethod = 'ASK-10';
     case NotAKeyRequest = 'ASK-11';
+    case NotAnIdempotencyKey = 'ASK-12';
+    case IdempotencyKeyReused = 'ASK-13';
     case AnotherReading = 'GONE-2';
     case OfferMoved = 'MIGRATE-1';
     case Unreadable = 'PLUGIN-2';
@@ -91,6 +93,7 @@ enum RefusalCode: string
     case MovedOn = 'RESTORE-11';
     case Unrenderable = 'SERVE-6';
     case NoJobName = 'SERVE-7';
+    case Unanswered = 'SERVE-8';
     case AnotherOffer = 'SPACE-6';
     case StackUnreadable = 'STACK-1';
     case StackUnusable = 'STACK-2';
