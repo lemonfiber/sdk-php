@@ -19,9 +19,9 @@
 name: contract-bump
 
 on:
-  # How the server asks. `contract-moved` there dispatches this whenever
-  # `contract/web-api.contract.json` changes, so the cadence is the change
-  # rather than the calendar.
+  # How the server asks. `contract-moved` there dispatches this whenever the
+  # contract artefact changes, so the cadence is the change rather than the
+  # calendar.
   workflow_dispatch:
   # The floor, for a dispatch that never arrived.
   schedule:
@@ -79,36 +79,43 @@ jobs:
           # revision stamp. That is the noise this workflow exists to remove,
           # arriving from the other direction.
           #
-          # So this compares what `contract-drift` compares: the parsed
-          # artefact. When the bytes match, there is nothing to take, and the
-          # stamp staying where it is remains true — it says where the bytes
-          # came from, and they came from there.
+          # So this compares what `contract-drift` compares, with the same
+          # script: the parsed artefact. When it matches, there is nothing to
+          # take, and the stamp staying where it is remains true — it says
+          # where the bytes came from, and they came from there.
           pin="$(tr -d '[:space:]' < contract/VERSION)"
           head="$(gh api "repos/${SERVER}/commits/main" --jq .sha)"
           echo "pin=${pin}" >> "$GITHUB_OUTPUT"
           echo "head=${head}" >> "$GITHUB_OUTPUT"
 
-          # `-L` follows redirects, and a redirect may point anywhere. These
-          # refuse any hop that is not HTTPS, so what is fetched cannot be
-          # downgraded.
-          curl -fsSL --proto "=https" --proto-redir "=https" --retry 3 -o served.json \
-            "https://raw.githubusercontent.com/${SERVER}/${head}/contract/web-api.contract.json"
+          # The archive of the revision's tree holds the contract in whichever
+          # layout that revision has it. `-L` follows redirects, and a redirect
+          # may point anywhere. These refuse any hop that is not HTTPS, so what
+          # is fetched cannot be downgraded.
+          curl -fsSL --proto "=https" --proto-redir "=https" --retry 3 -o lemonfiber.tar.gz \
+            "https://codeload.github.com/${SERVER}/tar.gz/${head}"
 
-          if VENDORED=contract/web-api.contract.json SERVED=served.json python3 -c '
-          import json, os, sys
-          vendored = json.load(open(os.environ["VENDORED"]))
-          served = json.load(open(os.environ["SERVED"]))
-          sys.exit(0 if vendored == served else 1)
-          '; then
-            echo "moved=no" >> "$GITHUB_OUTPUT"
-            echo "The vendored artefact matches the one ${head} serves; nothing to take."
-            echo "## The vendored contract is what the server describes" >>"${GITHUB_STEP_SUMMARY:-/dev/null}"
-          else
-            echo "moved=yes" >> "$GITHUB_OUTPUT"
-            echo "The artefact has changed since ${pin}; the server's main is ${head}."
-          fi
+          # Exit 0 is the same contract, 1 a different one, and anything else
+          # a copy that could not be read, which is neither.
+          compared=0
+          python3 scripts/contract_drift.py || compared=$?
+          rm -f lemonfiber.tar.gz
 
-          rm -f served.json
+          case "$compared" in
+            0)
+              echo "moved=no" >> "$GITHUB_OUTPUT"
+              echo "The vendored artefact matches the one ${head} serves; nothing to take."
+              echo "## The vendored contract is what the server describes" >>"${GITHUB_STEP_SUMMARY:-/dev/null}"
+              ;;
+            1)
+              echo "moved=yes" >> "$GITHUB_OUTPUT"
+              echo "The artefact has changed since ${pin}; the server's main is ${head}."
+              ;;
+            *)
+              echo "::error::the vendored contract and the one ${head} serves could not be compared"
+              exit 1
+              ;;
+          esac
 
       - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         if: steps.behind.outputs.moved == 'yes'
@@ -156,21 +163,13 @@ jobs:
           # with the working tree, and an untracked file is in neither. Read
           # that way, the catch-up that brought `provenance` committed 56
           # envelopes of 57 and left `Kind` naming a class nobody could load.
-          changed="$(git ls-files --modified --others --exclude-standard)"
+          #
+          # A file the sync removed is listed too: switching the contract's
+          # layout removes the other one, and a definition the server drops
+          # leaves its file behind it.
+          changed="$(git ls-files --modified --deleted --others --exclude-standard)"
           if [ -z "$changed" ]; then
             echo "::error::the pin moved and nothing changed on disk, so there is nothing to commit"
-            exit 1
-          fi
-          # `createCommitOnBranch` writes additions; a deletion needs a field
-          # this does not send, so a sync that removes a file has to be seen by
-          # a person rather than half-committed.
-          #
-          # Read into a variable and tested for emptiness rather than piped to
-          # `grep -q`, which exits at the first name and leaves `git diff` to
-          # die of SIGPIPE; under `pipefail` that reads as no deletion at all.
-          deleted="$(git diff --name-only --diff-filter=D)"
-          if [ -n "$deleted" ]; then
-            echo "::error::the sync deleted a file, which this cannot commit. Do it by hand."
             exit 1
           fi
           printf '%s\n' "$changed"
@@ -224,11 +223,17 @@ jobs:
           repo, branch, base, head, pin, note = sys.argv[1:7]
           # The same question the shell above asked, asked the same way. Two
           # spellings of it are two answers waiting to differ, and the one
-          # that decides what is committed is this one.
-          changed = subprocess.run(
-              ["git", "ls-files", "--modified", "--others", "--exclude-standard"],
-              capture_output=True, text=True, check=True,
-          ).stdout.split()
+          # that decides what is committed is this one. `--modified` lists a
+          # removed file as well, so what is removed is taken out of what is
+          # written.
+          def listed(*which):
+              return subprocess.run(
+                  ["git", "ls-files", *which, "--exclude-standard"],
+                  capture_output=True, text=True, check=True,
+              ).stdout.split()
+
+          deleted = listed("--deleted")
+          changed = [name for name in listed("--modified", "--others") if name not in deleted]
 
           print(json.dumps({
               "query": (
@@ -263,7 +268,8 @@ jobs:
                                   ).decode(),
                               }
                               for name in changed
-                          ]
+                          ],
+                          "deletions": [{"path": name} for name in deleted],
                       },
                   }
               },

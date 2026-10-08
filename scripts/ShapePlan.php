@@ -41,7 +41,8 @@ final class ShapePlan
     /** The alias each envelope class names its own payload with. */
     public const string PAYLOAD = 'Data';
 
-    private const string PREFIX = '#/$defs/';
+    /** What every reference this resolves opens with, before the definition's name. */
+    public const string DEFINITIONS = '#/$defs/';
 
     /** @var array<string, array<mixed, mixed>> each definition's schema, by name */
     private array $schemas = [];
@@ -106,6 +107,16 @@ final class ShapePlan
     public function closesACycle(?string $from, string $to): bool
     {
         return $from !== null && ($this->cycle[$from] ?? -1) === ($this->cycle[$to] ?? -2);
+    }
+
+    /**
+     * The definition a reference names, or nothing where it is not a pointer into {@see DEFINITIONS}.
+     */
+    public static function definitionIn(mixed $reference): ?string
+    {
+        return is_string($reference) && str_starts_with($reference, self::DEFINITIONS)
+            ? substr($reference, strlen(self::DEFINITIONS))
+            : null;
     }
 
     /**
@@ -238,13 +249,14 @@ final class ShapePlan
         while ($pending !== []) {
             $name = array_pop($pending);
 
-            if (in_array($name, $reached, true) || ! array_key_exists($name, $defs)) {
+            $definition = $defs[$name] ?? null;
+
+            if (in_array($name, $reached, true) || ! is_array($definition)) {
                 continue;
             }
 
             $reached[] = $name;
-            $definition = $defs[$name];
-            $pending = [...$pending, ...(is_array($definition) ? $this->referencesIn($definition) : [])];
+            $pending = [...$pending, ...$this->referencesIn($definition)];
         }
 
         return $reached;
@@ -258,8 +270,8 @@ final class ShapePlan
      */
     private function gathered(array $node): array
     {
-        $reference = $node['$ref'] ?? null;
-        $found = is_string($reference) && str_starts_with($reference, self::PREFIX) ? [substr($reference, strlen(self::PREFIX))] : [];
+        $name = self::definitionIn($node['$ref'] ?? null);
+        $found = $name === null ? [] : [$name];
 
         foreach ($node as $key => $child) {
             if ($key !== '$defs' && is_array($child)) {

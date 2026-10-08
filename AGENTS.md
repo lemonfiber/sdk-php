@@ -21,8 +21,8 @@ reference for the other. A client that disagrees with the contract is wrong.
 
 ## The rules you cannot break
 
-- **`src/Generated/` is not edited by hand.** It is produced from the vendored
-  `contract/web-api.contract.json` (`ARCH-R56`, `ARCH-R58`). `composer
+- **`src/Generated/` is not edited by hand.** It is produced from the contract
+  vendored under `contract/` (`ARCH-R56`, `ARCH-R58`). `composer
   contract:check` regenerates and fails on any diff. That directory is skipped by
   Pint, PHPStan, Rector and both test gates on purpose — generated code is proved
   by regeneration, not by passing a linter — and the guards hold it to the line

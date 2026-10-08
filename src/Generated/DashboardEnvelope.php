@@ -1,7 +1,7 @@
 <?php
 
-// Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Generated from the contract vendored under contract/. Do not edit.
+// Source: 34570aa127f59a0c54d79ab5bf1c3022e39f89a9, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,19 +15,18 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `dashboard` envelope, shaped as the contract describes it.
  *
+ * @phpstan-import-type Alert from Shapes
  * @phpstan-import-type FrontDoorReport from Shapes
  * @phpstan-import-type HouseholdReport from Shapes
  * @phpstan-import-type ProblemSeverity from Shapes
  * @phpstan-import-type Service from Shapes
  * @phpstan-type Affected array{check: string, downstream: list<string>, exit?: int|null, meaning: string, onset: string, remedies: list<string>, severity: ProblemSeverity, summary: string}
- * @phpstan-type Alert array{affected: list<string>, check: string, exit?: int|null, kind: string, meaning: string, moment: Moment, remedies: list<string>, severity: ProblemSeverity, summary: string}
  * @phpstan-type DashboardProtocol 'usenet'|'torrent'
  * @phpstan-type DashboardReading array{reading: 'known', value: int}|array{reading: 'stale', value: int}|array{reading: 'unknown'}
  * @phpstan-type Duration array{nanos: int, secs: int}
  * @phpstan-type Hardlink 'linking'|'copying'|'unknown'
  * @phpstan-type HealthStanding 'healthy'|'stopped'|'unconfigured'|'advisory'|'degraded'|'broken'|'critical'|'unknown'
  * @phpstan-type HealthSummary array{affected: list<Affected>, standing: HealthStanding, wanting_attention: int, worst?: string|null}
- * @phpstan-type Moment 'onset'|'resolved'
  * @phpstan-type PanelArray_of_Queue array{data: list<Queue>, panel: 'ready'}|array{data: array{reason: string}, panel: 'unavailable'}
  * @phpstan-type PanelArray_of_Service array{data: list<Service>, panel: 'ready'}|array{data: array{reason: string}, panel: 'unavailable'}
  * @phpstan-type PanelArray_of_Transfer array{data: list<Transfer>, panel: 'ready'}|array{data: array{reason: string}, panel: 'unavailable'}

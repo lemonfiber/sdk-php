@@ -12,7 +12,7 @@ it('speaks the version the contract the types came from describes', function ():
 });
 
 it('names every endpoint it knows, because the contract names none', function (): void {
-    // `contract/web-api.contract.json` carries envelope kinds and no endpoints,
+    // The vendored contract carries envelope kinds and no endpoints,
     // by design — so a path is knowledge this client holds on its callers'
     // behalf. A caller spelling one is a caller that breaks silently the day
     // lemonfiber moves it, which is the whole reason these are here.

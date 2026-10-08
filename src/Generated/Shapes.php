@@ -1,7 +1,7 @@
 <?php
 
-// Generated from contract/web-api.contract.json. Do not edit.
-// Source: 5a9496cec5089736f1f018ae55c551dd30cd6673, api_version 1.
+// Generated from the contract vendored under contract/. Do not edit.
+// Source: 34570aa127f59a0c54d79ab5bf1c3022e39f89a9, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -13,6 +13,7 @@ namespace Lemonfiber\Sdk\Generated;
  *
  * @phpstan-type Action array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'withdraw', key: string, owner: string, path: string, written: int}|array{does: 'rewind', path: string, previous: string, written: int}|array{current: string, does: 'repin', previous: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}|array{does: 'revoke', name: string}|array{does: 'reinstate', name: string}
  * @phpstan-type Address array{caution?: string|null, url: string}
+ * @phpstan-type Alert array{affected: list<string>, check: string, exit?: int|null, id?: string|null, kind: string, meaning: string, moment: Moment, remedies: list<string>, severity: ProblemSeverity, summary: string}
  * @phpstan-type AskingStanding 'unlimited'|'within-quota'|'near-quota'|'quota-exhausted'
  * @phpstan-type Candidate array{bytes: int, consequence?: string|null, name: string, standing: SeedingStanding}
  * @phpstan-type CarryingReport array{backup_first: bool, because: string, existing: string, ours: string, refused: bool, service: string, verdict: string}
@@ -44,8 +45,9 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Medium 'film'|'series'|'other'
  * @phpstan-type MemberAccess array{administrator: bool, age_limit?: int|null, disabled: bool, every_library: bool, libraries: list<string>, rated?: Rated|null, restriction: Restriction, unrated: Unrated}
  * @phpstan-type MemberAsking array{films: Counted, frees_up?: string|null, policy: Policy, standing: AskingStanding, television: Counted}
- * @phpstan-type MemberRequest array{estimate?: Estimate|null, id: int, media?: string|null, refused?: Refused|null, state?: RequestState|null, title?: string|null, waiting_days?: int|null}
+ * @phpstan-type MemberRequest array{arrived?: string|null, estimate?: Estimate|null, id: int, media?: string|null, refused?: Refused|null, shelf_id?: string|null, state?: RequestState|null, title?: string|null, waiting_days?: int|null, year?: int|null}
  * @phpstan-type MemberStanding 'invited'|'expired'|'declined'|'active'|'suspended'
+ * @phpstan-type Moment 'onset'|'resolved'
  * @phpstan-type MovedReport array{from: int, service: string, to: int}
  * @phpstan-type MusicChoice array{format: string, means: string, note: string, scope: string, size_per_hour: string, targets: string}
  * @phpstan-type NewsKind 'updates'|'requests'|'problems'
