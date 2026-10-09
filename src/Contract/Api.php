@@ -7,6 +7,7 @@ namespace Lemonfiber\Sdk\Contract;
 use Lemonfiber\Sdk\Generated\Contract;
 
 use function rawurlencode;
+use function str_replace;
 
 /**
  * The wire contract this client speaks.
@@ -96,6 +97,11 @@ final class Api implements HouseholdReads, MachineReads
     public const string JSON_MEDIA_TYPE = 'application/json';
 
     /**
+     * The place in a path template the title's id is filled in at.
+     */
+    private const string ID = '{id}';
+
+    /**
      * Where the action of that name is asked for.
      *
      * Composed from the name rather than written out per action, so there is one place the path is
@@ -142,5 +148,26 @@ final class Api implements HouseholdReads, MachineReads
     public static function title(string $id): string
     {
         return self::HELD_ENDPOINT . '/' . rawurlencode($id);
+    }
+
+    /**
+     * Where a title's poster is read, the id filled in as {@see self::title()} composes it.
+     */
+    public static function poster(string $id): string
+    {
+        return self::filledIn(self::POSTER_ENDPOINT, $id);
+    }
+
+    /**
+     * Where a title's backdrop is read, the id filled in as {@see self::title()} composes it.
+     */
+    public static function backdrop(string $id): string
+    {
+        return self::filledIn(self::BACKDROP_ENDPOINT, $id);
+    }
+
+    private static function filledIn(string $template, string $id): string
+    {
+        return str_replace(self::ID, rawurlencode($id), $template);
     }
 }

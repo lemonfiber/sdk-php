@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk;
 
-use function preg_match;
+use Lemonfiber\Sdk\Http\Header;
 
 /**
  * One support bundle as lemonfiber handed it over: the file itself, and what
@@ -17,11 +17,6 @@ use function preg_match;
  */
 final readonly class BundleFile
 {
-    /**
-     * A length as a header states one: digits and nothing else.
-     */
-    private const string WHOLE_NUMBER = '/\A\d+\z/';
-
     private function __construct(
         private string $name,
         private string $bytes,
@@ -40,7 +35,7 @@ final readonly class BundleFile
             $name,
             $bytes,
             $contentType,
-            $length !== null && preg_match(self::WHOLE_NUMBER, $length) === 1 ? (int) $length : null,
+            Header::wholeNumber($length),
         );
     }
 

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk;
 
+use function in_array;
+
+use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Envelope\EnvelopeReader;
 use Lemonfiber\Sdk\Events\EventFeed;
@@ -37,6 +40,11 @@ final readonly class Client
     private const int DEFAULT_RECONNECT_LIMIT = 5;
 
     private const int DEFAULT_WAIT_MILLISECONDS = 250;
+
+    /**
+     * The ids that are not one path segment once a path is normalised.
+     */
+    private const array NO_SEGMENT = ['', '.', '..'];
 
     public function __construct(
         private LemonfiberConnector $connector,
@@ -236,6 +244,40 @@ final readonly class Client
     }
 
     /**
+     * A title's poster: one of {@see Picture::MEDIA_TYPES}, of at most {@see Picture::MOST_BYTES}.
+     *
+     * The id is the one the shelf lists the title under, and the query takes `member` and
+     * `defaults` as the title read does. A title outside the member's limits is {@see Exception\Missing}
+     * with `PLAY-2`, and a title with no poster is {@see Exception\Missing} with `PLAY-9`.
+     *
+     * @param  array<string, scalar|list<scalar>|null>  $query
+     *
+     * @throws ConfigurationProblem
+     * @throws RequestFailed
+     * @throws Unreachable
+     * @throws UnreadableResponse
+     */
+    public function poster(string $id, array $query = []): Picture
+    {
+        return $this->connector->answer(ReadRequest::picture(Api::poster($this->titleId($id)), $query));
+    }
+
+    /**
+     * A title's backdrop, read and refused as {@see self::poster()} is.
+     *
+     * @param  array<string, scalar|list<scalar>|null>  $query
+     *
+     * @throws ConfigurationProblem
+     * @throws RequestFailed
+     * @throws Unreachable
+     * @throws UnreadableResponse
+     */
+    public function backdrop(string $id, array $query = []): Picture
+    {
+        return $this->connector->answer(ReadRequest::picture(Api::backdrop($this->titleId($id)), $query));
+    }
+
+    /**
      * @throws ConfigurationProblem
      */
     public function events(
@@ -280,5 +322,20 @@ final readonly class Client
         $this->connector->withMockClient($mock);
 
         return $this;
+    }
+
+    /**
+     * The id, where it is one path segment. An empty id and the two dot segments are not:
+     * a client or a proxy normalising the path would take each to a different read.
+     *
+     * @throws ConfigurationProblem
+     */
+    private function titleId(string $id): string
+    {
+        if (in_array($id, self::NO_SEGMENT, true)) {
+            throw ConfigurationProblem::idNamesNoTitle($id);
+        }
+
+        return $id;
     }
 }

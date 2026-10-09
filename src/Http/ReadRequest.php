@@ -17,9 +17,11 @@ use Lemonfiber\Sdk\BundleFile;
 use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Envelope\EnvelopeReader;
+use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\JobStanding;
 use Lemonfiber\Sdk\Logs;
 use Lemonfiber\Sdk\LogWindow;
+use Lemonfiber\Sdk\Picture;
 use Lemonfiber\Sdk\Time\Duration;
 use Override;
 
@@ -134,6 +136,33 @@ final class ReadRequest extends Request implements ReadsItsAnswer
             Header::in($answer, Header::CONTENT_TYPE),
             Header::in($answer, Header::CONTENT_LENGTH),
         ));
+    }
+
+    /**
+     * One of a title's pictures, asked for as one of the types a picture arrives as and read
+     * no further than one byte past the most a picture is. An answer stating a longer length
+     * is refused before any of it is read.
+     *
+     * @param array<string, scalar|list<scalar>|null> $parameters
+     *
+     * @return self<Picture>
+     */
+    public static function picture(string $endpoint, array $parameters = []): self
+    {
+        $request = new self($endpoint, $parameters, static function (Response $answer): Picture {
+            if (Header::wholeNumber(Header::in($answer, Header::CONTENT_LENGTH)) > Picture::MOST_BYTES) {
+                throw UnreadableResponse::pictureTooLarge();
+            }
+
+            return Picture::handedOver(
+                CappedReader::upTo($answer->stream(), Picture::MOST_BYTES),
+                Header::in($answer, Header::CONTENT_TYPE),
+            );
+        });
+        $request->headers()->add('Accept', implode(', ', Picture::MEDIA_TYPES));
+        $request->config()->add('stream', true);
+
+        return $request;
     }
 
     /**
