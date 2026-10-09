@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ad4e5f20666a8a10e0d0ed61f6a1a6a118614162, api_version 1.
+// Source: ebe81f0581db0d09c3025f7f745d5fa71883085a, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -39,6 +39,7 @@ final class RefusalStatus
             RefusalCode::NotAnIdempotencyKey => 400,
             RefusalCode::IdempotencyKeyReused => 400,
             RefusalCode::AnotherReading => 400,
+            RefusalCode::RestartMoved => 400,
             RefusalCode::OfferMoved => 400,
             RefusalCode::Unreadable => 404,
             RefusalCode::Refused => 400,
@@ -77,6 +78,7 @@ final class RefusalStatus
             RefusalCode::StepFailed => 500,
             RefusalCode::PathNotPlain => 400,
             RefusalCode::ValueWithheld => 400,
+            RefusalCode::PausingMoved => 400,
             RefusalCode::Unwanted => 400,
             RefusalCode::Repeated => 400,
             RefusalCode::NoSuchRead => 404,
@@ -109,12 +111,14 @@ final class RefusalStatus
             RefusalCode::StackUnrecognised => 500,
             RefusalCode::StackNeedsNewer => 500,
             RefusalCode::StackUnassembled => 500,
+            RefusalCode::UpdateMoved => 400,
             RefusalCode::NoSuchFiller => 404,
             RefusalCode::CannotFill => 400,
             RefusalCode::NothingAsks => 400,
             RefusalCode::ChoiceUnwritable => 500,
             RefusalCode::WiringMoved => 400,
             RefusalCode::Unreasonable => 400,
+            RefusalCode::AlreadyFills => 400,
         };
     }
 }

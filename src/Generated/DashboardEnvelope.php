@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ad4e5f20666a8a10e0d0ed61f6a1a6a118614162, api_version 1.
+// Source: ebe81f0581db0d09c3025f7f745d5fa71883085a, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -23,10 +23,13 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type Affected array{check: string, downstream: list<string>, exit?: int|null, meaning: string, onset: string, remedies: list<string>, severity: ProblemSeverity, summary: string}
  * @phpstan-type DashboardProtocol 'usenet'|'torrent'
  * @phpstan-type DashboardReading array{reading: 'known', value: int}|array{reading: 'stale', value: int}|array{reading: 'unknown'}
+ * @phpstan-type Downloader array{client: string, state: DownloaderState}
+ * @phpstan-type DownloaderState 'paused'|'fetching'|'unknown'
  * @phpstan-type Duration array{nanos: int, secs: int}
  * @phpstan-type Hardlink 'linking'|'copying'|'unknown'
  * @phpstan-type HealthStanding 'healthy'|'stopped'|'unconfigured'|'advisory'|'degraded'|'broken'|'critical'|'unknown'
  * @phpstan-type HealthSummary array{affected: list<Affected>, standing: HealthStanding, wanting_attention: int, worst?: string|null}
+ * @phpstan-type PanelArray_of_Downloader array{data: list<Downloader>, panel: 'ready'}|array{data: array{reason: string}, panel: 'unavailable'}
  * @phpstan-type PanelArray_of_Queue array{data: list<Queue>, panel: 'ready'}|array{data: array{reason: string}, panel: 'unavailable'}
  * @phpstan-type PanelArray_of_Service array{data: list<Service>, panel: 'ready'}|array{data: array{reason: string}, panel: 'unavailable'}
  * @phpstan-type PanelArray_of_Transfer array{data: list<Transfer>, panel: 'ready'}|array{data: array{reason: string}, panel: 'unavailable'}
@@ -35,9 +38,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PanelStorage array{data: Storage, panel: 'ready'}|array{data: array{reason: string}, panel: 'unavailable'}
  * @phpstan-type PanelVpn array{data: Vpn, panel: 'ready'}|array{data: array{reason: string}, panel: 'unavailable'}
  * @phpstan-type Queue array{depth: int, service: string, stuck: int}
- * @phpstan-type Snapshot array{alerts: list<Alert>, door: PanelFrontDoorReport, health: HealthSummary, household: PanelHouseholdReport, queue: PanelArray_of_Queue, services: PanelArray_of_Service, storage: PanelStorage, stuck: list<Stuck>, telemetry: Telemetry, transfers: PanelArray_of_Transfer, vpn?: PanelVpn|null}
+ * @phpstan-type Snapshot array{alerts: list<Alert>, door: PanelFrontDoorReport, downloaders: PanelArray_of_Downloader, health: HealthSummary, household: PanelHouseholdReport, queue: PanelArray_of_Queue, services: PanelArray_of_Service, storage: PanelStorage, stuck: list<Stuck>, telemetry: Telemetry, transfers: PanelArray_of_Transfer, vpn?: PanelVpn|null}
  * @phpstan-type Stall 'redownload-loop'|'repeated-import-failure'|'completed-not-imported'|'orphaned'|'stalled-download'|'waiting-indefinitely'|'slow'
- * @phpstan-type Storage array{exhaustion?: Duration|null, free: DashboardReading, hardlink: Hardlink}
+ * @phpstan-type Storage array{config_free: DashboardReading, exhaustion?: Duration|null, free: DashboardReading, hardlink: Hardlink}
  * @phpstan-type Stuck array{blocking?: string|null, held_for: int, items: int, name: string, stall: Stall}
  * @phpstan-type Telemetry 'live'|'degraded'|'disconnected'|'no-stack'|'unconfigured'
  * @phpstan-type Transfer array{eta?: Duration|null, name: string, progress: int, protocol: DashboardProtocol, speed: DashboardReading}

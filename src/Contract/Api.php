@@ -6,6 +6,8 @@ namespace Lemonfiber\Sdk\Contract;
 
 use Lemonfiber\Sdk\Generated\Contract;
 
+use function rawurlencode;
+
 /**
  * The wire contract this client speaks.
  *
@@ -128,5 +130,17 @@ final class Api implements HouseholdReads, MachineReads
     public static function bundle(string $name): string
     {
         return self::BUNDLE_ENDPOINT . '/' . $name;
+    }
+
+    /**
+     * Where one title on a member's shelf is read.
+     *
+     * Composed from the id the shelf lists it under, for the reason
+     * {@see self::action()} is. The id is encoded as one path segment, so
+     * whatever it holds names a title and never another path.
+     */
+    public static function title(string $id): string
+    {
+        return self::HELD_ENDPOINT . '/' . rawurlencode($id);
     }
 }

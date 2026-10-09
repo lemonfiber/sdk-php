@@ -43,8 +43,29 @@ interface HouseholdReads
      * *as* that account, so the age limit, the blocked kinds and the libraries it
      * reaches are applied before the answer is written — and a single answer about
      * a house would be wrong for whoever it was not read as.
+     *
+     * One title on that shelf is the id the shelf lists it under, as the last
+     * segment, and {@see Api::title()} is what composes it. That answers with the
+     * `title` envelope ({@see \Lemonfiber\Sdk\Generated\TitleEnvelope}): what
+     * it is, a series' seasons and episodes, and where each is served at the
+     * guarded front door. It takes `member` and `defaults`, and a title outside
+     * the member's limits is answered as absent, as one the household does not
+     * hold is.
      */
     public const string HELD_ENDPOINT = '/api/held';
+
+    /**
+     * The endpoint answering with what one member was part-way through and how
+     * far, most recent first, each located at the guarded front door as a title
+     * read through {@see Api::title()} is.
+     *
+     * It answers with the `part-way` envelope, so
+     * {@see \Lemonfiber\Sdk\Generated\PartWayEnvelope} is what reads it.
+     *
+     * It takes `member`, naming whose, and `most`, how many to answer with. Like
+     * the shelf it is read as that member, so there is no whole-household form.
+     */
+    public const string WATCHING_ENDPOINT = '/api/watching';
 
     /**
      * The endpoint answering with what the media server is playing now: who is
