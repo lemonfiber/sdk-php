@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ebe81f0581db0d09c3025f7f745d5fa71883085a, api_version 1.
+// Source: f41d39fb329202bbb14dcfedf2e1fdd83d855751, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -40,9 +40,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginInstalls array{agreement?: string|null, install?: PluginInstall|null, installed: list<PluginInstalled>, rehearsed: bool, removal?: PluginRemoval|null, sources?: list<PluginSource>, substituted?: list<PluginSubstituted>, update?: PluginUpdate|null}
  * @phpstan-type PluginOverriding array{setting: string, why: string}
  * @phpstan-type PluginPair array{approval?: string, from?: string, origin: string, release?: string, to: string, value: string}
- * @phpstan-type PluginPlaced array{api?: Api|null, config_path: string, description?: string, digest: string, image: string, listens?: int|null, media_types?: list<string>, name?: string, networks?: list<string>, provides?: list<string>, reached?: PluginReached|null, service: string, tag: string, takes_data: bool}
+ * @phpstan-type PluginPlaced array{api?: Api|null, config_path: string, description?: string, digest: string, image: string, listens?: int|null, media_types?: list<string>, name?: string, networks?: list<string>, provides?: list<string>, reached?: PluginReached|null, service: string, speaks?: list<string>, tag: string, takes_data: bool}
  * @phpstan-type PluginProving array{asks: string, came_to?: PluginVerdict|null, establishes: string, of?: string|null, proof: string, why: string}
- * @phpstan-type PluginPuts 'directory'|'document'|'region'
+ * @phpstan-type PluginPuts 'directory'|'document'|'key'|'region'
  * @phpstan-type PluginReached array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}
  * @phpstan-type PluginRecipe array{id: string, pairs: list<PluginPair>, steps: list<PluginStep>, title: string, why: string}
  * @phpstan-type PluginRecipeRan array{held: bool, recipe: string, steps: list<PluginStepRan>, why?: string|null}

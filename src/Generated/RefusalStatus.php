@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ebe81f0581db0d09c3025f7f745d5fa71883085a, api_version 1.
+// Source: f41d39fb329202bbb14dcfedf2e1fdd83d855751, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -41,6 +41,15 @@ final class RefusalStatus
             RefusalCode::AnotherReading => 400,
             RefusalCode::RestartMoved => 400,
             RefusalCode::OfferMoved => 400,
+            RefusalCode::NotAnItem => 400,
+            RefusalCode::NotOnTheirShelf => 404,
+            RefusalCode::NotADevice => 400,
+            RefusalCode::NothingToPlayFrom => 503,
+            RefusalCode::ServerSilent => 502,
+            RefusalCode::NobodyNamed => 400,
+            RefusalCode::NotInTheHousehold => 404,
+            RefusalCode::SignsNoDeviceIn => 503,
+            RefusalCode::NoSuchPicture => 404,
             RefusalCode::Unreadable => 404,
             RefusalCode::Refused => 400,
             RefusalCode::Unrecorded => 500,
