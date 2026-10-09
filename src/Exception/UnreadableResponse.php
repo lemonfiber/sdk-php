@@ -67,11 +67,19 @@ final class UnreadableResponse extends RuntimeException implements AnswerUnusabl
         );
     }
 
-    public static function notAPicture(?string $contentType): self
+    public static function notAPicture(string $contentType): self
     {
         return new self(sprintf(
-            'The answer is not a picture this client shows: it was labelled %s, and a picture is one of %s.',
-            $contentType === null ? 'with no type' : '"' . $contentType . '"',
+            'The answer is not a picture this client shows: it was labelled "%s", and a picture is one of %s.',
+            $contentType,
+            implode(', ', Picture::MEDIA_TYPES),
+        ));
+    }
+
+    public static function pictureUnlabelled(): self
+    {
+        return new self(sprintf(
+            'The answer is not a picture this client shows: it was labelled with no type, and a picture is one of %s.',
             implode(', ', Picture::MEDIA_TYPES),
         ));
     }

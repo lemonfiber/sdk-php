@@ -11,6 +11,7 @@ use Lemonfiber\Sdk\Generated\Kind;
 use Lemonfiber\Sdk\Generated\RefusalCode;
 use Lemonfiber\Sdk\Http\ReadRequest;
 use Lemonfiber\Sdk\Picture;
+use Lemonfiber\Sdk\Tests\Support\AnsweringListener;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
@@ -169,3 +170,15 @@ it('sends nothing for an id that names no title', function (string $id): void {
         ->and(fn(): Picture => $client->backdrop($id))->toThrow(ConfigurationProblem::class)
         ->and($mock->getLastPendingRequest())->toBeNull();
 })->with(['empty' => [''], 'this segment' => ['.'], 'the segment above' => ['..']]);
+
+it('stops reading a picture streamed past the most a picture is, without waiting for the rest', function (): void {
+    $peer = AnsweringListener::streamingAPicture(Picture::MOST_BYTES + 1024 * 1024);
+    $client = aClientAt($peer->address(), 'a-run-token');
+
+    $began = microtime(true);
+    expect(fn(): Picture => $client->poster('81'))->toThrow(
+        UnreadableResponse::class,
+        'The answer is larger than the 2097152 bytes a picture is at most, so none of it was kept.',
+    )
+        ->and(microtime(true) - $began)->toBeLessThan(aWait()->inSeconds() / 2);
+});

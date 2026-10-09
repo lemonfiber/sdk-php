@@ -5,7 +5,9 @@ declare(strict_types=1);
 // A peer that reads each request's head, writes it down, and answers every one
 // with the same answer. Given the status 0 it holds the connection open and never
 // answers, until long after any wait a test gives a call is over; given the
-// status 1 it hangs up without answering. Started as:
+// status 1 it hangs up without answering; given the status 2 it answers with a
+// picture stating no length, sends `body` bytes of it, and holds the connection
+// open as status 0 does. Started as:
 //
 //   answering-listener.php <tcp|tls> <host> <heard-file> <status> <location or -> <body>
 //
@@ -115,6 +117,14 @@ for (;;) {
 
     if ($status === '1') {
         fclose($accepted);
+
+        continue;
+    }
+
+    if ($status === '2') {
+        fwrite($accepted, "HTTP/1.1 200 Answered\r\nContent-Type: image/png\r\nConnection: close\r\n\r\n");
+        fwrite($accepted, str_repeat('x', (int) $body));
+        $held[] = [$accepted, microtime(true)];
 
         continue;
     }

@@ -6,8 +6,6 @@ namespace Lemonfiber\Sdk;
 
 use Lemonfiber\Sdk\Http\Header;
 
-use function preg_match;
-
 /**
  * One support bundle as lemonfiber handed it over: the file itself, and what
  * the transport said about it.
@@ -37,7 +35,7 @@ final readonly class BundleFile
             $name,
             $bytes,
             $contentType,
-            $length !== null && preg_match(Header::WHOLE_NUMBER, $length) === 1 ? (int) $length : null,
+            Header::wholeNumber($length),
         );
     }
 

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use GuzzleHttp\Psr7\FnStream;
 use GuzzleHttp\Psr7\Utils;
 use Lemonfiber\Sdk\Http\CappedReader;
 
@@ -24,4 +25,15 @@ it('gathers a body that arrives a little at a time', function (): void {
     })());
 
     expect(CappedReader::upTo($stream, 6))->toBe('abcdefg');
+});
+
+it('reads a body handed over a few bytes at a time no further than one byte past the most', function (): void {
+    $trickling = static function (): FnStream {
+        $whole = Utils::streamFor('abcdefghijkl');
+
+        return FnStream::decorate($whole, ['read' => static fn(int $length): string => $whole->read(min($length, 3))]);
+    };
+
+    expect(CappedReader::upTo($trickling(), 6))->toBe('abcdefg')
+        ->and(CappedReader::upTo($trickling(), 4))->toBe('abcde');
 });

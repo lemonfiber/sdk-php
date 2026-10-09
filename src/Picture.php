@@ -45,7 +45,11 @@ final readonly class Picture
      */
     public static function handedOver(string $bytes, ?string $contentType): self
     {
-        $mediaType = strtolower(trim(explode(';', $contentType ?? '', 2)[0]));
+        if ($contentType === null) {
+            throw UnreadableResponse::pictureUnlabelled();
+        }
+
+        $mediaType = strtolower(trim(explode(';', $contentType)[0]));
         if (! in_array($mediaType, self::MEDIA_TYPES, true)) {
             throw UnreadableResponse::notAPicture($contentType);
         }

@@ -98,6 +98,14 @@ final class AnsweringListener
     }
 
     /**
+     * A peer that answers with a picture stating no length, sends that many bytes of it, and then holds the connection open.
+     */
+    public static function streamingAPicture(int $bytes): self
+    {
+        return self::start('tcp', 'http', '127.0.0.1', 2, '-', (string) $bytes);
+    }
+
+    /**
      * Where it listens.
      */
     public function address(): string

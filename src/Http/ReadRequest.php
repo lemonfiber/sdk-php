@@ -150,7 +150,7 @@ final class ReadRequest extends Request implements ReadsItsAnswer
     public static function picture(string $endpoint, array $parameters = []): self
     {
         $request = new self($endpoint, $parameters, static function (Response $answer): Picture {
-            if (Header::declaresMoreThan($answer, Picture::MOST_BYTES)) {
+            if (Header::wholeNumber(Header::in($answer, Header::CONTENT_LENGTH)) > Picture::MOST_BYTES) {
                 throw UnreadableResponse::pictureTooLarge();
             }
 

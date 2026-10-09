@@ -21,17 +21,14 @@ final readonly class Header
     public const string CONTENT_LENGTH = 'Content-Length';
 
     /** A length as a header states one: digits and nothing else. */
-    public const string WHOLE_NUMBER = '/\A\d+\z/';
+    private const string WHOLE_NUMBER = '/\A\d+\z/';
 
     /**
-     * Whether the answer states a length of more than `$most` bytes. A length that is
-     * not a whole number states none.
+     * A header's value as a whole number, or none where it is anything else.
      */
-    public static function declaresMoreThan(Response $response, int $most): bool
+    public static function wholeNumber(?string $written): ?int
     {
-        $length = self::in($response, self::CONTENT_LENGTH);
-
-        return $length !== null && preg_match(self::WHOLE_NUMBER, $length) === 1 && (int) $length > $most;
+        return $written !== null && preg_match(self::WHOLE_NUMBER, $written) === 1 ? (int) $written : null;
     }
 
     /**
