@@ -55,6 +55,22 @@ interface HouseholdReads
     public const string HELD_ENDPOINT = '/api/held';
 
     /**
+     * The endpoint answering with a title's poster, as a raster image and not an envelope.
+     *
+     * `{id}` is the id the shelf lists the title under, and {@see Api::poster()} fills it in. It
+     * takes `member` and `defaults` as the title read does. A title outside the member's limits is
+     * answered as absent (`PLAY-2`), and so is a title with no poster (`PLAY-9`).
+     */
+    public const string POSTER_ENDPOINT = '/api/held/{id}/poster';
+
+    /**
+     * The endpoint answering with a title's backdrop, as a raster image and not an envelope.
+     *
+     * Read as {@see Api::POSTER_ENDPOINT} is, and filled in by {@see Api::backdrop()}.
+     */
+    public const string BACKDROP_ENDPOINT = '/api/held/{id}/backdrop';
+
+    /**
      * The endpoint answering with what one member was part-way through and how
      * far, most recent first, each located at the guarded front door as a title
      * read through {@see Api::title()} is.

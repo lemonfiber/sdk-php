@@ -202,6 +202,26 @@ $file->bytes();         // the file, as delivered
 $file->contentType();   // 'application/gzip'
 ```
 
+## Pictures
+
+A title's poster and backdrop are answered as bytes rather than an envelope, read
+as the member, by the id the shelf lists the title under:
+
+```php
+$poster = $client->poster($id, ['member' => 'ada']);
+$backdrop = $client->backdrop($id, ['member' => 'ada']);
+
+$poster->bytes();       // the image, as delivered
+$poster->mediaType();   // 'image/webp'
+```
+
+The client accepts only `image/jpeg`, `image/png`, `image/webp`, `image/gif` and
+`image/avif`, at most 2 MiB, and raises `UnreadableResponse` for anything else.
+It reads no further than one byte past the limit, and none of an answer that
+states a longer length. A
+title outside the member's limits raises `Missing` with `PLAY-2`, and a title
+with no picture of that kind raises `Missing` with `PLAY-9`.
+
 ## Live updates
 
 ```php

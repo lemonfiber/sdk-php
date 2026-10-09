@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ebe81f0581db0d09c3025f7f745d5fa71883085a, api_version 1.
+// Source: f41d39fb329202bbb14dcfedf2e1fdd83d855751, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -41,6 +41,15 @@ final class RefusalDescription
             RefusalCode::AnotherReading => 'Raised when an agreement names a reading of this machine that is not the one standing now.',
             RefusalCode::RestartMoved => 'Raised where a restart names an offer that is not the one a fresh look at the stack builds.',
             RefusalCode::OfferMoved => 'Raised when a replacement was agreed to for an offer that is not the one standing now.',
+            RefusalCode::NotAnItem => 'Said where the title named is not something the media server could hold.',
+            RefusalCode::NotOnTheirShelf => 'Said where the title is not one this member may watch, or is not there at all.',
+            RefusalCode::NotADevice => 'Said where what names a member\'s device is not a device id.',
+            RefusalCode::NothingToPlayFrom => 'Said where there is no media server to play from, or it was never set up.',
+            RefusalCode::ServerSilent => 'Said where the media server would not answer for a member.',
+            RefusalCode::NobodyNamed => 'Said where nobody is named for something only a member can be.',
+            RefusalCode::NotInTheHousehold => 'Said where the member named is not somebody in the household.',
+            RefusalCode::SignsNoDeviceIn => 'Said where the media server will not sign a device in by code.',
+            RefusalCode::NoSuchPicture => 'Said where a title on the member\'s shelf has no picture of the kind asked for.',
             RefusalCode::Unreadable => 'The source names no plugin this build can read.',
             RefusalCode::Refused => 'The manifest is read and this build refuses what it declares.',
             RefusalCode::Unrecorded => 'The record of what is installed cannot be read.',

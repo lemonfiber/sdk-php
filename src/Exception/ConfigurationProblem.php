@@ -141,4 +141,12 @@ final class ConfigurationProblem extends InvalidArgumentException implements Pro
             'An agreement to repairs names the offer it answers, and this one names none. Ask what could be put right, and answer with the agreement that offer came back with.',
         );
     }
+
+    public static function idNamesNoTitle(string $id): self
+    {
+        return new self(sprintf(
+            'A title is named by the id its shelf lists it under. "%s" is not one: it names no path segment, so nothing was sent.',
+            $id,
+        ));
+    }
 }

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Exception;
 
+use function implode;
+
+use Lemonfiber\Sdk\Picture;
 use RuntimeException;
 
 use function sprintf;
@@ -62,5 +65,22 @@ final class UnreadableResponse extends RuntimeException implements AnswerUnusabl
         return new self(
             'The answer carries no data.',
         );
+    }
+
+    public static function notAPicture(?string $contentType): self
+    {
+        return new self(sprintf(
+            'The answer is not a picture this client shows: it was labelled %s, and a picture is one of %s.',
+            $contentType === null ? 'with no type' : '"' . $contentType . '"',
+            implode(', ', Picture::MEDIA_TYPES),
+        ));
+    }
+
+    public static function pictureTooLarge(): self
+    {
+        return new self(sprintf(
+            'The answer is larger than the %d bytes a picture is at most, so none of it was kept.',
+            Picture::MOST_BYTES,
+        ));
     }
 }

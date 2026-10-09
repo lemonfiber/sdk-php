@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ebe81f0581db0d09c3025f7f745d5fa71883085a, api_version 1.
+// Source: f41d39fb329202bbb14dcfedf2e1fdd83d855751, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -42,6 +42,15 @@ enum RefusalCode: string
     case AnotherReading = 'GONE-2';
     case RestartMoved = 'LIFE-10';
     case OfferMoved = 'MIGRATE-1';
+    case NotAnItem = 'PLAY-1';
+    case NotOnTheirShelf = 'PLAY-2';
+    case NotADevice = 'PLAY-3';
+    case NothingToPlayFrom = 'PLAY-4';
+    case ServerSilent = 'PLAY-5';
+    case NobodyNamed = 'PLAY-6';
+    case NotInTheHousehold = 'PLAY-7';
+    case SignsNoDeviceIn = 'PLAY-8';
+    case NoSuchPicture = 'PLAY-9';
     case Unreadable = 'PLUGIN-2';
     case Refused = 'PLUGIN-3';
     case Unrecorded = 'PLUGIN-4';

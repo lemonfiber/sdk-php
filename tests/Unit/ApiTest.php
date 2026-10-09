@@ -65,6 +65,8 @@ it('names the reads it holds a path for, and holds no path it has no caller for'
         ->and(Api::EXPLAIN_ENDPOINT)->toBe('/api/explain')
         ->and(Api::BACKUPS_ENDPOINT)->toBe('/api/backups')
         ->and(Api::BUNDLE_ENDPOINT)->toBe('/api/bundle')
+        ->and(Api::POSTER_ENDPOINT)->toBe('/api/held/{id}/poster')
+        ->and(Api::BACKDROP_ENDPOINT)->toBe('/api/held/{id}/backdrop')
         ->and(Api::UNINSTALL_ENDPOINT)->toBe('/api/uninstall')
         ->and(Api::PLUGINS_ENDPOINT)->toBe('/api/plugins')
         ->and(Api::WIRING_ENDPOINT)->toBe('/api/wiring')
@@ -109,6 +111,13 @@ it('keeps a title id to the one segment it names', function (): void {
     // An id carrying a separator would otherwise reach a different read.
     expect(Api::title('../keys'))->toBe('/api/held/..%2Fkeys')
         ->and(Api::title('a b?c'))->toBe('/api/held/a%20b%3Fc');
+});
+
+it('composes the paths the pictures of a title are read under', function (): void {
+    expect(Api::poster('4f2a9c'))->toBe('/api/held/4f2a9c/poster')
+        ->and(Api::poster('81'))->toBe('/api/held/81/poster')
+        ->and(Api::backdrop('4f2a9c'))->toBe('/api/held/4f2a9c/backdrop')
+        ->and(Api::backdrop('../keys'))->toBe('/api/held/..%2Fkeys/backdrop');
 });
 
 it('keeps the two media types apart', function (): void {
