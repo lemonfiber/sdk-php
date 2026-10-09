@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ad4e5f20666a8a10e0d0ed61f6a1a6a118614162, api_version 1.
+// Source: ebe81f0581db0d09c3025f7f745d5fa71883085a, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -13,7 +13,7 @@ use Lemonfiber\Sdk\ActionRequest;
 /**
  * The `update` action, as the contract lists it.
  *
- * `confirm` carries the operator's yes to what it would cost.
+ * `offer`, `confirm` carry the operator's yes to what it would cost.
  */
 final class UpdateAction extends ActionRequest
 {
@@ -25,11 +25,13 @@ final class UpdateAction extends ActionRequest
     /**
      * @param  bool  $wait  Whether anything still downloading is let finish before the stop.
      * @param  string|null  $service  The one service to act on instead of the whole stack.
+     * @param  string|null  $offer  Carries the operator's yes. What was read before answering — the offer a repair's yes was read in, the listing a restore's was, what a replacement would stop — as it named itself.
      * @param  bool  $confirm  Carries the operator's yes. Whether a cost the action would incur was agreed to in advance.
      */
     public function __construct(
         public readonly bool $wait = false,
         public readonly ?string $service = null,
+        public readonly ?string $offer = null,
         public readonly bool $confirm = false,
     ) {}
 
@@ -43,7 +45,7 @@ final class UpdateAction extends ActionRequest
      */
     public function consent(): array
     {
-        return ['confirm'];
+        return ['offer', 'confirm'];
     }
 
     /**
@@ -62,6 +64,7 @@ final class UpdateAction extends ActionRequest
         return [
             'wait' => $this->wait,
             'service' => $this->service,
+            'offer' => $this->offer,
             'confirm' => $this->confirm,
         ];
     }

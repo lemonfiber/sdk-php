@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ad4e5f20666a8a10e0d0ed61f6a1a6a118614162, api_version 1.
+// Source: ebe81f0581db0d09c3025f7f745d5fa71883085a, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -18,7 +18,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type Pulling from Shapes
  * @phpstan-type PausedClient array{client: string, now?: Pulling|null, unreached?: string|null, was?: Pulling|null}
  * @phpstan-type Pausing 'pause'|'resume'
- * @phpstan-type PausingReport array{asked: Pausing, caution?: string|null, clients: list<PausedClient>, rehearsed: bool}
+ * @phpstan-type PausingReport array{asked: Pausing, caution?: string|null, clients: list<PausedClient>, offer: string, rehearsed: bool}
  * @phpstan-type Data PausingReport
  */
 final class PausingEnvelope

@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ad4e5f20666a8a10e0d0ed61f6a1a6a118614162, api_version 1.
+// Source: ebe81f0581db0d09c3025f7f745d5fa71883085a, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -40,6 +40,7 @@ enum RefusalCode: string
     case NotAnIdempotencyKey = 'ASK-12';
     case IdempotencyKeyReused = 'ASK-13';
     case AnotherReading = 'GONE-2';
+    case RestartMoved = 'LIFE-10';
     case OfferMoved = 'MIGRATE-1';
     case Unreadable = 'PLUGIN-2';
     case Refused = 'PLUGIN-3';
@@ -78,6 +79,7 @@ enum RefusalCode: string
     case StepFailed = 'PLUGIN-36';
     case PathNotPlain = 'PLUGIN-37';
     case ValueWithheld = 'PLUGIN-38';
+    case PausingMoved = 'RATE-6';
     case Unwanted = 'READ-1';
     case Repeated = 'READ-2';
     case NoSuchRead = 'READ-3';
@@ -110,12 +112,14 @@ enum RefusalCode: string
     case StackUnrecognised = 'STACK-8';
     case StackNeedsNewer = 'STACK-9';
     case StackUnassembled = 'STACK-10';
+    case UpdateMoved = 'UPDATE-5';
     case NoSuchFiller = 'WIRE-1';
     case CannotFill = 'WIRE-2';
     case NothingAsks = 'WIRE-3';
     case ChoiceUnwritable = 'WIRE-4';
     case WiringMoved = 'WIRE-5';
     case Unreasonable = 'WIRE-6';
+    case AlreadyFills = 'WIRE-7';
 
     /**
      * The case a code names, or none where there is no code or one this list does not name.
