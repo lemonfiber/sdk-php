@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ad4e5f20666a8a10e0d0ed61f6a1a6a118614162, api_version 1.
+// Source: ebe81f0581db0d09c3025f7f745d5fa71883085a, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -39,6 +39,7 @@ final class RefusalDescription
             RefusalCode::NotAnIdempotencyKey => 'Raised where an action\'s `Idempotency-Key` is not one to 255 visible characters, or is given more than once.',
             RefusalCode::IdempotencyKeyReused => 'Raised where an `Idempotency-Key` already sent with one action and its arguments is sent with another.',
             RefusalCode::AnotherReading => 'Raised when an agreement names a reading of this machine that is not the one standing now.',
+            RefusalCode::RestartMoved => 'Raised where a restart names an offer that is not the one a fresh look at the stack builds.',
             RefusalCode::OfferMoved => 'Raised when a replacement was agreed to for an offer that is not the one standing now.',
             RefusalCode::Unreadable => 'The source names no plugin this build can read.',
             RefusalCode::Refused => 'The manifest is read and this build refuses what it declares.',
@@ -77,6 +78,7 @@ final class RefusalDescription
             RefusalCode::StepFailed => 'Raised when a recipe\'s step failed any other way — nothing answered, the answer was not the one it expects, a capture found nothing, or the answer was larger than a recipe reads; the install or update was put back.',
             RefusalCode::PathNotPlain => 'Raised when a recipe\'s call path is not a plain absolute path; the manifest\'s every other fault is listed beside it.',
             RefusalCode::ValueWithheld => 'Raised when a recipe\'s call was not sent because a value it carries may not go where it was going: not where its pairs say, not back to the service a credential belongs to, or outside without its approval; the install or update was put back.',
+            RefusalCode::PausingMoved => 'Raised where pausing or resuming the download clients names an offer that is not the one a fresh look at them builds.',
             RefusalCode::Unwanted => 'Raised where a read was given a parameter its answer has nowhere to put.',
             RefusalCode::Repeated => 'Raised where a parameter carrying one value was given more than once.',
             RefusalCode::NoSuchRead => 'Raised where no read goes by the name that was asked for.',
@@ -109,12 +111,14 @@ final class RefusalDescription
             RefusalCode::StackUnrecognised => 'Raised when a manifest declares names this build does not know.',
             RefusalCode::StackNeedsNewer => 'Raised when a stack names a newer lemonfiber than the one running.',
             RefusalCode::StackUnassembled => 'Raised when a manifest\'s files are not laid out as the contract says.',
+            RefusalCode::UpdateMoved => 'Raised where an update names an offer that is not the one a fresh look at the releases builds.',
             RefusalCode::NoSuchFiller => 'A capability was named that no service in this stack provides.',
             RefusalCode::CannotFill => 'The service named cannot do the thing it was asked to fill.',
             RefusalCode::NothingAsks => 'Nothing in this stack asks for the capability, so a choice would change nothing.',
             RefusalCode::ChoiceUnwritable => 'The setting recording the choice could not be written.',
             RefusalCode::WiringMoved => 'Raised when a choice answers an offer that was read against a wiring that has since moved.',
             RefusalCode::Unreasonable => 'Raised when the reason given for a choice is longer than a reason may be, or holds a line break or another control character.',
+            RefusalCode::AlreadyFills => 'Raised where the service chosen already fills the capability, so there is nothing to change.',
         };
     }
 }

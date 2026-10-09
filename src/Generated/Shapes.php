@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ad4e5f20666a8a10e0d0ed61f6a1a6a118614162, api_version 1.
+// Source: ebe81f0581db0d09c3025f7f745d5fa71883085a, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -42,7 +42,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type HouseholdReport array{allows?: string|null, available: bool, filtering?: string|null, findings: list<string>, members: list<HouseholdMember>, policy?: Policy|null, rehearsed: bool}
  * @phpstan-type KeyPurpose 'home-assistant'|'mcp'|'other'
  * @phpstan-type Line array{detail: string, said: string, step: WalkthroughStep}
- * @phpstan-type Medium 'film'|'series'|'other'
+ * @phpstan-type Medium 'film'|'series'|'episode'|'other'
  * @phpstan-type MemberAccess array{administrator: bool, age_limit?: int|null, disabled: bool, every_library: bool, libraries: list<string>, rated?: Rated|null, restriction: Restriction, unrated: Unrated}
  * @phpstan-type MemberAsking array{films: Counted, frees_up?: string|null, policy: Policy, standing: AskingStanding, television: Counted}
  * @phpstan-type MemberRequest array{arrived?: string|null, estimate?: Estimate|null, id: int, media?: string|null, refused?: Refused|null, shelf_id?: string|null, state?: RequestState|null, title?: string|null, waiting_days?: int|null, year?: int|null}
@@ -53,6 +53,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type NewsKind 'updates'|'requests'|'problems'
  * @phpstan-type Notes array{releases: list<ReleaseSummary>, requirements: array<string, Requirement>, running?: Release|null, state: ChangelogState}
  * @phpstan-type Passed array{at?: string|null, to: list<string>}
+ * @phpstan-type Pinned array{fingerprint: string}
  * @phpstan-type Plan array{dropped: list<Dropped>, filtered: list<Filtered>, footprint: Footprint, forms: list<string>, profiles: list<string>, running?: list<string>|null, services: list<string>}
  * @phpstan-type Policy 'trusted'|'within-a-limit'|'everything-waits'
  * @phpstan-type Problem array{cause?: mixed, code: Code, detail?: string|null, meaning: string, remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}

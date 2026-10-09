@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ad4e5f20666a8a10e0d0ed61f6a1a6a118614162, api_version 1.
+// Source: ebe81f0581db0d09c3025f7f745d5fa71883085a, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,8 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `capabilities` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Capabilities array{capabilities: array<string, CapabilityState>}
+ * @phpstan-type Capabilities array{capabilities: array<string, CapabilityState>, scope: CredentialScope, stack?: string|null}
  * @phpstan-type CapabilityState 'available'|'unconfigured'|'unpermitted'
+ * @phpstan-type CredentialScope 'operator'|'read'|'act'|'member'
  * @phpstan-type Data Capabilities
  */
 final class CapabilitiesEnvelope

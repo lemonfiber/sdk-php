@@ -41,6 +41,7 @@ it('names the reads it holds a path for, and holds no path it has no caller for'
         ->and(Api::STORAGE_ENDPOINT)->toBe('/api/storage')
         ->and(Api::REQUESTS_ENDPOINT)->toBe('/api/requests')
         ->and(Api::HELD_ENDPOINT)->toBe('/api/held')
+        ->and(Api::WATCHING_ENDPOINT)->toBe('/api/watching')
         ->and(Api::PLAYING_ENDPOINT)->toBe('/api/playing')
         ->and(Api::CONFIG_ENDPOINT)->toBe('/api/config')
         ->and(Api::QUALITY_ENDPOINT)->toBe('/api/quality')
@@ -95,6 +96,19 @@ it('composes the path one support bundle is asked for under', function (): void 
     // since a join that dropped the name would answer the first by accident.
     expect(Api::bundle('t4m8'))->toBe('/api/bundle/t4m8')
         ->and(Api::bundle('w2qr'))->toBe('/api/bundle/w2qr');
+});
+
+it('composes the path one title on a shelf is read under', function (): void {
+    // Two ids again, since a join that dropped the id would answer the first by
+    // accident.
+    expect(Api::title('4f2a9c'))->toBe('/api/held/4f2a9c')
+        ->and(Api::title('81'))->toBe('/api/held/81');
+});
+
+it('keeps a title id to the one segment it names', function (): void {
+    // An id carrying a separator would otherwise reach a different read.
+    expect(Api::title('../keys'))->toBe('/api/held/..%2Fkeys')
+        ->and(Api::title('a b?c'))->toBe('/api/held/a%20b%3Fc');
 });
 
 it('keeps the two media types apart', function (): void {
