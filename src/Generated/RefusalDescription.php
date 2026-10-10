@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: f41d39fb329202bbb14dcfedf2e1fdd83d855751, api_version 1.
+// Source: 0e9fbff3d7b423c54967af31b0b77d083e37b0a0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -74,7 +74,7 @@ final class RefusalDescription
             RefusalCode::NotAsReviewed => 'Raised when what the catalogue\'s origin served is not what the catalogue reviewed.',
             RefusalCode::SpelledAlike => 'Raised when a plugin\'s service would be named, where lemonfiber keeps what a service holds, as another installed plugin\'s service already is.',
             RefusalCode::PluginOfferMoved => 'Raised when an install, an update or a removal answers an offer that was read against a plugin, a stack or a record that has since moved.',
-            RefusalCode::Unapproved => 'Raised when a value a recipe would carry to a destination was not approved as itself, or an approval names a pair the recipe does not carry.',
+            RefusalCode::Unapproved => 'Raised when a value a recipe would carry to a destination, or the egress guard\'s shape a service would take, was not approved as itself, or an approval names something the reading does not list.',
             RefusalCode::AnotherPlugin => 'Raised when the source an update names holds a different plugin from the one it was asked to update.',
             RefusalCode::Occupied => 'Raised when a plugin\'s service would take a name, a port or a label something already on this machine holds: a service of the stack or of the operator\'s overlay, another plugin\'s port, or a site in the proxy\'s live configuration.',
             RefusalCode::CatalogueReplaced => 'Raised when the catalogue\'s index verifies and is older than the newest one this machine has verified.',
