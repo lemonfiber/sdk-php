@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: cf9a18239dd3e3d710ae8d9d9d8916ab255b799f, api_version 1.
+// Source: 640f134910d8eecc146aa1c2531c4c7d2b0f177f, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -25,6 +25,8 @@ final class RefusalDescription
             RefusalCode::NotAPassword => 'Raised when what was offered at the door is not a password.',
             RefusalCode::KeyInTheClear => 'Raised when a key arrived from another machine over a connection its pin does not verify.',
             RefusalCode::NotForAKey => 'Raised when a key asked for something its scope does not reach.',
+            RefusalCode::NotOpen => 'Raised when a claim names an invitation that is not open.',
+            RefusalCode::ShortChoice => 'Raised when the password chosen at a claim is shorter than the least this takes.',
             RefusalCode::NoSuchAction => 'Raised where no action goes by the name that was asked for.',
             RefusalCode::MissingArgument => 'Raised where an action was not given an argument it needs.',
             RefusalCode::UnrecognisedArgument => 'Raised where an argument was given a value that names nothing.',
