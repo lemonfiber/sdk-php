@@ -319,7 +319,7 @@ it('claims an invitation with the name, the chosen password and the claim, in th
         ->toBe(['name' => 'ada', 'password' => 'a-password-of-twelve', 'claim' => 'a-claim-token']);
 });
 
-it('reads an invitation that is not open from the refusal\'s code, never as a wrong password', function (): void {
+it('reads an invitation that is not open from the code it was refused under, never as a wrong password', function (): void {
     [$door] = doorAnswering(refusedUnder('ADMIT-13', 401));
 
     $met = whatTheClaimMet($door);
@@ -329,13 +329,13 @@ it('reads an invitation that is not open from the refusal\'s code, never as a wr
         ->and($met?->status())->toBe(401);
 });
 
-it('reads a chosen password under the minimum from the refusal\'s code', function (): void {
+it('reads a chosen password under the minimum from the code it was refused under', function (): void {
     [$door] = doorAnswering(refusedUnder('ADMIT-14', 400));
 
     expect(whatTheClaimMet($door)?->code())->toBe(RefusalCode::ShortChoice);
 });
 
-it('reads a media server that could not be asked about a claim from the refusal\'s code', function (): void {
+it('reads a media server that could not be asked about a claim from the code it was refused under', function (): void {
     [$door] = doorAnswering(refusedUnder('ADMIT-7', 403));
 
     expect(whatTheClaimMet($door)?->code())->toBe(RefusalCode::Unconfirmed);
