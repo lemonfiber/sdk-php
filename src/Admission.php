@@ -132,6 +132,24 @@ final readonly class Admission
     }
 
     /**
+     * Claim an invitation: set the password the person chose on the account the invitation names, and come away with their session or with a reason.
+     *
+     * An invitation that is not open is refused under `ADMIT-13` and a chosen
+     * password under the minimum under `ADMIT-14`, each read from the
+     * refusal's code; neither is a wrong password.
+     *
+     * @throws ApiVersionMismatch
+     * @throws RequestFailed
+     * @throws TooManyAttempts
+     * @throws Unreachable
+     * @throws UnreadableResponse
+     */
+    public function claimAs(string $name, string $password, string $claim): Admitted
+    {
+        return $this->offered(new AdmissionRequest($password, $name, $claim));
+    }
+
+    /**
      * Where this door is, and the certificate it holds that address to.
      */
     public function baseUrl(): BaseUrl
@@ -164,7 +182,7 @@ final readonly class Admission
         $response = $this->connector->send($offer);
         $status = $response->status();
 
-        if ($status === self::NOT_THE_PASSWORD) {
+        if ($status === self::NOT_THE_PASSWORD && ! $offer->claims()) {
             throw PasswordWasRefused::atTheDoor();
         }
 

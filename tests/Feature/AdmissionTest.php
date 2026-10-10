@@ -9,6 +9,7 @@ use Lemonfiber\Sdk\Exception\PasswordWasRefused;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\TooManyAttempts;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
+use Lemonfiber\Sdk\Generated\RefusalCode;
 use Lemonfiber\Sdk\Http\AdmissionRequest;
 use Saloon\Contracts\Body\BodyRepository;
 use Saloon\Http\Faking\MockClient;
@@ -273,4 +274,81 @@ it('refuses an answer whose ending cannot be read as a moment', function (): voi
     ));
 
     expect(fn(): mixed => $door->open(A_PASSWORD))->toThrow(UnreadableResponse::class);
+});
+
+/**
+ * A refusal the stack answers with, carrying its code.
+ */
+function refusedUnder(string $code, int $status): MockResponse
+{
+    return MockResponse::make(sprintf(
+        '{"api_version":1,"kind":"error","data":{"code":"%s","summary":"Refused.","meaning":"m","severity":"error","state":"actionable","remedies":[]}}',
+        $code,
+    ), $status);
+}
+
+/**
+ * What a claim was refused with.
+ */
+function whatTheClaimMet(Admission $door): ?RequestFailed
+{
+    try {
+        $door->claimAs('ada', 'a-password-of-twelve', 'a-claim-token');
+    } catch (RequestFailed $refused) {
+        return $refused;
+    }
+
+    return null;
+}
+
+it('claims an invitation with the name, the chosen password and the claim, in the body, to the one endpoint', function (): void {
+    [$door, $mock] = doorAnswering(MockResponse::make(
+        '{"api_version":1,"kind":"admission","data":{"member":"a7f3","token":"a-session","until":"2026-09-14T10:00:00"}}',
+    ));
+
+    $admitted = $door->claimAs('ada', 'a-password-of-twelve', 'a-claim-token');
+
+    $pending = $mock->getLastPendingRequest();
+    $address = (string) $pending?->getUri();
+    $body = $pending?->body();
+
+    expect($admitted->member)->toBe('a7f3')
+        ->and($address)->toBe('http://127.0.0.1:9000' . Admission::ENDPOINT)
+        ->and($address)->not->toContain('a-claim-token')
+        ->and($body instanceof BodyRepository ? $body->all() : [])
+        ->toBe(['name' => 'ada', 'password' => 'a-password-of-twelve', 'claim' => 'a-claim-token']);
+});
+
+it('reads an invitation that is not open from the refusal\'s code, never as a wrong password', function (): void {
+    [$door] = doorAnswering(refusedUnder('ADMIT-13', 401));
+
+    $met = whatTheClaimMet($door);
+
+    expect($met)->not->toBeInstanceOf(PasswordWasRefused::class)
+        ->and($met?->code())->toBe(RefusalCode::NotOpen)
+        ->and($met?->status())->toBe(401);
+});
+
+it('reads a chosen password under the minimum from the refusal\'s code', function (): void {
+    [$door] = doorAnswering(refusedUnder('ADMIT-14', 400));
+
+    expect(whatTheClaimMet($door)?->code())->toBe(RefusalCode::ShortChoice);
+});
+
+it('reads a media server that could not be asked about a claim from the refusal\'s code', function (): void {
+    [$door] = doorAnswering(refusedUnder('ADMIT-7', 403));
+
+    expect(whatTheClaimMet($door)?->code())->toBe(RefusalCode::Unconfirmed);
+});
+
+it('holds a claim to the sign-in limits', function (): void {
+    [$door] = doorAnswering(MockResponse::make('{"error":"too many"}', 429, ['Retry-After' => '45']));
+
+    expect(whatTheClaimMet($door))->toBeInstanceOf(TooManyAttempts::class);
+});
+
+it('still reads a refused sign-in with a name as a wrong password', function (): void {
+    [$door] = doorAnswering(refusedUnder('ADMIT-8', 401));
+
+    expect(fn(): mixed => $door->openAs('ada', A_PASSWORD))->toThrow(PasswordWasRefused::class);
 });
