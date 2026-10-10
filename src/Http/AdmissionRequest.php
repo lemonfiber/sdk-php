@@ -41,16 +41,26 @@ final class AdmissionRequest extends Request implements HasBody, ReadsItsAnswer
     protected Method $method = Method::POST;
 
     /**
-     * @param string|null $name who the caller says they are, which a household member gives and the operator does not
+     * @param string|null $name  who the caller says they are, which a household member gives and the operator does not
+     * @param string|null $claim the claim token an invitation's join link carries, where this claims the invitation
      */
     public function __construct(
         private readonly string $password,
         private readonly ?string $name = null,
+        private readonly ?string $claim = null,
     ) {}
 
     public function resolveEndpoint(): string
     {
         return Admission::ENDPOINT;
+    }
+
+    /**
+     * Whether this offers a claim rather than a password somebody already holds.
+     */
+    public function claims(): bool
+    {
+        return $this->claim !== null;
     }
 
     /**
@@ -78,8 +88,10 @@ final class AdmissionRequest extends Request implements HasBody, ReadsItsAnswer
      */
     protected function defaultBody(): array
     {
-        return $this->name === null
-            ? ['password' => $this->password]
-            : ['name' => $this->name, 'password' => $this->password];
+        return match (true) {
+            $this->name === null => ['password' => $this->password],
+            $this->claim === null => ['name' => $this->name, 'password' => $this->password],
+            default => ['name' => $this->name, 'password' => $this->password, 'claim' => $this->claim],
+        };
     }
 }
