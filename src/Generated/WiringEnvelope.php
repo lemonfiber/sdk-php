@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: dc6670838b58c27ef1b1c64966f911492ff92c66, api_version 1.
+// Source: cf9a18239dd3e3d710ae8d9d9d8916ab255b799f, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -16,12 +16,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `wiring` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type Unfilled from Shapes
- * @phpstan-import-type ValueOrigin from Shapes
- * @phpstan-type Reaches array{capability: string, how: 'asked', origins: array<string, ValueOrigin>, services: list<string>, settled: WiringSettled}|array{how: 'by-name', service: string, why: string}
- * @phpstan-type Whose 'stack'|'operator'
- * @phpstan-type Wired array{by: string, reaches: Reaches}
+ * @phpstan-import-type Wired from Shapes
  * @phpstan-type WiringReport array{unfilled: list<Unfilled>, wired: list<Wired>}
- * @phpstan-type WiringSettled array{settled: 'outright'}|array{settled: 'each'}|array{claimants: list<string>, settled: 'contested'}|array{over: list<string>, settled: 'chosen', whose: Whose, why?: string|null}|array{settled: 'unfilled'}
  * @phpstan-type Data WiringReport
  */
 final class WiringEnvelope

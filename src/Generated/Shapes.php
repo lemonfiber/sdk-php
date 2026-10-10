@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: dc6670838b58c27ef1b1c64966f911492ff92c66, api_version 1.
+// Source: cf9a18239dd3e3d710ae8d9d9d8916ab255b799f, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -62,6 +62,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type ProblemStep array{came: StepCame, landed: bool, recipe: string, step: string}
  * @phpstan-type Pulling 'fetching'|'stopped'
  * @phpstan-type Rated array{allows: list<string>, fell_back: bool, holds_back: list<string>}
+ * @phpstan-type Reaches array{capability: string, how: 'asked', origins: array<string, ValueOrigin>, services: list<string>, settled: WiringSettled}|array{how: 'by-name', service: string, why: string}
  * @phpstan-type Refusal array{because: string, named: string}
  * @phpstan-type Refused array{at?: string|null, expired?: bool, reason: string, told?: Passed|null}
  * @phpstan-type Release array{carried?: string|null, delivers?: string|null, groups: list<Group>, patches?: string|null, released_on?: string|null, tag: string, user_facing: bool, version: string, withdrawn?: string|null}
@@ -94,5 +95,8 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type ValueOrigin array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}|array{named: string, origin: 'overridden', replaced: mixed}|array{named: string, origin: 'orphaned'}
  * @phpstan-type ValueReplaced array{from: mixed, value?: string|null, withheld: bool}
  * @phpstan-type WalkthroughStep 'choosing'|'searching'|'grabbing'|'downloading'|'importing'|'scanning'|'available'
+ * @phpstan-type Whose 'stack'|'operator'
+ * @phpstan-type Wired array{by: string, origin: ValueOrigin, reaches: Reaches}
+ * @phpstan-type WiringSettled array{settled: 'outright'}|array{settled: 'each'}|array{claimants: list<string>, settled: 'contested'}|array{over: list<string>, settled: 'chosen', whose: Whose, why?: string|null}|array{settled: 'unfilled'}
  */
 final class Shapes {}
