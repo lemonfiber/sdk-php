@@ -71,6 +71,33 @@ interface HouseholdReads
     public const string BACKDROP_ENDPOINT = '/api/held/{id}/backdrop';
 
     /**
+     * The endpoint answering with a member's search for titles the house does not hold yet.
+     *
+     * It answers with the `askable` envelope, so
+     * {@see \Lemonfiber\Sdk\Generated\AskableEnvelope} is what reads it: one page of titles,
+     * each with its id, kind, title, year and where it stands, beside what the member may ask
+     * for and whether it waits for approval.
+     *
+     * It takes `term`, the words searched for, two to a hundred characters once trimmed
+     * (`WISH-1` outside that); `after`, the place a previous page said the next one begins at
+     * (`WISH-2` where no page said it); and `member`, which a member's own session replaces with
+     * themselves. The search runs under that member's limits, and a title outside them is left
+     * out rather than shown. A `read` or an `act` key is not answered.
+     */
+    public const string ASKABLE_ENDPOINT = '/api/askable';
+
+    /**
+     * The endpoint answering with the poster of a title a search page offered, as a raster image.
+     *
+     * `{id}` is the id the page listed the title under, and {@see Api::askablePoster()} fills it
+     * in. It takes `kind` as the page named it and `member` as the search does. A title outside
+     * the member's limits is refused as `WISH-3`, and a title with no poster, or posters switched
+     * off by the operator, as `WISH-13`. The core fetches the picture; the client is never sent
+     * to the catalogue.
+     */
+    public const string ASKABLE_POSTER_ENDPOINT = '/api/askable/{id}/poster';
+
+    /**
      * The endpoint answering with what one member was part-way through and how
      * far, most recent first, each located at the guarded front door as a title
      * read through {@see Api::title()} is.

@@ -263,6 +263,26 @@ final readonly class Client
     }
 
     /**
+     * The poster of a title a member's search offered, read and bounded as {@see self::poster()} is.
+     *
+     * The id is the one the search page listed the title under, and the query takes `kind` as the
+     * page named it and `member` as the search does. A title outside the member's limits is
+     * {@see Exception\Missing} with `WISH-3`, and a title with no poster is {@see Exception\Missing}
+     * with `WISH-13`.
+     *
+     * @param  array<string, scalar|list<scalar>|null>  $query
+     *
+     * @throws ConfigurationProblem
+     * @throws RequestFailed
+     * @throws Unreachable
+     * @throws UnreadableResponse
+     */
+    public function askablePoster(string $id, array $query = []): Picture
+    {
+        return $this->connector->answer(ReadRequest::picture(Api::askablePoster($this->titleId($id)), $query));
+    }
+
+    /**
      * A title's backdrop, read and refused as {@see self::poster()} is.
      *
      * @param  array<string, scalar|list<scalar>|null>  $query

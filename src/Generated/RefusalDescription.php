@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bd04cd45e74cf3c9ecb885c935275bc7a8a371e1, api_version 1.
+// Source: 2a1472c24a6e4bb8d5ff70a792d61cc4b61e26b8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -130,6 +130,19 @@ final class RefusalDescription
             RefusalCode::WiringMoved => 'Raised when a choice answers an offer that was read against a wiring that has since moved.',
             RefusalCode::Unreasonable => 'Raised when the reason given for a choice is longer than a reason may be, or holds a line break or another control character.',
             RefusalCode::AlreadyFills => 'Raised where the service chosen already fills the capability, so there is nothing to change.',
+            RefusalCode::NotASearch => 'Said where the words searched for are too few or too many to search with.',
+            RefusalCode::NotAPlace => 'Said where the place a search was asked to go on from is not one a page answered.',
+            RefusalCode::NotAskable => 'Said where no title this member may ask for goes by the id and kind named.',
+            RefusalCode::CannotFetch => 'Said where the house cannot fetch that kind of title, or anything, right now.',
+            RefusalCode::AlreadyHere => 'Said where the title asked for is already in the house.',
+            RefusalCode::NothingLeft => 'Said where the member has asked for all their allowance lets them, until it frees up.',
+            RefusalCode::NoRoom => 'Said where the house has no room for new things, which is the house\'s and nobody\'s limit.',
+            RefusalCode::NotWorking => 'Said where what answers the household\'s asks did not answer, so nothing was asked.',
+            RefusalCode::NotSetUp => 'Said where the house has nothing to search or ask with at all.',
+            RefusalCode::NotItsSeason => 'Said where a season named is not one the title has, or seasons were named for a film.',
+            RefusalCode::NobodyAsking => 'Said where nobody is named for something only a member can do.',
+            RefusalCode::NotAMember => 'Said where the member named is not somebody in the household.',
+            RefusalCode::NoPicture => 'Said where a title a member may ask for has no picture to show them.',
         };
     }
 }

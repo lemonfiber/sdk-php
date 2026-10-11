@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bd04cd45e74cf3c9ecb885c935275bc7a8a371e1, api_version 1.
+// Source: 2a1472c24a6e4bb8d5ff70a792d61cc4b61e26b8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -130,6 +130,19 @@ final class RefusalStatus
             RefusalCode::WiringMoved => 400,
             RefusalCode::Unreasonable => 400,
             RefusalCode::AlreadyFills => 400,
+            RefusalCode::NotASearch => 400,
+            RefusalCode::NotAPlace => 400,
+            RefusalCode::NotAskable => 404,
+            RefusalCode::CannotFetch => 409,
+            RefusalCode::AlreadyHere => 409,
+            RefusalCode::NothingLeft => 409,
+            RefusalCode::NoRoom => 503,
+            RefusalCode::NotWorking => 503,
+            RefusalCode::NotSetUp => 503,
+            RefusalCode::NotItsSeason => 400,
+            RefusalCode::NobodyAsking => 400,
+            RefusalCode::NotAMember => 404,
+            RefusalCode::NoPicture => 404,
         };
     }
 }

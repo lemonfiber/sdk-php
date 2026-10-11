@@ -166,6 +166,15 @@ final class Api implements HouseholdReads, MachineReads
         return self::filledIn(self::BACKDROP_ENDPOINT, $id);
     }
 
+    /**
+     * Where the poster of a title a search page offered is read, the id filled in as
+     * {@see self::title()} composes it.
+     */
+    public static function askablePoster(string $id): string
+    {
+        return self::filledIn(self::ASKABLE_POSTER_ENDPOINT, $id);
+    }
+
     private static function filledIn(string $template, string $id): string
     {
         return str_replace(self::ID, rawurlencode($id), $template);

@@ -80,6 +80,7 @@ it('writes a class per action, taking each argument by name with its type and de
         'stop-seeding' => anAction('stop-seeding', [
             ['name' => 'forms', 'type' => aList()],
             ['name' => 'age_limit', 'type' => ['default' => null, 'minimum' => 0, 'type' => ['integer', 'null']]],
+            ['name' => 'seasons', 'type' => ['default' => [], 'items' => ['format' => 'uint32', 'minimum' => 0, 'type' => 'integer'], 'type' => 'array']],
             ['name' => 'confirm', 'type' => ['default' => false, 'type' => 'boolean']],
         ], ['confirm']),
     ]), JSON_THROW_ON_ERROR));
@@ -92,9 +93,10 @@ it('writes a class per action, taking each argument by name with its type and de
         ->and($source)->toContain('public readonly array $forms = [],')
         ->and($source)->toContain('public readonly ?int $ageLimit = null,')
         ->and($source)->toContain('@param  int<0, max>|null  $ageLimit')
+        ->and($source)->toContain('@param  list<int<0, max>>  $seasons')
         ->and($source)->toContain("@param  bool  \$confirm  Carries the operator's yes.")
         ->and(askTheActions($tree, 'new Lemonfiber\Sdk\Generated\StopSeedingAction(forms: ["tv"], ageLimit: 12)->payload()'))
-        ->toBe('{"forms":["tv"],"age_limit":12,"confirm":false}')
+        ->toBe('{"forms":["tv"],"age_limit":12,"seasons":[],"confirm":false}')
         ->and(askTheActions($tree, '[new Lemonfiber\Sdk\Generated\StopSeedingAction()->endpoint(), new Lemonfiber\Sdk\Generated\StopSeedingAction()->consent()]'))
         ->toBe('["\/api\/actions\/stop-seeding",["confirm"]]');
 
@@ -164,6 +166,8 @@ it('refuses a list of actions it cannot write as classes, names what is wrong, a
     'a list item of another type' => [['restart' => anAction('restart', [['name' => 'forms', 'type' => ['default' => [1], 'items' => ['type' => 'string'], 'type' => 'array']]])], 'the default [1]'],
     'a constraint a parameter cannot hold' => [['quality-set' => anAction('quality-set', [['name' => 'preset', 'type' => ['enum' => ['hd'], 'type' => 'string']]])], 'with `enum`'],
     'two types' => [['set' => anAction('set', [['name' => 'value', 'type' => ['type' => ['string', 'integer']]]])], 'which is not one type a parameter can be'],
+    'a list whose items name a bound that is not whole' => [['set' => anAction('set', [['name' => 'value', 'type' => ['items' => ['minimum' => 0.5, 'type' => 'integer'], 'type' => 'array']]])], 'with a bound that is not a whole number'],
+    'a list whose items hold a constraint a parameter cannot' => [['set' => anAction('set', [['name' => 'value', 'type' => ['items' => ['enum' => ['a'], 'type' => 'string'], 'type' => 'array']]])], 'a list of something other than one plain type'],
     'a list of objects' => [['set' => anAction('set', [['name' => 'value', 'type' => ['items' => ['type' => 'object'], 'type' => 'array']]])], 'a list of something other than one plain type'],
     'consent in an argument it does not take' => [['forget' => anAction('forget', consent: ['confirm'])], 'says consent travels in `confirm`, which it does not take'],
     'two actions written as one class' => [['ab-c' => anAction('ab-c'), 'a-bc' => anAction('a-bc')], 'would be written as ABcAction, as another action already is'],

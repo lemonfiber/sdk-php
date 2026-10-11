@@ -222,6 +222,28 @@ states a longer length. A
 title outside the member's limits raises `Missing` with `PLAY-2`, and a title
 with no picture of that kind raises `Missing` with `PLAY-9`.
 
+## Searching and asking
+
+A member searches for titles the house does not hold yet with
+`Api::ASKABLE_ENDPOINT`, a page at a time, and asks for one with the `ask`
+action, rehearsed first:
+
+```php
+$page = AskableEnvelope::in($client->read(Api::ASKABLE_ENDPOINT, ['term' => 'dune', 'member' => 'ada']));
+
+$client->act(new AskAction(id: $id, kind: 'movies', name: 'ada')->rehearsed());
+$client->act(new AskAction(id: $id, kind: 'movies', name: 'ada'), $idempotencyKey);
+```
+
+A found title's poster is read through the core, never from the catalogue:
+
+```php
+$poster = $client->askablePoster($id, ['kind' => 'movies', 'member' => 'ada']);
+```
+
+It is bounded as a shelf picture is. A title outside the member's limits raises
+`Missing` with `WISH-3`, and one with no poster raises `Missing` with `WISH-13`.
+
 ## Live updates
 
 ```php

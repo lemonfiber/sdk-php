@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bd04cd45e74cf3c9ecb885c935275bc7a8a371e1, api_version 1.
+// Source: 2a1472c24a6e4bb8d5ff70a792d61cc4b61e26b8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -23,7 +23,7 @@ final class InviteAction extends ActionRequest
     public const string ACTION = 'invite';
 
     /**
-     * @param  string|null  $name  Who an invitation is for, as they will sign in.
+     * @param  string|null  $name  Who an action addressed to somebody in the household is for, as they sign in.
      * @param  list<string>  $libraries  The libraries an invitation lets them open, by the names the media server gives those libraries. Empty is every one.
      * @param  int<0, max>|null  $ageLimit  The age above which an invitation has the media server hold things back.
      * @param  string|null  $unrated  What is to happen to content the media server has no rating for.  A word rather than a switch, because the choice has a cost either way and a switch has a default nobody can see: `block` holds unrated content back, and `allow` lets it through. Carried as it was written and read next door, so a word this build does not know is refused by name rather than falling to whichever answer the shape happened to default to.
@@ -48,6 +48,14 @@ final class InviteAction extends ActionRequest
     public function consent(): array
     {
         return ['confirm'];
+    }
+
+    /**
+     * The same request, asking what it would do rather than doing it.
+     */
+    public function rehearsed(): static
+    {
+        return $this->asRehearsal();
     }
 
     /**
