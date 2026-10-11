@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 2182322aa80d53f3618af3fa9ebd835d16d6bd72, api_version 1.
+// Source: 081b2de990d68d64f91569e3ffc1415c3831ea51, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -41,7 +41,23 @@ enum RefusalCode: string
     case NotAKeyRequest = 'ASK-11';
     case NotAnIdempotencyKey = 'ASK-12';
     case IdempotencyKeyReused = 'ASK-13';
+    case BundleNotHeld = 'BUNDLE-8';
+    case NoFormNamed = 'FORM-1';
+    case NoSuchForm = 'FORM-2';
+    case FormsConflict = 'FORM-3';
     case AnotherReading = 'GONE-2';
+    case BadName = 'KEY-1';
+    case NotAScope = 'KEY-2';
+    case NotAPurpose = 'KEY-3';
+    case NameTaken = 'KEY-5';
+    case NoSuchMember = 'KEY-6';
+    case NotForYourself = 'KEY-8';
+    case NoSuchKey = 'KEY-10';
+    case MembersMayNotMint = 'KEY-11';
+    case ClaimNotOpen = 'KEY-12';
+    case Unlinkable = 'KEY-13';
+    case AlreadyWorking = 'LIFE-3';
+    case RegistryRefused = 'LIFE-4';
     case RestartMoved = 'LIFE-10';
     case OfferMoved = 'MIGRATE-1';
     case NotAnItem = 'PLAY-1';
@@ -90,6 +106,18 @@ enum RefusalCode: string
     case StepFailed = 'PLUGIN-36';
     case PathNotPlain = 'PLUGIN-37';
     case ValueWithheld = 'PLUGIN-38';
+    case NothingToProve = 'PLUGIN-39';
+    case StrangerReplacing = 'PLUGIN-40';
+    case NoLimit = 'QUOTA-2';
+    case NotWaiting = 'QUOTA-4';
+    case NoReason = 'QUOTA-5';
+    case Nobody = 'QUOTA-6';
+    case NeverHere = 'QUOTA-7';
+    case NothingMeasured = 'RATE-1';
+    case NoZone = 'RATE-2';
+    case LimitUnreadable = 'RATE-3';
+    case NothingToLimit = 'RATE-4';
+    case NothingToPause = 'RATE-5';
     case PausingMoved = 'RATE-6';
     case Unwanted = 'READ-1';
     case Repeated = 'READ-2';
@@ -107,11 +135,20 @@ enum RefusalCode: string
     case NotALineCount = 'READ-14';
     case NotAChoice = 'READ-15';
     case MemberAndDefaults = 'READ-16';
+    case Cannot = 'REHEARSE-1';
+    case NotYet = 'REHEARSE-2';
     case Stale = 'REPAIR-1';
     case MovedOn = 'RESTORE-11';
     case Unrenderable = 'SERVE-6';
     case NoJobName = 'SERVE-7';
     case Unanswered = 'SERVE-8';
+    case NotReviewed = 'SETUP-1';
+    case DoesNotApply = 'SETUP-5';
+    case AlreadySetUp = 'SETUP-7';
+    case NothingToRecover = 'SETUP-8';
+    case NowhereToMeasure = 'SPACE-2';
+    case NothingToAsk = 'SPACE-4';
+    case NotHeld = 'SPACE-5';
     case AnotherOffer = 'SPACE-6';
     case StackUnreadable = 'STACK-1';
     case StackUnusable = 'STACK-2';
@@ -144,6 +181,7 @@ enum RefusalCode: string
     case NobodyAsking = 'WISH-11';
     case NotAMember = 'WISH-12';
     case NoPicture = 'WISH-13';
+    case Unrecognised = 'WORD-1';
 
     /**
      * The case a code names, or none where there is no code or one this list does not name.
