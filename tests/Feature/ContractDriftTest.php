@@ -6,7 +6,7 @@ use Lemonfiber\Sdk\Tests\Support\Archive;
 use Lemonfiber\Sdk\Tests\Support\ContractTree;
 
 /**
- * The comparison `contract-drift` and `contract-bump` make, shown agreeing and refusing.
+ * The comparison `contract-bump` makes, shown agreeing and refusing.
  */
 const DRIFT = __DIR__ . '/../../scripts/contract_drift.py';
 
@@ -42,27 +42,23 @@ function vendoredAs(array $files): array
 }
 
 /**
- * How the comparison exited and everything it said, with what it wrote to the run page.
+ * How the comparison exited and everything it said.
  *
- * @return array{int, string, string}
+ * @return array{int, string}
  */
-function compared(string $tree, string $archive, string ...$flags): array
+function compared(string $tree, string $archive): array
 {
-    $served = $tree . '/lemonfiber.tar.gz';
-    $summary = $tree . '/summary.md';
-    file_put_contents($served, $archive);
+    file_put_contents($tree . '/lemonfiber.tar.gz', $archive);
 
     $said = [];
     $code = 0;
     exec(sprintf(
-        'cd %s && GITHUB_STEP_SUMMARY=%s python3 %s %s 2>&1',
+        'cd %s && python3 %s 2>&1',
         escapeshellarg($tree),
-        escapeshellarg($summary),
         escapeshellarg((string) realpath(DRIFT)),
-        implode(' ', array_map(escapeshellarg(...), $flags)),
     ), $said, $code);
 
-    return [$code, implode("\n", $said), is_file($summary) ? (string) file_get_contents($summary) : ''];
+    return [$code, implode("\n", $said)];
 }
 
 it('agrees where each file parses to the same JSON, however it is spelled', function (): void {
@@ -120,27 +116,6 @@ it('differs in every file where the copy is in the other layout', function (): v
         ->and($said)->toContain('4 files differ')
         ->and($said)->toContain('contract/web-api.contract.json')
         ->and($said)->toContain('contract/web-api/index.json');
-
-    ContractTree::remove($tree);
-});
-
-it('reports the drift on the run page with the remedy, naming the revision and the files', function (): void {
-    $tree = ContractTree::withDirectory(vendoredAs(aDriftDirectory()));
-    $served = [...aDriftDirectory(), 'contract/web-api/index.json' => '{"api_version": 1, "kinds": {"word": "kinds/word.json", "phrase": "kinds/word.json"}}'];
-
-    [$code, $said, $summary] = compared($tree, Archive::of($served), '--head', 'abc123', '--report');
-
-    expect($code)->toBe(1)
-        ->and($summary)->toContain('## The vendored contract is behind')
-        ->and($summary)->toContain('described by the server and not here: phrase')
-        ->and($summary)->toContain('`contract/web-api/index.json`')
-        ->and($summary)->toContain('composer contract:sync -- abc123')
-        ->and($said)->toContain('::error::the vendored contract is behind lemonfiber abc123');
-
-    [$current, , $agreed] = compared($tree, Archive::of(aDriftDirectory()), '--head', 'abc123', '--report');
-
-    expect($current)->toBe(0)
-        ->and($agreed)->toContain('## The vendored contract is current');
 
     ContractTree::remove($tree);
 });

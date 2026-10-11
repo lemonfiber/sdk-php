@@ -1,7 +1,8 @@
 """The vendored contract, compared with the one a revision of lemonfiber holds.
 
-`contract-drift` and `contract-bump` both ask whether the copy under
-`contract/` is the contract lemonfiber's main holds. The revision arrives as
+`contract-bump` asks whether the copy under `contract/` is the contract
+lemonfiber's main holds; `contract-drift` asks the same through spec's shared
+`upstream-drift`. The revision arrives as
 the archive of its tree, and whichever layout it holds is the one compared:
 the directory `contract/web-api/` where it has an index, the single file
 `contract/web-api.contract.json` otherwise. Two copies agree when they hold the
@@ -12,7 +13,6 @@ Run from the root of the tree holding the copy, with the revision's archive
 beside it as `lemonfiber.tar.gz`:
 
   python3 scripts/contract_drift.py
-  python3 scripts/contract_drift.py --head <sha> --report
 
 Exits 0 when the copies agree, 1 when they differ, naming each file that does,
 and 2 when either cannot be read.
@@ -22,7 +22,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import pathlib
 import sys
 import tarfile
@@ -30,7 +29,6 @@ import tarfile
 FILE = "contract/web-api.contract.json"
 DIRECTORY = "contract/web-api"
 INDEX = "index.json"
-STAMP = "contract/VERSION"
 SERVED = "lemonfiber.tar.gz"
 
 
@@ -107,78 +105,8 @@ def differing(ours: dict[str, object], theirs: dict[str, object]) -> list[str]:
     )
 
 
-def described(copy: dict[str, object]) -> tuple[object, set[str]]:
-    """The `api_version` a copy names and the kinds it describes."""
-    head = copy.get(f"{DIRECTORY}/{INDEX}", copy.get(FILE))
-    if not isinstance(head, dict):
-        return None, set()
-    kinds = head.get("kinds")
-    return head.get("api_version"), set(kinds) if isinstance(kinds, dict) else set()
-
-
-def report(repo: pathlib.Path, head: str, ours: dict[str, object], theirs: dict[str, object], changed: list[str]) -> None:
-    """Says what `contract-drift` found, in the log and on the run page."""
-    summary = os.environ.get("GITHUB_STEP_SUMMARY")
-    said: list[str] = []
-
-    def say(line: str = "") -> None:
-        print(line)
-        said.append(line)
-
-    stamp = (repo / STAMP).read_text(encoding="utf-8").strip()
-
-    if not changed:
-        say("## The vendored contract is current")
-        say()
-        say(f"It matches the one lemonfiber `{head}` describes, vendored at `{stamp}`.")
-    else:
-        our_version, our_kinds = described(ours)
-        their_version, their_kinds = described(theirs)
-        missing = sorted(their_kinds - our_kinds)
-        extra = sorted(our_kinds - their_kinds)
-
-        say("## The vendored contract is behind")
-        say()
-        say("**This check gates.** It fails every pull request against `main` until")
-        say("the artefact in `contract/` is the one lemonfiber serves. You did not")
-        say("break this and you do not need to understand the kinds below to fix it.")
-        say()
-        say(f"- vendored at `{stamp}`: api_version {our_version}, {len(our_kinds)} kinds")
-        say(f"- served at lemonfiber `{head}`: api_version {their_version}, {len(their_kinds)} kinds")
-        if missing:
-            say(f"- described by the server and not here: {', '.join(missing)}")
-        if extra:
-            say(f"- described here and not by the server: {', '.join(extra)}")
-        say(f"- {len(changed)} files differ:")
-        for path in changed:
-            say(f"  - `{path}`")
-        say()
-        say("### Run this")
-        say()
-        say("```sh")
-        say(f"composer contract:sync -- {head}")
-        say("composer contract:generate")
-        say("```")
-        say()
-        say("Then commit `contract/` and `src/Generated`. Where that regenerates more")
-        say("than types — a kind arriving is a change to this package's surface — land")
-        say("the sync on its own first; that is the change this gate is asking for.")
-
-        print(
-            "::error::the vendored contract is behind lemonfiber "
-            f"{head} — run `composer contract:sync -- {head}` then "
-            "`composer contract:generate`, and commit contract/ and src/Generated"
-        )
-
-    if summary is not None:
-        pathlib.Path(summary).write_text("\n".join(said) + "\n", encoding="utf-8")
-
-
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--head", default="", help="the revision the archive is of, for the report")
-    parser.add_argument("--report", action="store_true", help="say what contract-drift found, with the remedy")
-    arguments = parser.parse_args()
+    argparse.ArgumentParser(description=__doc__.splitlines()[0]).parse_args()
 
     repo = pathlib.Path.cwd()
 
@@ -191,9 +119,7 @@ def main() -> int:
 
     changed = differing(ours, theirs)
 
-    if arguments.report:
-        report(repo, arguments.head, ours, theirs, changed)
-    elif changed:
+    if changed:
         print(f"{len(changed)} files differ:")
         for path in changed:
             print(f"  {path}")
