@@ -44,6 +44,7 @@ jobs:
           client-id: ${{ vars.RELEASE_CLIENT_ID }}
           private-key: ${{ secrets.RELEASE_APP_KEY }}
           owner: ${{ github.repository_owner }}
+          permission-actions: write
           repositories: lemonfiber-companion
 
       - name: Ask the companion to take this main
