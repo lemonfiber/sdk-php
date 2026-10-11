@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 081b2de990d68d64f91569e3ffc1415c3831ea51, api_version 1.
+// Source: 256bcc7bd5475c433542b8f6c63de66b43decdf0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -55,7 +55,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginRestored array{placed: bool, running: bool, version: string}
  * @phpstan-type PluginSecret array{id: string, of: string, why: string}
  * @phpstan-type PluginServiceAdapter array{kind: ApiKind, owner: PluginAdapterOwner, service: string}
- * @phpstan-type PluginShape 'egress-guard'
+ * @phpstan-type PluginShape 'egress-guard'|'render'
  * @phpstan-type PluginSource array{from: string, plugin: string, standing: PluginSourceStanding}
  * @phpstan-type PluginSourceStanding array{standing: 'reachable'}|array{standing: 'unreachable', why: string}|array{standing: 'unasked', why: string}
  * @phpstan-type PluginStep array{adapter?: PluginStepAdapter|null, id: string, method: string, path: string, to: string}
