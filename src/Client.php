@@ -26,6 +26,7 @@ use Lemonfiber\Sdk\Http\IdempotencyKey;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\ReadRequest;
 use Lemonfiber\Sdk\Http\ReleaseRequest;
+use Lemonfiber\Sdk\Http\RevokeKeyRequest;
 use Lemonfiber\Sdk\Http\RunToken;
 use Lemonfiber\Sdk\Http\StreamingEventSource;
 use Lemonfiber\Sdk\Time\Duration;
@@ -127,6 +128,25 @@ final readonly class Client
         $attempt = $idempotencyKey === null ? null : IdempotencyKey::fromString($idempotencyKey);
 
         return $this->connector->answer(new ActRequest($action, $attempt));
+    }
+
+    /**
+     * Revoke the integration key of that name.
+     *
+     * The answer is the `keys` envelope as the stack lists them once the key is
+     * revoked ({@see Generated\KeysEnvelope}). A name no key holds, or one
+     * that is not the caller's to revoke, is {@see Exception\Missing}. Sent once.
+     *
+     * @return Envelope<mixed>
+     *
+     * @throws ApiVersionMismatch
+     * @throws RequestFailed
+     * @throws Unreachable
+     * @throws UnreadableResponse
+     */
+    public function revokeKey(string $name): Envelope
+    {
+        return $this->connector->answer(new RevokeKeyRequest($name));
     }
 
     /**

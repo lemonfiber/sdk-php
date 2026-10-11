@@ -126,6 +126,17 @@ final class Api implements HouseholdReads, MachineReads
     }
 
     /**
+     * Where the integration key of that name is revoked.
+     *
+     * Composed from the name the keys read lists it under, encoded so a name is always one segment
+     * of the path.
+     */
+    public static function key(string $name): string
+    {
+        return self::KEYS_ENDPOINT . '/' . rawurlencode($name);
+    }
+
+    /**
      * Where the support bundle of that name is asked for.
      *
      * Composed from the name for the reason {@see self::action()} is: one place
