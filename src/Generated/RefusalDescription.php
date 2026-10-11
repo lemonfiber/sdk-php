@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 2182322aa80d53f3618af3fa9ebd835d16d6bd72, api_version 1.
+// Source: 081b2de990d68d64f91569e3ffc1415c3831ea51, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -40,7 +40,23 @@ final class RefusalDescription
             RefusalCode::NotAKeyRequest => 'Raised where the body of a mint is not a key\'s name, scope, purpose and the password, or the body of a collection is not a claim alone.',
             RefusalCode::NotAnIdempotencyKey => 'Raised where an action\'s `Idempotency-Key` is not one to 255 visible characters, or is given more than once.',
             RefusalCode::IdempotencyKeyReused => 'Raised where an `Idempotency-Key` already sent with one action and its arguments is sent with another.',
+            RefusalCode::BundleNotHeld => 'Raised when a name does not name one of the bundles this run kept.',
+            RefusalCode::NoFormNamed => 'Raised when no form was named.',
+            RefusalCode::NoSuchForm => 'Raised when a named form is not declared by the stack.',
+            RefusalCode::FormsConflict => 'Raised when forms that cannot be combined are named together.',
             RefusalCode::AnotherReading => 'Raised when an agreement names a reading of this machine that is not the one standing now.',
+            RefusalCode::BadName => 'Raised when a key is asked for under a word that cannot name one.',
+            RefusalCode::NotAScope => 'Raised when a key is asked for with a scope that is none of the three.',
+            RefusalCode::NotAPurpose => 'Raised when a key is asked for with a purpose that is none of the three.',
+            RefusalCode::NameTaken => 'Raised when a key is asked for under a name another key holds.',
+            RefusalCode::NoSuchMember => 'Raised when a member\'s key names an account the household does not hold.',
+            RefusalCode::NotForYourself => 'Raised when a household member asks for a key, or a revoke, that is not theirs alone.',
+            RefusalCode::NoSuchKey => 'Raised when no active key holds the name a revoke gave.',
+            RefusalCode::MembersMayNotMint => 'Raised when a household member asks to mint a key and the operator has not allowed members to.',
+            RefusalCode::ClaimNotOpen => 'Raised when a key is asked to be collected with a claim that collects nothing.',
+            RefusalCode::Unlinkable => 'Raised when a key is asked to be minted as a claim and no address another machine reaches can go in its link.',
+            RefusalCode::AlreadyWorking => 'Another run is already working on this stack.',
+            RefusalCode::RegistryRefused => 'Fetching images is switched off, so there was nothing to fetch with.',
             RefusalCode::RestartMoved => 'Raised where a restart names an offer that is not the one a fresh look at the stack builds.',
             RefusalCode::OfferMoved => 'Raised when a replacement was agreed to for an offer that is not the one standing now.',
             RefusalCode::NotAnItem => 'Said where the title named is not something the media server could hold.',
@@ -89,6 +105,18 @@ final class RefusalDescription
             RefusalCode::StepFailed => 'Raised when a recipe\'s step failed any other way — nothing answered, the answer was not the one it expects, a capture found nothing, or the answer was larger than a recipe reads; the install or update was put back.',
             RefusalCode::PathNotPlain => 'Raised when a recipe\'s call path is not a plain absolute path; the manifest\'s every other fault is listed beside it.',
             RefusalCode::ValueWithheld => 'Raised when a recipe\'s call was not sent because a value it carries may not go where it was going: not where its pairs say, not back to the service a credential belongs to, or outside without its approval; the install or update was put back.',
+            RefusalCode::NothingToProve => 'Nothing by that id is installed, so there is nothing to prove again.',
+            RefusalCode::StrangerReplacing => 'Raised when a plugin that is not first-party declares a service replacing one the stack ships.',
+            RefusalCode::NoLimit => 'Raised where a policy that lives inside a limit was chosen without one.',
+            RefusalCode::NotWaiting => 'Raised where the request named is not one that is waiting on anybody.',
+            RefusalCode::NoReason => 'Raised where a request was turned down and the reason said nothing.',
+            RefusalCode::Nobody => 'Raised where nobody in the household goes by the name that was given.',
+            RefusalCode::NeverHere => 'Raised where the request service holds no account for somebody who has one here.',
+            RefusalCode::NothingMeasured => 'Raised when a limit is expressed as a share of a line nothing has measured.',
+            RefusalCode::NoZone => 'Raised when a schedule is asked for and nothing says which zone the clients would read it in.',
+            RefusalCode::LimitUnreadable => 'Raised when what was asked for could not be read as a limit, a window or a cap.',
+            RefusalCode::NothingToLimit => 'Raised when there is no download client to limit.',
+            RefusalCode::NothingToPause => 'Raised when there is no download client to pause or resume.',
             RefusalCode::PausingMoved => 'Raised where pausing or resuming the download clients names an offer that is not the one a fresh look at them builds.',
             RefusalCode::Unwanted => 'Raised where a read was given a parameter its answer has nowhere to put.',
             RefusalCode::Repeated => 'Raised where a parameter carrying one value was given more than once.',
@@ -106,11 +134,20 @@ final class RefusalDescription
             RefusalCode::NotALineCount => 'Raised where how many log lines to begin with is not a number within the ceiling.',
             RefusalCode::NotAChoice => 'Raised where a parameter that takes a yes or a no is neither true nor false.',
             RefusalCode::MemberAndDefaults => 'Raised where a household read named a member and asked for the household\'s defaults as well.',
+            RefusalCode::Cannot => 'The flag cannot be honoured by this command, and never will be.',
+            RefusalCode::NotYet => 'The flag is not honoured by this command yet.',
             RefusalCode::Stale => 'Raised when consent was given for an offer that no longer stands.',
             RefusalCode::MovedOn => 'Raised when consent was given for a listing that no longer stands.',
             RefusalCode::Unrenderable => 'Raised when an answer could not be rendered.',
             RefusalCode::NoJobName => 'Raised when this machine will not supply the randomness a job is named with.',
             RefusalCode::Unanswered => 'Raised when an action\'s work ended before it had an answer to give.',
+            RefusalCode::NotReviewed => 'Raised when apply is asked for before the answers have been reviewed.',
+            RefusalCode::DoesNotApply => 'Raised when an answer is not meaningful on the platform setup is running on.',
+            RefusalCode::AlreadySetUp => 'Raised when setup is answered on a machine that is already set up.',
+            RefusalCode::NothingToRecover => 'Raised when a recovery is asked for and no apply stopped part-way.',
+            RefusalCode::NowhereToMeasure => 'Raised when there is no data location to measure.',
+            RefusalCode::NothingToAsk => 'Raised when there is no torrent client here to be holding a completed download.',
+            RefusalCode::NotHeld => 'Raised when the client answers and is holding nothing of the name given.',
             RefusalCode::AnotherOffer => 'Raised when an agreement names an offer that is not the one standing now.',
             RefusalCode::StackUnreadable => 'Raised when a stack directory holds no readable manifest.',
             RefusalCode::StackUnusable => 'Raised when a manifest is readable and this build cannot use it.',
@@ -143,6 +180,7 @@ final class RefusalDescription
             RefusalCode::NobodyAsking => 'Said where nobody is named for something only a member can do.',
             RefusalCode::NotAMember => 'Said where the member named is not somebody in the household.',
             RefusalCode::NoPicture => 'Said where a title a member may ask for has no picture to show them.',
+            RefusalCode::Unrecognised => 'A word this product does not explain, as a refusal that says what it does. Through the error model rather than a bare line, so it carries a code and a way forward like every other refusal — and the way forward is the list itself, which is short enough to be the answer rather than a pointer at one. It lies in the naming: the word is the whole of what was asked for, and there is no entry for it. A surface that reported this as its own failure would be telling a caller to try again at something that will never work.',
         };
     }
 }

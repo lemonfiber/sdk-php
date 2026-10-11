@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 2182322aa80d53f3618af3fa9ebd835d16d6bd72, api_version 1.
+// Source: 081b2de990d68d64f91569e3ffc1415c3831ea51, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -40,7 +40,23 @@ final class RefusalStatus
             RefusalCode::NotAKeyRequest => 400,
             RefusalCode::NotAnIdempotencyKey => 400,
             RefusalCode::IdempotencyKeyReused => 400,
+            RefusalCode::BundleNotHeld => 404,
+            RefusalCode::NoFormNamed => 400,
+            RefusalCode::NoSuchForm => 404,
+            RefusalCode::FormsConflict => 400,
             RefusalCode::AnotherReading => 400,
+            RefusalCode::BadName => 400,
+            RefusalCode::NotAScope => 400,
+            RefusalCode::NotAPurpose => 400,
+            RefusalCode::NameTaken => 400,
+            RefusalCode::NoSuchMember => 404,
+            RefusalCode::NotForYourself => 400,
+            RefusalCode::NoSuchKey => 404,
+            RefusalCode::MembersMayNotMint => 409,
+            RefusalCode::ClaimNotOpen => 401,
+            RefusalCode::Unlinkable => 409,
+            RefusalCode::AlreadyWorking => 409,
+            RefusalCode::RegistryRefused => 400,
             RefusalCode::RestartMoved => 400,
             RefusalCode::OfferMoved => 400,
             RefusalCode::NotAnItem => 400,
@@ -89,6 +105,18 @@ final class RefusalStatus
             RefusalCode::StepFailed => 500,
             RefusalCode::PathNotPlain => 400,
             RefusalCode::ValueWithheld => 400,
+            RefusalCode::NothingToProve => 404,
+            RefusalCode::StrangerReplacing => 403,
+            RefusalCode::NoLimit => 400,
+            RefusalCode::NotWaiting => 404,
+            RefusalCode::NoReason => 400,
+            RefusalCode::Nobody => 404,
+            RefusalCode::NeverHere => 404,
+            RefusalCode::NothingMeasured => 400,
+            RefusalCode::NoZone => 400,
+            RefusalCode::LimitUnreadable => 400,
+            RefusalCode::NothingToLimit => 400,
+            RefusalCode::NothingToPause => 400,
             RefusalCode::PausingMoved => 400,
             RefusalCode::Unwanted => 400,
             RefusalCode::Repeated => 400,
@@ -106,11 +134,20 @@ final class RefusalStatus
             RefusalCode::NotALineCount => 400,
             RefusalCode::NotAChoice => 400,
             RefusalCode::MemberAndDefaults => 400,
+            RefusalCode::Cannot => 400,
+            RefusalCode::NotYet => 400,
             RefusalCode::Stale => 400,
             RefusalCode::MovedOn => 400,
             RefusalCode::Unrenderable => 500,
             RefusalCode::NoJobName => 500,
             RefusalCode::Unanswered => 500,
+            RefusalCode::NotReviewed => 400,
+            RefusalCode::DoesNotApply => 400,
+            RefusalCode::AlreadySetUp => 400,
+            RefusalCode::NothingToRecover => 400,
+            RefusalCode::NowhereToMeasure => 400,
+            RefusalCode::NothingToAsk => 400,
+            RefusalCode::NotHeld => 400,
             RefusalCode::AnotherOffer => 400,
             RefusalCode::StackUnreadable => 500,
             RefusalCode::StackUnusable => 500,
@@ -143,6 +180,7 @@ final class RefusalStatus
             RefusalCode::NobodyAsking => 400,
             RefusalCode::NotAMember => 404,
             RefusalCode::NoPicture => 404,
+            RefusalCode::Unrecognised => 404,
         };
     }
 }
