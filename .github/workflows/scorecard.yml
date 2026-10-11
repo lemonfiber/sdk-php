@@ -22,7 +22,7 @@ on:
   # commit rarely moves, and a run on every merge holds a runner to publish the
   # same number again.
   schedule:
-    - cron: "0 6 * * 1"
+    - cron: "47 6 * * 1"
 
 permissions:
   contents: read
