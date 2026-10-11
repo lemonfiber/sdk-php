@@ -2,7 +2,7 @@
 name: stale
 on:
   schedule:
-    - cron: "30 1 * * *"
+    - cron: "28 1 * * *"
 permissions:
   contents: read
 
