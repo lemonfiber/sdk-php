@@ -33,37 +33,11 @@ permissions:
 
 jobs:
   tell:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
     permissions:
       contents: read
-    steps:
-      - name: Mint a token that can reach the companion
-        id: token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        with:
-          client-id: ${{ vars.RELEASE_CLIENT_ID }}
-          private-key: ${{ secrets.RELEASE_APP_KEY }}
-          owner: ${{ github.repository_owner }}
-          permission-actions: write
-          repositories: lemonfiber-companion
-
-      - name: Ask the companion to take this main
-        env:
-          GH_TOKEN: ${{ steps.token.outputs.token }}
-          OWNER: ${{ github.repository_owner }}
-        run: |
-          set -euo pipefail
-
-          if ! gh api --method POST \
-            "repos/${OWNER}/lemonfiber-companion/actions/workflows/sdk-bump.yml/dispatches" \
-            -f ref=main
-          then
-            # A notifier that cannot notify has to say so. Reporting success
-            # here would leave the weekly run as the only thing looking, which
-            # is the state this workflow exists to end.
-            echo "::error::the client moved and the companion was not told"
-            exit 1
-          fi
-
-          echo "asked lemonfiber-companion to take this main."
+    uses: lemonfiber/spec/.github/workflows/tell.yml@164464d71266bdc36d90272c58eb8bd02f1ba10d # v1.0.80
+    with:
+      repos: lemonfiber-companion
+      workflow: sdk-bump.yml
+    secrets:
+      RELEASE_APP_KEY: ${{ secrets.RELEASE_APP_KEY }}
