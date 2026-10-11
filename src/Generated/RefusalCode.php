@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bd04cd45e74cf3c9ecb885c935275bc7a8a371e1, api_version 1.
+// Source: 2a1472c24a6e4bb8d5ff70a792d61cc4b61e26b8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -131,6 +131,19 @@ enum RefusalCode: string
     case WiringMoved = 'WIRE-5';
     case Unreasonable = 'WIRE-6';
     case AlreadyFills = 'WIRE-7';
+    case NotASearch = 'WISH-1';
+    case NotAPlace = 'WISH-2';
+    case NotAskable = 'WISH-3';
+    case CannotFetch = 'WISH-4';
+    case AlreadyHere = 'WISH-5';
+    case NothingLeft = 'WISH-6';
+    case NoRoom = 'WISH-7';
+    case NotWorking = 'WISH-8';
+    case NotSetUp = 'WISH-9';
+    case NotItsSeason = 'WISH-10';
+    case NobodyAsking = 'WISH-11';
+    case NotAMember = 'WISH-12';
+    case NoPicture = 'WISH-13';
 
     /**
      * The case a code names, or none where there is no code or one this list does not name.

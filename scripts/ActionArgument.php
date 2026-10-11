@@ -45,6 +45,9 @@ final readonly class ActionArgument
     /** The keywords an argument's schema may hold; any other is a constraint this cannot write. */
     private const array UNDERSTOOD = ['type', 'items', 'default', 'description', 'title', 'format', 'minimum', 'maximum'];
 
+    /** What one item of a list a parameter takes may say of itself: one plain type, with its format and bounds. */
+    private const array AN_ITEM_HOLDS = ['type', 'format', 'minimum', 'maximum'];
+
     /** Each JSON type this writes, to the PHP type it is written as. */
     private const array SCALARS = ['string' => 'string', 'boolean' => 'bool', 'integer' => 'int', 'number' => 'float'];
 
@@ -121,7 +124,9 @@ final readonly class ActionArgument
     private function docType(string $base, array $schema): string
     {
         if ($base === self::ARRAY) {
-            return sprintf('list<%s>', self::SCALARS[$this->itemType($schema['items'] ?? null)]);
+            $items = $schema['items'] ?? null;
+
+            return sprintf('list<%s>', $this->docType($this->itemType($items), is_array($items) ? $items : []));
         }
 
         if ($base !== 'integer' || (! array_key_exists('minimum', $schema) && ! array_key_exists('maximum', $schema))) {
@@ -138,12 +143,9 @@ final readonly class ActionArgument
         return sprintf('int<%s, %s>', $minimum ?? 'min', $maximum ?? 'max');
     }
 
-    /**
-     * @throws UnexpectedValueException
-     */
     private function itemType(mixed $items): string
     {
-        $type = is_array($items) && array_keys($items) === ['type'] ? $items['type'] : null;
+        $type = is_array($items) && array_diff(array_keys($items), self::AN_ITEM_HOLDS) === [] ? ($items['type'] ?? null) : null;
 
         if (! is_string($type) || ! array_key_exists($type, self::SCALARS)) {
             throw $this->refusal('as a list of something other than one plain type');

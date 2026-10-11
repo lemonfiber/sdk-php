@@ -74,6 +74,29 @@ it('reads a backdrop where a backdrop is', function (): void {
         ->and((string) $mock->getLastPendingRequest()?->getUri())->toBe('http://127.0.0.1:9000/api/held/81/backdrop?member=ben');
 });
 
+it('reads the poster of a title a search offered, as the member, by the kind the page named', function (): void {
+    [$client, $mock] = aClientShowing(A_PICTURE, ['Content-Type' => 'image/jpeg']);
+
+    $poster = $client->askablePoster('tmdb-438631', ['kind' => 'movies', 'member' => 'ana']);
+
+    expect($poster->mediaType())->toBe('image/jpeg')
+        ->and((string) $mock->getLastPendingRequest()?->getUri())->toBe('http://127.0.0.1:9000/api/askable/tmdb-438631/poster?kind=movies&member=ana');
+});
+
+it('raises a found title nobody may see and one with no poster as missing, with the code saying which', function (string $code): void {
+    [$client] = aClientShowing(refusedAsAbsent($code), ['Content-Type' => 'application/json'], 404);
+
+    try {
+        $client->askablePoster('438631', ['kind' => 'movies']);
+        $raised = null;
+    } catch (Missing $missing) {
+        $raised = $missing;
+    }
+
+    expect($raised?->code())->toBe(RefusalCode::from($code))
+        ->and($raised?->endpoint())->toBe('/api/askable/438631/poster');
+})->with(['outside the member\'s limits' => ['WISH-3'], 'no poster' => ['WISH-13']]);
+
 it('reads a label in any case, and without its parameters', function (string $label, string $read): void {
     [$client] = aClientShowing(A_PICTURE, ['Content-Type' => $label]);
 
@@ -165,9 +188,10 @@ it('sends nothing for an id that names no title', function (string $id): void {
 
     expect(fn(): Picture => $client->poster($id))->toThrow(
         ConfigurationProblem::class,
-        sprintf('A title is named by the id its shelf lists it under. "%s" is not one: it names no path segment, so nothing was sent.', $id),
+        sprintf('A title is named by the id it was listed under. "%s" is not one: it names no path segment, so nothing was sent.', $id),
     )
         ->and(fn(): Picture => $client->backdrop($id))->toThrow(ConfigurationProblem::class)
+        ->and(fn(): Picture => $client->askablePoster($id))->toThrow(ConfigurationProblem::class)
         ->and($mock->getLastPendingRequest())->toBeNull();
 })->with(['empty' => [''], 'this segment' => ['.'], 'the segment above' => ['..']]);
 

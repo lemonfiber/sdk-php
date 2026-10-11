@@ -67,6 +67,8 @@ it('names the reads it holds a path for, and holds no path it has no caller for'
         ->and(Api::BUNDLE_ENDPOINT)->toBe('/api/bundle')
         ->and(Api::POSTER_ENDPOINT)->toBe('/api/held/{id}/poster')
         ->and(Api::BACKDROP_ENDPOINT)->toBe('/api/held/{id}/backdrop')
+        ->and(Api::ASKABLE_ENDPOINT)->toBe('/api/askable')
+        ->and(Api::ASKABLE_POSTER_ENDPOINT)->toBe('/api/askable/{id}/poster')
         ->and(Api::UNINSTALL_ENDPOINT)->toBe('/api/uninstall')
         ->and(Api::PLUGINS_ENDPOINT)->toBe('/api/plugins')
         ->and(Api::WIRING_ENDPOINT)->toBe('/api/wiring')
@@ -118,6 +120,12 @@ it('composes the paths the pictures of a title are read under', function (): voi
         ->and(Api::poster('81'))->toBe('/api/held/81/poster')
         ->and(Api::backdrop('4f2a9c'))->toBe('/api/held/4f2a9c/backdrop')
         ->and(Api::backdrop('../keys'))->toBe('/api/held/..%2Fkeys/backdrop');
+});
+
+it('composes the path the poster of a title a search offered is read under', function (): void {
+    expect(Api::askablePoster('438631'))->toBe('/api/askable/438631/poster')
+        ->and(Api::askablePoster('tmdb-1'))->toBe('/api/askable/tmdb-1/poster')
+        ->and(Api::askablePoster('../keys'))->toBe('/api/askable/..%2Fkeys/poster');
 });
 
 it('keeps the two media types apart', function (): void {

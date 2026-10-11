@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bd04cd45e74cf3c9ecb885c935275bc7a8a371e1, api_version 1.
+// Source: 2a1472c24a6e4bb8d5ff70a792d61cc4b61e26b8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -18,6 +18,8 @@ enum Kind: string
     case Alert = 'alert';
     case Alerts = 'alerts';
     case Archives = 'archives';
+    case Askable = 'askable';
+    case Asked = 'asked';
     case Backup = 'backup';
     case Bandwidth = 'bandwidth';
     case Beside = 'beside';

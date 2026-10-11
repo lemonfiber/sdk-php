@@ -145,7 +145,7 @@ final class ConfigurationProblem extends InvalidArgumentException implements Pro
     public static function idNamesNoTitle(string $id): self
     {
         return new self(sprintf(
-            'A title is named by the id its shelf lists it under. "%s" is not one: it names no path segment, so nothing was sent.',
+            'A title is named by the id it was listed under. "%s" is not one: it names no path segment, so nothing was sent.',
             $id,
         ));
     }
