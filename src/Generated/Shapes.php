@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 5e3ef10f7037f6a53d5bfd2cf87ed1c69cbc4387, api_version 1.
+// Source: 92aaa5d577c67686de2760f80c67325ec997a3f8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -11,7 +11,7 @@ namespace Lemonfiber\Sdk\Generated;
 /**
  * Every shape more than one kind carries, each named once and imported where it is used.
  *
- * @phpstan-type Action array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'withdraw', key: string, owner: string, path: string, written: int}|array{does: 'rewind', path: string, previous: string, written: int}|array{current: string, does: 'repin', previous: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}|array{does: 'revoke', name: string}|array{does: 'reinstate', name: string}
+ * @phpstan-type Action array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'withdraw', key: string, owner: string, path: string, written: int}|array{does: 'rewind', path: string, previous: string, written: int}|array{current: string, does: 'repin', previous: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}|array{does: 'revoke', name: string}|array{does: 'reinstate', name: string}|array{does: 'resettle', name: string, recorded?: string|null, value?: string|null}|array{does: 'rehold', earlier?: string|null, filed?: string|null, kept?: string|null, name: string}
  * @phpstan-type Address array{caution?: string|null, url: string}
  * @phpstan-type Alert array{affected: list<string>, check: string, exit?: int|null, id?: string|null, kind: string, meaning: string, moment: Moment, remedies: list<string>, severity: ProblemSeverity, summary: string}
  * @phpstan-type AskingStanding 'unlimited'|'within-quota'|'near-quota'|'quota-exhausted'
