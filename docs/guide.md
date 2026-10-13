@@ -171,6 +171,41 @@ way to mix them up. A job name only lives as long as the lemonfiber run that mad
 it; asking about one that run never made raises `NoSuchJob`. A job that stopped
 on a problem raises `RequestFailed` with lemonfiber's own sentence.
 
+## Integration keys and device keys
+
+`mintKey()` mints an integration key, proved by the operator's password given
+again or by a device key's signature:
+
+```php
+use Lemonfiber\Sdk\KeyMint;
+use Lemonfiber\Sdk\MintProof;
+
+$mint = KeyMint::of('den', 'read', 'home-assistant');
+$client->mintKey($mint, MintProof::password($password));
+```
+
+A phone registers a key pair it holds in hardware once, with the platform's
+attestation and the password, then proves each mint with a signature over a
+challenge the stack issued for it:
+
+```php
+use Lemonfiber\Sdk\DeviceAttestation;
+use Lemonfiber\Sdk\Generated\DeviceChallengeEnvelope;
+
+$client->registerDeviceKey('pixel', $publicKeyDer, DeviceAttestation::android($chainDer), $password);
+
+$challenge = DeviceChallengeEnvelope::in($client->deviceKeyChallenge('pixel'))->data['challenge'];
+$signature = $phone->sign($mint->signedText($challenge));   // ECDSA P-256 over SHA-256, in DER
+$client->mintKey($mint, MintProof::device('pixel', $challenge, $signature));
+```
+
+`DeviceAttestation::ios($object)` carries an App Attest attestation instead, made
+with the SHA-256 of the public key's DER as its client data hash. A challenge is
+good for one mint from the same token within a minute. `read(Api::DEVICE_KEYS_ENDPOINT)`
+lists the device keys, and `revokeDeviceKey()` revokes one; the keys it proved
+stay, each naming it as `proved_by` in the keys listing. Every refusal carries a
+`DEVICE-` code of its own.
+
 ## Logs
 
 `/api/logs` answers with one `log` envelope per line, so it has a method of its

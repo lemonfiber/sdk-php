@@ -142,6 +142,13 @@ final class ConfigurationProblem extends InvalidArgumentException implements Pro
         );
     }
 
+    public static function mintPartHoldsALineFeed(): self
+    {
+        return new self(
+            'A mint\'s name, scope, purpose and challenge are each one line of the text a device key signs, and one of them holds a line feed. Nothing was sent.',
+        );
+    }
+
     public static function idNamesNoTitle(string $id): self
     {
         return new self(sprintf(

@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 472e2fca5aaf2ed4a5cfaf553df6a8714e2164cc, api_version 1.
+// Source: 34b804b67efd8a70494734f8d588b0c5f697e107, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -31,6 +31,9 @@ enum Kind: string
     case Config = 'config';
     case Credentials = 'credentials';
     case Dashboard = 'dashboard';
+    case DeviceChallenge = 'device-challenge';
+    case DeviceKey = 'device-key';
+    case DeviceKeys = 'device-keys';
     case Doctor = 'doctor';
     case Error = 'error';
     case Forms = 'forms';

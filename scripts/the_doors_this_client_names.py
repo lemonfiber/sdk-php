@@ -60,6 +60,7 @@ NOT_A_READ = {
     "/api/capabilities": "what a stack says it can do, which has its own section",
     "/api/keys": "the listing of integration keys, under its own section beside minting and revoking",
     "/api/setup": "where the first-run walk stands, under its own section beside the walk's writes",
+    "/api/device-keys": "the operator's device keys, under the keys section beside registering and revoking them",
 }
 
 # Below this a reading has found the wrong text rather than a smaller surface.

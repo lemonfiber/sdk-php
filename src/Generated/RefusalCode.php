@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 472e2fca5aaf2ed4a5cfaf553df6a8714e2164cc, api_version 1.
+// Source: 34b804b67efd8a70494734f8d588b0c5f697e107, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -42,6 +42,19 @@ enum RefusalCode: string
     case NotAnIdempotencyKey = 'ASK-12';
     case IdempotencyKeyReused = 'ASK-13';
     case BundleNotHeld = 'BUNDLE-8';
+    case NotADeviceName = 'DEVICE-1';
+    case DeviceNameTaken = 'DEVICE-2';
+    case PublicHalfTaken = 'DEVICE-3';
+    case NotP256 = 'DEVICE-4';
+    case NoAttestation = 'DEVICE-5';
+    case AttestationUnverified = 'DEVICE-6';
+    case InSoftware = 'DEVICE-7';
+    case UntrustedApp = 'DEVICE-8';
+    case NotRegistered = 'DEVICE-9';
+    case ChallengeNotStanding = 'DEVICE-10';
+    case SignatureWrong = 'DEVICE-11';
+    case NoChallenge = 'DEVICE-12';
+    case AttestationRevoked = 'DEVICE-13';
     case NoFormNamed = 'FORM-1';
     case NoSuchForm = 'FORM-2';
     case FormsConflict = 'FORM-3';

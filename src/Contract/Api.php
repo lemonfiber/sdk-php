@@ -87,6 +87,15 @@ final class Api implements HouseholdReads, MachineReads
     public const string JOBS_ENDPOINT = '/api/jobs';
 
     /**
+     * The endpoint the operator's device keys are listed at, as the `device-keys` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\DeviceKeysEnvelope}) through {@see \Lemonfiber\Sdk\Client::read()},
+     * and registered at.
+     *
+     * An operator session's alone: a household member and a key are refused here.
+     */
+    public const string DEVICE_KEYS_ENDPOINT = '/api/device-keys';
+
+    /**
      * The media type live updates arrive as.
      */
     public const string EVENT_STREAM_MEDIA_TYPE = 'text/event-stream';
@@ -95,6 +104,21 @@ final class Api implements HouseholdReads, MachineReads
      * The media type every other answer arrives as.
      */
     public const string JSON_MEDIA_TYPE = 'application/json';
+
+    /**
+     * The place in a path template a device key's name is filled in at.
+     */
+    private const string NAME = '{name}';
+
+    /**
+     * Where the device key of that name is revoked.
+     */
+    private const string DEVICE_KEY = self::DEVICE_KEYS_ENDPOINT . '/' . self::NAME;
+
+    /**
+     * Where a challenge for the device key of that name is asked for.
+     */
+    private const string DEVICE_KEY_CHALLENGE = self::DEVICE_KEY . '/challenge';
 
     /**
      * The place in a path template the title's id is filled in at.
@@ -134,6 +158,23 @@ final class Api implements HouseholdReads, MachineReads
     public static function key(string $name): string
     {
         return self::KEYS_ENDPOINT . '/' . rawurlencode($name);
+    }
+
+    /**
+     * Where the device key of that name is revoked, the name encoded as one segment.
+     */
+    public static function deviceKey(string $name): string
+    {
+        return str_replace(self::NAME, rawurlencode($name), self::DEVICE_KEY);
+    }
+
+    /**
+     * Where a challenge for the device key of that name is asked for, the name encoded as one
+     * segment.
+     */
+    public static function deviceKeyChallenge(string $name): string
+    {
+        return str_replace(self::NAME, rawurlencode($name), self::DEVICE_KEY_CHALLENGE);
     }
 
     /**
