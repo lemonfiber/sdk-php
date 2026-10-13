@@ -32,4 +32,9 @@ requirement = [
   { id = "ARCH-R139", state = "partial", evidence = ["scripts/Refusals.php", "tests/Feature/ContractGeneratorTest.php::writes a case per refusal the contract lists, in the order of its code"] },
   { id = "ARCH-R170", state = "done", evidence = ["scripts/contract-generate.php", "tests/Feature/ContractGeneratorTest.php::refuses a reference to a definition the kind does not carry, and names it"] },
   { id = "ARCH-R219", state = "partial", evidence = ["src/Admission.php", "tests/Feature/AdmissionTest.php::claims an invitation with the name, the chosen password and the claim, in the body, to the one endpoint", "tests/Feature/AdmissionTest.php::reads an invitation that is not open from the code it was refused under, never as a wrong password"] },
+  { id = "ARCH-R258", state = "partial", evidence = ["src/Keys.php", "src/Http/DeviceKeyRequest.php", "src/DeviceAttestation.php", "tests/Feature/DeviceKeysTest.php::registers a device key with its public half, its attestation and the password, in base64url"] },
+  { id = "ARCH-R259", state = "partial", evidence = ["src/Contract/Api.php", "tests/Feature/DeviceKeysTest.php::revokes a device key by its name"] },
+  { id = "ARCH-R260", state = "partial", evidence = ["src/Http/DeviceKeyRequest.php", "tests/Feature/DeviceKeysTest.php::asks a challenge for one device key by its name, as one path segment"] },
+  { id = "ARCH-R261", state = "partial", evidence = ["src/Keys.php", "src/KeyMint.php", "src/MintProof.php", "tests/Feature/DeviceKeysTest.php::mints with a device key's signature over the text the stack verifies, and no password", "tests/Unit/KeyMintTest.php::spells the text a device key signs as the contract publishes it"] },
+  { id = "ARCH-R293", state = "partial", evidence = ["src/Generated/KeysEnvelope.php"] },
 ]
