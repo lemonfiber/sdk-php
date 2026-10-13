@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 92aaa5d577c67686de2760f80c67325ec997a3f8, api_version 1.
+// Source: 9e0d32c37c774c57564539390ea3f2fac3c7fe6d, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -141,6 +141,12 @@ final class RefusalDescription
             RefusalCode::Unrenderable => 'Raised when an answer could not be rendered.',
             RefusalCode::NoJobName => 'Raised when this machine will not supply the randomness a job is named with.',
             RefusalCode::Unanswered => 'Raised when an action\'s work ended before it had an answer to give.',
+            RefusalCode::NoSuchSetting => 'Raised where nothing in this stack reads a setting by the name given.',
+            RefusalCode::ASecret => 'Raised where the name given is a secret\'s, which this command never writes.',
+            RefusalCode::TakenElsewhere => 'Raised where the name given belongs to the other of the two commands that write settings.',
+            RefusalCode::UnwritableValue => 'Raised where a value cannot be written as the setting asked for.',
+            RefusalCode::SettingsMoved => 'Raised when a change answers an offer read against settings that have since moved.',
+            RefusalCode::AlreadyHolds => 'Raised where the setting already holds what the change asks for.',
             RefusalCode::NotReviewed => 'Raised when apply is asked for before the answers have been reviewed.',
             RefusalCode::DoesNotApply => 'Raised when an answer is not meaningful on the platform setup is running on.',
             RefusalCode::AlreadySetUp => 'Raised when setup is answered on a machine that is already set up.',
