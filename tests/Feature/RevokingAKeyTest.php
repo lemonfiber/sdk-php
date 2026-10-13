@@ -26,7 +26,7 @@ function aClientRevokingWith(MockResponse $answer): array
 function whatRevokingRaised(Client $client, string $name): ?Throwable
 {
     try {
-        $client->revokeKey($name);
+        $client->keys()->revoke($name);
     } catch (RequestFailed|Unreachable $raised) {
         return $raised;
     }
@@ -37,7 +37,7 @@ function whatRevokingRaised(Client $client, string $name): ?Throwable
 it('revokes a key by its name and reads the keys as the stack lists them after', function (): void {
     [$client, $mock] = aClientRevokingWith(MockResponse::make(['api_version' => 1, 'kind' => 'keys', 'data' => ['keys' => []]]));
 
-    $answer = $client->revokeKey('home assistant/den');
+    $answer = $client->keys()->revoke('home assistant/den');
     $pending = $mock->getLastPendingRequest();
 
     expect($answer->kind)->toBe('keys')
