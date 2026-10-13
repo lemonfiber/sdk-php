@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 472e2fca5aaf2ed4a5cfaf553df6a8714e2164cc, api_version 1.
+// Source: 34b804b67efd8a70494734f8d588b0c5f697e107, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -11,7 +11,7 @@ namespace Lemonfiber\Sdk\Generated;
 /**
  * Every shape more than one kind carries, each named once and imported where it is used.
  *
- * @phpstan-type Action array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'withdraw', key: string, owner: string, path: string, written: int}|array{does: 'rewind', path: string, previous: string, written: int}|array{current: string, does: 'repin', previous: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}|array{does: 'revoke', name: string}|array{does: 'reinstate', name: string}|array{does: 'resettle', filed?: string|null, name: string, recorded?: string|null, value?: string|null}|array{does: 'rehold', earlier?: string|null, filed?: string|null, kept?: string|null, name: string}
+ * @phpstan-type Action array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'withdraw', key: string, owner: string, path: string, written: int}|array{does: 'rewind', path: string, previous: string, written: int}|array{current: string, does: 'repin', previous: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}|array{does: 'revoke', name: string}|array{does: 'reinstate', name: string}|array{does: 'revoke-device', name: string}|array{does: 'reinstate-device', name: string}|array{does: 'resettle', filed?: string|null, name: string, recorded?: string|null, value?: string|null}|array{does: 'rehold', earlier?: string|null, filed?: string|null, kept?: string|null, name: string}
  * @phpstan-type Address array{caution?: string|null, url: string}
  * @phpstan-type Alert array{affected: list<string>, check: string, exit?: int|null, id?: string|null, kind: string, meaning: string, moment: Moment, remedies: list<string>, severity: ProblemSeverity, summary: string}
  * @phpstan-type AskingStanding 'unlimited'|'within-quota'|'near-quota'|'quota-exhausted'
@@ -24,6 +24,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type ConflictReport array{held_by: string, port: int, wanted_by: string}
  * @phpstan-type Counted array{limit?: int|null, period?: string|null, remaining?: int|null, used: int}
  * @phpstan-type Criticality 'critical'|'core'|'important'|'enhancing'|'optional'
+ * @phpstan-type DeviceKeyBacking 'strongbox'|'enclave'|'tee'
  * @phpstan-type Disposition 'shown'|'recorded'|'rehearsed'|'held'|'reapplied'|'would-reapply'
  * @phpstan-type DoctorCategory 'environment'|'storage'|'network'|'vpn'|'credentials'|'services'|'providers'|'queue'|'config'
  * @phpstan-type DoctorVerdict array{note?: string|null, outcome: 'pass'}|array{cause?: Problem|null, code: Code, detail?: string|null, meaning: string, outcome: 'warn', remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}|array{cause?: Problem|null, code: Code, detail?: string|null, meaning: string, outcome: 'fail', remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}|array{outcome: 'unverified', reason: string, remedy: Remedy}|array{outcome: 'skipped', reason: string}
