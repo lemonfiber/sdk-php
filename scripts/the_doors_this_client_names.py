@@ -1,12 +1,9 @@
 """The contract page names the reads, and this client holds a path for each.
 
-The contract this package vendors carries envelope kinds and **no endpoints**, so
-every path is knowledge written by hand in `src/Contract/`. Nothing read
-the two against each other, and the gap is not hypothetical: `held` and `config`
-were both generated as envelope types, shipped, and reachable by nobody, since
-the type existed and the door did not. A caller cannot spell the path itself —
-that is the whole point of the class — so a missing constant makes a read
-unreachable rather than inconvenient.
+This package generates no path from the contract it vendors, so every path is
+written by hand in `src/Contract/`. A caller does not spell a path itself, so a
+read whose envelope type is generated and whose constant is missing is
+unreachable.
 
 `lemonfiber/scripts/reads_match_the_contract.py` is this check's sibling and
 holds the server to the same block. Between them the page is read from both
