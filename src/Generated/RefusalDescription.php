@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 472e2fca5aaf2ed4a5cfaf553df6a8714e2164cc, api_version 1.
+// Source: 34b804b67efd8a70494734f8d588b0c5f697e107, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -41,6 +41,19 @@ final class RefusalDescription
             RefusalCode::NotAnIdempotencyKey => 'Raised where an action\'s `Idempotency-Key` is not one to 255 visible characters, or is given more than once.',
             RefusalCode::IdempotencyKeyReused => 'Raised where an `Idempotency-Key` already sent with one action and its arguments is sent with another.',
             RefusalCode::BundleNotHeld => 'Raised when a name does not name one of the bundles this run kept.',
+            RefusalCode::NotADeviceName => 'Raised when a device key is asked for under a word that cannot name one.',
+            RefusalCode::DeviceNameTaken => 'Raised when a device key is registered under a name another device key holds.',
+            RefusalCode::PublicHalfTaken => 'Raised when a device key is registered with a public half another device key holds.',
+            RefusalCode::NotP256 => 'Raised when the public half given is not a P-256 key.',
+            RefusalCode::NoAttestation => 'Raised when a device key is registered with no attestation.',
+            RefusalCode::AttestationUnverified => 'Raised when an attestation does not verify, or does not cover the public half.',
+            RefusalCode::InSoftware => 'Raised when an attestation places the key in software, or says it was not made in the hardware that keeps it.',
+            RefusalCode::UntrustedApp => 'Raised when an attestation names an app this stack does not trust.',
+            RefusalCode::NotRegistered => 'Raised when a device key named is not registered, or was revoked.',
+            RefusalCode::ChallengeNotStanding => 'Raised when a mint carries a challenge that does not stand.',
+            RefusalCode::SignatureWrong => 'Raised when a mint\'s signature does not verify against the device key.',
+            RefusalCode::NoChallenge => 'Raised when this machine would not supply the bytes a challenge is made of.',
+            RefusalCode::AttestationRevoked => 'Raised when an attestation\'s chain carries a certificate Google lists as revoked or suspended.',
             RefusalCode::NoFormNamed => 'Raised when no form was named.',
             RefusalCode::NoSuchForm => 'Raised when a named form is not declared by the stack.',
             RefusalCode::FormsConflict => 'Raised when forms that cannot be combined are named together.',
