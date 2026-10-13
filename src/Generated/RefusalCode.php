@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 92aaa5d577c67686de2760f80c67325ec997a3f8, api_version 1.
+// Source: 9e0d32c37c774c57564539390ea3f2fac3c7fe6d, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -142,6 +142,12 @@ enum RefusalCode: string
     case Unrenderable = 'SERVE-6';
     case NoJobName = 'SERVE-7';
     case Unanswered = 'SERVE-8';
+    case NoSuchSetting = 'SETTING-1';
+    case ASecret = 'SETTING-2';
+    case TakenElsewhere = 'SETTING-3';
+    case UnwritableValue = 'SETTING-4';
+    case SettingsMoved = 'SETTING-5';
+    case AlreadyHolds = 'SETTING-6';
     case NotReviewed = 'SETUP-1';
     case DoesNotApply = 'SETUP-5';
     case AlreadySetUp = 'SETUP-7';
