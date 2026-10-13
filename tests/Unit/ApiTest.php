@@ -72,6 +72,7 @@ it('names the reads it holds a path for, and holds no path it has no caller for'
         ->and(Api::UNINSTALL_ENDPOINT)->toBe('/api/uninstall')
         ->and(Api::PLUGINS_ENDPOINT)->toBe('/api/plugins')
         ->and(Api::WIRING_ENDPOINT)->toBe('/api/wiring')
+        ->and(Api::SETTINGS_ENDPOINT)->toBe('/api/settings')
         ->and(Api::CAPABILITIES_ENDPOINT)->toBe('/api/capabilities')
         ->and(Api::KEYS_ENDPOINT)->toBe('/api/keys')
         ->and(Api::SETUP_ENDPOINT)->toBe('/api/setup');
