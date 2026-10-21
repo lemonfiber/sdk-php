@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 7343ad109f993c0459be32d5876bed1aa7f6b42e, api_version 1.
+// Source: 31d55133baccd7e5f7330103c0b9485ee3a174b8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -49,6 +49,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type MemberRequest array{arrived?: string|null, estimate?: Estimate|null, id: int, media?: string|null, refused?: Refused|null, shelf_id?: string|null, state?: RequestState|null, title?: string|null, waiting_days?: int|null, year?: int|null}
  * @phpstan-type MemberStanding 'invited'|'expired'|'declined'|'active'|'suspended'
  * @phpstan-type Moment 'onset'|'resolved'
+ * @phpstan-type MoveOffered array{plugin: string, service: string}
  * @phpstan-type MovedReport array{from: int, service: string, to: int}
  * @phpstan-type MusicChoice array{format: string, means: string, note: string, scope: string, size_per_hour: string, targets: string}
  * @phpstan-type NewsKind 'updates'|'requests'|'problems'
