@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 31d55133baccd7e5f7330103c0b9485ee3a174b8, api_version 1.
+// Source: d077cd3c0615276d2c10ff3794aec0f08f6e89d9, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -178,6 +178,7 @@ final class RefusalDescription
             RefusalCode::StackUnrecognised => 'Raised when a manifest declares names this build does not know.',
             RefusalCode::StackNeedsNewer => 'Raised when a stack names a newer lemonfiber than the one running.',
             RefusalCode::StackUnassembled => 'Raised when a manifest\'s files are not laid out as the contract says.',
+            RefusalCode::ProjectEdited => 'Raised when a change would write over a generated project the operator has edited.',
             RefusalCode::UpdateMoved => 'Raised where an update names an offer that is not the one a fresh look at the releases builds.',
             RefusalCode::NoSuchFiller => 'A capability was named that no service in this stack provides.',
             RefusalCode::CannotFill => 'The service named cannot do the thing it was asked to fill.',
