@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 2fdb17698fa8603b4fd6649e0109bd01705f8b3b, api_version 1.
+// Source: 10f0bd484f3adc435d02eab68897e08e084477ca, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -18,7 +18,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type Unvetted from Shapes
  * @phpstan-type Owner array{of: 'core'}|array{namespace: string, of: 'namespace'}
  * @phpstan-type Reader array{default?: string|null, service: string, variable: string}
- * @phpstan-type SecretFrom 'operator'|'recipe'|'granted'
+ * @phpstan-type SecretFrom 'operator'|'recipe'|'granted'|'minted'
  * @phpstan-type SecretRead array{from?: SecretFrom|null, held: bool, name: string, readers: list<Reader>, whose: Owner}
  * @phpstan-type SettingChange array{agreement: string, applied: bool, consequence?: string|null, regenerates: list<string>, restarts: list<string>, setting: string, unrestarted?: string|null, value?: string|null, was?: string|null}
  * @phpstan-type SettingRead array{environment?: string|null, name: string, readers: list<Reader>, value?: string|null, whose: Owner}
