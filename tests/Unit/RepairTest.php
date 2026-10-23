@@ -16,7 +16,8 @@ it('asks what could be put right, and carries none of it out', function (): void
 
     expect($request->confirm)->toBeFalse()
         ->and($request->offer)->toBeNull()
-        ->and($request->agreed)->toBe([]);
+        ->and($request->agreed)->toBe([])
+        ->and($request->disruptive)->toBeFalse();
 });
 
 it('carries the yes with the offer it answers and the repairs picked out of it', function (): void {
@@ -24,7 +25,8 @@ it('carries the yes with the offer it answers and the repairs picked out of it',
 
     expect($request->confirm)->toBeTrue()
         ->and($request->offer)->toBe(AN_OFFER)
-        ->and($request->agreed)->toBe(['vpn.killswitch']);
+        ->and($request->agreed)->toBe(['vpn.killswitch'])
+        ->and($request->disruptive)->toBeFalse();
 });
 
 it('carries every repair that was picked, in the order they were named', function (): void {
@@ -48,7 +50,8 @@ it('carries a yes given before there was an offer to read', function (): void {
 
     expect($request->confirm)->toBeTrue()
         ->and($request->offer)->toBeNull()
-        ->and($request->agreed)->toBe([]);
+        ->and($request->agreed)->toBe([])
+        ->and($request->disruptive)->toBeFalse();
 });
 
 it('refuses an agreement that names no offer', function (): void {

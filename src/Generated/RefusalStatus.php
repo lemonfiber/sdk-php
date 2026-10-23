@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e0d5ee48e087ddd488e3bbade0614c2bdb8df72f, api_version 1.
+// Source: 2fdb17698fa8603b4fd6649e0109bd01705f8b3b, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -120,6 +120,8 @@ final class RefusalStatus
             RefusalCode::ValueWithheld => 400,
             RefusalCode::NothingToProve => 404,
             RefusalCode::StrangerReplacing => 403,
+            RefusalCode::NothingToRun => 404,
+            RefusalCode::ManifestUnkept => 409,
             RefusalCode::NoLimit => 400,
             RefusalCode::NotWaiting => 404,
             RefusalCode::NoReason => 400,
@@ -149,6 +151,7 @@ final class RefusalStatus
             RefusalCode::MemberAndDefaults => 400,
             RefusalCode::Cannot => 400,
             RefusalCode::NotYet => 400,
+            RefusalCode::RemovalMoved => 400,
             RefusalCode::Stale => 400,
             RefusalCode::MovedOn => 400,
             RefusalCode::Unrenderable => 500,
@@ -179,6 +182,7 @@ final class RefusalStatus
             RefusalCode::StackNeedsNewer => 500,
             RefusalCode::StackUnassembled => 500,
             RefusalCode::ProjectEdited => 409,
+            RefusalCode::ResetMoved => 400,
             RefusalCode::RootRefused => 409,
             RefusalCode::UpdateMoved => 400,
             RefusalCode::NoSuchFiller => 404,

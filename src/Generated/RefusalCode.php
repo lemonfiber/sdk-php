@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e0d5ee48e087ddd488e3bbade0614c2bdb8df72f, api_version 1.
+// Source: 2fdb17698fa8603b4fd6649e0109bd01705f8b3b, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -121,6 +121,8 @@ enum RefusalCode: string
     case ValueWithheld = 'PLUGIN-38';
     case NothingToProve = 'PLUGIN-39';
     case StrangerReplacing = 'PLUGIN-40';
+    case NothingToRun = 'PLUGIN-44';
+    case ManifestUnkept = 'PLUGIN-45';
     case NoLimit = 'QUOTA-2';
     case NotWaiting = 'QUOTA-4';
     case NoReason = 'QUOTA-5';
@@ -150,6 +152,7 @@ enum RefusalCode: string
     case MemberAndDefaults = 'READ-16';
     case Cannot = 'REHEARSE-1';
     case NotYet = 'REHEARSE-2';
+    case RemovalMoved = 'REMOVE-7';
     case Stale = 'REPAIR-1';
     case MovedOn = 'RESTORE-11';
     case Unrenderable = 'SERVE-6';
@@ -180,6 +183,7 @@ enum RefusalCode: string
     case StackNeedsNewer = 'STACK-9';
     case StackUnassembled = 'STACK-10';
     case ProjectEdited = 'STACK-11';
+    case ResetMoved = 'STACK-13';
     case RootRefused = 'STORAGE-9';
     case UpdateMoved = 'UPDATE-5';
     case NoSuchFiller = 'WIRE-1';

@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e0d5ee48e087ddd488e3bbade0614c2bdb8df72f, api_version 1.
+// Source: 2fdb17698fa8603b4fd6649e0109bd01705f8b3b, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -26,7 +26,7 @@ final class SearchAction extends ActionRequest
      * @param  int<0, max>|null  $season  The season a followed show is narrowed to, or every season where absent.
      */
     public function __construct(
-        public readonly bool $disruptive = false,
+        public readonly bool $disruptive,
         public readonly ?string $term = null,
         public readonly ?int $season = null,
     ) {}

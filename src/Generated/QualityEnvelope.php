@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e0d5ee48e087ddd488e3bbade0614c2bdb8df72f, api_version 1.
+// Source: 2fdb17698fa8603b4fd6649e0109bd01705f8b3b, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -19,7 +19,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type MusicChoice from Shapes
  * @phpstan-import-type StackEdit from Shapes
  * @phpstan-type PresetChoice array{means: string, needs_transcoding_here: bool, preset: string, resolution: string, scope: string, size_per_hour: string, transcoding: string}
- * @phpstan-type QualityReport array{choices: list<PresetChoice>, customised: bool, disposition: Disposition, music?: MusicChoice|null, overwritten?: StackEdit|null, rehearsed: bool}
+ * @phpstan-type QualityOffered array{formats: list<string>, media_types: list<string>, presets: list<string>}
+ * @phpstan-type QualityReport array{changes?: string|null, choices: list<PresetChoice>, customised: bool, disposition: Disposition, music?: MusicChoice|null, offered: QualityOffered, overwritten?: StackEdit|null, rehearsed: bool}
  * @phpstan-type Data QualityReport
  */
 final class QualityEnvelope
