@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e0d5ee48e087ddd488e3bbade0614c2bdb8df72f, api_version 1.
+// Source: 2fdb17698fa8603b4fd6649e0109bd01705f8b3b, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -26,6 +26,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Criticality 'critical'|'core'|'important'|'enhancing'|'optional'
  * @phpstan-type DeviceKeyBacking 'strongbox'|'enclave'|'tee'
  * @phpstan-type Disposition 'shown'|'recorded'|'rehearsed'|'held'|'reapplied'|'would-reapply'
+ * @phpstan-type Disruptive array{bounded?: int|null, disturbs: string, only: string}
  * @phpstan-type DoctorCategory 'environment'|'storage'|'network'|'vpn'|'credentials'|'services'|'providers'|'queue'|'config'
  * @phpstan-type DoctorVerdict array{note?: string|null, outcome: 'pass'}|array{cause?: Problem|null, code: Code, detail?: string|null, meaning: string, outcome: 'warn', remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}|array{cause?: Problem|null, code: Code, detail?: string|null, meaning: string, outcome: 'fail', remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}|array{outcome: 'unverified', reason: string, remedy: Remedy}|array{outcome: 'skipped', reason: string}
  * @phpstan-type Dropped array{needs: StackProtocol, profile: string}
@@ -33,7 +34,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Estimate array{bytes: int, measured: bool}
  * @phpstan-type Facing 'asking'|'watching'|'shelf'|'operators'|'carriage'|'unstated'
  * @phpstan-type Filtered array{forms: list<string>, id: string, name: string, needs: StackProtocol, profile: string}
- * @phpstan-type Finding array{category: DoctorCategory, caused_by?: string|null, check: string, onset?: string|null, origin: ValueOrigin, said?: string|null, service?: string|null, service_name?: string|null, title: string, verdict: DoctorVerdict}
+ * @phpstan-type Finding array{category: DoctorCategory, caused_by?: string|null, check: string, disruptive?: Disruptive|null, onset?: string|null, origin: ValueOrigin, said?: string|null, service?: string|null, service_name?: string|null, title: string, verdict: DoctorVerdict}
  * @phpstan-type Footprint array{estimated_mib: int, unestimated: list<string>}
  * @phpstan-type FrontDoorBeside array{address?: Address|null, because: string, facing: Facing, service: string}
  * @phpstan-type FrontDoorReport array{address?: Address|null, beside: list<FrontDoorBeside>, chosen: Chosen, facing?: Facing|null, meaning: string, service?: string|null, standing: FrontDoorStanding}

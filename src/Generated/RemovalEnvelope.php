@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e0d5ee48e087ddd488e3bbade0614c2bdb8df72f, api_version 1.
+// Source: 2fdb17698fa8603b4fd6649e0109bd01705f8b3b, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `removal` envelope, shaped as the contract describes it.
  *
- * @phpstan-type HouseholdRemoval array{'asks-through-the-request-service': bool, confirmed: bool, findings: list<string>, name: string, rehearsed: bool, requests: int, revoked: Revoked}
+ * @phpstan-type HouseholdRemoval array{'asks-through-the-request-service': bool, confirmed: bool, findings: list<string>, name: string, offer: string, rehearsed: bool, requests: int, revoked: Revoked, 'watch-history': string}
  * @phpstan-type Revoked 'everywhere'|'media-server-only'|'nothing'
  * @phpstan-type Data HouseholdRemoval
  */

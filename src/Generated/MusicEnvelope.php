@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e0d5ee48e087ddd488e3bbade0614c2bdb8df72f, api_version 1.
+// Source: 2fdb17698fa8603b4fd6649e0109bd01705f8b3b, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -18,7 +18,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type Disposition from Shapes
  * @phpstan-import-type MusicChoice from Shapes
  * @phpstan-import-type Triggered from Shapes
- * @phpstan-type MusicReport array{choice: MusicChoice, disposition: Disposition, outcome?: Triggered|null, rehearsed: bool}
+ * @phpstan-type MusicReport array{changes: string, choice: MusicChoice, disposition: Disposition, outcome?: Triggered|null, rehearsed: bool}
  * @phpstan-type Data MusicReport
  */
 final class MusicEnvelope

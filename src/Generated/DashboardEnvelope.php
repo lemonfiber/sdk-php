@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e0d5ee48e087ddd488e3bbade0614c2bdb8df72f, api_version 1.
+// Source: 2fdb17698fa8603b4fd6649e0109bd01705f8b3b, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -20,7 +20,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type HouseholdReport from Shapes
  * @phpstan-import-type ProblemSeverity from Shapes
  * @phpstan-import-type Service from Shapes
- * @phpstan-type Affected array{check: string, downstream: list<string>, exit?: int|null, meaning: string, onset: string, remedies: list<string>, severity: ProblemSeverity, summary: string}
+ * @phpstan-type Affected array{acknowledged?: bool, check: string, downstream: list<string>, exit?: int|null, meaning: string, onset: string, remedies: list<string>, severity: ProblemSeverity, summary: string}
  * @phpstan-type DashboardProtocol 'usenet'|'torrent'
  * @phpstan-type DashboardReading array{reading: 'known', value: int}|array{reading: 'stale', value: int}|array{reading: 'unknown'}
  * @phpstan-type Downloader array{client: string, state: DownloaderState}

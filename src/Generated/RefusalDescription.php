@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e0d5ee48e087ddd488e3bbade0614c2bdb8df72f, api_version 1.
+// Source: 2fdb17698fa8603b4fd6649e0109bd01705f8b3b, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -120,6 +120,8 @@ final class RefusalDescription
             RefusalCode::ValueWithheld => 'Raised when a recipe\'s call was not sent because a value it carries may not go where it was going: not where its pairs say, not back to the service a credential belongs to, or outside without its approval; the install or update was put back.',
             RefusalCode::NothingToProve => 'Nothing by that id is installed, so there is nothing to prove again.',
             RefusalCode::StrangerReplacing => 'Raised when a plugin that is not first-party declares a service replacing one the stack ships.',
+            RefusalCode::NothingToRun => 'Raised when a run names a plugin that is not installed, or a demand recipe the plugin does not declare.',
+            RefusalCode::ManifestUnkept => 'Raised when the manifest kept for an installed plugin is missing or is not the one that was installed, so its demand recipes cannot be read.',
             RefusalCode::NoLimit => 'Raised where a policy that lives inside a limit was chosen without one.',
             RefusalCode::NotWaiting => 'Raised where the request named is not one that is waiting on anybody.',
             RefusalCode::NoReason => 'Raised where a request was turned down and the reason said nothing.',
@@ -149,6 +151,7 @@ final class RefusalDescription
             RefusalCode::MemberAndDefaults => 'Raised where a household read named a member and asked for the household\'s defaults as well.',
             RefusalCode::Cannot => 'The flag cannot be honoured by this command, and never will be.',
             RefusalCode::NotYet => 'The flag is not honoured by this command yet.',
+            RefusalCode::RemovalMoved => 'Said where the offer answered is not the one a reading of the removal makes now.',
             RefusalCode::Stale => 'Raised when consent was given for an offer that no longer stands.',
             RefusalCode::MovedOn => 'Raised when consent was given for a listing that no longer stands.',
             RefusalCode::Unrenderable => 'Raised when an answer could not be rendered.',
@@ -179,6 +182,7 @@ final class RefusalDescription
             RefusalCode::StackNeedsNewer => 'Raised when a stack names a newer lemonfiber than the one running.',
             RefusalCode::StackUnassembled => 'Raised when a manifest\'s files are not laid out as the contract says.',
             RefusalCode::ProjectEdited => 'Raised when a change would write over a generated project the operator has edited.',
+            RefusalCode::ResetMoved => 'Raised where the offer a reset answers is not the one a reading of it makes now.',
             RefusalCode::RootRefused => 'Raised where `DATA_ROOT` names an NFS export lemonfiber cannot write into the mount options, so no project is written from it.',
             RefusalCode::UpdateMoved => 'Raised where an update names an offer that is not the one a fresh look at the releases builds.',
             RefusalCode::NoSuchFiller => 'A capability was named that no service in this stack provides.',

@@ -494,6 +494,16 @@
     "status": 403,
     "description": "Raised when a plugin that is not first-party declares a service replacing one the stack ships."
   },
+  "PLUGIN-44": {
+    "name": "NOTHING_TO_RUN",
+    "status": 404,
+    "description": "Raised when a run names a plugin that is not installed, or a demand recipe the plugin does not declare."
+  },
+  "PLUGIN-45": {
+    "name": "MANIFEST_UNKEPT",
+    "status": 409,
+    "description": "Raised when the manifest kept for an installed plugin is missing or is not the one that was installed, so its demand recipes cannot be read."
+  },
   "PLUGIN-5": {
     "name": "ALREADY",
     "status": 400,
@@ -664,6 +674,11 @@
     "status": 400,
     "description": "The flag is not honoured by this command yet."
   },
+  "REMOVE-7": {
+    "name": "REMOVAL_MOVED",
+    "status": 400,
+    "description": "Said where the offer answered is not the one a reading of the removal makes now."
+  },
   "REPAIR-1": {
     "name": "STALE",
     "status": 400,
@@ -773,6 +788,11 @@
     "name": "PROJECT_EDITED",
     "status": 409,
     "description": "Raised when a change would write over a generated project the operator has edited."
+  },
+  "STACK-13": {
+    "name": "RESET_MOVED",
+    "status": 400,
+    "description": "Raised where the offer a reset answers is not the one a reading of it makes now."
   },
   "STACK-2": {
     "name": "STACK_UNUSABLE",

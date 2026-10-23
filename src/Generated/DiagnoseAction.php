@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e0d5ee48e087ddd488e3bbade0614c2bdb8df72f, api_version 1.
+// Source: 2fdb17698fa8603b4fd6649e0109bd01705f8b3b, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -21,12 +21,12 @@ final class DiagnoseAction extends ActionRequest
     public const string ACTION = 'diagnose';
 
     /**
-     * @param  string|null  $only  The group of checks, or the one check, a diagnosis is narrowed to.
      * @param  bool  $disruptive  Whether the checks that disturb the running system are included.
+     * @param  string|null  $only  The group of checks, or the one check, a diagnosis is narrowed to.
      */
     public function __construct(
+        public readonly bool $disruptive,
         public readonly ?string $only = null,
-        public readonly bool $disruptive = false,
     ) {}
 
     public function action(): string

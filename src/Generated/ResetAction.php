@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e0d5ee48e087ddd488e3bbade0614c2bdb8df72f, api_version 1.
+// Source: 2fdb17698fa8603b4fd6649e0109bd01705f8b3b, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -13,7 +13,7 @@ use Lemonfiber\Sdk\ActionRequest;
 /**
  * The `reset` action, as the contract lists it.
  *
- * `confirm` carries the operator's yes to what it would cost.
+ * `offer` carries the operator's yes to what it would cost.
  */
 final class ResetAction extends ActionRequest
 {
@@ -23,10 +23,10 @@ final class ResetAction extends ActionRequest
     public const string ACTION = 'reset';
 
     /**
-     * @param  bool  $confirm  Carries the operator's yes. Whether a cost the action would incur was agreed to in advance.
+     * @param  string|null  $offer  Carries the operator's yes. What was read before answering — the offer a repair's yes was read in, the listing a restore's was, what a replacement would stop — as it named itself.
      */
     public function __construct(
-        public readonly bool $confirm = false,
+        public readonly ?string $offer = null,
     ) {}
 
     public function action(): string
@@ -39,7 +39,7 @@ final class ResetAction extends ActionRequest
      */
     public function consent(): array
     {
-        return ['confirm'];
+        return ['offer'];
     }
 
     /**
@@ -56,7 +56,7 @@ final class ResetAction extends ActionRequest
     protected function arguments(): array
     {
         return [
-            'confirm' => $this->confirm,
+            'offer' => $this->offer,
         ];
     }
 }
