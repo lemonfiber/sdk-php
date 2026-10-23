@@ -33,6 +33,9 @@ use function trim;
  * | {@see self::agreedTo()} | `confirm: true`, `offer`, `agreed` | the named repairs out of that offer are carried out |
  * | {@see self::agreedInAdvance()} | `confirm: true` | every repair is carried out, with no offer read first |
  *
+ * Every shape leaves the checks that disturb the running system out, and says
+ * so: `disruptive: false` travels with each.
+ *
  * The offer names itself, and that name comes back as `agreement` on the
  * `repair` envelope. lemonfiber builds the name again from a fresh look before
  * it acts and refuses an agreement whose offer has moved on — so somebody who
@@ -99,6 +102,6 @@ final readonly class Repair
      */
     public function request(): RepairAction
     {
-        return new RepairAction(offer: $this->offer, agreed: $this->agreed, confirm: $this->confirm);
+        return new RepairAction(disruptive: false, offer: $this->offer, agreed: $this->agreed, confirm: $this->confirm);
     }
 }
