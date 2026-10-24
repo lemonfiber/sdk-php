@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 10f0bd484f3adc435d02eab68897e08e084477ca, api_version 1.
+// Source: 2b6555d0a0fb2096da86579d5e4fa2b143d63462, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -16,10 +16,12 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `credentials` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type ValueOrigin from Shapes
+ * @phpstan-type CredentialGranted array{at: string, credential: string, for: string, of: string, plugin: string}
  * @phpstan-type CredentialHeld array{advisory?: string|null, consumers: list<string>, fingerprint?: string|null, from: ValueOrigin, location: string, name: string, origin: Origin, setting: string, state: CredentialState}
  * @phpstan-type CredentialReach array{reach: 'updated'}|array{detail: string, reach: 'pending'}|array{detail: string, reach: 'failed'}
+ * @phpstan-type CredentialRevoked array{agreement: string, ended: bool, grant: CredentialGranted, restarts: list<string>, unrestarted?: string|null}
  * @phpstan-type CredentialState 'absent'|'active'|'stale'|'invalid'|'rotating'|'superseded'
- * @phpstan-type Inventory array{held: list<CredentialHeld>, protection: Protection, rehearsed: bool, revealed?: Revealed|null, rotated?: Rotation|null}
+ * @phpstan-type Inventory array{grants: list<CredentialGranted>, held: list<CredentialHeld>, protection: Protection, rehearsed: bool, revealed?: Revealed|null, revoked?: CredentialRevoked|null, rotated?: Rotation|null}
  * @phpstan-type Origin 'operator'|'service'|'lemonfiber'
  * @phpstan-type Propagation array{consumer: string, reach: CredentialReach}
  * @phpstan-type Protection array{against: list<string>, not_against: list<string>, summary: string}

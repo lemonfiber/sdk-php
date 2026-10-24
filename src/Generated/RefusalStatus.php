@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 10f0bd484f3adc435d02eab68897e08e084477ca, api_version 1.
+// Source: 2b6555d0a0fb2096da86579d5e4fa2b143d63462, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -122,6 +122,8 @@ final class RefusalStatus
             RefusalCode::StrangerReplacing => 403,
             RefusalCode::NothingToRun => 404,
             RefusalCode::ManifestUnkept => 409,
+            RefusalCode::UnaimedCrossing => 403,
+            RefusalCode::NoGrant => 404,
             RefusalCode::NoLimit => 400,
             RefusalCode::NotWaiting => 404,
             RefusalCode::NoReason => 400,
