@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 10f0bd484f3adc435d02eab68897e08e084477ca, api_version 1.
+// Source: 2b6555d0a0fb2096da86579d5e4fa2b143d63462, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -122,6 +122,8 @@ final class RefusalDescription
             RefusalCode::StrangerReplacing => 'Raised when a plugin that is not first-party declares a service replacing one the stack ships.',
             RefusalCode::NothingToRun => 'Raised when a run names a plugin that is not installed, or a demand recipe the plugin does not declare.',
             RefusalCode::ManifestUnkept => 'Raised when the manifest kept for an installed plugin is missing or is not the one that was installed, so its demand recipes cannot be read.',
+            RefusalCode::UnaimedCrossing => 'Raised when a third-party plugin declares a secret of another service that names no capability of its own it is for.',
+            RefusalCode::NoGrant => 'Raised when a grant asked to be revoked is not one the plugin holds.',
             RefusalCode::NoLimit => 'Raised where a policy that lives inside a limit was chosen without one.',
             RefusalCode::NotWaiting => 'Raised where the request named is not one that is waiting on anybody.',
             RefusalCode::NoReason => 'Raised where a request was turned down and the reason said nothing.',

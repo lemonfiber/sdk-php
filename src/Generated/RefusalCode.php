@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 10f0bd484f3adc435d02eab68897e08e084477ca, api_version 1.
+// Source: 2b6555d0a0fb2096da86579d5e4fa2b143d63462, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -123,6 +123,8 @@ enum RefusalCode: string
     case StrangerReplacing = 'PLUGIN-40';
     case NothingToRun = 'PLUGIN-44';
     case ManifestUnkept = 'PLUGIN-45';
+    case UnaimedCrossing = 'PLUGIN-46';
+    case NoGrant = 'PLUGIN-47';
     case NoLimit = 'QUOTA-2';
     case NotWaiting = 'QUOTA-4';
     case NoReason = 'QUOTA-5';
