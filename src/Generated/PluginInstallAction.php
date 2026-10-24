@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: ceba0455d870b24e85d274b8fe8b85d130b9fa75, api_version 1.
+// Source: b79526cbfe6f7083080f172277706ccc61d392b8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -25,7 +25,7 @@ final class PluginInstallAction extends ActionRequest
     /**
      * @param  string|null  $offer  Carries the operator's yes. What was read before answering — the offer a repair's yes was read in, the listing a restore's was, what a replacement would stop — as it named itself.
      * @param  string|null  $source  Where a plugin comes from: its name in the catalogue, its directory on this machine or the `plugin.toml` inside it, or a git repository, at a branch, tag or commit named after its last `@`.
-     * @param  list<string>  $approved  Carries the operator's yes. Every value a recipe would carry elsewhere that is approved, as `value@destination`, and every privileged shape, as `shape@service`, exactly as the reading lists them.
+     * @param  list<string>  $approved  Carries the operator's yes. Every value a recipe would carry elsewhere that is approved, as `value@destination`, every privileged shape, as `shape@service`, and every credential granted to a plugin, as `setting@plugin`, exactly as the reading lists them.
      * @param  list<string>  $inputs  Every value the operator supplies for an input a recipe asks for, as `name=value`. What follows the `=` may be a secret, and is never repeated back.
      */
     public function __construct(
