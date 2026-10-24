@@ -29,6 +29,9 @@ const A_SHORT_WAIT_MS = 300;
 /** Room on top of the wait for starting a process and tearing a connection down. */
 const LEEWAY_SECONDS = 1.5;
 
+/** How long to sleep between two readings of what a peer heard, in microseconds. */
+const A_MOMENT_MICROSECONDS = 10_000;
+
 /** What a job envelope an action answers with looks like. */
 const A_JOB = '{"api_version":1,"kind":"job","data":{"job":"j","action":"restart"}}';
 
@@ -70,6 +73,19 @@ function howManyAsked(AnsweringListener $peer): int
     return substr_count($peer->heard(), 'HTTP/1.1');
 }
 
+/** How many request heads a peer that answers nothing was sent, once it has written the first down or the leeway is spent. */
+function howManyReachedASilentPeer(AnsweringListener $peer): int
+{
+    $clock = new SystemClock();
+    $until = $clock->elapsedSeconds() + LEEWAY_SECONDS;
+
+    while (howManyAsked($peer) === 0 && $clock->elapsedSeconds() < $until) {
+        usleep(A_MOMENT_MICROSECONDS);
+    }
+
+    return howManyAsked($peer);
+}
+
 it('gives up on a peer that never answers once the wait is over, however many attempts a read allows', function (bool $encrypted): void {
     $peer = AnsweringListener::silent($encrypted);
     $wait = Duration::ofMilliseconds(A_SHORT_WAIT_MS);
@@ -82,7 +98,7 @@ it('gives up on a peer that never answers once the wait is over, however many at
     expect($raised)->toBeInstanceOf(Unreachable::class)
         ->and($took)->toBeGreaterThanOrEqual($wait->inSeconds() * 0.9)
         ->and($took)->toBeLessThan($wait->inSeconds() + LEEWAY_SECONDS)
-        ->and(howManyAsked($peer))->toBe(1);
+        ->and(howManyReachedASilentPeer($peer))->toBe(1);
 })->with(['plain' => [false], 'held to its certificate' => [true]]);
 
 it('does not ask again where the pause before it would outlast the wait', function (): void {
