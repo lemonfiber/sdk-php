@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 2b6555d0a0fb2096da86579d5e4fa2b143d63462, api_version 1.
+// Source: ceba0455d870b24e85d274b8fe8b85d130b9fa75, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -30,7 +30,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type ExpectedKind 'bool'|'int'|'str'|'list'|'dict'
  * @phpstan-type KeySource 'config-xml'|'config-ini'|'config-json'|'config-yaml'|'api-settings'|'generated'|'none'
  * @phpstan-type PluginAdapterOwner 'lemonfiber'
- * @phpstan-type PluginAsking array{capability: string, each?: bool}
+ * @phpstan-type PluginAsking array{capability: string, each?: bool, native?: string|null}
  * @phpstan-type PluginChange array{path: string, puts: PluginPuts}
  * @phpstan-type PluginChangedCheck array{before?: DoctorVerdict|null, now: Finding}
  * @phpstan-type PluginConstraint 'status'|'json'|'json_has_keys'|'json_types'|'json_at_least'|'json_array_min'|'json_is_absent'|'content_type'|'body_starts_with'|'exit'|'stdout_starts_with'
