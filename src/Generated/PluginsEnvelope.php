@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 8ab642c3a9a1c205c3e4f5a4e3ce03a0ad464328, api_version 1.
+// Source: 81716bbfee5a95db4eabb8ef0db6fdcd38ca7408, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -76,6 +76,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginUpdate array{from: string, install: PluginInstall, interrupts: list<string>, plugin: string, restored?: PluginRestored|null, stopped?: string|null, to: string, went_back: UndoReversal}
  * @phpstan-type PluginVerdict array{outcome: 'passed'}|array{faults: list<string>, outcome: 'failed'}|array{outcome: 'unproven', why: string}|array{declared: list<PluginFailingAsDeclared>, outcome: 'failing-as-declared'}
  * @phpstan-type PluginVerification array{broke: list<PluginChangedCheck>, unsettled: list<PluginChangedCheck>}
+ * @phpstan-type RecordedWith string|int|bool
  * @phpstan-type ServiceConstant string|int|bool
  * @phpstan-type ServiceFields array{config_ro?: bool, env?: array<string, ServiceValue>, mem_limit_mib?: int|null, mount?: list<ServiceMount>, network?: ServiceNetwork|null, posture?: ServicePosture, publish?: list<ServicePublish>, tmpfs?: list<string>, user_mode?: ServiceUserMode|null}
  * @phpstan-type ServiceMount array{from: string, ro?: bool, to: string}
@@ -83,7 +84,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type ServicePosture 'standard'|'confined'
  * @phpstan-type ServicePublish array{listens?: int|null, port: int}
  * @phpstan-type ServiceSecretOf array{secret: string}
- * @phpstan-type ServiceSetting array{default: ServiceConstant, setting: string}
+ * @phpstan-type ServiceSetting array{default: ServiceConstant, recorded_with?: RecordedWith|null, setting: string}
  * @phpstan-type ServiceUrlOf array{files?: string|null, native?: string|null, url_of: string}
  * @phpstan-type ServiceUserMode 'image'|'puid-env'|'uid'
  * @phpstan-type ServiceValue ServiceConstant|ServiceSetting|ServiceUrlOf|ServiceSecretOf
