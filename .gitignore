@@ -11,3 +11,4 @@
 
 # Temporary trees the generator test builds and removes.
 /.contract-test-*/
+/.mutation-gate/

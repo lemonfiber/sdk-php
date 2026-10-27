@@ -34,6 +34,7 @@
         "ergebnis/phpstan-rules": "^2.13",
         "guzzlehttp/psr7": "^3.1",
         "laravel/pint": "^1.30",
+        "nightworksio/mutation-gate": "dev-main",
         "pestphp/pest": "^5.1",
         "pestphp/pest-plugin-arch": "^5.0",
         "phpstan/phpstan": "^2.2",
@@ -43,6 +44,13 @@
         "shipmonk/composer-dependency-analyser": "^1.8",
         "tomasvotruba/type-coverage": "^2.3"
     },
+    "repositories": [
+        {
+            "name": "mutation-gate",
+            "type": "vcs",
+            "url": "https://github.com/nightworksio/php-mutation-gate"
+        }
+    ],
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
@@ -110,7 +118,7 @@
         "refactor:fix": "rector process",
         "test": "pest",
         "test:coverage": "pest --coverage --min=100",
-        "test:mutation": "@php scripts/mutation.php"
+        "test:mutation": "mutation-gate"
     },
     "scripts-descriptions": {
         "changelog": "Rewrite CHANGELOG.md from the commit history with git-cliff.",
@@ -119,6 +127,6 @@
         "contract:generate": "Regenerate src/Generated from the vendored contract artefact, offline.",
         "contract:sync": "Vendor lemonfiber's contract artefact at one revision: composer contract:sync -- v1.0.0.",
         "guards": "Fail on suppressions, oversized files, remote addresses and reasoning in comments.",
-        "test:mutation": "Mutate every file under src at a floor of 100%; `-- --list` names the runners CI starts, each a shard or several small ones joined by `+`, `-- --shard=<name>` runs one."
+        "test:mutation": "Mutate src through nightworksio/mutation-gate at the floor of 100 mutation-gate.json gives it; CI runs it sharded, through the gate's reusable workflow."
     }
 }

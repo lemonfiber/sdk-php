@@ -1,0 +1,24 @@
+{
+    "$schema": "vendor/nightworksio/mutation-gate/resources/mutation-gate.schema.json",
+    "preset": "library",
+    "runner": "pest",
+    "trees": [
+        {
+            "path": "src",
+            "floor": 100
+        }
+    ],
+    "security": {
+        "floor": 100
+    },
+    "ignores": {
+        "native": "refuse",
+        "entries": [
+            {
+                "mutant": "f3641072f847",
+                "reason": "Equivalent: parse_url sets a user part wherever it sets a password, an empty one included, so 'user' refuses every address 'pass' would.",
+                "expires": "2027-10-27"
+            }
+        ]
+    }
+}

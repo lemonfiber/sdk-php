@@ -51,3 +51,11 @@ it('starts every call with a whole wait of its own', function (): void {
     expect(round($first->secondsLeft(), 6))->toBe(0.1)
         ->and(round($second->secondsLeft(), 6))->toBe(1.0);
 });
+
+it('reads the first pause in milliseconds, a whole second filling a wait of one', function (): void {
+    $short = Call::on(ReadRequest::envelope('/api/status'), Duration::ofSeconds(1), new FakeClock([0.0]));
+    $whole = Call::on(ReadRequest::envelope('/api/status'), Duration::ofSeconds(1), new FakeClock([0.0]));
+
+    expect($short->hasRoomToAskAgain(999))->toBeTrue()
+        ->and($whole->hasRoomToAskAgain(1000))->toBeFalse();
+});

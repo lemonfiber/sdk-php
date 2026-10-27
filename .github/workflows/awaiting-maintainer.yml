@@ -14,7 +14,7 @@
 #
 #   gates   gates / gates
 #   pin-only pin-only / pin-only
-#   ci               checks, tests and coverage, mutation testing,
+#   ci               checks, tests and coverage, mutation / verdict,
 #                    backward compatibility
 #   sonar            gate / gate
 #   contract-drift   contract-drift / drift

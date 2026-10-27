@@ -116,6 +116,11 @@ it('keeps a title id to the one segment it names', function (): void {
         ->and(Api::title('a b?c'))->toBe('/api/held/a%20b%3Fc');
 });
 
+it('keeps a device key\'s name to the one segment it names', function (): void {
+    expect(Api::deviceKey('../keys'))->toBe(Api::DEVICE_KEYS_ENDPOINT . '/..%2Fkeys')
+        ->and(Api::deviceKey('a b?c'))->toBe(Api::DEVICE_KEYS_ENDPOINT . '/a%20b%3Fc');
+});
+
 it('composes the paths the pictures of a title are read under', function (): void {
     expect(Api::poster('4f2a9c'))->toBe('/api/held/4f2a9c/poster')
         ->and(Api::poster('81'))->toBe('/api/held/81/poster')

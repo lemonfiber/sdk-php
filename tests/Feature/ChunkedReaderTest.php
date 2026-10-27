@@ -104,3 +104,17 @@ it('puts back whatever was handling warnings before a read', function (): void {
         restore_error_handler();
     }
 });
+
+it('hands out what is waiting in chunks of eight kilobytes', function (): void {
+    $handle = fopen('php://temp', 'w+');
+
+    expect($handle)->toBeResource();
+
+    /** @var resource $handle */
+    fwrite($handle, str_repeat('x', 8193));
+    rewind($handle);
+
+    $chunks = iterator_to_array(ChunkedReader::from($handle, Duration::ofMilliseconds(50)), false);
+
+    expect(array_map(strlen(...), $chunks))->toBe([8192, 1]);
+});
