@@ -9,6 +9,13 @@
         }
     ],
     "ignores": {
-        "native": "refuse"
+        "native": "refuse",
+        "entries": [
+            {
+                "mutant": "f3641072f847",
+                "reason": "Equivalent: parse_url sets a user part wherever it sets a password, an empty one included, so 'user' refuses every address 'pass' would.",
+                "expires": "2027-10-27"
+            }
+        ]
     }
 }

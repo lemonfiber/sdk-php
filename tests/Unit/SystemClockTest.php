@@ -14,3 +14,7 @@ it('counts forward in seconds', function (): void {
         ->and($second)->toBeGreaterThanOrEqual($first)
         ->and($second - $first)->toBeLessThan(1.0);
 });
+
+it('reads its counter in seconds', function (): void {
+    expect(new SystemClock(static fn(): int => 1_500_000_000)->elapsedSeconds())->toBe(1.5);
+});

@@ -131,3 +131,15 @@ it('refuses a line it cannot read rather than passing over it', function (): voi
     expect(fn(): array => new EnvelopeReader()->readEach($body))
         ->toThrow(UnreadableResponse::class, 'not readable as JSON');
 });
+
+it('reads an answer nested sixty-four deep, and refuses one nested deeper', function (): void {
+    $nested = static fn(int $levels): string => sprintf(
+        '{"api_version":1,"kind":"status","data":%s%s}',
+        str_repeat('[', $levels),
+        str_repeat(']', $levels),
+    );
+
+    expect(new EnvelopeReader()->read($nested(62))->kind)->toBe('status')
+        ->and(static fn(): Envelope => new EnvelopeReader()->read($nested(63)))
+        ->toThrow(UnreadableResponse::class, 'Maximum stack depth exceeded');
+});
