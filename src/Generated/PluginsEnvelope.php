@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 81716bbfee5a95db4eabb8ef0db6fdcd38ca7408, api_version 1.
+// Source: 28f15257698f727ce6347408c6e6584f56fe6a57, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -22,13 +22,11 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type UndoReversal from Shapes
  * @phpstan-import-type Unvetted from Shapes
  * @phpstan-import-type Wired from Shapes
- * @phpstan-type Api array{key_source: KeySource, kind: ApiKind, path?: string|null, version?: int|null}
  * @phpstan-type ApiKind 'servarr'|'sabnzbd'|'qbittorrent'|'seerr'|'bindery'|'jellyfin'|'bazarr'|'audiobookshelf'|'nzbhydra2'
  * @phpstan-type Contribution array{action?: string|null, at: string, category?: string|null, detail?: string|null, expect?: Expect|null, expected?: list<PluginExpectedFailure>, fixture?: string|null, for?: string|null, id: string, request?: PluginRequest|null, service?: string|null, timeout_s?: int|null, title?: string|null, why?: string|null}
  * @phpstan-type Expect array{body_starts_with?: string|null, content_type?: string|null, exit?: int|null, json?: array<string, Expected>|null, json_array_min?: int|null, json_at_least?: array<string, int>|null, json_has_keys?: list<string>|null, json_is_absent?: bool|null, json_types?: array<string, ExpectedKind>|null, status?: int|null, stdout_starts_with?: string|null}
  * @phpstan-type Expected bool|int|string
  * @phpstan-type ExpectedKind 'bool'|'int'|'str'|'list'|'dict'
- * @phpstan-type KeySource 'config-xml'|'config-ini'|'config-json'|'config-yaml'|'api-settings'|'generated'|'none'
  * @phpstan-type PluginAdapterOwner 'lemonfiber'
  * @phpstan-type PluginAsking array{capability: string, each?: bool, native?: string|null}
  * @phpstan-type PluginChange array{path: string, puts: PluginPuts}
@@ -42,12 +40,12 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginFailingAsDeclared array{constraint: PluginConstraint, fixture: string, held: string, place?: string|null, reason: string}
  * @phpstan-type PluginGranting array{approval: string, credential: string, for: string, of: string}
  * @phpstan-type PluginInstall array{against?: PluginEvidence|null, asks: list<Wired>, changes: list<PluginChange>, contests: list<WiringContest>, granting: list<PluginGranting>, overrides: list<PluginOverriding>, proofs: list<PluginProving>, recipes_ran: list<PluginRecipeRan>, recorded: bool, reversed?: UndoReversal|null, taking: list<PluginTaking>, verified?: PluginVerification|null, would: PluginInstalled}
- * @phpstan-type PluginInstalled array{adapters?: list<PluginServiceAdapter>, contributions?: list<Contribution>, declared?: PluginDeclaration, description?: string|null, from?: string, granted?: list<PluginGrant>, installed_at?: string, manifest?: string, name?: string|null, plugin: string, provides?: list<string>, recipes?: list<PluginRecipe>, request_proofs?: list<PluginRequestProof>, revision?: string, run_proofs?: list<PluginRunProof>, services: list<PluginPlaced>, signed?: string, tree?: string, version: string}
+ * @phpstan-type PluginInstalled array{contributions?: list<Contribution>, declared?: PluginDeclaration, description?: string|null, from?: string, granted?: list<PluginGrant>, installed_at?: string, manifest?: string, name?: string|null, plugin: string, provides?: list<string>, recipes?: list<PluginRecipe>, request_proofs?: list<PluginRequestProof>, revision?: string, run_proofs?: list<PluginRunProof>, services: list<PluginPlaced>, signed?: string, tree?: string, version: string}
  * @phpstan-type PluginInstalls array{agreement?: string|null, demand?: PluginDemand|null, install?: PluginInstall|null, installed: list<PluginInstalled>, nonconforming?: list<PluginNonconforming>, proof?: PluginReproof|null, rehearsed: bool, removal?: PluginRemoval|null, sources?: list<PluginSource>, substituted?: list<PluginSubstituted>, unvetted?: Unvetted|null, update?: PluginUpdate|null}
  * @phpstan-type PluginNonconforming array{at: string, capability: string, operation: string, plugin: string, why: string}
  * @phpstan-type PluginOverriding array{setting: string, why: string}
  * @phpstan-type PluginPair array{approval?: string, from?: string, origin: string, release?: string, to: string, value: string}
- * @phpstan-type PluginPlaced array{api?: Api|null, asks?: list<PluginAsking>, asks_for?: string|null, config_path: string, description?: string, digest: string, fields?: ServiceFields, fronts?: string|null, health?: string|null, hidden?: bool, icon?: string|null, image: string, listens?: int|null, media_types?: list<string>, name?: string, native?: string|null, networks?: list<string>, provides?: list<string>, reached?: PluginReached|null, reaches?: string|null, replaces?: string|null, service: string, shape?: PluginShape|null, speaks?: list<string>, starting?: string|null, tag: string, takes_data: bool, upstream?: array<string, string>}
+ * @phpstan-type PluginPlaced array{asks?: list<PluginAsking>, asks_for?: string|null, config_path: string, description?: string, digest: string, fields?: ServiceFields, fronts?: string|null, health?: string|null, hidden?: bool, icon?: string|null, image: string, listens?: int|null, media_types?: list<string>, name?: string, native?: string|null, networks?: list<string>, provides?: list<string>, reached?: PluginReached|null, reaches?: string|null, replaces?: string|null, service: string, shape?: PluginShape|null, speaks?: list<string>, starting?: string|null, tag: string, takes_data: bool, upstream?: array<string, string>}
  * @phpstan-type PluginProving array{asks: string, came_to?: PluginVerdict|null, establishes: string, of?: string|null, proof: string, why: string}
  * @phpstan-type PluginPuts 'directory'|'document'|'key'|'region'|'secrets'|'starting'|'upstream'
  * @phpstan-type PluginReached array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}
@@ -63,7 +61,6 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginRun array{args: list<string>, timeout_s?: int|null}
  * @phpstan-type PluginRunProof array{expect: Expect, proof: string, run: PluginRun, service: string, title: string, why: string}
  * @phpstan-type PluginSecret array{for?: string|null, id: string, minted?: bool, of: string, why: string}
- * @phpstan-type PluginServiceAdapter array{kind: ApiKind, owner: PluginAdapterOwner, service: string}
  * @phpstan-type PluginShape 'egress-guard'|'render'
  * @phpstan-type PluginSource array{from: string, plugin: string, standing: PluginSourceStanding}
  * @phpstan-type PluginSourceStanding array{standing: 'reachable'}|array{standing: 'unreachable', why: string}|array{standing: 'unasked', why: string}
