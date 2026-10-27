@@ -1,0 +1,14 @@
+{
+    "$schema": "vendor/nightworksio/mutation-gate/resources/mutation-gate.schema.json",
+    "preset": "library",
+    "runner": "pest",
+    "trees": [
+        {
+            "path": "src",
+            "floor": 100
+        }
+    ],
+    "ignores": {
+        "native": "refuse"
+    }
+}
