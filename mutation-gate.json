@@ -8,6 +8,9 @@
             "floor": 100
         }
     ],
+    "security": {
+        "floor": 100
+    },
     "ignores": {
         "native": "refuse",
         "entries": [
