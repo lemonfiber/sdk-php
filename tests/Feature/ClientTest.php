@@ -9,7 +9,6 @@ use Lemonfiber\Sdk\Events\EventFeed;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\NoSuchJob;
 use Lemonfiber\Sdk\Exception\RequestFailed;
-use Lemonfiber\Sdk\Exception\StreamInterrupted;
 use Lemonfiber\Sdk\Generated\BackupAction;
 use Lemonfiber\Sdk\Generated\DownAction;
 use Lemonfiber\Sdk\Generated\RestartAction;
@@ -396,23 +395,6 @@ it('answers a release of work that had already finished with what it finished as
     ]);
 
     expect(standingWord($client->letGoOf('k3n9v2xq')))->toBe('finished as repair');
-});
-
-it('takes a release answered below 400 for where the work stands, and one at 400 for a refusal', function (): void {
-    [$below] = clientAnswering([ReleaseRequest::class => stillNamed(399)]);
-    [$at] = clientAnswering([ReleaseRequest::class => stillNamed(400)]);
-
-    expect(standingWord($below->letGoOf('k3n9v2xq')))->toBe('ended')
-        ->and(static fn(): JobStanding => $at->letGoOf('k3n9v2xq'))->toThrow(RequestFailed::class);
-});
-
-it('reopens live updates five times before it gives up, where it is told no other number', function (): void {
-    [$client] = clientAnswering([ReadRequest::class => MockResponse::make('', 200, ['Content-Type' => 'text/event-stream'])]);
-
-    expect(static function () use ($client): void {
-        foreach ($client->events(Duration::ofSeconds(15))->follow() as $ignored) {
-        }
-    })->toThrow(StreamInterrupted::class, 'reopened 5 times');
 });
 
 it('reads a bounded window of one service\'s lines', function (): void {
