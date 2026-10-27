@@ -18,15 +18,6 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Generated\Kind;
 use Lemonfiber\Sdk\Generated\RefusalCode;
-use Lemonfiber\Sdk\Tests\Support\GeneratedRefusals;
-
-const A_CODE_THE_LIST_NAMES = 'FIXTURE-1';
-
-GeneratedRefusals::loadWith(A_CODE_THE_LIST_NAMES, [
-    'name' => 'LISTED_FOR_THESE_TESTS',
-    'status' => 403,
-    'description' => 'Raised by nothing; listed so these tests have a code the list names.',
-]);
 
 const NOTHING_WAS_TAKEN = 'lemonfiber turned down the request for /api/status and answered 500. Nothing was taken from that answer.';
 

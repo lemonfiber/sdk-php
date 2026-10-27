@@ -7,8 +7,21 @@ use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\RunToken;
+use Lemonfiber\Sdk\Tests\Support\GeneratedRefusals;
 use Lemonfiber\Sdk\Time\Duration;
 use Lemonfiber\Sdk\Time\SystemClock;
+
+/**
+ * A code the generated refusal list names in every process the suite runs in, a parallel worker's or a mutant's
+ * included: loaded here, before any test file can load the committed list.
+ */
+const A_CODE_THE_LIST_NAMES = 'FIXTURE-1';
+
+GeneratedRefusals::loadWith(A_CODE_THE_LIST_NAMES, [
+    'name' => 'LISTED_FOR_THESE_TESTS',
+    'status' => 403,
+    'description' => 'Raised by nothing; listed so these tests have a code the list names.',
+]);
 
 /**
  * A wait long enough that no test's call runs out of it, so only a test about the wait meets one.
