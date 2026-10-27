@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 28f15257698f727ce6347408c6e6584f56fe6a57, api_version 1.
+// Source: aaaf59f88495ca7c7f39c55a4d24cb9a3dcbb7d7, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -11,7 +11,7 @@ namespace Lemonfiber\Sdk\Generated;
 /**
  * Every shape more than one kind carries, each named once and imported where it is used.
  *
- * @phpstan-type Action array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'withdraw', key: string, owner: string, path: string, written: int}|array{does: 'rewind', path: string, previous: string, written: int}|array{does: 'move-back', from: string, to: string}|array{does: 'keep-copy', to: string, volume: string}|array{current: string, does: 'repin', previous: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}|array{does: 'revoke', name: string}|array{does: 'reinstate', name: string}|array{does: 'revoke-device', name: string}|array{does: 'reinstate-device', name: string}|array{does: 'resettle', filed?: string|null, name: string, recorded?: string|null, value?: string|null}|array{does: 'regrant', give: bool, grant: PluginGrant, plugin: string}|array{does: 'rehold', earlier?: string|null, filed?: string|null, kept?: string|null, name: string}|array{does: 'leave', path: string}
+ * @phpstan-type Action array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'withdraw', key: string, owner: string, path: string, written: int}|array{does: 'rewind', path: string, previous: string, written: int}|array{does: 'move-back', from: string, to: string}|array{does: 'rename-back', from: string, to: string}|array{does: 'keep-copy', to: string, volume: string}|array{current: string, does: 'repin', previous: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}|array{does: 'revoke', name: string}|array{does: 'reinstate', name: string}|array{does: 'revoke-device', name: string}|array{does: 'reinstate-device', name: string}|array{does: 'resettle', filed?: string|null, name: string, recorded?: string|null, value?: string|null}|array{does: 'regrant', give: bool, grant: PluginGrant, plugin: string}|array{does: 'rehold', earlier?: string|null, filed?: string|null, kept?: string|null, name: string}|array{does: 'leave', path: string}
  * @phpstan-type Address array{caution?: string|null, url: string}
  * @phpstan-type Alert array{affected: list<string>, check: string, exit?: int|null, id?: string|null, kind: string, meaning: string, moment: Moment, remedies: list<string>, severity: ProblemSeverity, summary: string}
  * @phpstan-type AskingStanding 'unlimited'|'within-quota'|'near-quota'|'quota-exhausted'
