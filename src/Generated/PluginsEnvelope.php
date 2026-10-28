@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 60a64d078f1d68029aab5297fcdf7dd493664056, api_version 1.
+// Source: 1b3ffae9af48dd12218b9c868b27025da0af3072, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -45,7 +45,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginNonconforming array{at: string, capability: string, operation: string, plugin: string, why: string}
  * @phpstan-type PluginOverriding array{setting: string, why: string}
  * @phpstan-type PluginPair array{approval?: string, from?: string, origin: string, release?: string, to: string, value: string}
- * @phpstan-type PluginPlaced array{asks?: list<PluginAsking>, asks_for?: string|null, config_path: string, description?: string, digest: string, fields?: ServiceFields, fronts?: string|null, health?: string|null, hidden?: bool, icon?: string|null, image: string, listens?: int|null, media_types?: list<string>, name?: string, native?: string|null, networks?: list<string>, provides?: list<string>, reached?: PluginReached|null, reaches?: string|null, replaces?: string|null, service: string, shape?: PluginShape|null, speaks?: list<string>, starting?: string|null, tag: string, takes_data: bool, upstream?: array<string, string>}
+ * @phpstan-type PluginPlaced array{asks?: list<PluginAsking>, asks_for?: string|null, config_path: string, contract?: int|null, description?: string, digest: string, fields?: ServiceFields, fronts?: string|null, health?: string|null, hidden?: bool, icon?: string|null, image: string, listens?: int|null, media_types?: list<string>, name?: string, native?: string|null, networks?: list<string>, provides?: list<string>, reached?: PluginReached|null, reaches?: string|null, replaces?: string|null, service: string, shape?: PluginShape|null, speaks?: list<string>, starting?: string|null, tag: string, takes_data: bool, upstream?: array<string, string>}
  * @phpstan-type PluginProving array{asks: string, came_to?: PluginVerdict|null, establishes: string, of?: string|null, proof: string, why: string}
  * @phpstan-type PluginPuts 'directory'|'document'|'key'|'region'|'secrets'|'starting'|'upstream'
  * @phpstan-type PluginReached array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}
