@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Lemonfiber\Sdk\Scripts;
 
 use function array_filter;
+use function array_is_list;
+use function array_keys;
 use function array_map;
 use function count;
 use function implode;
@@ -170,7 +172,7 @@ final readonly class ActionSource
         }
 
         $entries = array_map(
-            fn(array $argument): string => sprintf("            %s => \$this->%s,\n", $this->types->quoted($argument['wire']), $argument['param']),
+            fn(array $argument): string => sprintf("            %s => %s\$this->%s,\n", $this->types->quoted($argument['wire']), $argument['map'] ? '(object) ' : '', $argument['param']),
             $arguments,
         );
 
@@ -180,7 +182,8 @@ final readonly class ActionSource
     private function literal(mixed $value): string
     {
         return match (true) {
-            is_array($value) => '[' . implode(', ', array_map($this->literal(...), $value)) . ']',
+            is_array($value) && array_is_list($value) => '[' . implode(', ', array_map($this->literal(...), $value)) . ']',
+            is_array($value) => '[' . implode(', ', array_map(fn(int|string $key): string => $this->literal($key) . ' => ' . $this->literal($value[$key]), array_keys($value))) . ']',
             $value === null => 'null',
             is_bool($value) => $value ? 'true' : 'false',
             is_string($value) => $this->types->quoted($value),

@@ -38,12 +38,12 @@ use UnexpectedValueException;
  * type, is refused naming the action and the argument, rather than written as
  * a parameter that accepts something else.
  *
- * @phpstan-type Argument array{wire: string, param: string, native: string, doc: string, optional: bool, default: mixed, description: string}
+ * @phpstan-type Argument array{wire: string, param: string, native: string, doc: string, optional: bool, default: mixed, description: string, map: bool}
  */
 final readonly class ActionArgument
 {
     /** The keywords an argument's schema may hold; any other is a constraint this cannot write. */
-    private const array UNDERSTOOD = ['type', 'items', 'default', 'description', 'title', 'format', 'minimum', 'maximum'];
+    private const array UNDERSTOOD = ['type', 'items', 'additionalProperties', 'default', 'description', 'title', 'format', 'minimum', 'maximum'];
 
     /** What one item of a list a parameter takes may say of itself: one plain type, with its format and bounds. */
     private const array AN_ITEM_HOLDS = ['type', 'format', 'minimum', 'maximum'];
@@ -52,6 +52,8 @@ final readonly class ActionArgument
     private const array SCALARS = ['string' => 'string', 'boolean' => 'bool', 'integer' => 'int', 'number' => 'float'];
 
     private const string ARRAY = 'array';
+
+    private const string OBJECT = 'object';
 
     private const string NULL = 'null';
 
@@ -81,11 +83,12 @@ final readonly class ActionArgument
         return [
             'wire' => $this->wire,
             'param' => $this->param,
-            'native' => ($nullable ? '?' : '') . ($base === self::ARRAY ? 'array' : self::SCALARS[$base]),
+            'native' => ($nullable ? '?' : '') . (in_array($base, [self::ARRAY, self::OBJECT], true) ? 'array' : self::SCALARS[$base]),
             'doc' => $nullable ? $doc . '|null' : $doc,
             'optional' => array_key_exists('default', $schema),
             'default' => array_key_exists('default', $schema) ? $this->defaultOf($schema['default'], $base, $nullable, $schema) : null,
             'description' => $this->described($schema['description'] ?? null),
+            'map' => $base === self::OBJECT,
         ];
     }
 
@@ -107,7 +110,7 @@ final readonly class ActionArgument
         $nullable = in_array(self::NULL, $types, true);
         $rest = array_values(array_filter($types, static fn(mixed $one): bool => $one !== self::NULL));
 
-        if (count($rest) !== 1 || ! is_string($rest[0]) || ($rest[0] !== self::ARRAY && ! array_key_exists($rest[0], self::SCALARS))) {
+        if (count($rest) !== 1 || ! is_string($rest[0]) || (! in_array($rest[0], [self::ARRAY, self::OBJECT], true) && ! array_key_exists($rest[0], self::SCALARS))) {
             throw $this->refusal(sprintf('as %s, which is not one type a parameter can be', json_encode($type, JSON_UNESCAPED_SLASHES)));
         }
 
@@ -129,6 +132,12 @@ final readonly class ActionArgument
             return sprintf('list<%s>', $this->docType($this->itemType($items), is_array($items) ? $items : []));
         }
 
+        if ($base === self::OBJECT) {
+            $values = $schema['additionalProperties'] ?? null;
+
+            return sprintf('array<string, %s>', $this->docType($this->valueType($values), is_array($values) ? $values : []));
+        }
+
         if ($base !== 'integer' || (! array_key_exists('minimum', $schema) && ! array_key_exists('maximum', $schema))) {
             return self::SCALARS[$base];
         }
@@ -145,13 +154,22 @@ final readonly class ActionArgument
 
     private function itemType(mixed $items): string
     {
-        $type = is_array($items) && array_diff(array_keys($items), self::AN_ITEM_HOLDS) === [] ? ($items['type'] ?? null) : null;
+        return $this->plain($items) ?? throw $this->refusal('as a list of something other than one plain type');
+    }
 
-        if (! is_string($type) || ! array_key_exists($type, self::SCALARS)) {
-            throw $this->refusal('as a list of something other than one plain type');
-        }
+    private function valueType(mixed $values): string
+    {
+        return $this->plain($values) ?? throw $this->refusal('as a map to something other than one plain type');
+    }
 
-        return $type;
+    /**
+     * The one plain type a schema of an item or a value is, where it is one.
+     */
+    private function plain(mixed $schema): ?string
+    {
+        $type = is_array($schema) && array_diff(array_keys($schema), self::AN_ITEM_HOLDS) === [] ? ($schema['type'] ?? null) : null;
+
+        return is_string($type) && array_key_exists($type, self::SCALARS) ? $type : null;
     }
 
     /**
@@ -166,6 +184,7 @@ final readonly class ActionArgument
         $fits = match (true) {
             $default === null => $nullable,
             $base === self::ARRAY => is_array($default) && array_is_list($default) && $this->allOf($default, $this->itemType($schema['items'] ?? null)),
+            $base === self::OBJECT => is_array($default) && $this->keyedByName($default) && $this->allOf($default, $this->valueType($schema['additionalProperties'] ?? null)),
             default => $this->isOf($default, $base),
         };
 
@@ -177,7 +196,15 @@ final readonly class ActionArgument
     }
 
     /**
-     * @param  list<mixed>  $values
+     * @param  array<mixed, mixed>  $map
+     */
+    private function keyedByName(array $map): bool
+    {
+        return array_all(array_keys($map), static fn(mixed $key): bool => is_string($key));
+    }
+
+    /**
+     * @param  array<mixed, mixed>  $values
      */
     private function allOf(array $values, string $type): bool
     {

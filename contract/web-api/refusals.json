@@ -124,6 +124,11 @@
     "status": 404,
     "description": "Raised when a name does not name one of the bundles this run kept."
   },
+  "CRED-4": {
+    "name": "REPLACEMENT_MOVED",
+    "status": 400,
+    "description": "Raised where a replacement of the media server's internal certificate answers an offer that is not the one a fresh reading builds."
+  },
   "DEVICE-1": {
     "name": "NOT_A_DEVICE_NAME",
     "status": 400,
@@ -263,6 +268,11 @@
     "name": "RESTART_MOVED",
     "status": 400,
     "description": "Raised where a restart names an offer that is not the one a fresh look at the stack builds."
+  },
+  "LIFE-11": {
+    "name": "MOUNT_LINKED",
+    "status": 409,
+    "description": "Raised when a start finds a service's mount source reached through a link."
   },
   "LIFE-3": {
     "name": "ALREADY_WORKING",
@@ -749,10 +759,20 @@
     "status": 400,
     "description": "Raised where the setting already holds what the change asks for."
   },
+  "SETTING-7": {
+    "name": "OUTSIDE_ITS_CHOICES",
+    "status": 400,
+    "description": "Raised where a change would leave a setting holding a value outside its choices."
+  },
   "SETUP-1": {
     "name": "NOT_REVIEWED",
     "status": 400,
     "description": "Raised when apply is asked for before the answers have been reviewed."
+  },
+  "SETUP-16": {
+    "name": "GUARD_UNANSWERED",
+    "status": 400,
+    "description": "Raised when a VPN answer leaves the egress guard without what it needs to start."
   },
   "SETUP-5": {
     "name": "DOES_NOT_APPLY",
