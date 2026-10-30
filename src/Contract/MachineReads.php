@@ -338,13 +338,14 @@ interface MachineReads
 
     /**
      * The endpoint answering with every setting and secret the services read, as the `settings`
-     * envelope ({@see \Lemonfiber\Sdk\Generated\SettingsEnvelope}): each setting's default and the
-     * operator's value where one is recorded, and each secret without its value. It takes
-     * nothing, and answers the operator alone: a member and a key of any scope are refused.
+     * envelope ({@see \Lemonfiber\Sdk\Generated\SettingsEnvelope}): each setting's default, its
+     * choices where it has them and the operator's value where one is recorded, each secret
+     * without its value, and each service held back with what it waits for. It takes nothing,
+     * and answers the operator alone: a member and a key of any scope are refused.
      *
-     * **Reading is all this does.** Changing a setting is
-     * {@see \Lemonfiber\Sdk\Generated\SettingsSetAction} and putting it back to its default is
-     * {@see \Lemonfiber\Sdk\Generated\SettingsClearAction}, each rehearsed first and asked
+     * **Reading is all this does.** Changing one or more settings in one act is
+     * {@see \Lemonfiber\Sdk\Generated\SettingsSetAction} and putting them back to their defaults
+     * is {@see \Lemonfiber\Sdk\Generated\SettingsClearAction}, each rehearsed first and asked
      * through {@see Api::action()}.
      */
     public const string SETTINGS_ENDPOINT = '/api/settings';
