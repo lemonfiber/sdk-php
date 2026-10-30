@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 1b3ffae9af48dd12218b9c868b27025da0af3072, api_version 1.
+// Source: a7e01397b33934accaa4126989f6b043fbdf3d43, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -41,6 +41,7 @@ final class RefusalStatus
             RefusalCode::NotAnIdempotencyKey => 400,
             RefusalCode::IdempotencyKeyReused => 400,
             RefusalCode::BundleNotHeld => 404,
+            RefusalCode::ReplacementMoved => 400,
             RefusalCode::NotADeviceName => 400,
             RefusalCode::DeviceNameTaken => 409,
             RefusalCode::PublicHalfTaken => 409,
@@ -71,6 +72,7 @@ final class RefusalStatus
             RefusalCode::AlreadyWorking => 409,
             RefusalCode::RegistryRefused => 400,
             RefusalCode::RestartMoved => 400,
+            RefusalCode::MountLinked => 409,
             RefusalCode::OfferMoved => 400,
             RefusalCode::NotAnItem => 400,
             RefusalCode::NotOnTheirShelf => 404,
@@ -166,10 +168,12 @@ final class RefusalStatus
             RefusalCode::UnwritableValue => 400,
             RefusalCode::SettingsMoved => 400,
             RefusalCode::AlreadyHolds => 400,
+            RefusalCode::OutsideItsChoices => 400,
             RefusalCode::NotReviewed => 400,
             RefusalCode::DoesNotApply => 400,
             RefusalCode::AlreadySetUp => 400,
             RefusalCode::NothingToRecover => 400,
+            RefusalCode::GuardUnanswered => 400,
             RefusalCode::NowhereToMeasure => 400,
             RefusalCode::NothingToAsk => 400,
             RefusalCode::NotHeld => 400,

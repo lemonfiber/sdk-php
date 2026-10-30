@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 1b3ffae9af48dd12218b9c868b27025da0af3072, api_version 1.
+// Source: a7e01397b33934accaa4126989f6b043fbdf3d43, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -17,8 +17,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  *
  * @phpstan-import-type Unfilled from Shapes
  * @phpstan-import-type Unvetted from Shapes
- * @phpstan-type Substitution array{asked_by: list<string>, capability: string, leaves_unfilled: list<Unfilled>, now: string, setting: string, was?: string|null, why?: string|null}
- * @phpstan-type SubstitutionReport array{agreement: string, applied: bool, rehearsed: bool, substitution: Substitution, unvetted?: Unvetted|null}
+ * @phpstan-type Substitution array{asked_by: list<string>, capability: string, leaves_unfilled: list<Unfilled>, now: string, setting: string, starts: list<string>, stops: list<string>, was?: string|null, why?: string|null}
+ * @phpstan-type SubstitutionReport array{agreement: string, applied: bool, rehearsed: bool, substitution: Substitution, unran?: list<SubstitutionUnran>, unvetted?: Unvetted|null}
+ * @phpstan-type SubstitutionUnran array{because: string, service: string}
  * @phpstan-type Data SubstitutionReport
  */
 final class SubstitutionEnvelope

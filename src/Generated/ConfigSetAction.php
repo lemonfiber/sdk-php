@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 1b3ffae9af48dd12218b9c868b27025da0af3072, api_version 1.
+// Source: a7e01397b33934accaa4126989f6b043fbdf3d43, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -25,7 +25,7 @@ final class ConfigSetAction extends ActionRequest
     /**
      * @param  bool  $wait  Whether anything still downloading is let finish before the stop.
      * @param  string|null  $key  The configuration key to change.
-     * @param  string|null  $value  What to change the key or the setting to, written as exactly itself.
+     * @param  string|null  $value  What to change the key to, written as exactly itself.
      * @param  bool  $confirm  Carries the operator's yes. Whether a cost the action would incur was agreed to in advance.
      */
     public function __construct(

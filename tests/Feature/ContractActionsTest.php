@@ -103,6 +103,31 @@ it('writes a class per action, taking each argument by name with its type and de
     ContractTree::remove($tree);
 });
 
+it('takes a map of names to plain values as an array keyed by name, and sends it as an object, an empty one included', function (): void {
+    $tree = ContractTree::withFile(json_encode(contractActing([
+        'settings-set' => anAction('settings-set', [
+            ['name' => 'values', 'type' => ['additionalProperties' => ['type' => 'string'], 'default' => new stdClass(), 'type' => 'object']],
+            ['name' => 'limits', 'type' => ['additionalProperties' => ['minimum' => 0, 'type' => 'integer'], 'default' => ['down' => 5], 'type' => ['object', 'null']]],
+        ]),
+    ]), JSON_THROW_ON_ERROR));
+
+    $source = '';
+
+    expect(ContractTree::generate($tree)['status'])->toBe(0)
+        ->and($source = (string) file_get_contents($tree . '/src/Generated/SettingsSetAction.php'))->toContain('public readonly array $values = [],')
+        ->and($source)->toContain("public readonly ?array \$limits = ['down' => 5],")
+        ->and($source)->toContain('@param  array<string, string>  $values')
+        ->and($source)->toContain('@param  array<string, int<0, max>>|null  $limits')
+        ->and(askTheActions($tree, 'new Lemonfiber\Sdk\Generated\SettingsSetAction(values: ["domain" => "home.example.org"])->payload()'))
+        ->toBe('{"values":{"domain":"home.example.org"},"limits":{"down":5}}')
+        ->and(askTheActions($tree, 'new Lemonfiber\Sdk\Generated\SettingsSetAction()->payload()'))
+        ->toBe('{"values":{},"limits":{"down":5}}')
+        ->and(askTheActions($tree, 'new Lemonfiber\Sdk\Generated\SettingsSetAction(limits: null)->payload()'))
+        ->toBe('{"values":{},"limits":null}');
+
+    ContractTree::remove($tree);
+});
+
 it('asks for the arguments that have no default before those that do', function (): void {
     $tree = ContractTree::withFile(json_encode(contractActing([
         'down' => anAction('down', [
@@ -168,6 +193,11 @@ it('refuses a list of actions it cannot write as classes, names what is wrong, a
     'two types' => [['set' => anAction('set', [['name' => 'value', 'type' => ['type' => ['string', 'integer']]]])], 'which is not one type a parameter can be'],
     'a list whose items name a bound that is not whole' => [['set' => anAction('set', [['name' => 'value', 'type' => ['items' => ['minimum' => 0.5, 'type' => 'integer'], 'type' => 'array']]])], 'with a bound that is not a whole number'],
     'a list whose items hold a constraint a parameter cannot' => [['set' => anAction('set', [['name' => 'value', 'type' => ['items' => ['enum' => ['a'], 'type' => 'string'], 'type' => 'array']]])], 'a list of something other than one plain type'],
+    'a map to objects' => [['set' => anAction('set', [['name' => 'values', 'type' => ['additionalProperties' => ['type' => 'object'], 'type' => 'object']]])], 'a map to something other than one plain type'],
+    'a map that names no type for its values' => [['set' => anAction('set', [['name' => 'values', 'type' => ['type' => 'object']]])], 'a map to something other than one plain type'],
+    'a map whose default is a list' => [['set' => anAction('set', [['name' => 'values', 'type' => ['additionalProperties' => ['type' => 'string'], 'default' => ['a'], 'type' => 'object']]])], 'the default ["a"]'],
+    'a map whose default holds another type' => [['set' => anAction('set', [['name' => 'values', 'type' => ['additionalProperties' => ['type' => 'string'], 'default' => ['a' => 1], 'type' => 'object']]])], 'the default {"a":1}'],
+    'values of a map on something other than a map' => [['set' => anAction('set', [['name' => 'value', 'type' => ['additionalProperties' => ['type' => 'string'], 'type' => 'string']]])], 'with `additionalProperties`, which only a map holds'],
     'a list of objects' => [['set' => anAction('set', [['name' => 'value', 'type' => ['items' => ['type' => 'object'], 'type' => 'array']]])], 'a list of something other than one plain type'],
     'consent in an argument it does not take' => [['forget' => anAction('forget', consent: ['confirm'])], 'says consent travels in `confirm`, which it does not take'],
     'two actions written as one class' => [['ab-c' => anAction('ab-c'), 'a-bc' => anAction('a-bc')], 'would be written as ABcAction, as another action already is'],

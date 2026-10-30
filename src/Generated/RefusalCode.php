@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 1b3ffae9af48dd12218b9c868b27025da0af3072, api_version 1.
+// Source: a7e01397b33934accaa4126989f6b043fbdf3d43, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -42,6 +42,7 @@ enum RefusalCode: string
     case NotAnIdempotencyKey = 'ASK-12';
     case IdempotencyKeyReused = 'ASK-13';
     case BundleNotHeld = 'BUNDLE-8';
+    case ReplacementMoved = 'CRED-4';
     case NotADeviceName = 'DEVICE-1';
     case DeviceNameTaken = 'DEVICE-2';
     case PublicHalfTaken = 'DEVICE-3';
@@ -72,6 +73,7 @@ enum RefusalCode: string
     case AlreadyWorking = 'LIFE-3';
     case RegistryRefused = 'LIFE-4';
     case RestartMoved = 'LIFE-10';
+    case MountLinked = 'LIFE-11';
     case OfferMoved = 'MIGRATE-1';
     case NotAnItem = 'PLAY-1';
     case NotOnTheirShelf = 'PLAY-2';
@@ -167,10 +169,12 @@ enum RefusalCode: string
     case UnwritableValue = 'SETTING-4';
     case SettingsMoved = 'SETTING-5';
     case AlreadyHolds = 'SETTING-6';
+    case OutsideItsChoices = 'SETTING-7';
     case NotReviewed = 'SETUP-1';
     case DoesNotApply = 'SETUP-5';
     case AlreadySetUp = 'SETUP-7';
     case NothingToRecover = 'SETUP-8';
+    case GuardUnanswered = 'SETUP-16';
     case NowhereToMeasure = 'SPACE-2';
     case NothingToAsk = 'SPACE-4';
     case NotHeld = 'SPACE-5';

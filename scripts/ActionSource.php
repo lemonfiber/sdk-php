@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Lemonfiber\Sdk\Scripts;
 
 use function array_filter;
+use function array_is_list;
+use function array_keys;
 use function array_map;
 use function count;
 use function implode;
@@ -15,6 +17,7 @@ use function is_string;
 use function json_encode;
 use function rtrim;
 use function sprintf;
+use function str_starts_with;
 use function trim;
 
 /**
@@ -170,17 +173,34 @@ final readonly class ActionSource
         }
 
         $entries = array_map(
-            fn(array $argument): string => sprintf("            %s => \$this->%s,\n", $this->types->quoted($argument['wire']), $argument['param']),
+            fn(array $argument): string => sprintf("            %s => %s,\n", $this->types->quoted($argument['wire']), $this->sent($argument)),
             $arguments,
         );
 
         return "\n" . implode('', $entries) . '        ';
     }
 
+    /**
+     * How an argument's value travels: a map as an object, so that an empty one is `{}`, and null as itself.
+     *
+     * @param  Argument  $argument
+     */
+    private function sent(array $argument): string
+    {
+        $value = sprintf('$this->%s', $argument['param']);
+
+        return match (true) {
+            ! $argument['map'] => $value,
+            str_starts_with($argument['native'], '?') => sprintf('%1$s === null ? null : (object) %1$s', $value),
+            default => sprintf('(object) %s', $value),
+        };
+    }
+
     private function literal(mixed $value): string
     {
         return match (true) {
-            is_array($value) => '[' . implode(', ', array_map($this->literal(...), $value)) . ']',
+            is_array($value) && array_is_list($value) => '[' . implode(', ', array_map($this->literal(...), $value)) . ']',
+            is_array($value) => '[' . implode(', ', array_map(fn(int|string $key): string => $this->literal($key) . ' => ' . $this->literal($value[$key]), array_keys($value))) . ']',
             $value === null => 'null',
             is_bool($value) => $value ? 'true' : 'false',
             is_string($value) => $this->types->quoted($value),
