@@ -122,7 +122,7 @@ final readonly class ActionArgument
     }
 
     /**
-     * The type static analysis reads: a list's item type, and an integer's range.
+     * The type static analysis reads: a list's item type, a map's value type, and an integer's range.
      *
      * @param  array<mixed, mixed>  $schema
      *
@@ -130,18 +130,25 @@ final readonly class ActionArgument
      */
     private function docType(string $base, array $schema): string
     {
-        if ($base === self::ARRAY) {
-            $items = $schema['items'] ?? null;
+        $items = $schema['items'] ?? null;
+        $values = $schema['additionalProperties'] ?? null;
 
-            return sprintf('list<%s>', $this->docType($this->itemType($items), is_array($items) ? $items : []));
-        }
+        return match ($base) {
+            self::ARRAY => sprintf('list<%s>', $this->docType($this->itemType($items), is_array($items) ? $items : [])),
+            self::OBJECT => sprintf('array<string, %s>', $this->docType($this->valueType($values), is_array($values) ? $values : [])),
+            default => $this->scalarType($base, $schema),
+        };
+    }
 
-        if ($base === self::OBJECT) {
-            $values = $schema['additionalProperties'] ?? null;
-
-            return sprintf('array<string, %s>', $this->docType($this->valueType($values), is_array($values) ? $values : []));
-        }
-
+    /**
+     * A plain type, with an integer's range where it names one.
+     *
+     * @param  array<mixed, mixed>  $schema
+     *
+     * @throws UnexpectedValueException
+     */
+    private function scalarType(string $base, array $schema): string
+    {
         if ($base !== 'integer' || (! array_key_exists('minimum', $schema) && ! array_key_exists('maximum', $schema))) {
             return self::SCALARS[$base];
         }
