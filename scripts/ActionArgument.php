@@ -78,6 +78,10 @@ final readonly class ActionArgument
         }
 
         ['base' => $base, 'nullable' => $nullable] = $this->named($schema['type'] ?? null);
+
+        if ($base !== self::OBJECT && array_key_exists('additionalProperties', $schema)) {
+            throw $this->refusal('with `additionalProperties`, which only a map holds');
+        }
         $doc = $this->docType($base, $schema);
 
         return [

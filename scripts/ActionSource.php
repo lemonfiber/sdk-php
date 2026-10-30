@@ -17,6 +17,7 @@ use function is_string;
 use function json_encode;
 use function rtrim;
 use function sprintf;
+use function str_starts_with;
 use function trim;
 
 /**
@@ -172,11 +173,27 @@ final readonly class ActionSource
         }
 
         $entries = array_map(
-            fn(array $argument): string => sprintf("            %s => %s\$this->%s,\n", $this->types->quoted($argument['wire']), $argument['map'] ? '(object) ' : '', $argument['param']),
+            fn(array $argument): string => sprintf("            %s => %s,\n", $this->types->quoted($argument['wire']), $this->sent($argument)),
             $arguments,
         );
 
         return "\n" . implode('', $entries) . '        ';
+    }
+
+    /**
+     * How an argument's value travels: a map as an object, so that an empty one is `{}`, and null as itself.
+     *
+     * @param  Argument  $argument
+     */
+    private function sent(array $argument): string
+    {
+        $value = sprintf('$this->%s', $argument['param']);
+
+        return match (true) {
+            ! $argument['map'] => $value,
+            str_starts_with($argument['native'], '?') => sprintf('%1$s === null ? null : (object) %1$s', $value),
+            default => sprintf('(object) %s', $value),
+        };
     }
 
     private function literal(mixed $value): string

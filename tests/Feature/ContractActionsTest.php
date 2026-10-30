@@ -121,7 +121,9 @@ it('takes a map of names to plain values as an array keyed by name, and sends it
         ->and(askTheActions($tree, 'new Lemonfiber\Sdk\Generated\SettingsSetAction(values: ["domain" => "home.example.org"])->payload()'))
         ->toBe('{"values":{"domain":"home.example.org"},"limits":{"down":5}}')
         ->and(askTheActions($tree, 'new Lemonfiber\Sdk\Generated\SettingsSetAction()->payload()'))
-        ->toBe('{"values":{},"limits":{"down":5}}');
+        ->toBe('{"values":{},"limits":{"down":5}}')
+        ->and(askTheActions($tree, 'new Lemonfiber\Sdk\Generated\SettingsSetAction(limits: null)->payload()'))
+        ->toBe('{"values":{},"limits":null}');
 
     ContractTree::remove($tree);
 });
@@ -195,6 +197,7 @@ it('refuses a list of actions it cannot write as classes, names what is wrong, a
     'a map that names no type for its values' => [['set' => anAction('set', [['name' => 'values', 'type' => ['type' => 'object']]])], 'a map to something other than one plain type'],
     'a map whose default is a list' => [['set' => anAction('set', [['name' => 'values', 'type' => ['additionalProperties' => ['type' => 'string'], 'default' => ['a'], 'type' => 'object']]])], 'the default ["a"]'],
     'a map whose default holds another type' => [['set' => anAction('set', [['name' => 'values', 'type' => ['additionalProperties' => ['type' => 'string'], 'default' => ['a' => 1], 'type' => 'object']]])], 'the default {"a":1}'],
+    'values of a map on something other than a map' => [['set' => anAction('set', [['name' => 'value', 'type' => ['additionalProperties' => ['type' => 'string'], 'type' => 'string']]])], 'with `additionalProperties`, which only a map holds'],
     'a list of objects' => [['set' => anAction('set', [['name' => 'value', 'type' => ['items' => ['type' => 'object'], 'type' => 'array']]])], 'a list of something other than one plain type'],
     'consent in an argument it does not take' => [['forget' => anAction('forget', consent: ['confirm'])], 'says consent travels in `confirm`, which it does not take'],
     'two actions written as one class' => [['ab-c' => anAction('ab-c'), 'a-bc' => anAction('a-bc')], 'would be written as ABcAction, as another action already is'],
