@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 1b3ffae9af48dd12218b9c868b27025da0af3072, api_version 1.
+// Source: a7e01397b33934accaa4126989f6b043fbdf3d43, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,14 +15,17 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `settings` envelope, shaped as the contract describes it.
  *
+ * @phpstan-import-type Choosable from Shapes
  * @phpstan-import-type Unvetted from Shapes
+ * @phpstan-import-type Waiting from Shapes
  * @phpstan-type Owner array{of: 'core'}|array{namespace: string, of: 'namespace'}
- * @phpstan-type Reader array{default?: string|null, service: string, variable: string}
+ * @phpstan-type Reader array{default?: string|null, met: bool, needs: array<string, list<string>>, service: string, variable: string}
  * @phpstan-type SecretFrom 'operator'|'recipe'|'granted'|'minted'
  * @phpstan-type SecretRead array{from?: SecretFrom|null, held: bool, name: string, readers: list<Reader>, whose: Owner}
- * @phpstan-type SettingChange array{agreement: string, applied: bool, consequence?: string|null, regenerates: list<string>, restarts: list<string>, setting: string, unrestarted?: string|null, value?: string|null, was?: string|null}
- * @phpstan-type SettingRead array{environment?: string|null, name: string, readers: list<Reader>, value?: string|null, whose: Owner}
- * @phpstan-type SettingsReport array{change?: SettingChange|null, rehearsed: bool, secrets: list<SecretRead>, settings: list<SettingRead>, unvetted?: Unvetted|null}
+ * @phpstan-type SettingChange array{agreement: string, applied: bool, regenerates: list<string>, restarts: list<string>, settings: list<SettingMove>, starts: list<string>, unrestarted?: string|null, waiting: list<Waiting>}
+ * @phpstan-type SettingMove array{consequence?: string|null, setting: string, value?: string|null, was?: string|null}
+ * @phpstan-type SettingRead array{choices?: list<Choosable>|null, environment?: string|null, name: string, readers: list<Reader>, value?: string|null, whose: Owner}
+ * @phpstan-type SettingsReport array{change?: SettingChange|null, rehearsed: bool, secrets: list<SecretRead>, settings: list<SettingRead>, unvetted?: Unvetted|null, waiting: list<Waiting>}
  * @phpstan-type Data SettingsReport
  */
 final class SettingsEnvelope

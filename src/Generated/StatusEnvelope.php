@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 1b3ffae9af48dd12218b9c868b27025da0af3072, api_version 1.
+// Source: a7e01397b33934accaa4126989f6b043fbdf3d43, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -19,9 +19,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type Filtered from Shapes
  * @phpstan-import-type Service from Shapes
  * @phpstan-import-type ServiceState from Shapes
+ * @phpstan-import-type Waiting from Shapes
  * @phpstan-type Awaiting 'downloads'|'images'
  * @phpstan-type Disturbances array{fetching: TakesAway, restarting: TakesAway, starting: TakesAway, stopping: TakesAway, stopping_after_downloads: TakesAway, switching: TakesAway}
- * @phpstan-type StatusReport array{active_forms: list<string>, condition: Condition, disturbs: Disturbances, filtered: list<Filtered>, forms: list<string>, services: list<Service>, undeclared: list<Undeclared>}
+ * @phpstan-type StatusReport array{active_forms: list<string>, condition: Condition, disturbs: Disturbances, filtered: list<Filtered>, forms: list<string>, services: list<Service>, undeclared: list<Undeclared>, waiting: list<Waiting>}
  * @phpstan-type TakesAway array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: Awaiting}
  * @phpstan-type Undeclared array{describes: string, id: string, state: ServiceState}
  * @phpstan-type Data StatusReport

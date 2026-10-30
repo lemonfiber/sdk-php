@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 1b3ffae9af48dd12218b9c868b27025da0af3072, api_version 1.
+// Source: a7e01397b33934accaa4126989f6b043fbdf3d43, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -26,7 +26,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type Propagation array{consumer: string, reach: CredentialReach}
  * @phpstan-type Protection array{against: list<string>, not_against: list<string>, summary: string}
  * @phpstan-type Revealed array{name: string, value?: string|null, warning: string}
- * @phpstan-type Rotation array{consumers: list<Propagation>, credential: string, settled: Settled}
+ * @phpstan-type Rotation array{consumers: list<Propagation>, credential: string, offer?: string|null, settled: Settled}
  * @phpstan-type Settled array{observed: string, settled: 'replaced'}|array{detail: string, settled: 'refused'}|array{detail: string, settled: 'unproven'}|array{detail: string, settled: 'replaced-unproven'}|array{afterwards: list<string>, detail: string, location: string, settled: 'rehearsed'}|array{known: list<string>, settled: 'unknown'}|array{detail: string, settled: 'elsewhere'}
  * @phpstan-type Data Inventory
  */

@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 1b3ffae9af48dd12218b9c868b27025da0af3072, api_version 1.
+// Source: a7e01397b33934accaa4126989f6b043fbdf3d43, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -41,6 +41,7 @@ final class RefusalDescription
             RefusalCode::NotAnIdempotencyKey => 'Raised where an action\'s `Idempotency-Key` is not one to 255 visible characters, or is given more than once.',
             RefusalCode::IdempotencyKeyReused => 'Raised where an `Idempotency-Key` already sent with one action and its arguments is sent with another.',
             RefusalCode::BundleNotHeld => 'Raised when a name does not name one of the bundles this run kept.',
+            RefusalCode::ReplacementMoved => 'Raised where a replacement of the media server\'s internal certificate answers an offer that is not the one a fresh reading builds.',
             RefusalCode::NotADeviceName => 'Raised when a device key is asked for under a word that cannot name one.',
             RefusalCode::DeviceNameTaken => 'Raised when a device key is registered under a name another device key holds.',
             RefusalCode::PublicHalfTaken => 'Raised when a device key is registered with a public half another device key holds.',
@@ -71,6 +72,7 @@ final class RefusalDescription
             RefusalCode::AlreadyWorking => 'Another run is already working on this stack.',
             RefusalCode::RegistryRefused => 'Fetching images is switched off, so there was nothing to fetch with.',
             RefusalCode::RestartMoved => 'Raised where a restart names an offer that is not the one a fresh look at the stack builds.',
+            RefusalCode::MountLinked => 'Raised when a start finds a service\'s mount source reached through a link.',
             RefusalCode::OfferMoved => 'Raised when a replacement was agreed to for an offer that is not the one standing now.',
             RefusalCode::NotAnItem => 'Said where the title named is not something the media server could hold.',
             RefusalCode::NotOnTheirShelf => 'Said where the title is not one this member may watch, or is not there at all.',
@@ -166,10 +168,12 @@ final class RefusalDescription
             RefusalCode::UnwritableValue => 'Raised where a value cannot be written as the setting asked for.',
             RefusalCode::SettingsMoved => 'Raised when a change answers an offer read against settings that have since moved.',
             RefusalCode::AlreadyHolds => 'Raised where the setting already holds what the change asks for.',
+            RefusalCode::OutsideItsChoices => 'Raised where a change would leave a setting holding a value outside its choices.',
             RefusalCode::NotReviewed => 'Raised when apply is asked for before the answers have been reviewed.',
             RefusalCode::DoesNotApply => 'Raised when an answer is not meaningful on the platform setup is running on.',
             RefusalCode::AlreadySetUp => 'Raised when setup is answered on a machine that is already set up.',
             RefusalCode::NothingToRecover => 'Raised when a recovery is asked for and no apply stopped part-way.',
+            RefusalCode::GuardUnanswered => 'Raised when a VPN answer leaves the egress guard without what it needs to start.',
             RefusalCode::NowhereToMeasure => 'Raised when there is no data location to measure.',
             RefusalCode::NothingToAsk => 'Raised when there is no torrent client here to be holding a completed download.',
             RefusalCode::NotHeld => 'Raised when the client answers and is holding nothing of the name given.',

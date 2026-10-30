@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 1b3ffae9af48dd12218b9c868b27025da0af3072, api_version 1.
+// Source: a7e01397b33934accaa4126989f6b043fbdf3d43, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -23,13 +23,11 @@ final class SettingsSetAction extends ActionRequest
     public const string ACTION = 'settings-set';
 
     /**
-     * @param  string|null  $value  What to change the key or the setting to, written as exactly itself.
-     * @param  string|null  $setting  The setting to change or put back to its default, by the name the settings read lists it under.
+     * @param  array<string, string>  $values  Each setting to change, by the name the settings read lists it under, with the value it is to hold, written as exactly itself.
      * @param  string|null  $offer  Carries the operator's yes. What was read before answering — the offer a repair's yes was read in, the listing a restore's was, what a replacement would stop — as it named itself.
      */
     public function __construct(
-        public readonly ?string $value = null,
-        public readonly ?string $setting = null,
+        public readonly array $values = [],
         public readonly ?string $offer = null,
     ) {}
 
@@ -60,8 +58,7 @@ final class SettingsSetAction extends ActionRequest
     protected function arguments(): array
     {
         return [
-            'value' => $this->value,
-            'setting' => $this->setting,
+            'values' => (object) $this->values,
             'offer' => $this->offer,
         ];
     }

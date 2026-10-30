@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 1b3ffae9af48dd12218b9c868b27025da0af3072, api_version 1.
+// Source: a7e01397b33934accaa4126989f6b043fbdf3d43, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -23,11 +23,11 @@ final class SettingsClearAction extends ActionRequest
     public const string ACTION = 'settings-clear';
 
     /**
-     * @param  string|null  $setting  The setting to change or put back to its default, by the name the settings read lists it under.
+     * @param  list<string>  $settings  The settings to put back to their defaults, by the names the settings read lists them under.
      * @param  string|null  $offer  Carries the operator's yes. What was read before answering — the offer a repair's yes was read in, the listing a restore's was, what a replacement would stop — as it named itself.
      */
     public function __construct(
-        public readonly ?string $setting = null,
+        public readonly array $settings = [],
         public readonly ?string $offer = null,
     ) {}
 
@@ -58,7 +58,7 @@ final class SettingsClearAction extends ActionRequest
     protected function arguments(): array
     {
         return [
-            'setting' => $this->setting,
+            'settings' => $this->settings,
             'offer' => $this->offer,
         ];
     }
