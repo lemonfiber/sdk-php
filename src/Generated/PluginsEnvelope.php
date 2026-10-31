@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 53eb6d48a3f5e00735d516e7240932a35bb7a5e0, api_version 1.
+// Source: 668dad0f9ba40b08aaf0dfbda2926b8fb5267d40, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -61,7 +61,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginRestored array{placed: bool, running: bool, version: string}
  * @phpstan-type PluginRun array{args: list<string>, timeout_s?: int|null}
  * @phpstan-type PluginRunProof array{expect: Expect, proof: string, run: PluginRun, service: string, title: string, why: string}
- * @phpstan-type PluginSecret array{for?: string|null, id: string, minted?: bool, needed_to_start?: bool, needs?: array<string, list<ServiceConstant>>, of: string, was?: string|null, why: string}
+ * @phpstan-type PluginSecret array{for?: string|null, id: string, lapses_s?: int|null, minted?: bool, needed_to_start?: bool, needs?: array<string, list<ServiceConstant>>, of: string, was?: string|null, why: string}
  * @phpstan-type PluginShape 'egress-guard'|'render'
  * @phpstan-type PluginSharing array{adapter: string, at: string, upstream: string}
  * @phpstan-type PluginSource array{from: string, plugin: string, standing: PluginSourceStanding}
@@ -73,7 +73,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginTaking array{approval: string, devices: list<string>, grants: list<string>, service: string, shape: PluginShape}
  * @phpstan-type PluginUnfilled array{capability: string, filled_by: string}
  * @phpstan-type PluginUpdate array{from: string, install: PluginInstall, interrupts: list<string>, plugin: string, restored?: PluginRestored|null, stopped?: string|null, to: string, went_back: UndoReversal}
- * @phpstan-type PluginVerdict array{outcome: 'passed'}|array{faults: list<string>, outcome: 'failed'}|array{outcome: 'unproven', why: string}|array{declared: list<PluginFailingAsDeclared>, outcome: 'failing-as-declared'}
+ * @phpstan-type PluginVerdict array{outcome: 'passed'}|array{faults: list<string>, outcome: 'failed'}|array{outcome: 'unproven', why: string}|array{declared: list<PluginFailingAsDeclared>, outcome: 'failing-as-declared'}|array{outcome: 'open', why: string}
  * @phpstan-type PluginVerification array{broke: list<PluginChangedCheck>, unsettled: list<PluginChangedCheck>}
  * @phpstan-type RecordedWith string|int|bool
  * @phpstan-type ServiceCertificate array{certificate: string, key: string, names: list<string>}
