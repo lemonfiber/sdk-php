@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: b81064077ef45a4fdc104931ecace46d1e85f55f, api_version 1.
+// Source: 53eb6d48a3f5e00735d516e7240932a35bb7a5e0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -191,6 +191,7 @@ enum RefusalCode: string
     case StackUnassembled = 'STACK-10';
     case ProjectEdited = 'STACK-11';
     case ResetMoved = 'STACK-13';
+    case ServiceUnfenced = 'STACK-15';
     case RootRefused = 'STORAGE-9';
     case UpdateMoved = 'UPDATE-5';
     case NoSuchFiller = 'WIRE-1';
