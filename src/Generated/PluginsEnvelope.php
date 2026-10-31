@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 668dad0f9ba40b08aaf0dfbda2926b8fb5267d40, api_version 1.
+// Source: 0d8245e1af6579fbc5b2e186c21597475b18dc0d, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -56,7 +56,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginRecipeRan array{held: bool, recipe: string, steps: list<PluginStepRan>, why?: string|null}
  * @phpstan-type PluginRemoval array{interrupts: list<string>, leaves: list<PluginUnfilled>, plugin: string, removed: bool, went_back: UndoReversal}
  * @phpstan-type PluginReproof array{asked: bool, cleared: bool, kept: list<PluginNonconforming>, plugin: string, proofs: list<PluginProving>}
- * @phpstan-type PluginRequest array{accept?: string|null, method: string, path: string}
+ * @phpstan-type PluginRequest array{accept?: string|null, method: string, path: string, varies?: array<string, string>}
  * @phpstan-type PluginRequestProof array{expect: Expect, proof: string, request: PluginRequest, service: string, title: string, why: string}
  * @phpstan-type PluginRestored array{placed: bool, running: bool, version: string}
  * @phpstan-type PluginRun array{args: list<string>, timeout_s?: int|null}
