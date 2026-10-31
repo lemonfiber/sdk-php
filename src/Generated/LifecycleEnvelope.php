@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: b81064077ef45a4fdc104931ecace46d1e85f55f, api_version 1.
+// Source: 53eb6d48a3f5e00735d516e7240932a35bb7a5e0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -22,7 +22,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type Service from Shapes
  * @phpstan-import-type StackEdit from Shapes
  * @phpstan-import-type Unvetted from Shapes
- * @phpstan-type LifecycleReport array{action: string, command: list<string>, condition?: Condition|null, forwarding?: string|null, held?: string|null, moves?: list<MoveOffered>, offer?: string|null, passing?: string|null, plan: Plan, port_conflicts?: list<ConflictReport>, rehearsed: bool, secured?: string|null, services: list<Service>, stack_edits: list<StackEdit>, status?: int|null, swept?: list<string>, switched?: Switched|null, unvetted?: Unvetted|null}
+ * @phpstan-type LifecycleReport array{action: string, command: list<string>, condition?: Condition|null, fencing?: string|null, forwarding?: string|null, held?: string|null, moves?: list<MoveOffered>, offer?: string|null, passing?: string|null, plan: Plan, port_conflicts?: list<ConflictReport>, rehearsed: bool, secured?: string|null, services: list<Service>, stack_edits: list<StackEdit>, status?: int|null, swept?: list<string>, switched?: Switched|null, unfenced?: list<string>, unvetted?: Unvetted|null}
  * @phpstan-type Switched array{kept: list<string>, started: list<string>, stop_command?: list<string>|null, stopped: list<string>}
  * @phpstan-type Data LifecycleReport
  */

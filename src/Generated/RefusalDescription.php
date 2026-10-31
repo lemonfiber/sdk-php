@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: b81064077ef45a4fdc104931ecace46d1e85f55f, api_version 1.
+// Source: 53eb6d48a3f5e00735d516e7240932a35bb7a5e0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -190,6 +190,7 @@ final class RefusalDescription
             RefusalCode::StackUnassembled => 'Raised when a manifest\'s files are not laid out as the contract says.',
             RefusalCode::ProjectEdited => 'Raised when a change would write over a generated project the operator has edited.',
             RefusalCode::ResetMoved => 'Raised where the offer a reset answers is not the one a reading of it makes now.',
+            RefusalCode::ServiceUnfenced => 'Raised where a start names a fenced service no fence can be written for.',
             RefusalCode::RootRefused => 'Raised where `DATA_ROOT` names an NFS export lemonfiber cannot write into the mount options, so no project is written from it.',
             RefusalCode::UpdateMoved => 'Raised where an update names an offer that is not the one a fresh look at the releases builds.',
             RefusalCode::NoSuchFiller => 'A capability was named that no service in this stack provides.',
