@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: a7e01397b33934accaa4126989f6b043fbdf3d43, api_version 1.
+// Source: b81064077ef45a4fdc104931ecace46d1e85f55f, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -80,7 +80,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type ServiceConstant string|int|bool
  * @phpstan-type ServiceFields array{certificate?: ServiceCertificate|null, config_ro?: bool, env?: array<string, ServiceValue>, mem_limit_mib?: int|null, mount?: list<ServiceMount>, network?: ServiceNetwork|null, posture?: ServicePosture, publish?: list<ServicePublish>, rebuilt?: list<string>, shares_config?: string|null, tmpfs?: list<string>, user_mode?: ServiceUserMode|null}
  * @phpstan-type ServiceMount array{from: string, ro?: bool, to: string}
- * @phpstan-type ServiceNetwork array{via: string}
+ * @phpstan-type ServiceNetwork array{fenced?: bool, via?: string|null}
  * @phpstan-type ServicePosture 'standard'|'confined'
  * @phpstan-type ServicePublish array{listens?: int|null, port: int}
  * @phpstan-type ServiceSecretOf array{secret: string}
