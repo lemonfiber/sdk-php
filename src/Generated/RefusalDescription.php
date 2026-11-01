@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 0d8245e1af6579fbc5b2e186c21597475b18dc0d, api_version 1.
+// Source: 291f7abf81f39e8d158f084c1417271d44450b53, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -180,7 +180,6 @@ final class RefusalDescription
             RefusalCode::AnotherOffer => 'Raised when an agreement names an offer that is not the one standing now.',
             RefusalCode::StackUnreadable => 'Raised when a stack directory holds no readable manifest.',
             RefusalCode::StackUnusable => 'Raised when a manifest is readable and this build cannot use it.',
-            RefusalCode::StackNotEmbedded => 'Raised when the embedded stack is not intact.',
             RefusalCode::StackNotSetUp => 'Raised when lemonfiber has nowhere to write the stack.',
             RefusalCode::StackNotWritten => 'Raised when the stack could not be written to disk.',
             RefusalCode::StackInvalid => 'Raised when a manifest parses and breaks the contract.',
@@ -192,6 +191,7 @@ final class RefusalDescription
             RefusalCode::ResetMoved => 'Raised where the offer a reset answers is not the one a reading of it makes now.',
             RefusalCode::ServiceUnfenced => 'Raised where a start names a fenced service no fence can be written for.',
             RefusalCode::RootRefused => 'Raised where `DATA_ROOT` names an NFS export lemonfiber cannot write into the mount options, so no project is written from it.',
+            RefusalCode::MovedForGood => 'Raised when a run moved one of lemonfiber\'s own guards onto its plugin, which no undo or removal puts back.',
             RefusalCode::UpdateMoved => 'Raised where an update names an offer that is not the one a fresh look at the releases builds.',
             RefusalCode::NoSuchFiller => 'A capability was named that no service in this stack provides.',
             RefusalCode::CannotFill => 'The service named cannot do the thing it was asked to fill.',

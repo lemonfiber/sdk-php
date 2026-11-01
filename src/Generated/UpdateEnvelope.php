@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 0d8245e1af6579fbc5b2e186c21597475b18dc0d, api_version 1.
+// Source: 291f7abf81f39e8d158f084c1417271d44450b53, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -18,11 +18,11 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type MoveOffered from Shapes
  * @phpstan-import-type Notes from Shapes
  * @phpstan-import-type StackEdit from Shapes
+ * @phpstan-import-type StackMoveTaken from Shapes
  * @phpstan-import-type Unvetted from Shapes
  * @phpstan-type Ending 'updated'|'not-fetched'|'not-started'|'not-reached'
  * @phpstan-type Jump 'major'|'minor'|'patch'|'untellable'
- * @phpstan-type StackMoveTaken array{plugin: string, service: string, taken: bool, why?: string|null}
- * @phpstan-type StackUpdateReport array{applied: list<UpdateApplied>, backup?: string|null, changelog: Notes, changes: list<UpdateChange>, confirmed: bool, halted?: string|null, in_flight: list<string>, moved?: list<StackMoveTaken>, moves?: list<MoveOffered>, offer: string, rehearsed: bool, stack_edits: list<StackEdit>, state: UpdateState, unvetted?: Unvetted|null}
+ * @phpstan-type StackUpdateReport array{applied: list<UpdateApplied>, backup?: string|null, changelog: Notes, changes: list<UpdateChange>, confirmed: bool, guards?: list<StackMoveTaken>, halted?: string|null, in_flight: list<string>, moved?: list<StackMoveTaken>, moves?: list<MoveOffered>, offer: string, rehearsed: bool, stack_edits: list<StackEdit>, state: UpdateState, unvetted?: Unvetted|null}
  * @phpstan-type UpdateApplied array{detail?: string|null, ending: Ending, from: string, reversal: UpdateReversal, service: string, to: string}
  * @phpstan-type UpdateChange array{because: string, current: string, irreversible: bool, jump: Jump, refused: bool, service: string, target: string}
  * @phpstan-type UpdateReversal 'rollback'|'restore'

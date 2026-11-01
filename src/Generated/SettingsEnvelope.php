@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 0d8245e1af6579fbc5b2e186c21597475b18dc0d, api_version 1.
+// Source: 291f7abf81f39e8d158f084c1417271d44450b53, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -16,6 +16,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `settings` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type Choosable from Shapes
+ * @phpstan-import-type StackMoveTaken from Shapes
  * @phpstan-import-type Unvetted from Shapes
  * @phpstan-import-type Waiting from Shapes
  * @phpstan-type Owner array{of: 'core'}|array{namespace: string, of: 'namespace'}
@@ -25,7 +26,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type SettingChange array{agreement: string, applied: bool, regenerates: list<string>, restarts: list<string>, settings: list<SettingMove>, starts: list<string>, unrestarted?: string|null, waiting: list<Waiting>}
  * @phpstan-type SettingMove array{consequence?: string|null, setting: string, value?: string|null, was?: string|null}
  * @phpstan-type SettingRead array{choices?: list<Choosable>|null, environment?: string|null, name: string, readers: list<Reader>, value?: string|null, whose: Owner}
- * @phpstan-type SettingsReport array{change?: SettingChange|null, rehearsed: bool, secrets: list<SecretRead>, settings: list<SettingRead>, unvetted?: Unvetted|null, waiting: list<Waiting>}
+ * @phpstan-type SettingsReport array{change?: SettingChange|null, guards?: list<StackMoveTaken>, rehearsed: bool, secrets: list<SecretRead>, settings: list<SettingRead>, unvetted?: Unvetted|null, waiting: list<Waiting>}
  * @phpstan-type Data SettingsReport
  */
 final class SettingsEnvelope

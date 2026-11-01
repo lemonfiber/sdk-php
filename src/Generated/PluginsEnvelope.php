@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 0d8245e1af6579fbc5b2e186c21597475b18dc0d, api_version 1.
+// Source: 291f7abf81f39e8d158f084c1417271d44450b53, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -18,17 +18,16 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type DoctorVerdict from Shapes
  * @phpstan-import-type Finding from Shapes
  * @phpstan-import-type PluginGrant from Shapes
+ * @phpstan-import-type StackMoveTaken from Shapes
  * @phpstan-import-type StepCame from Shapes
  * @phpstan-import-type UndoReversal from Shapes
  * @phpstan-import-type Unvetted from Shapes
  * @phpstan-import-type Waiting from Shapes
  * @phpstan-import-type Wired from Shapes
- * @phpstan-type ApiKind 'servarr'|'sabnzbd'|'qbittorrent'|'seerr'|'bindery'|'jellyfin'|'bazarr'|'audiobookshelf'|'nzbhydra2'
  * @phpstan-type Contribution array{action?: string|null, at: string, category?: string|null, detail?: string|null, expect?: Expect|null, expected?: list<PluginExpectedFailure>, fixture?: string|null, for?: string|null, id: string, request?: PluginRequest|null, service?: string|null, timeout_s?: int|null, title?: string|null, why?: string|null}
  * @phpstan-type Expect array{body_starts_with?: string|null, content_type?: string|null, exit?: int|null, json?: array<string, Expected>|null, json_array_min?: int|null, json_at_least?: array<string, int>|null, json_has_keys?: list<string>|null, json_is_absent?: bool|null, json_types?: array<string, ExpectedKind>|null, status?: int|null, stdout_starts_with?: string|null}
  * @phpstan-type Expected bool|int|string
  * @phpstan-type ExpectedKind 'bool'|'int'|'str'|'list'|'dict'
- * @phpstan-type PluginAdapterOwner 'lemonfiber'
  * @phpstan-type PluginAsking array{capability: string, each?: bool, native?: string|null}
  * @phpstan-type PluginChange array{path: string, puts: PluginPuts}
  * @phpstan-type PluginChangedCheck array{before?: DoctorVerdict|null, now: Finding}
@@ -42,7 +41,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginGranting array{approval: string, credential: string, for: string, of: string}
  * @phpstan-type PluginInstall array{against?: PluginEvidence|null, asks: list<Wired>, changes: list<PluginChange>, contests: list<WiringContest>, granting: list<PluginGranting>, overrides: list<PluginOverriding>, proofs: list<PluginProving>, recipes_ran: list<PluginRecipeRan>, recorded: bool, reversed?: UndoReversal|null, secured?: string|null, sharing: list<PluginSharing>, taking: list<PluginTaking>, verified?: PluginVerification|null, waiting: list<Waiting>, would: PluginInstalled}
  * @phpstan-type PluginInstalled array{contributions?: list<Contribution>, declared?: PluginDeclaration, description?: string|null, from?: string, granted?: list<PluginGrant>, installed_at?: string, manifest?: string, name?: string|null, plugin: string, provides?: list<string>, recipes?: list<PluginRecipe>, request_proofs?: list<PluginRequestProof>, revision?: string, run_proofs?: list<PluginRunProof>, services: list<PluginPlaced>, signed?: string, tree?: string, version: string}
- * @phpstan-type PluginInstalls array{agreement?: string|null, demand?: PluginDemand|null, install?: PluginInstall|null, installed: list<PluginInstalled>, nonconforming?: list<PluginNonconforming>, proof?: PluginReproof|null, rehearsed: bool, removal?: PluginRemoval|null, sources?: list<PluginSource>, substituted?: list<PluginSubstituted>, unvetted?: Unvetted|null, update?: PluginUpdate|null}
+ * @phpstan-type PluginInstalls array{agreement?: string|null, demand?: PluginDemand|null, guards?: list<StackMoveTaken>, install?: PluginInstall|null, installed: list<PluginInstalled>, nonconforming?: list<PluginNonconforming>, proof?: PluginReproof|null, rehearsed: bool, removal?: PluginRemoval|null, sources?: list<PluginSource>, substituted?: list<PluginSubstituted>, unvetted?: Unvetted|null, update?: PluginUpdate|null}
  * @phpstan-type PluginNonconforming array{at: string, capability: string, operation: string, plugin: string, why: string}
  * @phpstan-type PluginOverriding array{setting: string, why: string}
  * @phpstan-type PluginPair array{approval?: string, from?: string, origin: string, release?: string, to: string, value: string}
@@ -61,13 +60,12 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginRestored array{placed: bool, running: bool, version: string}
  * @phpstan-type PluginRun array{args: list<string>, timeout_s?: int|null}
  * @phpstan-type PluginRunProof array{expect: Expect, proof: string, run: PluginRun, service: string, title: string, why: string}
- * @phpstan-type PluginSecret array{for?: string|null, id: string, lapses_s?: int|null, minted?: bool, needed_to_start?: bool, needs?: array<string, list<ServiceConstant>>, of: string, was?: string|null, why: string}
+ * @phpstan-type PluginSecret array{captured?: bool, for?: string|null, id: string, lapses_s?: int|null, minted?: bool, needed_to_start?: bool, needs?: array<string, list<ServiceConstant>>, of: string, was?: string|null, why: string}
  * @phpstan-type PluginShape 'egress-guard'|'render'
  * @phpstan-type PluginSharing array{adapter: string, at: string, upstream: string}
  * @phpstan-type PluginSource array{from: string, plugin: string, standing: PluginSourceStanding}
  * @phpstan-type PluginSourceStanding array{standing: 'reachable'}|array{standing: 'unreachable', why: string}|array{standing: 'unasked', why: string}
- * @phpstan-type PluginStep array{adapter?: PluginStepAdapter|null, id: string, method: string, path: string, to: string}
- * @phpstan-type PluginStepAdapter array{kind: ApiKind, owner: PluginAdapterOwner}
+ * @phpstan-type PluginStep array{id: string, method: string, native?: string|null, path: string, to: string}
  * @phpstan-type PluginStepRan array{came: StepCame, landed: bool, status?: int|null, step: string, to: string, tries: int, why?: string|null}
  * @phpstan-type PluginSubstituted array{capability: string, plugin: string, service: string}
  * @phpstan-type PluginTaking array{approval: string, devices: list<string>, grants: list<string>, service: string, shape: PluginShape}
@@ -78,7 +76,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type RecordedWith string|int|bool
  * @phpstan-type ServiceCertificate array{certificate: string, key: string, names: list<string>}
  * @phpstan-type ServiceConstant string|int|bool
- * @phpstan-type ServiceFields array{certificate?: ServiceCertificate|null, config_ro?: bool, env?: array<string, ServiceValue>, mem_limit_mib?: int|null, mount?: list<ServiceMount>, network?: ServiceNetwork|null, posture?: ServicePosture, publish?: list<ServicePublish>, rebuilt?: list<string>, shares_config?: string|null, tmpfs?: list<string>, user_mode?: ServiceUserMode|null}
+ * @phpstan-type ServiceFields array{certificate?: ServiceCertificate|null, config_ro?: bool, env?: array<string, ServiceValue>, mem_limit_mib?: int|null, mount?: list<ServiceMount>, network?: ServiceNetwork|null, posture?: ServicePosture, publish?: list<ServicePublish>, rebuilt?: list<string>, shares_config?: string|null, tmpfs?: list<string>, user_mode?: ServiceUserModeWritten|null}
+ * @phpstan-type ServiceIdVariables array{gid_env: string, uid_env: string}
  * @phpstan-type ServiceMount array{from: string, ro?: bool, to: string}
  * @phpstan-type ServiceNetwork array{fenced?: bool, via?: string|null}
  * @phpstan-type ServicePosture 'standard'|'confined'
@@ -87,6 +86,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type ServiceSetting array{default: ServiceConstant, needs?: array<string, list<ServiceConstant>>, one_of?: list<SettingChoice>|null, recorded_with?: RecordedWith|null, setting: string, was?: string|null}
  * @phpstan-type ServiceUrlOf array{files?: string|null, native?: string|null, url_of: string}
  * @phpstan-type ServiceUserMode 'image'|'puid-env'|'uid'
+ * @phpstan-type ServiceUserModeWritten ServiceUserMode|ServiceIdVariables
  * @phpstan-type ServiceValue ServiceConstant|ServiceSetting|ServiceUrlOf|ServiceSecretOf
  * @phpstan-type SettingChoice ServiceConstant|SettingChoiceNeeding
  * @phpstan-type SettingChoiceNeeding array{needs: array<string, list<ServiceConstant>>, values: list<ServiceConstant>}
