@@ -35,8 +35,8 @@ use UnexpectedValueException;
  * The contract artefact vendored under `contract/`, read in whichever layout it is in.
  *
  * The directory `contract/web-api/` is an index naming one file per kind and
- * per list, with every definition in a file of its own under `defs/` and each
- * `$ref` a path resolved against the file it appears in. The single file
+ * per list, or per part of a list, with every definition in a file of its own
+ * under `defs/` and each `$ref` a path resolved against the file it appears in. The single file
  * `contract/web-api.contract.json` holds the same content in one document,
  * each kind carrying its own `$defs`.
  *
@@ -59,7 +59,7 @@ final readonly class VendoredContract
     public const string STAMP = 'contract/VERSION';
 
     /**
-     * The lists the index names a file for, each read into the artefact under the same key.
+     * The lists the index names a file for, or a file for each part of, each read into the artefact under the same key.
      *
      * @var list<string>
      */
@@ -146,8 +146,7 @@ final readonly class VendoredContract
 
         foreach (self::LISTS as $list) {
             if (array_key_exists($list, $index)) {
-                $named = $this->named($index[$list], $list);
-                $artefact[$list] = $this->decoded($this->text($named), $named);
+                $artefact[$list] = $this->listed($index[$list], $list);
             }
         }
 
@@ -183,6 +182,36 @@ final readonly class VendoredContract
         }
 
         return $artefact;
+    }
+
+    /**
+     * A list the index names one file for, or a file for each part of, gathered into one object.
+     *
+     * @throws UnexpectedValueException
+     */
+    private function listed(mixed $files, string $list): mixed
+    {
+        if (! is_array($files)) {
+            $named = $this->named($files, $list);
+
+            return $this->decoded($this->text($named), $named);
+        }
+
+        $gathered = [];
+
+        foreach ($files as $part => $path) {
+            $named = $this->named($path, sprintf('the %s of `%s`', $list, $part));
+
+            foreach ($this->object($named) as $key => $entry) {
+                if (array_key_exists($key, $gathered)) {
+                    throw new UnexpectedValueException(sprintf('%s lists `%s`, which another file of %s lists too.', $named, $key, $list));
+                }
+
+                $gathered[$key] = $entry;
+            }
+        }
+
+        return $gathered;
     }
 
     /**

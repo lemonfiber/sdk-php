@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 0d8245e1af6579fbc5b2e186c21597475b18dc0d, api_version 1.
+// Source: abd7d75f6b2627327b6935f5322f696016413234, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -73,6 +73,9 @@ final class RefusalDescription
             RefusalCode::RegistryRefused => 'Fetching images is switched off, so there was nothing to fetch with.',
             RefusalCode::RestartMoved => 'Raised where a restart names an offer that is not the one a fresh look at the stack builds.',
             RefusalCode::MountLinked => 'Raised when a start finds a service\'s mount source reached through a link.',
+            RefusalCode::OfflineInstallMoved => 'Raised where an `up` or a `switch` names an offer that is not the install a fresh look at the stack offers.',
+            RefusalCode::OfflineInstallUnanswered => 'Raised where a start would install a part this build carries and nobody said yes.',
+            RefusalCode::OfflineInstallUnheld => 'Raised where an install a start was agreed to did not hold.',
             RefusalCode::OfferMoved => 'Raised when a replacement was agreed to for an offer that is not the one standing now.',
             RefusalCode::NotAnItem => 'Said where the title named is not something the media server could hold.',
             RefusalCode::NotOnTheirShelf => 'Said where the title is not one this member may watch, or is not there at all.',
@@ -127,6 +130,8 @@ final class RefusalDescription
             RefusalCode::UnaimedCrossing => 'Raised when a third-party plugin declares a secret of another service that names no capability of its own it is for.',
             RefusalCode::NoGrant => 'Raised when a grant asked to be revoked is not one the plugin holds.',
             RefusalCode::EarlierTaken => 'Raised when a plugin\'s setting or secret names, as the variable an earlier release kept its value under, one another installed plugin\'s setting or secret names.',
+            RefusalCode::AnotherSource => 'Raised when a plugin carrying the id of a part this build pins comes from anywhere but that pin.',
+            RefusalCode::Unconforming => 'Raised when a case of a contract a plugin\'s adapter speaks fails, or no recording the plugin ships answers it.',
             RefusalCode::NoLimit => 'Raised where a policy that lives inside a limit was chosen without one.',
             RefusalCode::NotWaiting => 'Raised where the request named is not one that is waiting on anybody.',
             RefusalCode::NoReason => 'Raised where a request was turned down and the reason said nothing.',
@@ -169,6 +174,7 @@ final class RefusalDescription
             RefusalCode::SettingsMoved => 'Raised when a change answers an offer read against settings that have since moved.',
             RefusalCode::AlreadyHolds => 'Raised where the setting already holds what the change asks for.',
             RefusalCode::OutsideItsChoices => 'Raised where a change would leave a setting holding a value outside its choices.',
+            RefusalCode::OwnerSetUp => 'Raised where `PLEX_LINK_MODE` would enter or leave `owner` for a request service already set up.',
             RefusalCode::NotReviewed => 'Raised when apply is asked for before the answers have been reviewed.',
             RefusalCode::DoesNotApply => 'Raised when an answer is not meaningful on the platform setup is running on.',
             RefusalCode::AlreadySetUp => 'Raised when setup is answered on a machine that is already set up.',
@@ -180,7 +186,6 @@ final class RefusalDescription
             RefusalCode::AnotherOffer => 'Raised when an agreement names an offer that is not the one standing now.',
             RefusalCode::StackUnreadable => 'Raised when a stack directory holds no readable manifest.',
             RefusalCode::StackUnusable => 'Raised when a manifest is readable and this build cannot use it.',
-            RefusalCode::StackNotEmbedded => 'Raised when the embedded stack is not intact.',
             RefusalCode::StackNotSetUp => 'Raised when lemonfiber has nowhere to write the stack.',
             RefusalCode::StackNotWritten => 'Raised when the stack could not be written to disk.',
             RefusalCode::StackInvalid => 'Raised when a manifest parses and breaks the contract.',
@@ -192,6 +197,7 @@ final class RefusalDescription
             RefusalCode::ResetMoved => 'Raised where the offer a reset answers is not the one a reading of it makes now.',
             RefusalCode::ServiceUnfenced => 'Raised where a start names a fenced service no fence can be written for.',
             RefusalCode::RootRefused => 'Raised where `DATA_ROOT` names an NFS export lemonfiber cannot write into the mount options, so no project is written from it.',
+            RefusalCode::MovedForGood => 'Raised when a run moved one of lemonfiber\'s own guards onto its plugin, which no undo or removal puts back.',
             RefusalCode::UpdateMoved => 'Raised where an update names an offer that is not the one a fresh look at the releases builds.',
             RefusalCode::NoSuchFiller => 'A capability was named that no service in this stack provides.',
             RefusalCode::CannotFill => 'The service named cannot do the thing it was asked to fill.',

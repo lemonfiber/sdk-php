@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 0d8245e1af6579fbc5b2e186c21597475b18dc0d, api_version 1.
+// Source: abd7d75f6b2627327b6935f5322f696016413234, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -74,6 +74,9 @@ enum RefusalCode: string
     case RegistryRefused = 'LIFE-4';
     case RestartMoved = 'LIFE-10';
     case MountLinked = 'LIFE-11';
+    case OfflineInstallMoved = 'LIFE-12';
+    case OfflineInstallUnanswered = 'LIFE-13';
+    case OfflineInstallUnheld = 'LIFE-14';
     case OfferMoved = 'MIGRATE-1';
     case NotAnItem = 'PLAY-1';
     case NotOnTheirShelf = 'PLAY-2';
@@ -128,6 +131,8 @@ enum RefusalCode: string
     case UnaimedCrossing = 'PLUGIN-46';
     case NoGrant = 'PLUGIN-47';
     case EarlierTaken = 'PLUGIN-48';
+    case AnotherSource = 'PLUGIN-49';
+    case Unconforming = 'PLUGIN-50';
     case NoLimit = 'QUOTA-2';
     case NotWaiting = 'QUOTA-4';
     case NoReason = 'QUOTA-5';
@@ -170,6 +175,7 @@ enum RefusalCode: string
     case SettingsMoved = 'SETTING-5';
     case AlreadyHolds = 'SETTING-6';
     case OutsideItsChoices = 'SETTING-7';
+    case OwnerSetUp = 'SETTING-9';
     case NotReviewed = 'SETUP-1';
     case DoesNotApply = 'SETUP-5';
     case AlreadySetUp = 'SETUP-7';
@@ -181,7 +187,6 @@ enum RefusalCode: string
     case AnotherOffer = 'SPACE-6';
     case StackUnreadable = 'STACK-1';
     case StackUnusable = 'STACK-2';
-    case StackNotEmbedded = 'STACK-3';
     case StackNotSetUp = 'STACK-4';
     case StackNotWritten = 'STACK-5';
     case StackInvalid = 'STACK-6';
@@ -193,6 +198,7 @@ enum RefusalCode: string
     case ResetMoved = 'STACK-13';
     case ServiceUnfenced = 'STACK-15';
     case RootRefused = 'STORAGE-9';
+    case MovedForGood = 'UNDO-5';
     case UpdateMoved = 'UPDATE-5';
     case NoSuchFiller = 'WIRE-1';
     case CannotFill = 'WIRE-2';
