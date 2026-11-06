@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 0d8245e1af6579fbc5b2e186c21597475b18dc0d, api_version 1.
+// Source: abd7d75f6b2627327b6935f5322f696016413234, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -18,7 +18,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type Assessment 'assessed'|'unassessable'
  * @phpstan-type SeedReport array{assessment: Assessment, rehearsed: bool, wirings: list<Wiring>}
  * @phpstan-type SeedSeverity array{severity: 'informational'}|array{breakage: string, remediation: string, severity: 'warning'}
- * @phpstan-type SeedState array{state: 'wired'}|array{service: string, state: 'restarted'}|array{state: 'already-wired'}|array{state: 'drifted'}|array{state: 'stale'}|array{ours: string, state: 'conflicted', yours?: string|null}|array{state: 'adopted'}|array{state: 'unmanaged'}|array{ours?: string|null, state: 'would-wire', yours?: string|null}|array{state: 'would-adopt'}|array{reason: string, state: 'observed'}|array{reason: string, state: 'unmatched'}|array{reason: string, state: 'skipped'}|array{detail: string, state: 'failed'}|array{reason: string, state: 'refused'}
+ * @phpstan-type SeedState array{state: 'wired'}|array{service: string, state: 'restarted'}|array{state: 'already-wired'}|array{state: 'drifted'}|array{path: string, state: 'kept'}|array{state: 'stale'}|array{ours: string, state: 'conflicted', yours?: string|null}|array{state: 'adopted'}|array{state: 'unmanaged'}|array{ours?: string|null, state: 'would-wire', yours?: string|null}|array{state: 'would-adopt'}|array{reason: string, state: 'observed'}|array{reason: string, state: 'unmatched'}|array{reason: string, state: 'skipped'}|array{detail: string, state: 'failed'}|array{reason: string, state: 'refused'}
  * @phpstan-type Wiring array{connection: string, severity: SeedSeverity, state: SeedState}
  * @phpstan-type Data SeedReport
  */

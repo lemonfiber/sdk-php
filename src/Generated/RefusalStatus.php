@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 0d8245e1af6579fbc5b2e186c21597475b18dc0d, api_version 1.
+// Source: abd7d75f6b2627327b6935f5322f696016413234, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -73,6 +73,9 @@ final class RefusalStatus
             RefusalCode::RegistryRefused => 400,
             RefusalCode::RestartMoved => 400,
             RefusalCode::MountLinked => 409,
+            RefusalCode::OfflineInstallMoved => 400,
+            RefusalCode::OfflineInstallUnanswered => 409,
+            RefusalCode::OfflineInstallUnheld => 409,
             RefusalCode::OfferMoved => 400,
             RefusalCode::NotAnItem => 400,
             RefusalCode::NotOnTheirShelf => 404,
@@ -127,6 +130,8 @@ final class RefusalStatus
             RefusalCode::UnaimedCrossing => 403,
             RefusalCode::NoGrant => 404,
             RefusalCode::EarlierTaken => 400,
+            RefusalCode::AnotherSource => 403,
+            RefusalCode::Unconforming => 400,
             RefusalCode::NoLimit => 400,
             RefusalCode::NotWaiting => 404,
             RefusalCode::NoReason => 400,
@@ -169,6 +174,7 @@ final class RefusalStatus
             RefusalCode::SettingsMoved => 400,
             RefusalCode::AlreadyHolds => 400,
             RefusalCode::OutsideItsChoices => 400,
+            RefusalCode::OwnerSetUp => 409,
             RefusalCode::NotReviewed => 400,
             RefusalCode::DoesNotApply => 400,
             RefusalCode::AlreadySetUp => 400,
@@ -180,7 +186,6 @@ final class RefusalStatus
             RefusalCode::AnotherOffer => 400,
             RefusalCode::StackUnreadable => 500,
             RefusalCode::StackUnusable => 500,
-            RefusalCode::StackNotEmbedded => 500,
             RefusalCode::StackNotSetUp => 500,
             RefusalCode::StackNotWritten => 500,
             RefusalCode::StackInvalid => 500,
@@ -192,6 +197,7 @@ final class RefusalStatus
             RefusalCode::ResetMoved => 400,
             RefusalCode::ServiceUnfenced => 409,
             RefusalCode::RootRefused => 409,
+            RefusalCode::MovedForGood => 409,
             RefusalCode::UpdateMoved => 400,
             RefusalCode::NoSuchFiller => 404,
             RefusalCode::CannotFill => 400,

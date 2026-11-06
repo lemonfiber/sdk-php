@@ -81,6 +81,22 @@ it('vendors the directory where the revision holds one, and only it', function (
     ContractTree::remove($tree);
 });
 
+it('vendors a list the index names a file for each part of', function (): void {
+    $tree = ContractTree::withFile(aServedFile());
+    $served = [
+        ...aServedDirectory(),
+        'contract/web-api/index.json' => '{"api_version": 1, "kinds": {"word": "kinds/word.json"}, "refusals": {"ADMIT": "refusals/ADMIT.json", "ASK": "refusals/ASK.json"}}',
+        'contract/web-api/refusals/ADMIT.json' => '{}',
+        'contract/web-api/refusals/ASK.json' => '{}',
+    ];
+
+    new ContractVendor($tree)->vendor(Archive::of($served), REVISION);
+
+    expect(array_keys(vendoredUnder($tree)))->toContain('web-api/refusals/ADMIT.json', 'web-api/refusals/ASK.json');
+
+    ContractTree::remove($tree);
+});
+
 it('replaces the directory whole, so a definition the revision dropped leaves', function (): void {
     $tree = ContractTree::withDirectory(['defs/Dropped.json' => '{}', 'index.json' => '{}']);
 
@@ -139,6 +155,10 @@ it('refuses an archive it cannot vendor, names what is wrong, and leaves the cop
     'an index naming a list file not there' => [
         [...aServedDirectory(), 'contract/web-api/index.json' => '{"api_version": 1, "kinds": {"word": "kinds/word.json"}, "reads": "gone.json"}'],
         'names "gone.json"',
+    ],
+    'an index naming a file for a part of a list not there' => [
+        [...aServedDirectory(), 'contract/web-api/index.json' => '{"api_version": 1, "kinds": {"word": "kinds/word.json"}, "refusals": {"ASK": "refusals/ASK.json"}}'],
+        'names "refusals/ASK.json"',
     ],
     'an index naming an action file not there' => [
         [...aServedDirectory(), 'contract/web-api/index.json' => '{"api_version": 1, "kinds": {"word": "kinds/word.json"}, "actions": {"restart": "actions/gone.json"}}'],

@@ -138,6 +138,66 @@ it('reads the directory into the single file\'s shape', function (): void {
     ContractTree::remove($tree);
 });
 
+/**
+ * `aDirectory()`'s index, naming a file for each family of refusals.
+ *
+ * @param  array<string, string>  $families
+ * @return array<string, mixed>
+ */
+function indexWithRefusals(array $families): array
+{
+    return [
+        'api_version' => 1,
+        'key_callable' => 'key-callable.json',
+        'kinds' => ['word' => 'kinds/word.json', 'phrase' => 'kinds/phrase.json'],
+        'reads' => 'reads.json',
+        'refusals' => $families,
+    ];
+}
+
+it('gathers a list the index names a file for each part of into the one list the single file holds', function (): void {
+    $files = aDirectory();
+    unset($files['refusals.json']);
+    $files['index.json'] = indexWithRefusals(['ADMIT' => 'refusals/ADMIT.json', 'ASK' => 'refusals/ASK.json']);
+    $files['refusals/ADMIT.json'] = ['ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => 'Raised.']];
+    $files['refusals/ASK.json'] = ['ASK-1' => ['name' => 'NOT_ASKED', 'status' => 400, 'description' => 'Raised.']];
+    $tree = ContractTree::withDirectory($files);
+
+    expect(new VendoredContract($tree)->artefact()['refusals'] ?? null)->toBe([
+        'ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => 'Raised.'],
+        'ASK-1' => ['name' => 'NOT_ASKED', 'status' => 400, 'description' => 'Raised.'],
+    ]);
+
+    ContractTree::remove($tree);
+});
+
+it('refuses a list whose parts name one entry twice, or name a part it cannot read', function (array $parts, array $changed, string $named): void {
+    /** @var array<string, string> $parts */
+    /** @var array<string, mixed> $changed */
+    $files = aDirectory();
+    unset($files['refusals.json']);
+    $files['index.json'] = indexWithRefusals($parts);
+    $files['refusals/ADMIT.json'] = ['ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => 'Raised.']];
+    $tree = ContractTree::withDirectory([...$files, ...$changed]);
+
+    $result = ContractTree::generate($tree);
+
+    expect($result['status'])->toBe(1)
+        ->and($result['stderr'])->toContain($named)
+        ->and(is_dir($tree . '/src/Generated'))->toBeFalse();
+
+    ContractTree::remove($tree);
+})->with([
+    'one code in two parts' => [
+        ['ADMIT' => 'refusals/ADMIT.json', 'AGAIN' => 'refusals/AGAIN.json'],
+        ['refusals/AGAIN.json' => ['ADMIT-4' => ['name' => 'NOT_ADMITTED', 'status' => 403, 'description' => 'Raised.']]],
+        'contract/web-api/refusals/AGAIN.json lists `ADMIT-4`, which another file of refusals lists too',
+    ],
+    'a part not there' => [['ADMIT' => 'refusals/ADMIT.json', 'GONE' => 'refusals/GONE.json'], [], 'contract/web-api/refusals/GONE.json could not be read'],
+    'a part outside the directory' => [['ADMIT' => '../ADMIT.json'], [], 'names "../ADMIT.json" as the refusals of `ADMIT`, which is no file inside contract/web-api/'],
+    'a part that is not an object' => [['ADMIT' => 'refusals/ADMIT.json'], ['refusals/ADMIT.json' => '[]'], 'contract/web-api/refusals/ADMIT.json is not a JSON object'],
+]);
+
 it('refuses a reference in the directory that resolves to no definition, names it and the file, and writes nothing', function (string $at, string $reference): void {
     $files = aDirectory();
     $files[$at] = $at === 'kinds/word.json'

@@ -6,6 +6,7 @@ namespace Lemonfiber\Sdk\Scripts;
 
 use function array_key_exists;
 use function array_keys;
+use function array_values;
 use function bin2hex;
 use function count;
 use function dirname;
@@ -157,7 +158,7 @@ final readonly class ContractVendor
     }
 
     /**
-     * The files the index names for its lists.
+     * The files the index names for its lists and for each part of a list.
      *
      * @param  array<mixed, mixed>  $index
      * @return list<mixed>
@@ -168,7 +169,7 @@ final readonly class ContractVendor
 
         foreach (VendoredContract::LISTS as $list) {
             if (array_key_exists($list, $index)) {
-                $named[] = $index[$list];
+                $named = is_array($index[$list]) ? [...$named, ...array_values($index[$list])] : [...$named, $index[$list]];
             }
         }
 
