@@ -17,7 +17,7 @@ check=vendor-bin/bc/vendor/bin/roave-backward-compatibility-check
 
 lock="$(gh api repos/lemonfiber/lemonfiber-companion/contents/composer.lock -H 'Accept: application/vnd.github.raw')"
 pin="$(printf '%s' "${lock}" | jq -r '[.packages[], (.["packages-dev"] // [])[]] | map(select(.name == "lemonfiber/sdk-php")) | first | .source.reference // empty')"
-if [ -z "${pin}" ]; then
+if [[ -z "${pin}" ]]; then
   echo "::error::The companion's lockfile names no commit of lemonfiber/sdk-php, so there is nothing to compare against." >&2
   exit 1
 fi
