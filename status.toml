@@ -37,4 +37,5 @@ requirement = [
   { id = "ARCH-R260", state = "partial", evidence = ["src/Http/DeviceKeyRequest.php", "tests/Feature/DeviceKeysTest.php::asks a challenge for one device key by its name, as one path segment"] },
   { id = "ARCH-R261", state = "partial", evidence = ["src/Keys.php", "src/KeyMint.php", "src/MintProof.php", "tests/Feature/DeviceKeysTest.php::mints with a device key's signature over the text the stack verifies, and no password", "tests/Unit/KeyMintTest.php::spells the text a device key signs as the contract publishes it"] },
   { id = "ARCH-R293", state = "partial", evidence = ["src/Generated/KeysEnvelope.php"] },
+  { id = "OPS-R95", state = "partial", evidence = [".github/workflows/contract-bump.yml", "scripts/bc-added.sh"] },
 ]
