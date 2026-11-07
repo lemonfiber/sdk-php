@@ -1,10 +1,154 @@
 {
     "format": 1,
-    "commit": "fb61c53eae6af8a44b67a6ef3094cc5aec63fb13",
-    "time": "2026-11-07T07:10:33Z",
+    "commit": "2c9350ba0cbe34075af931b80b87be46bef74566",
+    "time": "2026-11-07T21:01:11Z",
     "verdict": "passed",
-    "trees": [],
+    "score": 100.0,
+    "trees": [
+        {
+            "path": "src",
+            "floor": 100.0,
+            "score": 100.0
+        },
+        {
+            "path": "src/Generated"
+        }
+    ],
     "newCode": {
         "floor": 100.0
-    }
+    },
+    "mutators": [
+        {
+            "runner": "pest",
+            "mutator": "Pest\\Mutate\\Mutators\\Removal\\RemoveArrayItem",
+            "seconds": 74.6569496902175,
+            "survived": 0,
+            "killRate": 100.0
+        },
+        {
+            "runner": "pest",
+            "mutator": "Pest\\Mutate\\Mutators\\Number\\DecrementInteger",
+            "seconds": 54.05395027863295,
+            "survived": 0,
+            "killRate": 100.0
+        },
+        {
+            "runner": "pest",
+            "mutator": "Pest\\Mutate\\Mutators\\Number\\IncrementInteger",
+            "seconds": 38.14885212324344,
+            "survived": 0,
+            "killRate": 100.0
+        },
+        {
+            "runner": "pest",
+            "mutator": "Pest\\Mutate\\Mutators\\ControlStructures\\IfNegated",
+            "seconds": 24.162423755781923,
+            "survived": 0,
+            "killRate": 100.0
+        },
+        {
+            "runner": "pest",
+            "mutator": "Pest\\Mutate\\Mutators\\Arithmetic\\PlusToMinus",
+            "seconds": 16.556222089922304,
+            "survived": 0,
+            "killRate": 100.0
+        },
+        {
+            "runner": "pest",
+            "mutator": "Pest\\Mutate\\Mutators\\Equality\\IdenticalToNotIdentical",
+            "seconds": 14.982974767364803,
+            "survived": 0,
+            "killRate": 100.0
+        },
+        {
+            "runner": "pest",
+            "mutator": "Pest\\Mutate\\Mutators\\Removal\\RemoveEarlyReturn",
+            "seconds": 12.482960580346461,
+            "survived": 0,
+            "killRate": 100.0
+        },
+        {
+            "runner": "pest",
+            "mutator": "Pest\\Mutate\\Mutators\\Logical\\BooleanAndToBooleanOr",
+            "seconds": 12.142077832530948,
+            "survived": 0,
+            "killRate": 100.0
+        },
+        {
+            "runner": "pest",
+            "mutator": "Pest\\Mutate\\Mutators\\ControlStructures\\ForeachEmptyIterable",
+            "seconds": 10.046962336125,
+            "survived": 0,
+            "killRate": 100.0
+        },
+        {
+            "runner": "pest",
+            "mutator": "Pest\\Mutate\\Mutators\\Removal\\RemoveFunctionCall",
+            "seconds": 9.922981044456339,
+            "survived": 0,
+            "killRate": 100.0
+        }
+    ],
+    "heatmap": [
+        {
+            "path": "src/ActionRequest.php",
+            "score": 100.0,
+            "base": 100.0,
+            "notKilled": 0
+        },
+        {
+            "path": "src/Admission.php",
+            "score": 100.0,
+            "base": 100.0,
+            "notKilled": 0
+        },
+        {
+            "path": "src/Admitted.php",
+            "score": 100.0,
+            "base": 100.0,
+            "notKilled": 0
+        },
+        {
+            "path": "src/Base64Url.php",
+            "score": 100.0,
+            "base": 100.0,
+            "notKilled": 0
+        },
+        {
+            "path": "src/BundleFile.php",
+            "score": 100.0,
+            "base": 100.0,
+            "notKilled": 0
+        },
+        {
+            "path": "src/Client.php",
+            "score": 100.0,
+            "base": 100.0,
+            "notKilled": 0
+        },
+        {
+            "path": "src/Contract/Api.php",
+            "score": 100.0,
+            "base": 100.0,
+            "notKilled": 0
+        },
+        {
+            "path": "src/DeviceAttestation.php",
+            "score": 100.0,
+            "base": 100.0,
+            "notKilled": 0
+        },
+        {
+            "path": "src/Envelope/EnvelopeReader.php",
+            "score": 100.0,
+            "base": 100.0,
+            "notKilled": 0
+        },
+        {
+            "path": "src/Envelope/Payload.php",
+            "score": 100.0,
+            "base": 100.0,
+            "notKilled": 0
+        }
+    ]
 }
