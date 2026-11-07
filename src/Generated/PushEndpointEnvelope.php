@@ -1,0 +1,43 @@
+<?php
+
+// Generated from the contract vendored under contract/. Do not edit.
+// Source: b9c6aa15418a873e5727b99b3356af9a2d7240d0, api_version 1.
+// Regenerate with `composer contract:generate`.
+
+declare(strict_types=1);
+
+namespace Lemonfiber\Sdk\Generated;
+
+use Lemonfiber\Sdk\Envelope\Envelope;
+use Lemonfiber\Sdk\Envelope\Payload;
+use Lemonfiber\Sdk\Exception\UnexpectedKind;
+
+/**
+ * The `push-endpoint` envelope, shaped as the contract describes it.
+ *
+ * @phpstan-type RegisteredPushEndpoint array{endpoint: string, name: string, registered: string, rehearsed: bool}
+ * @phpstan-type Data RegisteredPushEndpoint
+ */
+final class PushEndpointEnvelope
+{
+    /**
+     * The kind an envelope must carry to be read as this one.
+     */
+    public const Kind KIND = Kind::PushEndpoint;
+
+    /**
+     * The same envelope with its payload typed by its kind.
+     *
+     * @param  Envelope<mixed>  $envelope
+     * @return Envelope<Data>
+     *
+     * @throws UnexpectedKind
+     */
+    public static function in(Envelope $envelope): Envelope
+    {
+        /** @var Data $data */
+        $data = Payload::under(self::KIND, $envelope);
+
+        return new Envelope($envelope->apiVersion, $envelope->kind, $data, $envelope->host);
+    }
+}

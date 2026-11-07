@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: abd7d75f6b2627327b6935f5322f696016413234, api_version 1.
+// Source: b9c6aa15418a873e5727b99b3356af9a2d7240d0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -23,9 +23,11 @@ final class SpaceAction extends ActionRequest
     public const string ACTION = 'space';
 
     /**
+     * @param  list<string>  $only  The categories of what the offer holds as costing nothing to take, orphaned or extracted; all it holds where none is named.
      * @param  string|null  $offer  Carries the operator's yes. What was read before answering — the offer a repair's yes was read in, the listing a restore's was, what a replacement would stop — as it named itself.
      */
     public function __construct(
+        public readonly array $only = [],
         public readonly ?string $offer = null,
     ) {}
 
@@ -56,6 +58,7 @@ final class SpaceAction extends ActionRequest
     protected function arguments(): array
     {
         return [
+            'only' => $this->only,
             'offer' => $this->offer,
         ];
     }

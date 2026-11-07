@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: abd7d75f6b2627327b6935f5322f696016413234, api_version 1.
+// Source: b9c6aa15418a873e5727b99b3356af9a2d7240d0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -11,9 +11,9 @@ namespace Lemonfiber\Sdk\Generated;
 /**
  * Every shape more than one kind carries, each named once and imported where it is used.
  *
- * @phpstan-type Action array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'withdraw', key: string, owner: string, path: string, written: int}|array{does: 'rewind', path: string, previous: string, written: int}|array{does: 'reseed', path: string, plugin: string, secret: string, written: int}|array{does: 'move-back', from: string, to: string}|array{does: 'rename-back', from: string, to: string}|array{does: 'keep-copy', to: string, volume: string}|array{current: string, does: 'repin', previous: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}|array{does: 'revoke', name: string}|array{does: 'reinstate', name: string}|array{does: 'revoke-device', name: string}|array{does: 'reinstate-device', name: string}|array{does: 'resettle', filed?: string|null, name: string, recorded?: string|null, value?: string|null}|array{does: 'regrant', give: bool, grant: PluginGrant, plugin: string}|array{does: 'rehold', earlier?: string|null, filed?: string|null, kept?: string|null, name: string}|array{does: 'unreplaced', service: string}|array{does: 'unmoved', service: string}|array{does: 'run', running: bool, service: string}|array{does: 'leave', path: string}
+ * @phpstan-type Action array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'withdraw', key: string, owner: string, path: string, written: int}|array{does: 'rewind', path: string, previous: string, written: int}|array{does: 'reseed', path: string, plugin: string, secret: string, written: int}|array{does: 'move-back', from: string, to: string}|array{does: 'rename-back', from: string, to: string}|array{does: 'keep-copy', to: string, volume: string}|array{current: string, does: 'repin', previous: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}|array{does: 'revoke', name: string}|array{does: 'reinstate', name: string}|array{does: 'revoke-device', name: string}|array{does: 'reinstate-device', name: string}|array{does: 'push-endpoint', name: string}|array{does: 'resettle', filed?: string|null, name: string, recorded?: string|null, value?: string|null}|array{does: 'regrant', give: bool, grant: PluginGrant, plugin: string}|array{does: 'rehold', earlier?: string|null, filed?: string|null, kept?: string|null, name: string}|array{does: 'unreplaced', service: string}|array{does: 'unmoved', service: string}|array{does: 'run', running: bool, service: string}|array{does: 'leave', path: string}
  * @phpstan-type Address array{caution?: string|null, url: string}
- * @phpstan-type Alert array{affected: list<string>, check: string, exit?: int|null, id?: string|null, kind: string, meaning: string, moment: Moment, remedies: list<string>, severity: ProblemSeverity, summary: string}
+ * @phpstan-type Alert array{affected: list<string>, check: string, exit?: int|null, id?: string|null, kind: string, meaning: string, moment: Moment, notification?: 'problem'|'completion'|'update'|'backup'|'request'|'member', remedies: list<string>, severity: ProblemSeverity, summary: string}
  * @phpstan-type Apis string|list<string>
  * @phpstan-type AskingStanding 'unlimited'|'within-quota'|'near-quota'|'quota-exhausted'
  * @phpstan-type Candidate array{bytes: int, consequence?: string|null, name: string, standing: SeedingStanding}

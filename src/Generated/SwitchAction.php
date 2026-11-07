@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: abd7d75f6b2627327b6935f5322f696016413234, api_version 1.
+// Source: b9c6aa15418a873e5727b99b3356af9a2d7240d0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -12,6 +12,8 @@ use Lemonfiber\Sdk\ActionRequest;
 
 /**
  * The `switch` action, as the contract lists it.
+ *
+ * `offer` carries the operator's yes to what it would cost.
  */
 final class SwitchAction extends ActionRequest
 {
@@ -22,9 +24,11 @@ final class SwitchAction extends ActionRequest
 
     /**
      * @param  list<string>  $forms  The forms to act on.
+     * @param  string|null  $offer  Carries the operator's yes. What was read before answering — the offer a repair's yes was read in, the listing a restore's was, what a replacement would stop — as it named itself.
      */
     public function __construct(
         public readonly array $forms = [],
+        public readonly ?string $offer = null,
     ) {}
 
     public function action(): string
@@ -37,7 +41,7 @@ final class SwitchAction extends ActionRequest
      */
     public function consent(): array
     {
-        return [];
+        return ['offer'];
     }
 
     /**
@@ -55,6 +59,7 @@ final class SwitchAction extends ActionRequest
     {
         return [
             'forms' => $this->forms,
+            'offer' => $this->offer,
         ];
     }
 }
