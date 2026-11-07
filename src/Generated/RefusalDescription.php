@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: abd7d75f6b2627327b6935f5322f696016413234, api_version 1.
+// Source: b9c6aa15418a873e5727b99b3356af9a2d7240d0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -76,6 +76,7 @@ final class RefusalDescription
             RefusalCode::OfflineInstallMoved => 'Raised where an `up` or a `switch` names an offer that is not the install a fresh look at the stack offers.',
             RefusalCode::OfflineInstallUnanswered => 'Raised where a start would install a part this build carries and nobody said yes.',
             RefusalCode::OfflineInstallUnheld => 'Raised where an install a start was agreed to did not hold.',
+            RefusalCode::OfflineInstallUnread => 'Raised where a start would install a part whose install could not be read.',
             RefusalCode::OfferMoved => 'Raised when a replacement was agreed to for an offer that is not the one standing now.',
             RefusalCode::NotAnItem => 'Said where the title named is not something the media server could hold.',
             RefusalCode::NotOnTheirShelf => 'Said where the title is not one this member may watch, or is not there at all.',
@@ -132,6 +133,11 @@ final class RefusalDescription
             RefusalCode::EarlierTaken => 'Raised when a plugin\'s setting or secret names, as the variable an earlier release kept its value under, one another installed plugin\'s setting or secret names.',
             RefusalCode::AnotherSource => 'Raised when a plugin carrying the id of a part this build pins comes from anywhere but that pin.',
             RefusalCode::Unconforming => 'Raised when a case of a contract a plugin\'s adapter speaks fails, or no recording the plugin ships answers it.',
+            RefusalCode::NotAPushName => 'Raised when a push endpoint is registered under a word that cannot name one.',
+            RefusalCode::PushNameTaken => 'Raised when a push endpoint is registered under a name another holds.',
+            RefusalCode::PushNotHttps => 'Raised when a push endpoint\'s address is not an `https` address.',
+            RefusalCode::PushKeysUnreadable => 'Raised when the keys a push endpoint gave cannot be encrypted to.',
+            RefusalCode::PushNotRegistered => 'Raised when no push endpoint holds the name asked about.',
             RefusalCode::NoLimit => 'Raised where a policy that lives inside a limit was chosen without one.',
             RefusalCode::NotWaiting => 'Raised where the request named is not one that is waiting on anybody.',
             RefusalCode::NoReason => 'Raised where a request was turned down and the reason said nothing.',
@@ -184,6 +190,7 @@ final class RefusalDescription
             RefusalCode::NothingToAsk => 'Raised when there is no torrent client here to be holding a completed download.',
             RefusalCode::NotHeld => 'Raised when the client answers and is holding nothing of the name given.',
             RefusalCode::AnotherOffer => 'Raised when an agreement names an offer that is not the one standing now.',
+            RefusalCode::NotOnOffer => 'Raised when an answer narrows to a category its offer does not hold as costing nothing.',
             RefusalCode::StackUnreadable => 'Raised when a stack directory holds no readable manifest.',
             RefusalCode::StackUnusable => 'Raised when a manifest is readable and this build cannot use it.',
             RefusalCode::StackNotSetUp => 'Raised when lemonfiber has nowhere to write the stack.',

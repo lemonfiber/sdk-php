@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: abd7d75f6b2627327b6935f5322f696016413234, api_version 1.
+// Source: b9c6aa15418a873e5727b99b3356af9a2d7240d0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -76,6 +76,7 @@ final class RefusalStatus
             RefusalCode::OfflineInstallMoved => 400,
             RefusalCode::OfflineInstallUnanswered => 409,
             RefusalCode::OfflineInstallUnheld => 409,
+            RefusalCode::OfflineInstallUnread => 409,
             RefusalCode::OfferMoved => 400,
             RefusalCode::NotAnItem => 400,
             RefusalCode::NotOnTheirShelf => 404,
@@ -132,6 +133,11 @@ final class RefusalStatus
             RefusalCode::EarlierTaken => 400,
             RefusalCode::AnotherSource => 403,
             RefusalCode::Unconforming => 400,
+            RefusalCode::NotAPushName => 400,
+            RefusalCode::PushNameTaken => 409,
+            RefusalCode::PushNotHttps => 400,
+            RefusalCode::PushKeysUnreadable => 400,
+            RefusalCode::PushNotRegistered => 404,
             RefusalCode::NoLimit => 400,
             RefusalCode::NotWaiting => 404,
             RefusalCode::NoReason => 400,
@@ -184,6 +190,7 @@ final class RefusalStatus
             RefusalCode::NothingToAsk => 400,
             RefusalCode::NotHeld => 400,
             RefusalCode::AnotherOffer => 400,
+            RefusalCode::NotOnOffer => 400,
             RefusalCode::StackUnreadable => 500,
             RefusalCode::StackUnusable => 500,
             RefusalCode::StackNotSetUp => 500,

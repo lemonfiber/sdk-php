@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: abd7d75f6b2627327b6935f5322f696016413234, api_version 1.
+// Source: b9c6aa15418a873e5727b99b3356af9a2d7240d0, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -77,6 +77,7 @@ enum RefusalCode: string
     case OfflineInstallMoved = 'LIFE-12';
     case OfflineInstallUnanswered = 'LIFE-13';
     case OfflineInstallUnheld = 'LIFE-14';
+    case OfflineInstallUnread = 'LIFE-15';
     case OfferMoved = 'MIGRATE-1';
     case NotAnItem = 'PLAY-1';
     case NotOnTheirShelf = 'PLAY-2';
@@ -133,6 +134,11 @@ enum RefusalCode: string
     case EarlierTaken = 'PLUGIN-48';
     case AnotherSource = 'PLUGIN-49';
     case Unconforming = 'PLUGIN-50';
+    case NotAPushName = 'PUSH-1';
+    case PushNameTaken = 'PUSH-2';
+    case PushNotHttps = 'PUSH-3';
+    case PushKeysUnreadable = 'PUSH-4';
+    case PushNotRegistered = 'PUSH-5';
     case NoLimit = 'QUOTA-2';
     case NotWaiting = 'QUOTA-4';
     case NoReason = 'QUOTA-5';
@@ -185,6 +191,7 @@ enum RefusalCode: string
     case NothingToAsk = 'SPACE-4';
     case NotHeld = 'SPACE-5';
     case AnotherOffer = 'SPACE-6';
+    case NotOnOffer = 'SPACE-8';
     case StackUnreadable = 'STACK-1';
     case StackUnusable = 'STACK-2';
     case StackNotSetUp = 'STACK-4';
