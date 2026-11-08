@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e2aa153d5bd6a7f1bd039e314ace6ba5a164f46c, api_version 1.
+// Source: 4d13f8d0d12bc8c6da3049198fa701e67520af0c, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -29,7 +29,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type Expect array{body_starts_with?: string|null, content_type?: string|null, exit?: int|null, json?: array<string, Expected>|null, json_array_min?: int|null, json_at_least?: array<string, int>|null, json_has_keys?: list<string>|null, json_is_absent?: bool|null, json_types?: array<string, ExpectedKind>|null, status?: int|null, stdout_starts_with?: string|null}
  * @phpstan-type Expected bool|int|string
  * @phpstan-type ExpectedKind 'bool'|'int'|'str'|'list'|'dict'
- * @phpstan-type PluginAsking array{capability: string, each?: bool, files?: string|null, native?: Apis|null}
+ * @phpstan-type PluginAsking array{capability: string, each?: bool, files?: string|null, media_types?: list<string>, native?: Apis|null}
  * @phpstan-type PluginChange array{path: string, placeholders: list<PluginPlaceholder>, puts: PluginPuts}
  * @phpstan-type PluginChangedCheck array{before?: DoctorVerdict|null, now: Finding}
  * @phpstan-type PluginConstraint 'status'|'json'|'json_has_keys'|'json_types'|'json_at_least'|'json_array_min'|'json_is_absent'|'content_type'|'body_starts_with'|'exit'|'stdout_starts_with'
