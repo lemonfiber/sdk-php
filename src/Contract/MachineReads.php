@@ -361,6 +361,16 @@ interface MachineReads
     public const string BOOT_ENDPOINT = '/api/boot';
 
     /**
+     * The endpoint answering with what the outside watcher sees, as the `watcher` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\WatcherEnvelope}): the plugin filling `status.watch`,
+     * whether its monitor answers and why not, when it was asked, every monitor it holds with
+     * what each covers where lemonfiber made it, and every critical service and household entry
+     * point no active monitor covers. A watcher that does not answer, or nothing filling the
+     * capability, is answered as blind with everything uncovered. It takes nothing.
+     */
+    public const string WATCHER_ENDPOINT = '/api/watcher';
+
+    /**
      * The endpoint answering with what this stack can do, as the `capabilities` envelope
      * ({@see \Lemonfiber\Sdk\Generated\CapabilitiesEnvelope}).
      *

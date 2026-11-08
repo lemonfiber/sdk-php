@@ -74,6 +74,7 @@ it('names the reads it holds a path for, and holds no path it has no caller for'
         ->and(Api::WIRING_ENDPOINT)->toBe('/api/wiring')
         ->and(Api::SETTINGS_ENDPOINT)->toBe('/api/settings')
         ->and(Api::BOOT_ENDPOINT)->toBe('/api/boot')
+        ->and(Api::WATCHER_ENDPOINT)->toBe('/api/watcher')
         ->and(Api::CAPABILITIES_ENDPOINT)->toBe('/api/capabilities')
         ->and(Api::KEYS_ENDPOINT)->toBe('/api/keys')
         ->and(Api::SETUP_ENDPOINT)->toBe('/api/setup');

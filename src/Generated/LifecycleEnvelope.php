@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 4d13f8d0d12bc8c6da3049198fa701e67520af0c, api_version 1.
+// Source: a1ca3119cbfcfcf6279e73af3cbbf53a64d7fed8, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -24,7 +24,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type StackEdit from Shapes
  * @phpstan-import-type StackMoveTaken from Shapes
  * @phpstan-import-type Unvetted from Shapes
- * @phpstan-type LifecycleReport array{action: string, command: list<string>, condition?: Condition|null, fencing?: string|null, forwarded?: Forwarded|null, forwarding?: string|null, guards?: list<StackMoveTaken>, held?: string|null, installing?: list<UpInstallOffered>, moves?: list<MoveOffered>, offer?: string|null, passing?: string|null, plan: Plan, port_conflicts?: list<ConflictReport>, rehearsed: bool, rendering?: string|null, secured?: string|null, services: list<Service>, stack_edits: list<StackEdit>, status?: int|null, swept?: list<string>, switched?: Switched|null, unfenced?: list<string>, unrendered?: list<string>, unvetted?: Unvetted|null}
+ * @phpstan-type LifecycleReport array{action: string, command: list<string>, condition?: Condition|null, fencing?: string|null, forwarded?: Forwarded|null, forwarding?: string|null, guards?: list<StackMoveTaken>, held?: string|null, installing?: list<UpInstallOffered>, moves?: list<MoveOffered>, offer?: string|null, passing?: string|null, plan: Plan, port_conflicts?: list<ConflictReport>, rehearsed: bool, rendering?: string|null, secured?: string|null, services: list<Service>, stack_edits: list<StackEdit>, status?: int|null, swept?: list<string>, switched?: Switched|null, unfenced?: list<string>, unrendered?: list<string>, unvetted?: Unvetted|null, watched?: string|null}
  * @phpstan-type Switched array{kept: list<string>, started: list<string>, stop_command?: list<string>|null, stopped: list<string>}
  * @phpstan-type UpInstallOffered array{offer?: string|null, plugin: string, why?: string|null}
  * @phpstan-type Data LifecycleReport
