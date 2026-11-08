@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: e2aa153d5bd6a7f1bd039e314ace6ba5a164f46c, api_version 1.
+// Source: 4d13f8d0d12bc8c6da3049198fa701e67520af0c, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -69,7 +69,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type ProblemStep array{came: StepCame, landed: bool, recipe: string, step: string}
  * @phpstan-type Pulling 'fetching'|'stopped'
  * @phpstan-type Rated array{allows: list<string>, fell_back: bool, holds_back: list<string>}
- * @phpstan-type Reaches array{capability: string, files?: string|null, how: 'asked', native?: Apis|null, origins: array<string, ValueOrigin>, services: list<string>, settled: WiringSettled}|array{how: 'by-name', service: string, why: string}
+ * @phpstan-type Reaches array{capability: string, files?: string|null, how: 'asked', media_types?: list<string>, native?: Apis|null, origins: array<string, ValueOrigin>, services: list<string>, settled: WiringSettled}|array{how: 'by-name', service: string, why: string}
  * @phpstan-type Refusal array{because: string, named: string}
  * @phpstan-type Refused array{at?: string|null, expired?: bool, reason: string, told?: Passed|null}
  * @phpstan-type Release array{carried?: string|null, delivers?: string|null, groups: list<Group>, patches?: string|null, released_on?: string|null, tag: string, user_facing: bool, version: string, withdrawn?: string|null}
@@ -97,7 +97,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type UndoLeft array{because: string, target: string}
  * @phpstan-type UndoNoted array{because: string, target: string}
  * @phpstan-type UndoReversal array{left: list<UndoLeft>, noted?: list<UndoNoted>, rehearsed: bool, reversed: list<Undo>}
- * @phpstan-type Unfilled array{by: string, capability: string, files?: string|null, native?: Apis|null}
+ * @phpstan-type Unfilled array{by: string, capability: string, files?: string|null, media_types?: list<string>, native?: Apis|null}
  * @phpstan-type Unrated 'held-back'|'let-through'
  * @phpstan-type UnsupportedReport array{because: string, what: string}
  * @phpstan-type Unvetted array{overlay: string, services: list<string>}
