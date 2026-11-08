@@ -52,7 +52,7 @@ TEMPLATED = re.compile(r"/\{[^}]+\}$")
 
 # Doors this client holds a path for that the reading block does not name, each
 # with what it is instead. Each is its own section of the same page: three are not
-# reads at all, and three are the read half of a section that also writes.
+# reads at all, and four are the read half of a section that also writes.
 NOT_A_READ = {
     "/api/events": "the live stream, which has its own section",
     "/api/actions": "the one door every action is asked for through",
@@ -61,6 +61,7 @@ NOT_A_READ = {
     "/api/keys": "the listing of integration keys, under its own section beside minting and revoking",
     "/api/setup": "where the first-run walk stands, under its own section beside the walk's writes",
     "/api/device-keys": "the operator's device keys, under the keys section beside registering and revoking them",
+    "/api/push-endpoints": "the phones asking to be woken, under the live-state section beside registering and removing them",
 }
 
 # Below this a reading has found the wrong text rather than a smaller surface.

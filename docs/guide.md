@@ -208,6 +208,26 @@ lists the device keys, and `keys()->revokeDevice()` revokes one; the keys it pro
 stay, each naming it as `proved_by` in the keys listing. Every refusal carries a
 `DEVICE-` code of its own.
 
+## Push endpoints
+
+A phone that cannot hold the stream while it is closed registers the UnifiedPush
+endpoint its distributor gave, with the WebPush key pair it made for that stack.
+The stack then sends it a message on every alert's onset and resolution, saying
+only that it has something to say, and the phone reads the stream to learn what:
+
+```php
+use Lemonfiber\Sdk\PushEndpointRegistering;
+
+$client->pushEndpoints()->register(PushEndpointRegistering::of('pixel', $endpoint, $p256dh, $auth));
+$client->pushEndpoints()->remove('pixel');
+```
+
+`$p256dh` is the public key as an uncompressed P-256 point and `$auth` the
+secret, both as bytes; the client sends them in base64url. A registration answers
+with the `push-endpoint` envelope and a removal with the `push-endpoints` listing,
+each already typed by its kind. `read(Api::PUSH_ENDPOINTS_ENDPOINT)` lists them.
+They are the operator's alone, and every refusal carries a `PUSH-` code of its own.
+
 ## Logs
 
 `/api/logs` answers with one `log` envelope per line, so it has a method of its
