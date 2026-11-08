@@ -351,6 +351,16 @@ interface MachineReads
     public const string SETTINGS_ENDPOINT = '/api/settings';
 
     /**
+     * The endpoint answering with what became of this machine's last restart, as the `boot`
+     * envelope ({@see \Lemonfiber\Sdk\Generated\BootEnvelope}): when the machine last started,
+     * the post-boot verification kept against that start and the newest kept against any, why a
+     * run against that start started nothing, and since when and for how many starts the stack
+     * has not come back. Each part is absent where nothing is kept, and a verification against
+     * an earlier start is answered beside the latest rather than as it. It takes nothing.
+     */
+    public const string BOOT_ENDPOINT = '/api/boot';
+
+    /**
      * The endpoint answering with what this stack can do, as the `capabilities` envelope
      * ({@see \Lemonfiber\Sdk\Generated\CapabilitiesEnvelope}).
      *

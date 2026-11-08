@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: b9c6aa15418a873e5727b99b3356af9a2d7240d0, api_version 1.
+// Source: e2aa153d5bd6a7f1bd039e314ace6ba5a164f46c, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -38,6 +38,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Filtered array{forms: list<string>, id: string, name: string, needs: StackProtocol, profile: string}
  * @phpstan-type Finding array{category: DoctorCategory, caused_by?: string|null, check: string, disruptive?: Disruptive|null, onset?: string|null, origin: ValueOrigin, said?: string|null, service?: string|null, service_name?: string|null, title: string, verdict: DoctorVerdict}
  * @phpstan-type Footprint array{estimated_mib: int, unestimated: list<string>}
+ * @phpstan-type Forwarded array{now?: int|null, pushed: bool, was?: int|null}
  * @phpstan-type FrontDoorBeside array{address?: Address|null, because: string, facing: Facing, service: string}
  * @phpstan-type FrontDoorReport array{address?: Address|null, beside: list<FrontDoorBeside>, chosen: Chosen, facing?: Facing|null, meaning: string, service?: string|null, standing: FrontDoorStanding}
  * @phpstan-type FrontDoorStanding 'established'|'library-only'|'unreachable'|'stranded'|'none'

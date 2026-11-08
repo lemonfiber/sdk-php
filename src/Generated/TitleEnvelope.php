@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: b9c6aa15418a873e5727b99b3356af9a2d7240d0, api_version 1.
+// Source: e2aa153d5bd6a7f1bd039e314ace6ba5a164f46c, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
