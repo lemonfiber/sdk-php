@@ -10,6 +10,9 @@ use Lemonfiber\Sdk\Http\RunToken;
 use Lemonfiber\Sdk\Tests\Support\GeneratedRefusals;
 use Lemonfiber\Sdk\Time\Duration;
 use Lemonfiber\Sdk\Time\SystemClock;
+use Saloon\Http\Faking\MockClient;
+use Saloon\Http\Faking\MockResponse;
+use Saloon\Repositories\Body\JsonBodyRepository;
 
 /**
  * A code the generated refusal list names in every process the suite runs in, a parallel worker's or a mutant's
@@ -67,4 +70,37 @@ function aPinnedClient(string $address, string $token, string $certificateDigest
         new SystemClock(),
         aMoment(),
     ));
+}
+
+/**
+ * A client whose request of that class is answered with `$answer`, and the mock answering it.
+ *
+ * @return array{0: Client, 1: MockClient}
+ */
+function aClientAnswering(string $request, MockResponse $answer): array
+{
+    $mock = new MockClient([$request => $answer]);
+
+    return [Client::onPort(9000, 'a-run-token', aWait())->withMockClient($mock), $mock];
+}
+
+/**
+ * The body the last request carried, decoded.
+ *
+ * @return array<mixed>
+ */
+function theBodySent(MockClient $mock): array
+{
+    $body = $mock->getLastPendingRequest()?->body();
+    $sent = json_decode($body instanceof JsonBodyRepository ? (string) $body : '', true, flags: JSON_THROW_ON_ERROR);
+
+    return is_array($sent) ? $sent : [];
+}
+
+/**
+ * An answer carrying the envelope of that kind, its payload empty.
+ */
+function anEnvelopeOf(string $kind): MockResponse
+{
+    return MockResponse::make(['api_version' => 1, 'kind' => $kind, 'data' => []]);
 }

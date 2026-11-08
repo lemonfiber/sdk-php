@@ -138,6 +138,14 @@ final readonly class Client
     }
 
     /**
+     * The phones asking to be woken: registering and removing their push endpoints.
+     */
+    public function pushEndpoints(): PushEndpoints
+    {
+        return new PushEndpoints($this->connector);
+    }
+
+    /**
      * Ask what could be put right, or carry out what was agreed to.
      *
      * The one action with a method of its own here, since it is the one whose

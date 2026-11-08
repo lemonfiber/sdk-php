@@ -96,6 +96,15 @@ final class Api implements HouseholdReads, MachineReads
     public const string DEVICE_KEYS_ENDPOINT = '/api/device-keys';
 
     /**
+     * The endpoint the phones asking to be woken are listed at, as the `push-endpoints` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\PushEndpointsEnvelope}) through
+     * {@see \Lemonfiber\Sdk\Client::read()}, and registered at.
+     *
+     * An operator session's alone: a household member and a key are refused here.
+     */
+    public const string PUSH_ENDPOINTS_ENDPOINT = '/api/push-endpoints';
+
+    /**
      * The media type live updates arrive as.
      */
     public const string EVENT_STREAM_MEDIA_TYPE = 'text/event-stream';
@@ -158,6 +167,14 @@ final class Api implements HouseholdReads, MachineReads
     public static function key(string $name): string
     {
         return self::KEYS_ENDPOINT . '/' . rawurlencode($name);
+    }
+
+    /**
+     * Where the push endpoint of that name is removed, the name encoded as one segment.
+     */
+    public static function pushEndpoint(string $name): string
+    {
+        return self::PUSH_ENDPOINTS_ENDPOINT . '/' . rawurlencode($name);
     }
 
     /**

@@ -122,6 +122,12 @@ it('keeps a device key\'s name to the one segment it names', function (): void {
         ->and(Api::deviceKey('a b?c'))->toBe(Api::DEVICE_KEYS_ENDPOINT . '/a%20b%3Fc');
 });
 
+it('keeps a push endpoint\'s name to the one segment it names', function (): void {
+    expect(Api::PUSH_ENDPOINTS_ENDPOINT)->toBe('/api/push-endpoints')
+        ->and(Api::pushEndpoint('../keys'))->toBe('/api/push-endpoints/..%2Fkeys')
+        ->and(Api::pushEndpoint('a b?c'))->toBe('/api/push-endpoints/a%20b%3Fc');
+});
+
 it('composes the paths the pictures of a title are read under', function (): void {
     expect(Api::poster('4f2a9c'))->toBe('/api/held/4f2a9c/poster')
         ->and(Api::poster('81'))->toBe('/api/held/81/poster')

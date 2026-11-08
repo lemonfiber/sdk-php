@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Lemonfiber\Sdk\Client;
 use Lemonfiber\Sdk\DeviceAttestation;
 use Lemonfiber\Sdk\Exception\Missing;
 use Lemonfiber\Sdk\Exception\RequestFailed;
@@ -12,32 +11,7 @@ use Lemonfiber\Sdk\Http\MintKeyRequest;
 use Lemonfiber\Sdk\KeyMint;
 use Lemonfiber\Sdk\MintProof;
 use Saloon\Enums\Method;
-use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
-use Saloon\Repositories\Body\JsonBodyRepository;
-
-/**
- * @return array{0: Client, 1: MockClient}
- */
-function aClientAnswering(string $request, MockResponse $answer): array
-{
-    $mock = new MockClient([$request => $answer]);
-
-    return [Client::onPort(9000, 'a-run-token', aWait())->withMockClient($mock), $mock];
-}
-
-/**
- * The body the last request carried, decoded.
- *
- * @return array<mixed>
- */
-function theBodySent(MockClient $mock): array
-{
-    $body = $mock->getLastPendingRequest()?->body();
-    $sent = json_decode($body instanceof JsonBodyRepository ? (string) $body : '', true, flags: JSON_THROW_ON_ERROR);
-
-    return is_array($sent) ? $sent : [];
-}
 
 /** A fresh P-256 key pair, as a phone's hardware would hold one. */
 function aPhone(): OpenSSLAsymmetricKey
@@ -48,11 +22,6 @@ function aPhone(): OpenSSLAsymmetricKey
     }
 
     return $phone;
-}
-
-function anEnvelopeOf(string $kind): MockResponse
-{
-    return MockResponse::make(['api_version' => 1, 'kind' => $kind, 'data' => []]);
 }
 
 it('registers a device key with its public half, its attestation and the password, in base64url', function (): void {
