@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: b9c6aa15418a873e5727b99b3356af9a2d7240d0, api_version 1.
+// Source: e2aa153d5bd6a7f1bd039e314ace6ba5a164f46c, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -17,13 +17,14 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  *
  * @phpstan-import-type Condition from Shapes
  * @phpstan-import-type ConflictReport from Shapes
+ * @phpstan-import-type Forwarded from Shapes
  * @phpstan-import-type MoveOffered from Shapes
  * @phpstan-import-type Plan from Shapes
  * @phpstan-import-type Service from Shapes
  * @phpstan-import-type StackEdit from Shapes
  * @phpstan-import-type StackMoveTaken from Shapes
  * @phpstan-import-type Unvetted from Shapes
- * @phpstan-type LifecycleReport array{action: string, command: list<string>, condition?: Condition|null, fencing?: string|null, forwarding?: string|null, guards?: list<StackMoveTaken>, held?: string|null, installing?: list<UpInstallOffered>, moves?: list<MoveOffered>, offer?: string|null, passing?: string|null, plan: Plan, port_conflicts?: list<ConflictReport>, rehearsed: bool, rendering?: string|null, secured?: string|null, services: list<Service>, stack_edits: list<StackEdit>, status?: int|null, swept?: list<string>, switched?: Switched|null, unfenced?: list<string>, unrendered?: list<string>, unvetted?: Unvetted|null}
+ * @phpstan-type LifecycleReport array{action: string, command: list<string>, condition?: Condition|null, fencing?: string|null, forwarded?: Forwarded|null, forwarding?: string|null, guards?: list<StackMoveTaken>, held?: string|null, installing?: list<UpInstallOffered>, moves?: list<MoveOffered>, offer?: string|null, passing?: string|null, plan: Plan, port_conflicts?: list<ConflictReport>, rehearsed: bool, rendering?: string|null, secured?: string|null, services: list<Service>, stack_edits: list<StackEdit>, status?: int|null, swept?: list<string>, switched?: Switched|null, unfenced?: list<string>, unrendered?: list<string>, unvetted?: Unvetted|null}
  * @phpstan-type Switched array{kept: list<string>, started: list<string>, stop_command?: list<string>|null, stopped: list<string>}
  * @phpstan-type UpInstallOffered array{offer?: string|null, plugin: string, why?: string|null}
  * @phpstan-type Data LifecycleReport
