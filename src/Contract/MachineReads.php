@@ -371,6 +371,29 @@ interface MachineReads
     public const string WATCHER_ENDPOINT = '/api/watcher';
 
     /**
+     * The endpoint answering with what the download queue holds, as the `queue` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\QueueEnvelope}): whether healing acts, the strikes and
+     * grace window in force, every unhealthy download with its curator, release, classification
+     * and why, its strikes and grace, and what the next run would do to it where healing is on,
+     * every curator or download client that could not be reached or verified, whether the list
+     * may be short, when the queue was last classified, and the newest runs with each act as it
+     * came out. A record that cannot be read is refused, never answered as a healthy queue. It
+     * takes nothing, and running a pass is not served here.
+     */
+    public const string QUEUE_ENDPOINT = '/api/queue';
+
+    /**
+     * The endpoint answering with how this stack runs without lemonfiber, as the `stack` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\StackEnvelope}): whether this machine runs the stack this
+     * build ships or the operator's own, the directory the Compose project is written to and the
+     * `.env` beside it, the `docker compose` words that bring it up with no lemonfiber running,
+     * every part those words alone do not bring up as lemonfiber does, and how any action is run
+     * without a question being put. It takes nothing, and answers the operator alone: a member
+     * and a key of any scope are refused.
+     */
+    public const string STACK_ENDPOINT = '/api/stack';
+
+    /**
      * The endpoint answering with what this stack can do, as the `capabilities` envelope
      * ({@see \Lemonfiber\Sdk\Generated\CapabilitiesEnvelope}).
      *

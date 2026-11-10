@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: a1ca3119cbfcfcf6279e73af3cbbf53a64d7fed8, api_version 1.
+// Source: 10531156453569a9e96110e9dddb5d472faf8aeb, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -11,7 +11,7 @@ namespace Lemonfiber\Sdk\Generated;
 /**
  * Every shape more than one kind carries, each named once and imported where it is used.
  *
- * @phpstan-type Action array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'withdraw', key: string, owner: string, path: string, written: int}|array{does: 'rewind', path: string, previous: string, written: int}|array{does: 'reseed', path: string, plugin: string, secret: string, written: int}|array{does: 'move-back', from: string, to: string}|array{does: 'rename-back', from: string, to: string}|array{does: 'keep-copy', to: string, volume: string}|array{current: string, does: 'repin', previous: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}|array{does: 'revoke', name: string}|array{does: 'reinstate', name: string}|array{does: 'revoke-device', name: string}|array{does: 'reinstate-device', name: string}|array{does: 'push-endpoint', name: string}|array{does: 'resettle', filed?: string|null, name: string, recorded?: string|null, value?: string|null}|array{does: 'regrab', kind: TitleKind, release: string, title: int}|array{does: 'regrant', give: bool, grant: PluginGrant, plugin: string}|array{does: 'rehold', earlier?: string|null, filed?: string|null, kept?: string|null, name: string}|array{does: 'unreplaced', service: string}|array{does: 'unmoved', service: string}|array{does: 'run', running: bool, service: string}|array{does: 'leave', path: string}
+ * @phpstan-type Action array{does: 'remove', id: string, resource: string}|array{does: 'restore', key: string, value?: string|null, wrote: string}|array{does: 'delete', path: string}|array{does: 'withdraw', key: string, owner: string, path: string, written: int}|array{does: 'rewind', path: string, previous: string, written: int}|array{does: 'reseed', path: string, plugin: string, secret: string, written: int}|array{does: 'move-back', from: string, to: string}|array{does: 'rename-back', from: string, to: string}|array{does: 'keep-copy', to: string, volume: string}|array{current: string, does: 'repin', previous: string}|array{does: 'reconfigure', field: string, id: string, resource: string, value?: string|null}|array{does: 'revoke', name: string}|array{does: 'reinstate', name: string}|array{does: 'revoke-device', name: string}|array{does: 'reinstate-device', name: string}|array{does: 'push-endpoint', name: string}|array{does: 'resettle', filed?: string|null, name: string, recorded?: string|null, value?: string|null}|array{does: 'regrab', kind: VideoKind, release: string, title: int}|array{does: 'regrant', give: bool, grant: PluginGrant, plugin: string}|array{does: 'rehold', earlier?: string|null, filed?: string|null, kept?: string|null, name: string}|array{does: 'unreplaced', service: string}|array{does: 'unmoved', service: string}|array{does: 'run', running: bool, service: string}|array{does: 'leave', path: string}
  * @phpstan-type Address array{caution?: string|null, url: string}
  * @phpstan-type Alert array{affected: list<string>, check: string, exit?: int|null, id?: string|null, kind: string, meaning: string, moment: Moment, notification?: 'problem'|'completion'|'update'|'backup'|'request'|'member', remedies: list<string>, severity: ProblemSeverity, summary: string}
  * @phpstan-type Apis string|list<string>
@@ -50,7 +50,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Medium 'film'|'series'|'episode'|'other'
  * @phpstan-type MemberAccess array{administrator: bool, age_limit?: int|null, disabled: bool, every_library: bool, libraries: list<string>, rated?: Rated|null, restriction: Restriction, unrated: Unrated}
  * @phpstan-type MemberAsking array{films: Counted, frees_up?: string|null, policy: Policy, standing: AskingStanding, television: Counted}
- * @phpstan-type MemberRequest array{arrived?: string|null, estimate?: Estimate|null, id: int, media?: string|null, refused?: Refused|null, shelf_id?: string|null, state?: RequestState|null, title?: string|null, waiting_days?: int|null, year?: int|null}
+ * @phpstan-type MemberRequest array{arrived?: string|null, asked?: string|null, estimate?: Estimate|null, id: string, media?: string|null, refused?: Refused|null, shelf_id?: string|null, state?: RequestState|null, title?: string|null, waiting_days?: int|null, year?: int|null}
  * @phpstan-type MemberStanding 'invited'|'expired'|'declined'|'active'|'suspended'
  * @phpstan-type Moment 'onset'|'resolved'
  * @phpstan-type MoveOffered array{configured_by?: string|null, plugin: string, service: string}
@@ -90,7 +90,8 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Stance 'unchanged'|'pending'|'blocked'|'applied'
  * @phpstan-type StepCame 'answered'|'skipped'|'not-reached'|'unreachable'|'refused'|'withheld'|'unexpected'|'uncaptured'|'oversized'
  * @phpstan-type Term array{also_called: list<string>, deep?: string|null, forms: list<string>, short: string, word: string}
- * @phpstan-type TitleKind 'tv'|'movies'
+ * @phpstan-type TitleKind 'tv'|'movies'|'music'|'books'
+ * @phpstan-type TitleUnit 'album'|'artist'|'book'|'author'|'series'
  * @phpstan-type Tree array{archive_path: string, host_path: string}
  * @phpstan-type Triggered array{state: 'started'}|array{state: 'not-started'}|array{detail: string, state: 'failed'}
  * @phpstan-type Undo array{action: Action, target: string}
@@ -104,6 +105,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Validation array{observed: string, outcome: 'valid'}|array{detail: string, outcome: 'rejected'}|array{detail: string, outcome: 'unreachable'}|array{detail: string, outcome: 'degraded'}
  * @phpstan-type ValueOrigin array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}|array{named: string, origin: 'overridden', replaced: mixed}|array{named: string, origin: 'orphaned'}
  * @phpstan-type ValueReplaced array{from: mixed, value?: string|null, withheld: bool}
+ * @phpstan-type VideoKind 'tv'|'movies'
  * @phpstan-type Waiting array{service: string, wants: list<Wanted>}
  * @phpstan-type WalkthroughStep 'choosing'|'searching'|'grabbing'|'downloading'|'importing'|'scanning'|'available'
  * @phpstan-type Wanted array{choices?: list<string>|null, kind: 'setting', setting: string}|array{kind: 'secret', secret: string}|array{kind: 'service', service: string}

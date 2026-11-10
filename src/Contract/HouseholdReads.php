@@ -87,15 +87,42 @@ interface HouseholdReads
     public const string ASKABLE_ENDPOINT = '/api/askable';
 
     /**
+     * The endpoint answering with which kinds one member may ask for now.
+     *
+     * It answers with the `askable-kinds` envelope, so
+     * {@see \Lemonfiber\Sdk\Generated\AskableKindsEnvelope} is what reads it: the member asked
+     * about, and each kind they may ask for, series first, with the units a title of it is asked
+     * for in, none for series and films. A kind the member's allowance takes none of is left out.
+     *
+     * It takes `member` as {@see Api::ASKABLE_ENDPOINT} does, and is answered to the same callers
+     * with the same refusals.
+     */
+    public const string ASKABLE_KINDS_ENDPOINT = '/api/askable/kinds';
+
+    /**
      * The endpoint answering with the poster of a title a search page offered, as a raster image.
      *
      * `{id}` is the id the page listed the title under, and {@see Api::askablePoster()} fills it
-     * in. It takes `kind` as the page named it and `member` as the search does. A title outside
-     * the member's limits is refused as `WISH-3`, and a title with no poster, or posters switched
-     * off by the operator, as `WISH-13`. The core fetches the picture; the client is never sent
-     * to the catalogue.
+     * in. It takes `kind` as the page named it, `unit` beside it for music and books, and `member`
+     * as the search does. For music and books the id is the curator's reference, and the cover is
+     * read back from that curator. A title outside the member's limits is refused as `WISH-3`, and
+     * a title with no poster, or posters switched off by the operator, as `WISH-13`. The core
+     * fetches the picture; the client is never sent to the catalogue.
      */
     public const string ASKABLE_POSTER_ENDPOINT = '/api/askable/{id}/poster';
+
+    /**
+     * The endpoint answering with the cover of an ask for music or books the core keeps, as a
+     * raster image and not an envelope.
+     *
+     * `{reference}` is the reference the household list names the ask with (`music-3`), and
+     * {@see Api::requestPoster()} fills it in. It answers after the search that found the title
+     * is gone, fetched as a search page's cover is. It takes `member`, which a member's own
+     * session replaces with themselves, so a member reads only the covers of their own asks and
+     * the operator reads any; a `read` or an `act` key is not answered. A reference no kept ask
+     * goes by, or one another member made, is refused as `WISH-3`.
+     */
+    public const string REQUEST_POSTER_ENDPOINT = '/api/requests/{reference}/poster';
 
     /**
      * The endpoint answering with what one member was part-way through and how

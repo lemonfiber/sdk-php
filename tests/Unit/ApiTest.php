@@ -68,13 +68,17 @@ it('names the reads it holds a path for, and holds no path it has no caller for'
         ->and(Api::POSTER_ENDPOINT)->toBe('/api/held/{id}/poster')
         ->and(Api::BACKDROP_ENDPOINT)->toBe('/api/held/{id}/backdrop')
         ->and(Api::ASKABLE_ENDPOINT)->toBe('/api/askable')
+        ->and(Api::ASKABLE_KINDS_ENDPOINT)->toBe('/api/askable/kinds')
         ->and(Api::ASKABLE_POSTER_ENDPOINT)->toBe('/api/askable/{id}/poster')
+        ->and(Api::REQUEST_POSTER_ENDPOINT)->toBe('/api/requests/{reference}/poster')
         ->and(Api::UNINSTALL_ENDPOINT)->toBe('/api/uninstall')
         ->and(Api::PLUGINS_ENDPOINT)->toBe('/api/plugins')
         ->and(Api::WIRING_ENDPOINT)->toBe('/api/wiring')
         ->and(Api::SETTINGS_ENDPOINT)->toBe('/api/settings')
         ->and(Api::BOOT_ENDPOINT)->toBe('/api/boot')
         ->and(Api::WATCHER_ENDPOINT)->toBe('/api/watcher')
+        ->and(Api::QUEUE_ENDPOINT)->toBe('/api/queue')
+        ->and(Api::STACK_ENDPOINT)->toBe('/api/stack')
         ->and(Api::CAPABILITIES_ENDPOINT)->toBe('/api/capabilities')
         ->and(Api::KEYS_ENDPOINT)->toBe('/api/keys')
         ->and(Api::SETUP_ENDPOINT)->toBe('/api/setup');
@@ -140,6 +144,12 @@ it('composes the path the poster of a title a search offered is read under', fun
     expect(Api::askablePoster('438631'))->toBe('/api/askable/438631/poster')
         ->and(Api::askablePoster('tmdb-1'))->toBe('/api/askable/tmdb-1/poster')
         ->and(Api::askablePoster('../keys'))->toBe('/api/askable/..%2Fkeys/poster');
+});
+
+it('composes the path the cover of an ask the core keeps is read under', function (): void {
+    expect(Api::requestPoster('music-3'))->toBe('/api/requests/music-3/poster')
+        ->and(Api::requestPoster('books-12'))->toBe('/api/requests/books-12/poster')
+        ->and(Api::requestPoster('../keys'))->toBe('/api/requests/..%2Fkeys/poster');
 });
 
 it('keeps the two media types apart', function (): void {

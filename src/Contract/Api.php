@@ -135,6 +135,11 @@ final class Api implements HouseholdReads, MachineReads
     private const string ID = '{id}';
 
     /**
+     * The place in a path template a kept ask's reference is filled in at.
+     */
+    private const string REFERENCE = '{reference}';
+
+    /**
      * Where the action of that name is asked for.
      *
      * Composed from the name rather than written out per action, so there is one place the path is
@@ -182,7 +187,7 @@ final class Api implements HouseholdReads, MachineReads
      */
     public static function deviceKey(string $name): string
     {
-        return str_replace(self::NAME, rawurlencode($name), self::DEVICE_KEY);
+        return self::filledIn(self::DEVICE_KEY, self::NAME, $name);
     }
 
     /**
@@ -191,7 +196,7 @@ final class Api implements HouseholdReads, MachineReads
      */
     public static function deviceKeyChallenge(string $name): string
     {
-        return str_replace(self::NAME, rawurlencode($name), self::DEVICE_KEY_CHALLENGE);
+        return self::filledIn(self::DEVICE_KEY_CHALLENGE, self::NAME, $name);
     }
 
     /**
@@ -224,7 +229,7 @@ final class Api implements HouseholdReads, MachineReads
      */
     public static function poster(string $id): string
     {
-        return self::filledIn(self::POSTER_ENDPOINT, $id);
+        return self::filledIn(self::POSTER_ENDPOINT, self::ID, $id);
     }
 
     /**
@@ -232,7 +237,7 @@ final class Api implements HouseholdReads, MachineReads
      */
     public static function backdrop(string $id): string
     {
-        return self::filledIn(self::BACKDROP_ENDPOINT, $id);
+        return self::filledIn(self::BACKDROP_ENDPOINT, self::ID, $id);
     }
 
     /**
@@ -241,11 +246,19 @@ final class Api implements HouseholdReads, MachineReads
      */
     public static function askablePoster(string $id): string
     {
-        return self::filledIn(self::ASKABLE_POSTER_ENDPOINT, $id);
+        return self::filledIn(self::ASKABLE_POSTER_ENDPOINT, self::ID, $id);
     }
 
-    private static function filledIn(string $template, string $id): string
+    /**
+     * Where the cover of an ask the core keeps is read, the reference encoded as one segment.
+     */
+    public static function requestPoster(string $reference): string
     {
-        return str_replace(self::ID, rawurlencode($id), $template);
+        return self::filledIn(self::REQUEST_POSTER_ENDPOINT, self::REFERENCE, $reference);
+    }
+
+    private static function filledIn(string $template, string $placeholder, string $value): string
+    {
+        return str_replace($placeholder, rawurlencode($value), $template);
     }
 }
