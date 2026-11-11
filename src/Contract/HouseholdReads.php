@@ -221,4 +221,17 @@ interface HouseholdReads
      * minting and revoking are writes.
      */
     public const string KEYS_ENDPOINT = '/api/keys';
+
+    /**
+     * The endpoint answering with the ways a member may be told that something they asked for is
+     * ready, as the `notify-mine` envelope ({@see \Lemonfiber\Sdk\Generated\NotifyMineEnvelope}):
+     * each way the operator offered the household, in the order it was offered, by the id it is
+     * chosen by and the name the household reads it by, with whether this member is told on it,
+     * and whether their own phone is registered to be woken. It names no address, kind or state.
+     *
+     * It answers a member's own session, which replaces `member` with themselves; a key of any
+     * scope is refused. Choosing among the offered ways is
+     * {@see \Lemonfiber\Sdk\Generated\NotifyChooseAction}, asked through {@see Api::action()}.
+     */
+    public const string NOTIFY_MINE_ENDPOINT = '/api/notify/mine';
 }

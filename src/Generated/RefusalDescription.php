@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 10531156453569a9e96110e9dddb5d472faf8aeb, api_version 1.
+// Source: c5c41655acaa3381676e975a8e5e4236abd09fae, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -78,6 +78,16 @@ final class RefusalDescription
             RefusalCode::OfflineInstallUnheld => 'Raised where an install a start was agreed to did not hold.',
             RefusalCode::OfflineInstallUnread => 'Raised where a start would install a part whose install could not be read.',
             RefusalCode::OfferMoved => 'Raised when a replacement was agreed to for an offer that is not the one standing now.',
+            RefusalCode::NotABackendName => 'Raised when a back-end is added under a word that cannot name one.',
+            RefusalCode::BackendNameTaken => 'Raised when a back-end is added under a name another holds.',
+            RefusalCode::NoSuchBackend => 'Raised when no back-end holds the name asked about.',
+            RefusalCode::HostedUnacknowledged => 'Raised when a back-end on a host that is not the household\'s own is added without saying so.',
+            RefusalCode::NotABackendAddress => 'Raised when a back-end\'s address is not one it can be reached at.',
+            RefusalCode::BackendIncomplete => 'Raised when a back-end is added without what its kind needs.',
+            RefusalCode::NotARetrySchedule => 'Raised when a back-end\'s attempts and delays do not agree.',
+            RefusalCode::NotOffered => 'Raised when a member chooses a back-end that is not offered to members.',
+            RefusalCode::NoSuchWake => 'Raised when a phone confirms a wake nobody sent it.',
+            RefusalCode::EventsRefused => 'Raised when an event arrives without the key the core gave its sender.',
             RefusalCode::NotAnItem => 'Said where the title named is not something the media server could hold.',
             RefusalCode::NotOnTheirShelf => 'Said where the title is not one this member may watch, or is not there at all.',
             RefusalCode::NotADevice => 'Said where what names a member\'s device is not a device id.',

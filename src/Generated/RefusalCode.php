@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 10531156453569a9e96110e9dddb5d472faf8aeb, api_version 1.
+// Source: c5c41655acaa3381676e975a8e5e4236abd09fae, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -79,6 +79,16 @@ enum RefusalCode: string
     case OfflineInstallUnheld = 'LIFE-14';
     case OfflineInstallUnread = 'LIFE-15';
     case OfferMoved = 'MIGRATE-1';
+    case NotABackendName = 'NOTIFY-1';
+    case BackendNameTaken = 'NOTIFY-2';
+    case NoSuchBackend = 'NOTIFY-3';
+    case HostedUnacknowledged = 'NOTIFY-4';
+    case NotABackendAddress = 'NOTIFY-5';
+    case BackendIncomplete = 'NOTIFY-6';
+    case NotARetrySchedule = 'NOTIFY-7';
+    case NotOffered = 'NOTIFY-8';
+    case NoSuchWake = 'NOTIFY-9';
+    case EventsRefused = 'NOTIFY-10';
     case NotAnItem = 'PLAY-1';
     case NotOnTheirShelf = 'PLAY-2';
     case NotADevice = 'PLAY-3';

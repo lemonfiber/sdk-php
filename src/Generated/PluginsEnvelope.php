@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 10531156453569a9e96110e9dddb5d472faf8aeb, api_version 1.
+// Source: c5c41655acaa3381676e975a8e5e4236abd09fae, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -42,16 +42,16 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginGranting array{approval: string, credential: string, for: string, of: string}
  * @phpstan-type PluginInstall array{against?: PluginEvidence|null, asks: list<Wired>, changes: list<PluginChange>, contests: list<WiringContest>, granting: list<PluginGranting>, overrides: list<PluginOverriding>, proofs: list<PluginProving>, recipes_ran: list<PluginRecipeRan>, recorded: bool, reversed?: UndoReversal|null, secured?: string|null, sharing: list<PluginSharing>, taking: list<PluginTaking>, verified?: PluginVerification|null, waiting: list<Waiting>, would: PluginInstalled}
  * @phpstan-type PluginInstalled array{contributions?: list<Contribution>, declared?: PluginDeclaration, description?: string|null, from?: string, granted?: list<PluginGrant>, installed_at?: string, manifest?: string, name?: string|null, plugin: string, provides?: list<string>, recipes?: list<PluginRecipe>, request_proofs?: list<PluginRequestProof>, revision?: string, run_proofs?: list<PluginRunProof>, services: list<PluginPlaced>, signed?: string, tree?: string, version: string}
- * @phpstan-type PluginInstalls array{agreement?: string|null, demand?: PluginDemand|null, guards?: list<StackMoveTaken>, install?: PluginInstall|null, installed: list<PluginInstalled>, nonconforming?: list<PluginNonconforming>, proof?: PluginReproof|null, rehearsed: bool, removal?: PluginRemoval|null, sources?: list<PluginSource>, substituted?: list<PluginSubstituted>, unvetted?: Unvetted|null, update?: PluginUpdate|null}
+ * @phpstan-type PluginInstalls array{agreement?: string|null, demand?: PluginDemand|null, guards?: list<StackMoveTaken>, install?: PluginInstall|null, installed: list<PluginInstalled>, nonconforming?: list<PluginNonconforming>, proof?: PluginReproof|null, rehearsed: bool, removal?: PluginRemoval|null, sources?: list<PluginSource>, substituted?: list<PluginSubstituted>, unproxied?: bool, unvetted?: Unvetted|null, update?: PluginUpdate|null}
  * @phpstan-type PluginNonconforming array{at: string, capability: string, operation: string, plugin: string, why: string}
  * @phpstan-type PluginOverriding array{setting: string, why: string}
  * @phpstan-type PluginPair array{approval?: string, from?: string, origin: string, release?: string, to: string, value: string}
  * @phpstan-type PluginPlaced array{asks?: list<PluginAsking>, asks_for?: string|null, config_path: string, contract?: int|null, description?: string, digest: string, fields?: ServiceFields, fronts?: string|null, health?: string|null, hidden?: bool, icon?: string|null, image: string, listens?: int|null, media_types?: list<string>, name?: string, native?: string|null, networks?: list<string>, provides?: list<string>, reached?: PluginReached|null, reaches?: string|null, replaces?: string|null, service: string, shape?: PluginShape|null, speaks?: list<string>, starting?: string|null, tag: string, takes_data: bool, upstream?: array<string, string>}
  * @phpstan-type PluginPlaceholder array{form: PluginPlaceholderForm, secret: string}
- * @phpstan-type PluginPlaceholderForm 'plain'|'pbkdf2'
+ * @phpstan-type PluginPlaceholderForm 'plain'|'pbkdf2'|'bcrypt'
  * @phpstan-type PluginProving array{asks: string, came_to?: PluginVerdict|null, establishes: string, of?: string|null, proof: string, why: string}
  * @phpstan-type PluginPuts 'directory'|'document'|'key'|'secrets'|'starting'|'upstream'
- * @phpstan-type PluginReached array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}
+ * @phpstan-type PluginReached array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'proxied'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}
  * @phpstan-type PluginRecipe array{id: string, inputs?: list<PluginRecipeInput>, on?: PluginRecipeOn, pairs: list<PluginPair>, steps: list<PluginStep>, title: string, why: string}
  * @phpstan-type PluginRecipeInput array{ask: string, name: string, secret: bool}
  * @phpstan-type PluginRecipeOn 'install'|'demand'
@@ -80,7 +80,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type RecordedWith string|int|bool
  * @phpstan-type ServiceCertificate array{certificate: string, key: string, names: list<string>}
  * @phpstan-type ServiceConstant string|int|bool
- * @phpstan-type ServiceFields array{certificate?: ServiceCertificate|null, config_ro?: bool, env?: array<string, ServiceValue>, mem_limit_mib?: int|null, mount?: list<ServiceMount>, network?: ServiceNetwork|null, posture?: ServicePosture, publish?: list<ServicePublish>, rebuilt?: list<string>, shares_config?: string|null, tmpfs?: list<string>, user_mode?: ServiceUserModeWritten|null}
+ * @phpstan-type ServiceFields array{args?: list<string>, certificate?: ServiceCertificate|null, config_ro?: bool, env?: array<string, ServiceValue>, mem_limit_mib?: int|null, mount?: list<ServiceMount>, network?: ServiceNetwork|null, posture?: ServicePosture, publish?: list<ServicePublish>, rebuilt?: list<string>, shares_config?: string|null, tmpfs?: list<string>, user_mode?: ServiceUserModeWritten|null}
  * @phpstan-type ServiceIdVariables array{gid_env: string, uid_env: string}
  * @phpstan-type ServiceMount array{from: string, ro?: bool, to: string}
  * @phpstan-type ServiceNetwork array{fenced?: bool, via?: string|null}

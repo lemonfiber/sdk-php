@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 10531156453569a9e96110e9dddb5d472faf8aeb, api_version 1.
+// Source: c5c41655acaa3381676e975a8e5e4236abd09fae, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -22,7 +22,7 @@ final class AskAction extends ActionRequest
 
     /**
      * @param  string|null  $name  Who an action addressed to somebody in the household is for, as they sign in.
-     * @param  string|null  $id  The title an action is about: the title or episode a player's progress is on, by the identifier the shelf lists it under, or the title a member asks for, by the identifier their search listed it under.
+     * @param  string|null  $id  The thing an action is about, by its id: the title or episode a player's progress is on, by the identifier the shelf lists it under, the title a member asks for, by the identifier their search listed it under, or the wake a phone confirms.
      * @param  string|null  $kind  Whether the title asked for is a series, a film, music or books, as a page of a member's search names it: `tv`, `movies`, `music` or `books`.
      * @param  list<int<0, max>>  $seasons  The seasons of a series asked for. None names every season not already here or on its way.
      * @param  string|null  $unit  What is asked for within music or books, as a page of a member's search names it: `album` or `artist`, `book`, `author` or `series`. Absent asks for an album or a book.
