@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: a1ca3119cbfcfcf6279e73af3cbbf53a64d7fed8, api_version 1.
+// Source: 10531156453569a9e96110e9dddb5d472faf8aeb, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -19,6 +19,7 @@ enum Kind: string
     case Alerts = 'alerts';
     case Archives = 'archives';
     case Askable = 'askable';
+    case AskableKinds = 'askable-kinds';
     case Asked = 'asked';
     case Backup = 'backup';
     case Bandwidth = 'bandwidth';
@@ -70,6 +71,7 @@ enum Kind: string
     case PushEndpoint = 'push-endpoint';
     case PushEndpoints = 'push-endpoints';
     case Quality = 'quality';
+    case Queue = 'queue';
     case Removal = 'removal';
     case Repair = 'repair';
     case Replacement = 'replacement';
@@ -80,6 +82,7 @@ enum Kind: string
     case Settings = 'settings';
     case Setup = 'setup';
     case Space = 'space';
+    case Stack = 'stack';
     case Start = 'start';
     case Status = 'status';
     case Step = 'step';

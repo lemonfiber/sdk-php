@@ -1,0 +1,46 @@
+<?php
+
+// Generated from the contract vendored under contract/. Do not edit.
+// Source: 10531156453569a9e96110e9dddb5d472faf8aeb, api_version 1.
+// Regenerate with `composer contract:generate`.
+
+declare(strict_types=1);
+
+namespace Lemonfiber\Sdk\Generated;
+
+use Lemonfiber\Sdk\Envelope\Envelope;
+use Lemonfiber\Sdk\Envelope\Payload;
+use Lemonfiber\Sdk\Exception\UnexpectedKind;
+
+/**
+ * The `askable-kinds` envelope, shaped as the contract describes it.
+ *
+ * @phpstan-import-type TitleKind from Shapes
+ * @phpstan-import-type TitleUnit from Shapes
+ * @phpstan-type AskableKind array{kind: TitleKind, units: list<TitleUnit>}
+ * @phpstan-type AskableKindsReport array{kinds: list<AskableKind>, member: string}
+ * @phpstan-type Data AskableKindsReport
+ */
+final class AskableKindsEnvelope
+{
+    /**
+     * The kind an envelope must carry to be read as this one.
+     */
+    public const Kind KIND = Kind::AskableKinds;
+
+    /**
+     * The same envelope with its payload typed by its kind.
+     *
+     * @param  Envelope<mixed>  $envelope
+     * @return Envelope<Data>
+     *
+     * @throws UnexpectedKind
+     */
+    public static function in(Envelope $envelope): Envelope
+    {
+        /** @var Data $data */
+        $data = Payload::under(self::KIND, $envelope);
+
+        return new Envelope($envelope->apiVersion, $envelope->kind, $data, $envelope->host);
+    }
+}
