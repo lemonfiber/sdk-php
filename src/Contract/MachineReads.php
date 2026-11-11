@@ -394,6 +394,19 @@ interface MachineReads
     public const string STACK_ENDPOINT = '/api/stack';
 
     /**
+     * The endpoint answering with where a message goes, as the `notify` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\NotifyEnvelope}): where delivery as a whole stands
+     * (`unconfigured`, `ready`, `degraded` or `unreachable`), every back-end in the order it was
+     * added with what it speaks, the host and topic or path it reaches with no credential, who
+     * chose it, where it is hosted, how far it is proven, its newest delivery, every delivery
+     * failed since its last confirmed one and any delivery still to be tried again, and each
+     * back-end whose record could not be read with why. A store that cannot be read at all is
+     * refused rather than answered as none. It takes nothing, and answers the operator alone: a
+     * member and a key of any scope are refused.
+     */
+    public const string NOTIFY_ENDPOINT = '/api/notify';
+
+    /**
      * The endpoint answering with what this stack can do, as the `capabilities` envelope
      * ({@see \Lemonfiber\Sdk\Generated\CapabilitiesEnvelope}).
      *

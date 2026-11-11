@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 10531156453569a9e96110e9dddb5d472faf8aeb, api_version 1.
+// Source: c5c41655acaa3381676e975a8e5e4236abd09fae, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,9 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `alerts` envelope, shaped as the contract describes it.
  *
+ * @phpstan-import-type NotificationKind from Shapes
  * @phpstan-type AlertReport array{changed: bool, exceptions: list<ExceptionReport>, kinds: list<NotificationKind>, means: string, preset: string, rehearsed: bool}
  * @phpstan-type ExceptionReport array{kind: string, wanted: bool}
- * @phpstan-type NotificationKind 'problem'|'completion'|'update'|'backup'|'request'|'member'
  * @phpstan-type Data AlertReport
  */
 final class AlertsEnvelope

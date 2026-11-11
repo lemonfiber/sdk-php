@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 10531156453569a9e96110e9dddb5d472faf8aeb, api_version 1.
+// Source: c5c41655acaa3381676e975a8e5e4236abd09fae, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -59,6 +59,8 @@ enum Kind: string
     case Music = 'music';
     case News = 'news';
     case NewsItems = 'news-items';
+    case Notify = 'notify';
+    case NotifyMine = 'notify-mine';
     case Outbound = 'outbound';
     case Pairing = 'pairing';
     case PartWay = 'part-way';
