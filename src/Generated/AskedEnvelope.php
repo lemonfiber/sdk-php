@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: a1ca3119cbfcfcf6279e73af3cbbf53a64d7fed8, api_version 1.
+// Source: 726fdabead6ab457ae0f68ed50a43b9d91a264b9, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -16,9 +16,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `asked` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type TitleKind from Shapes
- * @phpstan-type AskedReport array{kind: TitleKind, leaves: LeftAfter, member: string, outcome: Became, rehearsed: bool, released: bool, said: string, seasons: list<int>, title: string}
+ * @phpstan-import-type TitleUnit from Shapes
+ * @phpstan-type AskedReport array{kind: TitleKind, leaves: LeftAfter, member: string, outcome: Became, rehearsed: bool, released: bool, request?: string|null, said: string, seasons: list<int>, title: string, unit?: TitleUnit|null}
  * @phpstan-type Became 'asked'|'waiting'|'on-its-way'
- * @phpstan-type LeftAfter array{films?: int|null, television?: int|null}
+ * @phpstan-type LeftAfter array{books?: int|null, films?: int|null, music?: int|null, television?: int|null}
  * @phpstan-type Data AskedReport
  */
 final class AskedEnvelope

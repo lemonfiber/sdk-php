@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: a1ca3119cbfcfcf6279e73af3cbbf53a64d7fed8, api_version 1.
+// Source: 726fdabead6ab457ae0f68ed50a43b9d91a264b9, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -78,6 +78,16 @@ final class RefusalStatus
             RefusalCode::OfflineInstallUnheld => 409,
             RefusalCode::OfflineInstallUnread => 409,
             RefusalCode::OfferMoved => 400,
+            RefusalCode::NotABackendName => 400,
+            RefusalCode::BackendNameTaken => 409,
+            RefusalCode::NoSuchBackend => 404,
+            RefusalCode::HostedUnacknowledged => 400,
+            RefusalCode::NotABackendAddress => 400,
+            RefusalCode::BackendIncomplete => 400,
+            RefusalCode::NotARetrySchedule => 400,
+            RefusalCode::NotOffered => 400,
+            RefusalCode::NoSuchWake => 404,
+            RefusalCode::EventsRefused => 401,
             RefusalCode::NotAnItem => 400,
             RefusalCode::NotOnTheirShelf => 404,
             RefusalCode::NotADevice => 400,

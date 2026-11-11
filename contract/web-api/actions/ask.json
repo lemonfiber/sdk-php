@@ -16,7 +16,7 @@
       "name": "id",
       "type": {
         "default": null,
-        "description": "The title an action is about: the title or episode a player's progress is on,\nby the identifier the shelf lists it under, or the title a member asks for, by\nthe identifier their search listed it under.",
+        "description": "The thing an action is about, by its id: the title or episode a player's progress\nis on, by the identifier the shelf lists it under, the title a member asks for, by\nthe identifier their search listed it under, or the wake a phone confirms.",
         "type": [
           "string",
           "null"
@@ -27,7 +27,7 @@
       "name": "kind",
       "type": {
         "default": null,
-        "description": "Whether the title asked for is a series or a film, as a page of a member's search\nnames it: `tv` or `movies`.",
+        "description": "Whether the title asked for is a series, a film, music or books, as a page of a\nmember's search names it: `tv`, `movies`, `music` or `books`.",
         "type": [
           "string",
           "null"
@@ -45,6 +45,17 @@
           "type": "integer"
         },
         "type": "array"
+      }
+    },
+    {
+      "name": "unit",
+      "type": {
+        "default": null,
+        "description": "What is asked for within music or books, as a page of a member's search names\nit: `album` or `artist`, `book`, `author` or `series`. Absent asks for an album\nor a book.",
+        "type": [
+          "string",
+          "null"
+        ]
       }
     }
   ],

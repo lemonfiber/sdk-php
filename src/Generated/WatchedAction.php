@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: a1ca3119cbfcfcf6279e73af3cbbf53a64d7fed8, api_version 1.
+// Source: 726fdabead6ab457ae0f68ed50a43b9d91a264b9, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -22,7 +22,7 @@ final class WatchedAction extends ActionRequest
 
     /**
      * @param  string|null  $name  Who an action addressed to somebody in the household is for, as they sign in.
-     * @param  string|null  $id  The title an action is about: the title or episode a player's progress is on, by the identifier the shelf lists it under, or the title a member asks for, by the identifier their search listed it under.
+     * @param  string|null  $id  The thing an action is about, by its id: the title or episode a player's progress is on, by the identifier the shelf lists it under, the title a member asks for, by the identifier their search listed it under, or the wake a phone confirms.
      * @param  int<0, max>|null  $position  How far into it the member is, in whole seconds.
      * @param  bool|null  $ended  Whether the member finished it. Absent says nothing about finishing, which is a position like any other.
      */

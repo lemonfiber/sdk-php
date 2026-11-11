@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: a1ca3119cbfcfcf6279e73af3cbbf53a64d7fed8, api_version 1.
+// Source: 726fdabead6ab457ae0f68ed50a43b9d91a264b9, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -22,15 +22,17 @@ final class AskAction extends ActionRequest
 
     /**
      * @param  string|null  $name  Who an action addressed to somebody in the household is for, as they sign in.
-     * @param  string|null  $id  The title an action is about: the title or episode a player's progress is on, by the identifier the shelf lists it under, or the title a member asks for, by the identifier their search listed it under.
-     * @param  string|null  $kind  Whether the title asked for is a series or a film, as a page of a member's search names it: `tv` or `movies`.
+     * @param  string|null  $id  The thing an action is about, by its id: the title or episode a player's progress is on, by the identifier the shelf lists it under, the title a member asks for, by the identifier their search listed it under, or the wake a phone confirms.
+     * @param  string|null  $kind  Whether the title asked for is a series, a film, music or books, as a page of a member's search names it: `tv`, `movies`, `music` or `books`.
      * @param  list<int<0, max>>  $seasons  The seasons of a series asked for. None names every season not already here or on its way.
+     * @param  string|null  $unit  What is asked for within music or books, as a page of a member's search names it: `album` or `artist`, `book`, `author` or `series`. Absent asks for an album or a book.
      */
     public function __construct(
         public readonly ?string $name = null,
         public readonly ?string $id = null,
         public readonly ?string $kind = null,
         public readonly array $seasons = [],
+        public readonly ?string $unit = null,
     ) {}
 
     public function action(): string
@@ -64,6 +66,7 @@ final class AskAction extends ActionRequest
             'id' => $this->id,
             'kind' => $this->kind,
             'seasons' => $this->seasons,
+            'unit' => $this->unit,
         ];
     }
 }
