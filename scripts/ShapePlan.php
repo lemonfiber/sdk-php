@@ -81,10 +81,11 @@ final class ShapePlan
     /**
      * @param  array<mixed, mixed>  $kinds  each kind's schema, by kind
      * @param  list<string>  $taken  every name this generator writes itself, which no definition may take
+     * @param  array<string, string>  $spoken  the kind each class carries, by class, for naming it in a refusal
      *
      * @throws UnexpectedValueException naming a definition this plan cannot name
      */
-    public function __construct(array $kinds, array $taken)
+    public function __construct(array $kinds, array $taken, private array $spoken = [])
     {
         $held = array_map(strtolower(...), [...$taken, self::PAYLOAD, self::SHARED]);
 
@@ -233,19 +234,21 @@ final class ShapePlan
      */
     private function define(string $kind, string $name, array $definition, array $held): void
     {
+        $carrier = $this->spoken[$kind] ?? $kind;
+
         if (in_array(strtolower($name), $held, true)) {
-            throw new UnexpectedValueException(sprintf('The definition `%s`, carried by `%s`, takes a name this generator writes itself.', $name, $kind));
+            throw new UnexpectedValueException(sprintf('The definition `%s`, carried by `%s`, takes a name this generator writes itself.', $name, $carrier));
         }
 
         if (preg_match(self::ALIAS, $name) !== 1) {
-            throw new UnexpectedValueException(sprintf('The definition `%s`, carried by `%s`, is not a name a PHPStan type alias can carry.', $name, $kind));
+            throw new UnexpectedValueException(sprintf('The definition `%s`, carried by `%s`, is not a name a PHPStan type alias can carry.', $name, $carrier));
         }
 
         if (array_key_exists($name, $this->schemas) && json_encode($this->schemas[$name]) !== json_encode($definition)) {
-            throw new UnexpectedValueException(sprintf('The definition `%s` is carried by `%s` and by `%s` as two different shapes.', $name, $this->carriers[$name], $kind));
+            throw new UnexpectedValueException(sprintf('The definition `%s` is carried by `%s` and by `%s` as two different shapes.', $name, $this->carriers[$name], $carrier));
         }
 
-        $this->carriers[$name] ??= $kind;
+        $this->carriers[$name] ??= $carrier;
         $this->schemas[$name] = $definition;
         $this->refers[$name] = $this->referencesIn($definition);
     }
