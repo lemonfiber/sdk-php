@@ -33,6 +33,9 @@ use function trim;
  */
 final readonly class ActionSource
 {
+    /** The class every action class imports by its short name. */
+    public const array IMPORTED = ['ActionRequest'];
+
     public function __construct(private SchemaTypes $types) {}
 
     /**

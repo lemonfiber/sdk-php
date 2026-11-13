@@ -348,7 +348,7 @@ final readonly class ContractGenerator
         }
 
         try {
-            return new ShapePlan($classes, [...array_keys($classes), ...self::CLASSES, ...$actions]);
+            return new ShapePlan($classes, [...array_keys($classes), ...self::CLASSES, ...$actions, ...GeneratedSource::IMPORTED, ...ActionSource::IMPORTED, ...SchemaTypes::KEYWORDS]);
         } catch (UnexpectedValueException $unnamed) {
             $this->refuse($unnamed->getMessage() . ' Nothing was generated.');
 

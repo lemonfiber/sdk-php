@@ -6,6 +6,7 @@ namespace Lemonfiber\Sdk\Scripts;
 
 use function array_key_exists;
 use function array_keys;
+use function array_map;
 use function array_pop;
 use function array_unique;
 use function array_values;
@@ -16,10 +17,12 @@ use function is_string;
 use function json_encode;
 use function ksort;
 use function min;
+use function preg_match;
 use function sort;
 use function sprintf;
 use function str_starts_with;
 use function strlen;
+use function strtolower;
 use function substr;
 
 use UnexpectedValueException;
@@ -44,8 +47,14 @@ final class ShapePlan
     /** What every reference this resolves opens with, before the definition's name. */
     public const string DEFINITIONS = '#/$defs/';
 
+    /** A name a PHPStan type alias can carry. */
+    private const string ALIAS = '/^[A-Za-z_]\w*$/';
+
     /** @var array<string, array<mixed, mixed>> each definition's schema, by name */
     private array $schemas = [];
+
+    /** @var array<string, string> the kind each definition was first carried by, by name */
+    private array $carriers = [];
 
     /** @var array<string, list<string>> each definition's kinds, by name */
     private array $users = [];
@@ -71,15 +80,17 @@ final class ShapePlan
 
     /**
      * @param  array<mixed, mixed>  $kinds  each kind's schema, by kind
-     * @param  list<string>  $taken  the names generated classes already hold
+     * @param  list<string>  $taken  every name this generator writes itself, which no definition may take
      *
      * @throws UnexpectedValueException naming a definition this plan cannot name
      */
     public function __construct(array $kinds, array $taken)
     {
+        $held = array_map(strtolower(...), [...$taken, self::PAYLOAD, self::SHARED]);
+
         foreach ($kinds as $kind => $schema) {
             if (is_string($kind) && is_array($schema)) {
-                $this->collect($kind, $schema, $taken);
+                $this->collect($kind, $schema, $held);
             }
         }
 
@@ -188,18 +199,18 @@ final class ShapePlan
      * Takes in a kind's definitions, and counts the kind as a user of each its payload reaches.
      *
      * @param  array<mixed, mixed>  $schema
-     * @param  list<string>  $taken
+     * @param  list<string>  $held  every name no definition may take, in lower case
      *
      * @throws UnexpectedValueException
      */
-    private function collect(string $kind, array $schema, array $taken): void
+    private function collect(string $kind, array $schema, array $held): void
     {
         $defs = $schema['$defs'] ?? [];
         $defs = is_array($defs) ? $defs : [];
 
         foreach ($defs as $name => $definition) {
             if (is_string($name) && is_array($definition)) {
-                $this->define($kind, $name, $definition, $taken);
+                $this->define($kind, $name, $definition, $held);
             }
         }
 
@@ -216,20 +227,25 @@ final class ShapePlan
      * Takes in one definition a kind carries.
      *
      * @param  array<mixed, mixed>  $definition
-     * @param  list<string>  $taken
+     * @param  list<string>  $held  every name no definition may take, in lower case
      *
-     * @throws UnexpectedValueException naming a definition that takes a name already held, or one carried as two shapes
+     * @throws UnexpectedValueException naming a definition that takes a name this generator writes, one no alias can carry, or one carried as two shapes
      */
-    private function define(string $kind, string $name, array $definition, array $taken): void
+    private function define(string $kind, string $name, array $definition, array $held): void
     {
-        if (in_array($name, $taken, true) || $name === self::PAYLOAD || $name === self::SHARED) {
-            throw new UnexpectedValueException(sprintf('The definition `%s`, carried by `%s`, takes a name a generated class or alias already holds.', $name, $kind));
+        if (in_array(strtolower($name), $held, true)) {
+            throw new UnexpectedValueException(sprintf('The definition `%s`, carried by `%s`, takes a name this generator writes itself.', $name, $kind));
+        }
+
+        if (preg_match(self::ALIAS, $name) !== 1) {
+            throw new UnexpectedValueException(sprintf('The definition `%s`, carried by `%s`, is not a name a PHPStan type alias can carry.', $name, $kind));
         }
 
         if (array_key_exists($name, $this->schemas) && json_encode($this->schemas[$name]) !== json_encode($definition)) {
-            throw new UnexpectedValueException(sprintf('The definition `%s` is carried by more than one kind as two different shapes.', $name));
+            throw new UnexpectedValueException(sprintf('The definition `%s` is carried by `%s` and by `%s` as two different shapes.', $name, $this->carriers[$name], $kind));
         }
 
+        $this->carriers[$name] ??= $kind;
         $this->schemas[$name] = $definition;
         $this->refers[$name] = $this->referencesIn($definition);
     }

@@ -22,6 +22,9 @@ use UnexpectedValueException;
  */
 final readonly class GeneratedSource
 {
+    /** The classes every envelope class imports by their short names. */
+    public const array IMPORTED = ['Envelope', 'Payload', 'UnexpectedKind'];
+
     private const string NAMESPACE = 'Lemonfiber\\Sdk\\Generated';
 
     /** One enum case, as each generated enum writes it: its name and its value. */
