@@ -261,12 +261,13 @@ $file->contentType();   // 'application/gzip'
 
 ## Pictures
 
-A title's poster and backdrop are answered as bytes rather than an envelope, read
-as the member, by the id the shelf lists the title under:
+Pictures are answered as bytes rather than an envelope, through
+`$client->pictures()`. A title's poster and backdrop are read as the member, by
+the id the shelf lists the title under:
 
 ```php
-$poster = $client->poster($id, ['member' => 'ada']);
-$backdrop = $client->backdrop($id, ['member' => 'ada']);
+$poster = $client->pictures()->poster($id, ['member' => 'ada']);
+$backdrop = $client->pictures()->backdrop($id, ['member' => 'ada']);
 
 $poster->bytes();       // the image, as delivered
 $poster->mediaType();   // 'image/webp'
@@ -295,11 +296,21 @@ $client->act(new AskAction(id: $id, kind: 'movies', name: 'ada'), $idempotencyKe
 A found title's poster is read through the core, never from the catalogue:
 
 ```php
-$poster = $client->askablePoster($id, ['kind' => 'movies', 'member' => 'ada']);
+$poster = $client->pictures()->askablePoster($id, ['kind' => 'movies', 'member' => 'ada']);
 ```
 
 It is bounded as a shelf picture is. A title outside the member's limits raises
 `Missing` with `WISH-3`, and one with no poster raises `Missing` with `WISH-13`.
+
+The cover of an ask for music or books the core keeps is read by the reference
+the household list names the ask with, after the search that found it is gone:
+
+```php
+$cover = $client->pictures()->requestPoster('music-3', ['member' => 'ada']);
+```
+
+A member's own session reads only the covers of their own asks. A reference no
+kept ask goes by, or one another member made, raises `Missing` with `WISH-3`.
 
 ## Live updates
 
