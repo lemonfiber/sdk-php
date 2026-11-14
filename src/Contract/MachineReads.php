@@ -254,6 +254,15 @@ interface MachineReads
     public const string MIGRATION_ENDPOINT = '/api/migration';
 
     /**
+     * The endpoint answering with what setup settled.
+     *
+     * Read from the configuration as it stands, with whether this stack is set up.
+     * It answers with the `settled` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\SettledEnvelope}) and takes nothing.
+     */
+    public const string SETTLED_ENDPOINT = '/api/settled';
+
+    /**
      * What a surface can mark as new: releases, requests and checks found wrong, newest first.
      * It answers with the `news-items` envelope
      * ({@see \Lemonfiber\Sdk\Generated\NewsItemsEnvelope}) and takes nothing; the stream
