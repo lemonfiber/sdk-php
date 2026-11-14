@@ -71,6 +71,76 @@
     "/api/setup/answer": "bodies/setup-answer.json",
     "/api/setup/recover": "bodies/setup-recover.json"
   },
+  "events": {
+    "heartbeat_seconds": 15,
+    "kinds": {
+      "alert": {
+        "schema": "kinds/alert.json",
+        "nature": "record",
+        "audience": "anyone"
+      },
+      "dashboard": {
+        "schema": "kinds/dashboard.json",
+        "nature": "state",
+        "audience": "anyone"
+      },
+      "held": {
+        "schema": "kinds/held.json",
+        "nature": "state",
+        "audience": "anyone"
+      },
+      "household": {
+        "schema": "kinds/household.json",
+        "nature": "state",
+        "audience": "anyone"
+      },
+      "log": {
+        "schema": "kinds/log.json",
+        "nature": "record",
+        "audience": "anyone"
+      },
+      "news": {
+        "schema": "kinds/news.json",
+        "nature": "state",
+        "audience": "anyone"
+      },
+      "playing": {
+        "schema": "kinds/playing.json",
+        "nature": "state",
+        "audience": "anyone"
+      },
+      "plugins": {
+        "schema": "kinds/plugins.json",
+        "nature": "state",
+        "audience": "anyone"
+      },
+      "pull": {
+        "schema": "kinds/pull.json",
+        "nature": "state",
+        "audience": "anyone"
+      },
+      "settings": {
+        "schema": "kinds/settings.json",
+        "nature": "state",
+        "audience": "operator"
+      },
+      "start": {
+        "schema": "kinds/start.json",
+        "nature": "state",
+        "audience": "anyone"
+      },
+      "step": {
+        "schema": "kinds/step.json",
+        "nature": "record",
+        "audience": "anyone"
+      },
+      "wiring": {
+        "schema": "kinds/wiring.json",
+        "nature": "state",
+        "audience": "anyone"
+      }
+    }
+  },
   "key_callable": "key-callable.json",
   "kinds": {
     "admission": "kinds/admission.json",
@@ -97,6 +167,7 @@
     "device-key": "kinds/device-key.json",
     "device-keys": "kinds/device-keys.json",
     "doctor": "kinds/doctor.json",
+    "ended": "kinds/ended.json",
     "error": "kinds/error.json",
     "forms": "kinds/forms.json",
     "front-door": "kinds/front-door.json",
@@ -126,6 +197,10 @@
     "part-way": "kinds/part-way.json",
     "pausing": "kinds/pausing.json",
     "playing": "kinds/playing.json",
+    "plugin-claims": "kinds/plugin-claims.json",
+    "plugin-conformance": "kinds/plugin-conformance.json",
+    "plugin-provenance": "kinds/plugin-provenance.json",
+    "plugin-recording": "kinds/plugin-recording.json",
     "plugins": "kinds/plugins.json",
     "preview": "kinds/preview.json",
     "provenance": "kinds/provenance.json",
@@ -142,6 +217,7 @@
     "seed": "kinds/seed.json",
     "self-update": "kinds/self-update.json",
     "settings": "kinds/settings.json",
+    "settled": "kinds/settled.json",
     "setup": "kinds/setup.json",
     "space": "kinds/space.json",
     "stack": "kinds/stack.json",

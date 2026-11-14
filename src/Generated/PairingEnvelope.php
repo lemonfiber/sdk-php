@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bde24bea7750e01ca80449d334dc84c578bad596, api_version 1.
+// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,7 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `pairing` envelope, shaped as the contract describes it.
  *
- * @phpstan-type Pairing array{caution?: string|null, compare: string, material: PairingMaterial, replacing: string, until: string, written: string}
+ * @phpstan-type Pairing array{caution?: string|null, compare: string, material: PairingMaterial, replacing: string, until: int, written: string}
  * @phpstan-type PairingMaterial array{address: string, expires: int, fingerprint: string, stack: string}
  * @phpstan-type Data Pairing
  */

@@ -73,7 +73,6 @@ final class AdmissionRequest extends Request implements HasBody, ReadsItsAnswer
     #[Override]
     public function createDtoFromResponse(Response $response): Admitted
     {
-        /** @var array{member?: string|null, token: string, until: string} $data */
         $data = AdmissionEnvelope::in(new EnvelopeReader()->read($response->body()))->data;
 
         // Absent and present-and-null are one answer on this field, which is

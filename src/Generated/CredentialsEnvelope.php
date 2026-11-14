@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bde24bea7750e01ca80449d334dc84c578bad596, api_version 1.
+// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -16,7 +16,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `credentials` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type ValueOrigin from Shapes
- * @phpstan-type CredentialGranted array{at: string, credential: string, for: string, of: string, plugin: string}
+ * @phpstan-type CredentialGranted array{at?: int|null, credential: string, for: string, of: string, plugin: string}
  * @phpstan-type CredentialHeld array{advisory?: string|null, consumers: list<string>, fingerprint?: string|null, from: ValueOrigin, location: string, name: string, origin: Origin, setting: string, state: CredentialState}
  * @phpstan-type CredentialReach array{reach: 'updated'}|array{detail: string, reach: 'pending'}|array{detail: string, reach: 'failed'}
  * @phpstan-type CredentialRevoked array{agreement: string, ended: bool, grant: CredentialGranted, restarts: list<string>, unrestarted?: string|null}

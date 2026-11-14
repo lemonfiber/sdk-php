@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bde24bea7750e01ca80449d334dc84c578bad596, api_version 1.
+// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -21,10 +21,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type Searchable array{covers: string, spends: string}
  * @phpstan-type SeasonCoverage array{have: int, outstanding: list<Part>, season: int, unmonitored: int, wanted: int}
  * @phpstan-type TraceConfidence 'certain'|'uncertain'
- * @phpstan-type TraceMoment array{at: string, outcome: TraceOutcome}
+ * @phpstan-type TraceMoment array{at?: int|null, outcome: TraceOutcome}
  * @phpstan-type TraceOutcome 'grabbed'|'download-failed'|'imported'|'removed'
  * @phpstan-type TraceReport array{confidence: TraceConfidence, coverage?: Coverage|null, findings: list<string>, furthest: Stage, history: list<TraceMoment>, item: string, matched: bool, searchable?: Searchable|null, stages: list<TraceStage>, stall?: string|null}
- * @phpstan-type TraceStage array{at?: string|null, service: string, stage: Stage}
+ * @phpstan-type TraceStage array{at?: int|null, service: string, stage: Stage}
  * @phpstan-type Data TraceReport
  */
 final class TraceEnvelope

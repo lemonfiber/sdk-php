@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bde24bea7750e01ca80449d334dc84c578bad596, api_version 1.
+// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -20,9 +20,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type MovedReport from Shapes
  * @phpstan-import-type UnsupportedReport from Shapes
  * @phpstan-type LinkingReport array{because: string, cost: string, filesystems: list<string>, forced: bool, links: bool, remedy: string}
+ * @phpstan-type Location array{at: string}|array{unread: string}|array{none: string}
  * @phpstan-type MigrationReport array{beside: list<MovedReport>, carrying: list<CarryingReport>, conflicts: list<ConflictReport>, linking?: LinkingReport|null, modes: list<ModeReport>, not_carried: list<UnsupportedReport>, read: bool, standing: list<StandingReport>, unsupported: list<UnsupportedReport>}
  * @phpstan-type ModeReport array{disturbs: bool, mode: string, preselected: bool, what: string}
- * @phpstan-type OccupantReport array{adoptable: bool, ports: list<int>, running: bool, service: string}
+ * @phpstan-type OccupantReport array{adoptable: bool, config: Location, library: Location, ports: list<int>, running: bool, service: string}
  * @phpstan-type StandingReport array{project: string, services: list<OccupantReport>}
  * @phpstan-type Data MigrationReport
  */

@@ -45,11 +45,11 @@ final class UnreadableResponse extends RuntimeException implements AnswerUnusabl
         );
     }
 
-    public static function endingUnreadable(string $written): self
+    public static function endingUnreadable(string $carried): self
     {
         return new self(sprintf(
-            'The session came back with an ending this client cannot read as a moment: %s.',
-            $written,
+            'The session came back with an ending that is a %s rather than a count of seconds.',
+            $carried,
         ));
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bde24bea7750e01ca80449d334dc84c578bad596, api_version 1.
+// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -37,6 +37,7 @@ enum Kind: string
     case DeviceKey = 'device-key';
     case DeviceKeys = 'device-keys';
     case Doctor = 'doctor';
+    case Ended = 'ended';
     case Error = 'error';
     case Forms = 'forms';
     case FrontDoor = 'front-door';
@@ -66,6 +67,10 @@ enum Kind: string
     case PartWay = 'part-way';
     case Pausing = 'pausing';
     case Playing = 'playing';
+    case PluginClaims = 'plugin-claims';
+    case PluginConformance = 'plugin-conformance';
+    case PluginProvenance = 'plugin-provenance';
+    case PluginRecording = 'plugin-recording';
     case Plugins = 'plugins';
     case Preview = 'preview';
     case Provenance = 'provenance';
@@ -82,6 +87,7 @@ enum Kind: string
     case Seed = 'seed';
     case SelfUpdate = 'self-update';
     case Settings = 'settings';
+    case Settled = 'settled';
     case Setup = 'setup';
     case Space = 'space';
     case Stack = 'stack';
