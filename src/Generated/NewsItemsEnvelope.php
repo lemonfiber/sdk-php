@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bde24bea7750e01ca80449d334dc84c578bad596, api_version 1.
+// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -16,9 +16,11 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `news-items` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type NewsKind from Shapes
+ * @phpstan-import-type TitleKind from Shapes
+ * @phpstan-import-type TitleUnit from Shapes
  * @phpstan-type News array{problems: list<NewsProblem>, requests: list<NewsRequest>, unread: list<NewsKind>, updates: list<NewsUpdate>}
- * @phpstan-type NewsProblem array{check: string, onset: string, summary: string}
- * @phpstan-type NewsRequest array{asked?: string|null, by: string, request: string, title?: string|null}
+ * @phpstan-type NewsProblem array{check: string, onset: int, summary: string}
+ * @phpstan-type NewsRequest array{asked?: int|null, by: string, kind?: TitleKind|null, request: string, title?: string|null, unit?: TitleUnit|null}
  * @phpstan-type NewsUpdate array{delivers?: string|null, version: string}
  * @phpstan-type Data News
  */

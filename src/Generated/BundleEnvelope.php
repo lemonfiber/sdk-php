@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bde24bea7750e01ca80449d334dc84c578bad596, api_version 1.
+// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -19,7 +19,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type Contents array{missing: list<string>, pieces: list<Piece>, taken: Taken, terms: Terms}
  * @phpstan-type Filenames bool
  * @phpstan-type Piece array{body: string, name: string}
- * @phpstan-type Taken array{at: string, lemonfiber: string, stack: string}
+ * @phpstan-type Taken array{at: int, lemonfiber: string, stack: string}
  * @phpstan-type Terms array{filenames: Filenames, revealed: list<string>, window: string}
  * @phpstan-type Data Bundle
  */

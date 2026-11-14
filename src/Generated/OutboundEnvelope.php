@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bde24bea7750e01ca80449d334dc84c578bad596, api_version 1.
+// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -18,7 +18,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type ValueOrigin from Shapes
  * @phpstan-type Elsewhere array{destination: string, origin: ValueOrigin, purpose: string, recorded: bool, service: string}
  * @phpstan-type Leaving array{on_behalf: list<OnBehalf>, ours: list<Outbound>, theirs: list<Elsewhere>}
- * @phpstan-type OnBehalf array{destination: string, plugin: string, purpose: string}
+ * @phpstan-type OnBehalf array{allowed: bool, cost: string, destination: string, plugin: string, purpose: string, switch: string}
  * @phpstan-type Outbound array{allowed: bool, cost: string, destination: list<string>, purpose: string, reach: OutboundReach, sends: string, switch: string}
  * @phpstan-type OutboundReach 'registry'|'guides'|'echo'|'indexer'|'usenet'|'household'|'updates'|'plugin-source'|'catalogue'|'posters'|'waking'|'ntfy'|'gotify'|'webhook'|'apprise'
  * @phpstan-type Data Leaving

@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bde24bea7750e01ca80449d334dc84c578bad596, api_version 1.
+// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -21,10 +21,10 @@ final class UndoAction extends ActionRequest
     public const string ACTION = 'undo';
 
     /**
-     * @param  string|null  $at  The stamp of the run to put back, as the history writes it.
+     * @param  int<0, max>|null  $at  When the run to put back was made, as the history writes it.
      */
     public function __construct(
-        public readonly ?string $at = null,
+        public readonly ?int $at = null,
     ) {}
 
     public function action(): string

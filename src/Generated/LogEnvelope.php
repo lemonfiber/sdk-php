@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bde24bea7750e01ca80449d334dc84c578bad596, api_version 1.
+// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -16,7 +16,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `log` envelope, shaped as the contract describes it.
  *
  * @phpstan-type LogLevel 'trace'|'debug'|'info'|'warn'|'error'|'fatal'
- * @phpstan-type LogLine array{at?: string|null, level?: LogLevel|null, line: string, service: string, stream: Stream}
+ * @phpstan-type LogLine array{level?: LogLevel|null, line: string, service: string, stamped?: string|null, stream: Stream}
  * @phpstan-type Stream 'stdout'|'stderr'
  * @phpstan-type Data LogLine
  */

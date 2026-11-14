@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bde24bea7750e01ca80449d334dc84c578bad596, api_version 1.
+// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -18,7 +18,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type KeyPurpose from Shapes
  * @phpstan-type KeyListing array{keys: list<ListedKey>, purposes: string, rehearsed: bool, revoked?: string|null}
  * @phpstan-type KeyState 'active'|'waiting'|'revoked'|'orphaned'|'unconfirmed'
- * @phpstan-type ListedKey array{member_minted: bool, minted: string, name: string, proved_by?: string|null, purpose: KeyPurpose, revoked?: string|null, scope: string, state: KeyState, used?: string|null}
+ * @phpstan-type ListedKey array{member_minted: bool, minted: int, name: string, proved_by?: string|null, purpose: KeyPurpose, revoked?: int|null, scope: string, state: KeyState, used?: int|null}
  * @phpstan-type Data KeyListing
  */
 final class KeysEnvelope

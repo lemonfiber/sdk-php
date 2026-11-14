@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: bde24bea7750e01ca80449d334dc84c578bad596, api_version 1.
+// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -18,7 +18,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type Apis from Shapes
  * @phpstan-import-type DoctorVerdict from Shapes
  * @phpstan-import-type Finding from Shapes
+ * @phpstan-import-type PluginConstraint from Shapes
+ * @phpstan-import-type PluginEvidence from Shapes
  * @phpstan-import-type PluginGrant from Shapes
+ * @phpstan-import-type PluginVerdict from Shapes
  * @phpstan-import-type StackMoveTaken from Shapes
  * @phpstan-import-type StepCame from Shapes
  * @phpstan-import-type UndoReversal from Shapes
@@ -32,18 +35,15 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginAsking array{capability: string, each?: bool, files?: string|null, media_types?: list<string>, native?: Apis|null}
  * @phpstan-type PluginChange array{path: string, placeholders: list<PluginPlaceholder>, puts: PluginPuts}
  * @phpstan-type PluginChangedCheck array{before?: DoctorVerdict|null, now: Finding}
- * @phpstan-type PluginConstraint 'status'|'json'|'json_has_keys'|'json_types'|'json_at_least'|'json_array_min'|'json_is_absent'|'content_type'|'body_starts_with'|'exit'|'stdout_starts_with'
- * @phpstan-type PluginDeclaration array{claims?: list<string>, license?: string, overrides?: list<PluginOverriding>, reaches?: list<string>, reviewed?: bool, secrets?: list<PluginSecret>, upstream?: string}
+ * @phpstan-type PluginDeclaration array{claims?: list<string>, license?: string, overrides?: list<PluginOverriding>, reaches?: list<string>, reviewed?: bool, secrets?: list<PluginSecret>, stops?: list<PluginStopping>, upstream?: string}
  * @phpstan-type PluginDeclaredVerdict 'fails'
  * @phpstan-type PluginDemand array{plugin: string, ran?: PluginRecipeRan|null, recipe: PluginRecipe}
- * @phpstan-type PluginEvidence 'recordings'|'service'
  * @phpstan-type PluginExpectedFailure array{constraint: PluginConstraint, fixture: string, place?: string|null, reason: string, verdict: PluginDeclaredVerdict}
- * @phpstan-type PluginFailingAsDeclared array{constraint: PluginConstraint, fixture: string, held: string, place?: string|null, reason: string}
  * @phpstan-type PluginGranting array{approval: string, credential: string, for: string, of: string}
  * @phpstan-type PluginInstall array{against?: PluginEvidence|null, asks: list<Wired>, changes: list<PluginChange>, contests: list<WiringContest>, granting: list<PluginGranting>, overrides: list<PluginOverriding>, proofs: list<PluginProving>, recipes_ran: list<PluginRecipeRan>, recorded: bool, reversed?: UndoReversal|null, secured?: string|null, sharing: list<PluginSharing>, taking: list<PluginTaking>, verified?: PluginVerification|null, waiting: list<Waiting>, would: PluginInstalled}
- * @phpstan-type PluginInstalled array{contributions?: list<Contribution>, declared?: PluginDeclaration, description?: string|null, from?: string, granted?: list<PluginGrant>, installed_at?: string, manifest?: string, name?: string|null, plugin: string, provides?: list<string>, recipes?: list<PluginRecipe>, request_proofs?: list<PluginRequestProof>, revision?: string, run_proofs?: list<PluginRunProof>, services: list<PluginPlaced>, signed?: string, tree?: string, version: string}
+ * @phpstan-type PluginInstalled array{contributions?: list<Contribution>, declared?: PluginDeclaration, description?: string|null, from?: string, granted?: list<PluginGrant>, installed_at?: int|null, manifest?: string, name?: string|null, plugin: string, provides?: list<string>, recipes?: list<PluginRecipe>, request_proofs?: list<PluginRequestProof>, revision?: string, run_proofs?: list<PluginRunProof>, services: list<PluginPlaced>, signed?: string, tree?: string, version: string}
  * @phpstan-type PluginInstalls array{agreement?: string|null, demand?: PluginDemand|null, guards?: list<StackMoveTaken>, install?: PluginInstall|null, installed: list<PluginInstalled>, nonconforming?: list<PluginNonconforming>, proof?: PluginReproof|null, rehearsed: bool, removal?: PluginRemoval|null, sources?: list<PluginSource>, substituted?: list<PluginSubstituted>, unproxied?: bool, unvetted?: Unvetted|null, update?: PluginUpdate|null}
- * @phpstan-type PluginNonconforming array{at: string, capability: string, operation: string, plugin: string, why: string}
+ * @phpstan-type PluginNonconforming array{at: int, capability: string, operation: string, plugin: string, why: string}
  * @phpstan-type PluginOverriding array{setting: string, why: string}
  * @phpstan-type PluginPair array{approval?: string, from?: string, origin: string, release?: string, to: string, value: string}
  * @phpstan-type PluginPlaced array{asks?: list<PluginAsking>, asks_for?: string|null, config_path: string, contract?: int|null, description?: string, digest: string, fields?: ServiceFields, fronts?: string|null, health?: string|null, hidden?: bool, icon?: string|null, image: string, listens?: int|null, media_types?: list<string>, name?: string, native?: string|null, networks?: list<string>, provides?: list<string>, reached?: PluginReached|null, reaches?: string|null, replaces?: string|null, service: string, shape?: PluginShape|null, speaks?: list<string>, starting?: string|null, tag: string, takes_data: bool, upstream?: array<string, string>}
@@ -71,11 +71,12 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginSourceStanding array{standing: 'reachable'}|array{standing: 'unreachable', why: string}|array{standing: 'unasked', why: string}
  * @phpstan-type PluginStep array{id: string, method: string, native?: string|null, path: string, to: string}
  * @phpstan-type PluginStepRan array{came: StepCame, landed: bool, status?: int|null, step: string, to: string, tries: int, why?: string|null}
+ * @phpstan-type PluginStopped array{recipe: string, step: string, title: string}
+ * @phpstan-type PluginStopping array{host: string, said?: string|null, steps?: list<PluginStopped>}
  * @phpstan-type PluginSubstituted array{capability: string, plugin: string, service: string}
  * @phpstan-type PluginTaking array{approval: string, devices: list<string>, grants: list<string>, grouped: bool, service: string, shape: PluginShape}
  * @phpstan-type PluginUnfilled array{capability: string, filled_by: string}
  * @phpstan-type PluginUpdate array{from: string, install: PluginInstall, interrupts: list<string>, plugin: string, reshipped: list<PluginReshipped>, restored?: PluginRestored|null, stopped?: string|null, to: string, went_back: UndoReversal}
- * @phpstan-type PluginVerdict array{outcome: 'passed'}|array{faults: list<string>, outcome: 'failed'}|array{outcome: 'unproven', why: string}|array{declared: list<PluginFailingAsDeclared>, outcome: 'failing-as-declared'}|array{outcome: 'open', why: string}
  * @phpstan-type PluginVerification array{broke: list<PluginChangedCheck>, unsettled: list<PluginChangedCheck>}
  * @phpstan-type RecordedWith string|int|bool
  * @phpstan-type ServiceCertificate array{certificate: string, key: string, names: list<string>}
