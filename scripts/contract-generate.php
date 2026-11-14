@@ -269,7 +269,7 @@ final readonly class ContractGenerator
     private function planned(array $kinds, array $listed, string $stamp, int $version): ?array
     {
         $found = $this->classesOf($kinds);
-        $plan = $found === null ? null : $this->planOf($found['classes'], array_keys($listed['actions']));
+        $plan = $found === null ? null : $this->planOf($found['classes'], array_keys($listed['actions']), $found['named']);
 
         if ($found === null || ! $plan instanceof ShapePlan) {
             return null;
@@ -336,8 +336,9 @@ final readonly class ContractGenerator
      *
      * @param  array<string, array<mixed, mixed>>  $classes
      * @param  list<string>  $actions  the class each action is written as
+     * @param  array<string, string>  $named  class name to the kind it came from
      */
-    private function planOf(array $classes, array $actions): ?ShapePlan
+    private function planOf(array $classes, array $actions, array $named): ?ShapePlan
     {
         $taken = array_intersect($actions, self::CLASSES);
 
@@ -348,7 +349,13 @@ final readonly class ContractGenerator
         }
 
         try {
-            return new ShapePlan($classes, [...array_keys($classes), ...self::CLASSES, ...$actions]);
+            $spoken = [];
+
+            foreach ($named as $name => $kind) {
+                $spoken[$name . 'Envelope'] = $kind;
+            }
+
+            return new ShapePlan($classes, [...array_keys($classes), ...self::CLASSES, ...$actions, ...GeneratedSource::IMPORTED, ...ActionSource::IMPORTED, ...SchemaTypes::KEYWORDS], $spoken);
         } catch (UnexpectedValueException $unnamed) {
             $this->refuse($unnamed->getMessage() . ' Nothing was generated.');
 

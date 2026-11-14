@@ -38,6 +38,9 @@ final readonly class SchemaTypes
      */
     public const string UNKNOWN = 'mixed';
 
+    /** Every PHPStan keyword a type this writes may spell. */
+    public const array KEYWORDS = [self::UNKNOWN, 'list', 'array', 'int', 'float', 'string', 'bool', 'null', 'true', 'false'];
+
     /**
      * @param  ShapePlan  $plan  where each definition the payloads reach is named
      */

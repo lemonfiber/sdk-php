@@ -67,13 +67,25 @@ it('refuses a definition taking a name already held, and names it and its kind',
         ['AEnvelope' => kindCarrying($name, [$name => ['type' => 'string']])],
         ['Kind'],
     ))->toThrow(UnexpectedValueException::class, sprintf('`%s`, carried by `AEnvelope`', $name));
-})->with(['a generated class' => 'Kind', 'the payload alias' => ShapePlan::PAYLOAD, 'the shared class' => ShapePlan::SHARED]);
+})->with([
+    'a generated class' => 'Kind',
+    'a generated class in another case' => 'kind',
+    'the payload alias' => ShapePlan::PAYLOAD,
+    'the shared class' => ShapePlan::SHARED,
+]);
+
+it('refuses a definition no type alias can carry, and names it and its kind', function (): void {
+    expect(static fn(): ShapePlan => new ShapePlan(
+        ['AEnvelope' => kindCarrying('Not-A-Name', ['Not-A-Name' => ['type' => 'string']])],
+        [],
+    ))->toThrow(UnexpectedValueException::class, '`Not-A-Name`, carried by `AEnvelope`, is not a name a PHPStan type alias can carry');
+});
 
 it('refuses one name carried as two shapes', function (): void {
     expect(static fn(): ShapePlan => new ShapePlan([
         'AEnvelope' => kindCarrying('Word', ['Word' => ['type' => 'string']]),
         'BEnvelope' => kindCarrying('Word', ['Word' => ['type' => 'integer']]),
-    ], []))->toThrow(UnexpectedValueException::class, '`Word` is carried by more than one kind as two different shapes');
+    ], []))->toThrow(UnexpectedValueException::class, '`Word` is carried by `AEnvelope` and by `BEnvelope` as two different shapes');
 });
 
 it('leaves a reference closing a cycle to be mixed, and no other', function (): void {
