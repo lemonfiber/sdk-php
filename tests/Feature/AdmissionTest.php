@@ -55,15 +55,14 @@ function whatWasSaidBy(Admission $door): string
 /**
  * The answer a machine gives somebody who got the password right.
  *
- * The ending is written the way lemonfiber writes every instant — to the
- * second, in UTC, with no zone on it — rather than with the `Z` an RFC 3339
- * example would carry. A fixture that invents a shape the stack does not send
- * is a test that passes against a client which could not read a real answer.
+ * The ending is written the way lemonfiber writes every instant: whole seconds
+ * since the epoch. A fixture that invents a shape the stack does not send is a
+ * test that passes against a client which could not read a real answer.
  */
 function admits(): MockResponse
 {
     return MockResponse::make(
-        '{"api_version":1,"kind":"admission","data":{"token":"a-session","until":"2026-09-14T10:00:00"}}',
+        '{"api_version":1,"kind":"admission","data":{"token":"a-session","until":1789380000}}',
     );
 }
 
@@ -82,7 +81,7 @@ it('carries the member a session is for', function (): void {
     // and a caller that had to ask a second endpoint to find out would be
     // holding an answer that could disagree with the one it signed in with.
     [$door] = doorAnswering(MockResponse::make(
-        '{"api_version":1,"kind":"admission","data":{"member":"a7f3","token":"a-session","until":"2026-09-14T10:00:00"}}',
+        '{"api_version":1,"kind":"admission","data":{"member":"a7f3","token":"a-session","until":1789380000}}',
     ));
 
     expect($door->open(A_PASSWORD)->member)->toBe('a7f3');
@@ -104,7 +103,7 @@ it('reads a member that arrived as null as the operator', function (): void {
     // them differently would make the operator's session depend on which of two
     // ways a stack chose to say nothing.
     [$door] = doorAnswering(MockResponse::make(
-        '{"api_version":1,"kind":"admission","data":{"member":null,"token":"a-session","until":"2026-09-14T10:00:00"}}',
+        '{"api_version":1,"kind":"admission","data":{"member":null,"token":"a-session","until":1789380000}}',
     ));
 
     expect($door->open(A_PASSWORD)->member)->toBeNull();
@@ -130,7 +129,7 @@ it('sends the password in the body, to the one endpoint, and never in the addres
 
 it('sends a member\'s name beside the password, in the body, to the one endpoint', function (): void {
     [$door, $mock] = doorAnswering(MockResponse::make(
-        '{"api_version":1,"kind":"admission","data":{"member":"a7f3","token":"a-session","until":"2026-09-14T10:00:00"}}',
+        '{"api_version":1,"kind":"admission","data":{"member":"a7f3","token":"a-session","until":1789380000}}',
     ));
 
     $admitted = $door->openAs('ada', A_PASSWORD);
@@ -263,7 +262,7 @@ it('refuses a pinned address that is not encrypted', function (): void {
         ->toThrow(ConfigurationProblem::class);
 });
 
-it('refuses an answer whose ending cannot be read as a moment', function (): void {
+it('refuses an answer whose ending is not a count of seconds', function (): void {
     // Rather than admitting with a guessed one. Either direction of guess is
     // worse than the refusal, and neither is something a caller could find out
     // about: a moment already past throws away a session the stack just opened,
@@ -303,7 +302,7 @@ function whatTheClaimMet(Admission $door): ?RequestFailed
 
 it('claims an invitation with the name, the chosen password and the claim, in the body, to the one endpoint', function (): void {
     [$door, $mock] = doorAnswering(MockResponse::make(
-        '{"api_version":1,"kind":"admission","data":{"member":"a7f3","token":"a-session","until":"2026-09-14T10:00:00"}}',
+        '{"api_version":1,"kind":"admission","data":{"member":"a7f3","token":"a-session","until":1789380000}}',
     ));
 
     $admitted = $door->claimAs('ada', 'a-password-of-twelve', 'a-claim-token');

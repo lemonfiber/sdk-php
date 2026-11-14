@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk;
 
+use function get_debug_type;
+use function is_int;
+
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
 
 /**
@@ -18,11 +21,10 @@ use Lemonfiber\Sdk\Exception\UnreadableResponse;
  * the difference matters to whoever is looking at the screen: an expired
  * session is answered by signing in again, and a rejected one may not be.
  *
- * **Carried as a count of seconds rather than as the text that arrived.** The
- * wire format is this client's business and nobody else's — a caller handed the
- * stamp would have to know how this product writes one, which is the knowledge
- * an SDK exists to hold. It is also the difference between one parse here and
- * one parse in every application that ever talks to a stack.
+ * **Carried as the count of seconds since the epoch the wire carries.** A
+ * timezone is a rendering decision belonging to whoever shows something to
+ * somebody, and nothing a caller decides with this — whether a session has
+ * expired — changes with where the reader is standing.
  */
 final readonly class Admitted
 {
@@ -53,7 +55,7 @@ final readonly class Admitted
     /**
      * The one place an answer becomes an admission.
      *
-     * Takes the strings the `admission` envelope carries rather than the
+     * Takes the fields the `admission` envelope carries rather than the
      * envelope, so that reading the envelope stays in one place —
      * {@see Admission} — and this type is something a test can build.
      *
@@ -61,23 +63,20 @@ final readonly class Admitted
      * the wire's own default — the field is optional there — so a body without
      * it builds the same session here as it describes there.
      *
-     * **An unreadable ending refuses the whole answer** rather than becoming a
-     * session with a guessed one. Either direction of guess is worse than the
-     * refusal: a moment already past throws away a session the stack just
-     * opened, and a far-future one leaves an application believing in a session
-     * long after the stack has stopped honouring it. Neither is something a
-     * caller could find out about, and this is.
+     * **An ending that is not a count of seconds refuses the whole answer**
+     * rather than becoming a session with a guessed one: a moment already past
+     * throws away a session the stack just opened, and a far-future one leaves
+     * an application believing in a session long after the stack has stopped
+     * honouring it.
      *
      * @throws UnreadableResponse
      */
-    public static function of(string $token, string $until, ?string $member = null): self
+    public static function of(string $token, mixed $until, ?string $member = null): self
     {
-        $seconds = Stamp::secondsIn($until);
-
-        if ($seconds === null) {
-            throw UnreadableResponse::endingUnreadable($until);
+        if (! is_int($until)) {
+            throw UnreadableResponse::endingUnreadable(get_debug_type($until));
         }
 
-        return new self($token, $seconds, $member);
+        return new self($token, $until, $member);
     }
 }
