@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
+// Source: c4e98c06e6a6aab2127ae392414bfb9f088b038d, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -144,6 +144,7 @@ final class RefusalDescription
             RefusalCode::AnotherSource => 'Raised when a plugin carrying the id of a part this build pins comes from anywhere but that pin.',
             RefusalCode::Unconforming => 'Raised when a case of a contract a plugin\'s adapter speaks fails, or no recording the plugin ships answers it.',
             RefusalCode::KeyUnreadable => 'Raised when a key an author names to verify a plugin\'s images against cannot be read, or is not a PEM public key on the P-256 curve.',
+            RefusalCode::UndeclaredForm => 'Raised when a plugin\'s manifest names a form the stack does not declare.',
             RefusalCode::NotAPushName => 'Raised when a push endpoint is registered under a word that cannot name one.',
             RefusalCode::PushNameTaken => 'Raised when a push endpoint is registered under a name another holds.',
             RefusalCode::PushNotHttps => 'Raised when a push endpoint\'s address is not an `https` address.',

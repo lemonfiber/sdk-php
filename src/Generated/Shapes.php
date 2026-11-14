@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
+// Source: c4e98c06e6a6aab2127ae392414bfb9f088b038d, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -64,7 +64,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type NotificationKind 'problem'|'completion'|'update'|'backup'|'request'|'member'|'ready'
  * @phpstan-type Passed array{at?: int|null, to: list<string>}
  * @phpstan-type Pinned array{fingerprint: string}
- * @phpstan-type Plan array{dropped: list<Dropped>, filtered: list<Filtered>, footprint: Footprint, forms: list<string>, profiles: list<string>, running?: list<string>|null, services: list<string>}
+ * @phpstan-type Plan array{dropped: list<Dropped>, filtered: list<Filtered>, footprint: Footprint, forms: list<string>, profiles: list<string>, running?: list<string>|null, services: list<string>, vanished?: list<Vanished>}
  * @phpstan-type PluginConstraint 'status'|'json'|'json_has_keys'|'json_types'|'json_at_least'|'json_array_min'|'json_is_absent'|'content_type'|'body_starts_with'|'exit'|'stdout_starts_with'
  * @phpstan-type PluginEvidence 'recordings'|'service'
  * @phpstan-type PluginFailingAsDeclared array{constraint: PluginConstraint, fixture: string, held: string, place?: string|null, reason: string}
@@ -115,6 +115,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Validation array{observed: string, outcome: 'valid'}|array{detail: string, outcome: 'rejected'}|array{detail: string, outcome: 'unreachable'}|array{detail: string, outcome: 'degraded'}
  * @phpstan-type ValueOrigin array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}|array{named: string, origin: 'overridden', replaced: mixed}|array{named: string, origin: 'orphaned'}
  * @phpstan-type ValueReplaced array{from: mixed, value?: string|null, withheld: bool}
+ * @phpstan-type Vanished array{forms: list<string>, plugin: string}
  * @phpstan-type VideoKind 'tv'|'movies'
  * @phpstan-type Violation array{location: string, message: string}
  * @phpstan-type Waiting array{service: string, wants: list<Wanted>}

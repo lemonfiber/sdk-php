@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 2a22ca0bbdb5f45403cd5c01012e917bc23bbdc4, api_version 1.
+// Source: c4e98c06e6a6aab2127ae392414bfb9f088b038d, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -40,8 +40,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginDemand array{plugin: string, ran?: PluginRecipeRan|null, recipe: PluginRecipe}
  * @phpstan-type PluginExpectedFailure array{constraint: PluginConstraint, fixture: string, place?: string|null, reason: string, verdict: PluginDeclaredVerdict}
  * @phpstan-type PluginGranting array{approval: string, credential: string, for: string, of: string}
- * @phpstan-type PluginInstall array{against?: PluginEvidence|null, asks: list<Wired>, changes: list<PluginChange>, contests: list<WiringContest>, granting: list<PluginGranting>, overrides: list<PluginOverriding>, proofs: list<PluginProving>, recipes_ran: list<PluginRecipeRan>, recorded: bool, reversed?: UndoReversal|null, secured?: string|null, sharing: list<PluginSharing>, taking: list<PluginTaking>, verified?: PluginVerification|null, waiting: list<Waiting>, would: PluginInstalled}
- * @phpstan-type PluginInstalled array{contributions?: list<Contribution>, declared?: PluginDeclaration, description?: string|null, from?: string, granted?: list<PluginGrant>, installed_at?: int|null, manifest?: string, name?: string|null, plugin: string, provides?: list<string>, recipes?: list<PluginRecipe>, request_proofs?: list<PluginRequestProof>, revision?: string, run_proofs?: list<PluginRunProof>, services: list<PluginPlaced>, signed?: string, tree?: string, version: string}
+ * @phpstan-type PluginInstall array{against?: PluginEvidence|null, asks: list<Wired>, awaits?: list<string>, changes: list<PluginChange>, contests: list<WiringContest>, granting: list<PluginGranting>, overrides: list<PluginOverriding>, proofs: list<PluginProving>, recipes_ran: list<PluginRecipeRan>, recorded: bool, reversed?: UndoReversal|null, secured?: string|null, sharing: list<PluginSharing>, taking: list<PluginTaking>, verified?: PluginVerification|null, waiting: list<Waiting>, would: PluginInstalled}
+ * @phpstan-type PluginInstalled array{contributions?: list<Contribution>, declared?: PluginDeclaration, description?: string|null, forms?: list<string>, from?: string, granted?: list<PluginGrant>, installed_at?: int|null, manifest?: string, name?: string|null, plugin: string, provides?: list<string>, recipes?: list<PluginRecipe>, request_proofs?: list<PluginRequestProof>, revision?: string, run_proofs?: list<PluginRunProof>, services: list<PluginPlaced>, signed?: string, tree?: string, version: string}
  * @phpstan-type PluginInstalls array{agreement?: string|null, demand?: PluginDemand|null, guards?: list<StackMoveTaken>, install?: PluginInstall|null, installed: list<PluginInstalled>, nonconforming?: list<PluginNonconforming>, proof?: PluginReproof|null, rehearsed: bool, removal?: PluginRemoval|null, sources?: list<PluginSource>, substituted?: list<PluginSubstituted>, unproxied?: bool, unvetted?: Unvetted|null, update?: PluginUpdate|null}
  * @phpstan-type PluginNonconforming array{at: int, capability: string, operation: string, plugin: string, why: string}
  * @phpstan-type PluginOverriding array{setting: string, why: string}
@@ -81,7 +81,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type RecordedWith string|int|bool
  * @phpstan-type ServiceCertificate array{certificate: string, key: string, names: list<string>}
  * @phpstan-type ServiceConstant string|int|bool
- * @phpstan-type ServiceFields array{args?: list<string>, certificate?: ServiceCertificate|null, config_ro?: bool, env?: array<string, ServiceValue>, mem_limit_mib?: int|null, mount?: list<ServiceMount>, network?: ServiceNetwork|null, posture?: ServicePosture, publish?: list<ServicePublish>, rebuilt?: list<string>, shares_config?: string|null, tmpfs?: list<string>, user_mode?: ServiceUserModeWritten|null}
+ * @phpstan-type ServiceFields array{args?: list<string>, certificate?: ServiceCertificate|null, config_ro?: bool, container_hostname?: string|null, env?: array<string, ServiceValue>, mem_limit_mib?: int|null, mount?: list<ServiceMount>, network?: ServiceNetwork|null, posture?: ServicePosture, publish?: list<ServicePublish>, rebuilt?: list<string>, shares_config?: string|null, tmpfs?: list<string>, user_mode?: ServiceUserModeWritten|null}
  * @phpstan-type ServiceIdVariables array{gid_env: string, uid_env: string}
  * @phpstan-type ServiceMount array{from: string, ro?: bool, to: string}
  * @phpstan-type ServiceNetwork array{fenced?: bool, via?: string|null}
