@@ -138,6 +138,17 @@ interface HouseholdReads
     public const string WATCHING_ENDPOINT = '/api/watching';
 
     /**
+     * The endpoint answering with the live TV channels one member may watch, each
+     * with the programme on it now.
+     *
+     * It answers with the `channels` envelope. It takes `member`, naming whose,
+     * and is read as that member: a channel whose programme now is outside their
+     * limits is left out, and a member whose account may not watch live TV is
+     * answered none.
+     */
+    public const string CHANNELS_ENDPOINT = '/api/channels';
+
+    /**
      * The endpoint answering with what the media server is playing now: who is
      * watching what, on which device, and whether it is paused.
      *
