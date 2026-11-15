@@ -1,7 +1,7 @@
 {
     "format": 1,
-    "commit": "6a3154ebc9e34d53ac945f930dd5a1299f65dd0c",
-    "time": "2026-11-15T05:02:43Z",
+    "commit": "ccb9bd32f39746fcbfb1ae86b41f3c9a88828dea",
+    "time": "2026-11-15T05:59:42Z",
     "verdict": "passed",
     "score": 100.0,
     "trees": [
@@ -21,70 +21,70 @@
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Removal\\RemoveArrayItem",
-            "seconds": 373.1068534006764,
+            "seconds": 402.3750897882661,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Number\\DecrementInteger",
-            "seconds": 281.2406141036687,
+            "seconds": 319.44910031851555,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Number\\IncrementInteger",
-            "seconds": 192.62208100451986,
+            "seconds": 222.19770790218345,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\ControlStructures\\IfNegated",
-            "seconds": 94.39316257468039,
+            "seconds": 100.60062658089004,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Arithmetic\\PlusToMinus",
-            "seconds": 90.8599881316707,
+            "seconds": 98.81571453648016,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Equality\\IdenticalToNotIdentical",
-            "seconds": 76.89459084152382,
+            "seconds": 83.51621035002212,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Removal\\RemoveEarlyReturn",
-            "seconds": 68.26404805715065,
+            "seconds": 69.76049390745868,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Logical\\BooleanAndToBooleanOr",
-            "seconds": 57.780122052452164,
+            "seconds": 66.62935405022581,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\ControlStructures\\ForeachEmptyIterable",
-            "seconds": 54.45839184078373,
+            "seconds": 55.002275841739745,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
-            "mutator": "Pest\\Mutate\\Mutators\\Removal\\RemoveFunctionCall",
-            "seconds": 50.35703107915671,
+            "mutator": "Pest\\Mutate\\Mutators\\Logical\\TrueToFalse",
+            "seconds": 53.40815442977997,
             "survived": 0,
             "killRate": 100.0
         }
@@ -93,31 +93,26 @@
         {
             "path": "src/ActionRequest.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/Admission.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/Admitted.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/Base64Url.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/BundleFile.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
@@ -135,7 +130,6 @@
         {
             "path": "src/DeviceAttestation.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
@@ -147,7 +141,6 @@
         {
             "path": "src/Envelope/Payload.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         }
     ]
