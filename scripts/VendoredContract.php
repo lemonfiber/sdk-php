@@ -12,6 +12,7 @@ use function explode;
 use function file_get_contents;
 use function glob;
 use function implode;
+use function in_array;
 use function is_array;
 use function is_dir;
 use function is_file;
@@ -169,7 +170,10 @@ final readonly class VendoredContract
             $artefact[self::ACTIONS] = [];
 
             foreach ($actions as $action => $path) {
-                $artefact[self::ACTIONS][$action] = $this->object($this->named($path, sprintf('the action `%s`', $action)));
+                $named = $this->named($path, sprintf('the action `%s`', $action));
+                $read = $this->resolved($this->object($named), $named);
+                $unresolved = [...$unresolved, ...$read['unresolved']];
+                $artefact[self::ACTIONS][$action] = $this->inlined($read['schema'], $pool['defs'], []);
             }
         }
 
@@ -275,6 +279,38 @@ final readonly class VendoredContract
         }
 
         return $schema;
+    }
+
+    /**
+     * A schema with every reference in it to a definition replaced by that definition, the keywords beside the
+     * reference kept over the definition's own, where an action's argument carries no definitions of its own.
+     *
+     * A definition already being inlined on the way to one is left a reference, which the argument reader refuses.
+     *
+     * @param  array<mixed, mixed>  $node
+     * @param  array<string, array{schema: array<mixed, mixed>, reached: list<string>}>  $defs
+     * @param  list<string>  $within
+     * @return array<mixed, mixed>
+     */
+    private function inlined(array $node, array $defs, array $within): array
+    {
+        $reference = $node['$ref'] ?? null;
+        $name = is_string($reference) && str_starts_with($reference, ShapePlan::DEFINITIONS) ? substr($reference, strlen(ShapePlan::DEFINITIONS)) : null;
+
+        if ($name !== null && array_key_exists($name, $defs) && ! in_array($name, $within, true)) {
+            $definition = $defs[$name]['schema'];
+            unset($definition['$schema'], $node['$ref']);
+
+            return $this->inlined([...$definition, ...$node], $defs, [...$within, $name]);
+        }
+
+        foreach ($node as $key => $value) {
+            if (is_array($value)) {
+                $node[$key] = $this->inlined($value, $defs, $within);
+            }
+        }
+
+        return $node;
     }
 
     /**

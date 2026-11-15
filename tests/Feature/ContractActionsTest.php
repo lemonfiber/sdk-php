@@ -216,3 +216,53 @@ it('reads the actions the directory lists, each from its own file', function ():
 
     ContractTree::remove($tree);
 });
+
+it('takes an argument that refers to a definition, or is one schema or null, as that definition\'s type', function (): void {
+    $tree = ContractTree::withDirectory([
+        'index.json' => ['api_version' => 1, 'actions' => ['undo' => 'actions/undo.json'], 'kinds' => ['word' => 'kinds/word.json']],
+        'actions/undo.json' => anAction('undo', [
+            ['name' => 'at', 'type' => ['anyOf' => [['$ref' => '../defs/Instant.json'], ['type' => 'null']], 'default' => null, 'description' => 'When.']],
+            ['name' => 'since', 'type' => ['$ref' => '../defs/Instant.json', 'default' => 0]],
+        ]),
+        'defs/Instant.json' => ['$schema' => 'https://json-schema.org/draft/2020-12/schema', 'type' => 'integer', 'format' => 'uint64', 'minimum' => 0, 'description' => 'A moment.'],
+        'kinds/word.json' => aWordKind(),
+    ]);
+
+    $result = ContractTree::generate($tree);
+    $source = (string) file_get_contents($tree . '/src/Generated/UndoAction.php');
+
+    expect($result['status'])->toBe(0)
+        ->and($source)->toContain('public readonly ?int $at = null,')
+        ->and($source)->toContain('@param  int<0, max>|null  $at  When.')
+        ->and($source)->toContain('public readonly int $since = 0,')
+        ->and($source)->toContain('@param  int<0, max>  $since  A moment.')
+        ->and(askTheActions($tree, 'new Lemonfiber\Sdk\Generated\UndoAction(at: 1790000000)->payload()'))
+        ->toBe('{"at":1790000000,"since":0}');
+
+    ContractTree::remove($tree);
+});
+
+it('leaves an argument of either of two schemas, neither of them null, to be refused', function (): void {
+    $tree = ContractTree::withDirectory([
+        'index.json' => ['api_version' => 1, 'actions' => ['set' => 'actions/set.json'], 'kinds' => ['word' => 'kinds/word.json']],
+        'actions/set.json' => anAction('set', [['name' => 'value', 'type' => ['anyOf' => [['type' => 'string'], ['type' => 'integer']]]]]),
+        'kinds/word.json' => aWordKind(),
+    ]);
+
+    expect(ContractTree::generate($tree)['stderr'])->toContain('which a parameter cannot hold');
+
+    ContractTree::remove($tree);
+});
+
+it('leaves a definition an argument reaches within itself a reference, to be refused', function (): void {
+    $tree = ContractTree::withDirectory([
+        'index.json' => ['api_version' => 1, 'actions' => ['set' => 'actions/set.json'], 'kinds' => ['word' => 'kinds/word.json']],
+        'actions/set.json' => anAction('set', [['name' => 'value', 'type' => ['$ref' => '../defs/Loop.json']]]),
+        'defs/Loop.json' => ['anyOf' => [['$ref' => 'Loop.json'], ['type' => 'null']]],
+        'kinds/word.json' => aWordKind(),
+    ]);
+
+    expect(ContractTree::generate($tree)['stderr'])->toContain('which a parameter cannot hold');
+
+    ContractTree::remove($tree);
+});
