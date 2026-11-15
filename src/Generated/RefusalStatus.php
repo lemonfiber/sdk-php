@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: c4e98c06e6a6aab2127ae392414bfb9f088b038d, api_version 1.
+// Source: 2fee5cf8935ee541c8e6fee4e85d8b00ae2611e6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -97,6 +97,9 @@ final class RefusalStatus
             RefusalCode::NotInTheHousehold => 404,
             RefusalCode::SignsNoDeviceIn => 503,
             RefusalCode::NoSuchPicture => 404,
+            RefusalCode::NoLiveTv => 404,
+            RefusalCode::NotTheirStream => 404,
+            RefusalCode::NotTheirPass => 403,
             RefusalCode::Unreadable => 404,
             RefusalCode::Refused => 400,
             RefusalCode::Unrecorded => 500,
