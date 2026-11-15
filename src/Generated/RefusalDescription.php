@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: c4e98c06e6a6aab2127ae392414bfb9f088b038d, api_version 1.
+// Source: 2fee5cf8935ee541c8e6fee4e85d8b00ae2611e6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -97,6 +97,9 @@ final class RefusalDescription
             RefusalCode::NotInTheHousehold => 'Said where the member named is not somebody in the household.',
             RefusalCode::SignsNoDeviceIn => 'Said where the media server will not sign a device in by code.',
             RefusalCode::NoSuchPicture => 'Said where a title on the member\'s shelf has no picture of the kind asked for.',
+            RefusalCode::NoLiveTv => 'Said where the member\'s own account may not watch live TV, or the server has none.',
+            RefusalCode::NotTheirStream => 'Said where the live stream named is not one the core opened for this member.',
+            RefusalCode::NotTheirPass => 'Said where the pass handed back does not open for this member and title.',
             RefusalCode::Unreadable => 'The source names no plugin this build can read.',
             RefusalCode::Refused => 'The manifest is read and this build refuses what it declares.',
             RefusalCode::Unrecorded => 'The record of what is installed cannot be read.',
