@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: 2fee5cf8935ee541c8e6fee4e85d8b00ae2611e6, api_version 1.
+// Source: fc07885a2d4c8498362bdcaf6539f91033928867, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -241,6 +241,7 @@ final class RefusalDescription
             RefusalCode::NobodyAsking => 'Said where nobody is named for something only a member can do.',
             RefusalCode::NotAMember => 'Said where the member named is not somebody in the household.',
             RefusalCode::NoPicture => 'Said where a title a member may ask for has no picture to show them.',
+            RefusalCode::ThroughTheHouse => 'Said where a member whose asks wait for approval has no account of their own on what files the household\'s asks, so nothing could wait for anybody\'s yes.',
             RefusalCode::Unrecognised => 'A word this product does not explain, as a refusal that says what it does. Through the error model rather than a bare line, so it carries a code and a way forward like every other refusal — and the way forward is the list itself, which is short enough to be the answer rather than a pointer at one. It lies in the naming: the word is the whole of what was asked for, and there is no entry for it. A surface that reported this as its own failure would be telling a caller to try again at something that will never work.',
         };
     }
