@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: fc07885a2d4c8498362bdcaf6539f91033928867, api_version 1.
+// Source: 6a2d9bbd6d8c0b7a09258f6352d427c89b8bc2b6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,10 +15,11 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `handoff` envelope, shaped as the contract describes it.
  *
+ * @phpstan-import-type Instant from Shapes
  * @phpstan-type HandoffClient array{client: string, code: string, deep_link: bool, device: string, open_source: bool}
  * @phpstan-type HandoffRemedy 'invite'|'ask-again'|'start-server'|'record-address'
- * @phpstan-type HandoffReport array{address?: string|null, caution?: string|null, clients: list<HandoffClient>, issued?: int|null, name: string, quick_connect: bool, reason?: string|null, rehearsed: bool, remedy?: HandoffRemedy|null, sessions: list<HandoffSession>, state: HandoffState, steps: list<string>}
- * @phpstan-type HandoffSession array{client: string, device: string, last_seen?: int|null}
+ * @phpstan-type HandoffReport array{address?: string|null, caution?: string|null, clients: list<HandoffClient>, issued?: Instant|null, name: string, quick_connect: bool, reason?: string|null, rehearsed: bool, remedy?: HandoffRemedy|null, sessions: list<HandoffSession>, state: HandoffState, steps: list<string>}
+ * @phpstan-type HandoffSession array{client: string, device: string, last_seen?: Instant|null}
  * @phpstan-type HandoffState 'unprovisioned'|'ready'|'pending'|'connected'|'failed'
  * @phpstan-type Data HandoffReport
  */

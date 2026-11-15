@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: fc07885a2d4c8498362bdcaf6539f91033928867, api_version 1.
+// Source: 6a2d9bbd6d8c0b7a09258f6352d427c89b8bc2b6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -16,9 +16,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `part-way` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type Medium from Shapes
+ * @phpstan-import-type Obstacle from Shapes
  * @phpstan-import-type Pinned from Shapes
- * @phpstan-type PartWay array{backdrop?: string|null, door?: Pinned|null, id: string, length?: int|null, medium: Medium, position: int, poster?: string|null, stream_from?: string|null, title: string, unlocated?: string|null, year?: int|null}
- * @phpstan-type PartWayReport array{available: bool, findings: list<string>, id: string, member: string, part_way: list<PartWay>, rehearsed: bool}
+ * @phpstan-type PartWay array{backdrop?: string|null, door?: Pinned|null, id: string, length?: int|null, medium: Medium, position: int, poster?: string|null, stream_from?: string|null, title: string, unlocated?: Obstacle|null, year?: int|null}
+ * @phpstan-type PartWayReport array{available: bool, findings: list<Obstacle>, id: string, member: string, part_way: list<PartWay>, rehearsed: bool}
  * @phpstan-type Data PartWayReport
  */
 final class PartWayEnvelope

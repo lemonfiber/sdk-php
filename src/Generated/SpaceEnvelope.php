@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: fc07885a2d4c8498362bdcaf6539f91033928867, api_version 1.
+// Source: 6a2d9bbd6d8c0b7a09258f6352d427c89b8bc2b6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -16,8 +16,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `space` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type Candidate from Shapes
+ * @phpstan-import-type Instant from Shapes
  * @phpstan-type Consumption array{category: SpaceCategory, reclaim: Reclaim, tally: Tally}
- * @phpstan-type Freshness array{as: 'live'}|array{as: 'as_of', at: int}
+ * @phpstan-type Freshness array{as: 'live'}|array{as: 'as_of', at: Instant}
  * @phpstan-type Interrupted array{name: string, partial: int, said: string}
  * @phpstan-type Level 'unknown'|'ample'|'advisory'|'warning'|'critical'|'exhausted'
  * @phpstan-type Outsized array{bytes: int, path: string, times_typical: int}
