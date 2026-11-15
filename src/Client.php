@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk;
 
-use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Envelope\EnvelopeReader;
 use Lemonfiber\Sdk\Events\EventFeed;
@@ -139,6 +138,14 @@ final readonly class Client
     }
 
     /**
+     * The pictures lemonfiber hands over as bytes rather than an envelope: posters, backdrops and covers.
+     */
+    public function pictures(): Pictures
+    {
+        return new Pictures($this->connector);
+    }
+
+    /**
      * Ask what could be put right, or carry out what was agreed to.
      *
      * The one action with a method of its own here, since it is the one whose
@@ -250,60 +257,6 @@ final readonly class Client
     public function bundle(string $name): BundleFile
     {
         return $this->connector->answer(ReadRequest::bundle($name));
-    }
-
-    /**
-     * A title's poster: one of {@see Picture::MEDIA_TYPES}, of at most {@see Picture::MOST_BYTES}.
-     *
-     * The id is the one the shelf lists the title under, and the query takes `member` and
-     * `defaults` as the title read does. A title outside the member's limits is {@see Exception\Missing}
-     * with `PLAY-2`, and a title with no poster is {@see Exception\Missing} with `PLAY-9`.
-     *
-     * @param  array<string, scalar|list<scalar>|null>  $query
-     *
-     * @throws ConfigurationProblem
-     * @throws RequestFailed
-     * @throws Unreachable
-     * @throws UnreadableResponse
-     */
-    public function poster(string $id, array $query = []): Picture
-    {
-        return $this->connector->answer(ReadRequest::picture(Api::poster(TitleId::segment($id)), $query));
-    }
-
-    /**
-     * The poster of a title a member's search offered, read and bounded as {@see self::poster()} is.
-     *
-     * The id is the one the search page listed the title under, and the query takes `kind` as the
-     * page named it and `member` as the search does. A title outside the member's limits is
-     * {@see Exception\Missing} with `WISH-3`, and a title with no poster is {@see Exception\Missing}
-     * with `WISH-13`.
-     *
-     * @param  array<string, scalar|list<scalar>|null>  $query
-     *
-     * @throws ConfigurationProblem
-     * @throws RequestFailed
-     * @throws Unreachable
-     * @throws UnreadableResponse
-     */
-    public function askablePoster(string $id, array $query = []): Picture
-    {
-        return $this->connector->answer(ReadRequest::picture(Api::askablePoster(TitleId::segment($id)), $query));
-    }
-
-    /**
-     * A title's backdrop, read and refused as {@see self::poster()} is.
-     *
-     * @param  array<string, scalar|list<scalar>|null>  $query
-     *
-     * @throws ConfigurationProblem
-     * @throws RequestFailed
-     * @throws Unreachable
-     * @throws UnreadableResponse
-     */
-    public function backdrop(string $id, array $query = []): Picture
-    {
-        return $this->connector->answer(ReadRequest::picture(Api::backdrop(TitleId::segment($id)), $query));
     }
 
     /**

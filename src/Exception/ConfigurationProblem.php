@@ -156,4 +156,12 @@ final class ConfigurationProblem extends InvalidArgumentException implements Pro
             $id,
         ));
     }
+
+    public static function referenceNamesNoAsk(string $reference): self
+    {
+        return new self(sprintf(
+            'A kept ask is named by the reference the household list gave it. "%s" is not one: it names no path segment, so nothing was sent.',
+            $reference,
+        ));
+    }
 }
