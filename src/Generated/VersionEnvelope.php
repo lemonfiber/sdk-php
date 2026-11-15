@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: fc07885a2d4c8498362bdcaf6539f91033928867, api_version 1.
+// Source: 6a2d9bbd6d8c0b7a09258f6352d427c89b8bc2b6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,8 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `version` envelope, shaped as the contract describes it.
  *
+ * @phpstan-import-type Instant from Shapes
  * @phpstan-import-type Notes from Shapes
- * @phpstan-type VersionReport array{attestation_status?: int|null, binary: string, changelog: Notes, compose?: string|null, stack: string, supported_schema: list<int>}
+ * @phpstan-type VersionReport array{attestation_status?: Instant|null, binary: string, changelog: Notes, compose?: string|null, stack: string, supported_schema: list<int>}
  * @phpstan-type Data VersionReport
  */
 final class VersionEnvelope

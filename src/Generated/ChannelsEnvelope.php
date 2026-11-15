@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: fc07885a2d4c8498362bdcaf6539f91033928867, api_version 1.
+// Source: 6a2d9bbd6d8c0b7a09258f6352d427c89b8bc2b6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,9 +15,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `channels` envelope, shaped as the contract describes it.
  *
+ * @phpstan-import-type Instant from Shapes
  * @phpstan-type Channel array{id: string, name: string, now?: Programme|null, number?: string|null}
  * @phpstan-type ChannelsReport array{channels: list<Channel>, id: string, member: string, rehearsed: bool}
- * @phpstan-type Programme array{certificate?: string|null, ends?: int|null, title: string}
+ * @phpstan-type Programme array{certificate?: string|null, ends?: Instant|null, title: string}
  * @phpstan-type Data ChannelsReport
  */
 final class ChannelsEnvelope

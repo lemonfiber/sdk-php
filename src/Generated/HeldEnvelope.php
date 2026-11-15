@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: fc07885a2d4c8498362bdcaf6539f91033928867, api_version 1.
+// Source: 6a2d9bbd6d8c0b7a09258f6352d427c89b8bc2b6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -16,9 +16,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `held` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type Medium from Shapes
+ * @phpstan-import-type Obstacle from Shapes
  * @phpstan-import-type Pinned from Shapes
- * @phpstan-type Held array{backdrop?: string|null, door?: Pinned|null, id: string, medium: Medium, poster?: string|null, stream_from?: string|null, title: string, unlocated?: string|null, year?: int|null}
- * @phpstan-type HeldReport array{available: bool, findings: list<string>, holdings: list<Held>, id: string, member: string, rehearsed: bool}
+ * @phpstan-type Held array{backdrop?: string|null, door?: Pinned|null, id: string, medium: Medium, poster?: string|null, stream_from?: string|null, title: string, unlocated?: Obstacle|null, year?: int|null}
+ * @phpstan-type HeldReport array{available: bool, findings: list<Obstacle>, holdings: list<Held>, id: string, member: string, rehearsed: bool}
  * @phpstan-type Data HeldReport
  */
 final class HeldEnvelope

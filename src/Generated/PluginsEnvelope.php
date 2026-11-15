@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: fc07885a2d4c8498362bdcaf6539f91033928867, api_version 1.
+// Source: 6a2d9bbd6d8c0b7a09258f6352d427c89b8bc2b6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -18,6 +18,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type Apis from Shapes
  * @phpstan-import-type DoctorVerdict from Shapes
  * @phpstan-import-type Finding from Shapes
+ * @phpstan-import-type Instant from Shapes
  * @phpstan-import-type PluginConstraint from Shapes
  * @phpstan-import-type PluginEvidence from Shapes
  * @phpstan-import-type PluginGrant from Shapes
@@ -41,9 +42,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginExpectedFailure array{constraint: PluginConstraint, fixture: string, place?: string|null, reason: string, verdict: PluginDeclaredVerdict}
  * @phpstan-type PluginGranting array{approval: string, credential: string, for: string, of: string}
  * @phpstan-type PluginInstall array{against?: PluginEvidence|null, asks: list<Wired>, awaits?: list<string>, changes: list<PluginChange>, contests: list<WiringContest>, granting: list<PluginGranting>, overrides: list<PluginOverriding>, proofs: list<PluginProving>, recipes_ran: list<PluginRecipeRan>, recorded: bool, reversed?: UndoReversal|null, secured?: string|null, sharing: list<PluginSharing>, taking: list<PluginTaking>, verified?: PluginVerification|null, waiting: list<Waiting>, would: PluginInstalled}
- * @phpstan-type PluginInstalled array{contributions?: list<Contribution>, declared?: PluginDeclaration, description?: string|null, forms?: list<string>, from?: string, granted?: list<PluginGrant>, installed_at?: int|null, manifest?: string, name?: string|null, plugin: string, provides?: list<string>, recipes?: list<PluginRecipe>, request_proofs?: list<PluginRequestProof>, revision?: string, run_proofs?: list<PluginRunProof>, services: list<PluginPlaced>, signed?: string, tree?: string, version: string}
+ * @phpstan-type PluginInstalled array{contributions?: list<Contribution>, declared?: PluginDeclaration, description?: string|null, forms?: list<string>, from?: string, granted?: list<PluginGrant>, installed_at?: Instant|null, manifest?: string, name?: string|null, plugin: string, provides?: list<string>, recipes?: list<PluginRecipe>, request_proofs?: list<PluginRequestProof>, revision?: string, run_proofs?: list<PluginRunProof>, services: list<PluginPlaced>, signed?: string, tree?: string, version: string}
  * @phpstan-type PluginInstalls array{agreement?: string|null, demand?: PluginDemand|null, guards?: list<StackMoveTaken>, install?: PluginInstall|null, installed: list<PluginInstalled>, nonconforming?: list<PluginNonconforming>, proof?: PluginReproof|null, rehearsed: bool, removal?: PluginRemoval|null, sources?: list<PluginSource>, substituted?: list<PluginSubstituted>, unproxied?: bool, unvetted?: Unvetted|null, update?: PluginUpdate|null}
- * @phpstan-type PluginNonconforming array{at: int, capability: string, operation: string, plugin: string, why: string}
+ * @phpstan-type PluginNonconforming array{at: Instant, capability: string, operation: string, plugin: string, why: string}
  * @phpstan-type PluginOverriding array{setting: string, why: string}
  * @phpstan-type PluginPair array{approval?: string, from?: string, origin: string, release?: string, to: string, value: string}
  * @phpstan-type PluginPlaced array{asks?: list<PluginAsking>, asks_for?: string|null, config_path: string, contract?: int|null, description?: string, digest: string, fields?: ServiceFields, fronts?: string|null, health?: string|null, hidden?: bool, icon?: string|null, image: string, listens?: int|null, media_types?: list<string>, name?: string, native?: string|null, networks?: list<string>, provides?: list<string>, reached?: PluginReached|null, reaches?: string|null, replaces?: string|null, service: string, shape?: PluginShape|null, speaks?: list<string>, starting?: string|null, tag: string, takes_data: bool, upstream?: array<string, string>}

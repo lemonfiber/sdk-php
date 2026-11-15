@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: fc07885a2d4c8498362bdcaf6539f91033928867, api_version 1.
+// Source: 6a2d9bbd6d8c0b7a09258f6352d427c89b8bc2b6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,16 +15,17 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `trace` envelope, shaped as the contract describes it.
  *
+ * @phpstan-import-type Instant from Shapes
  * @phpstan-import-type Stage from Shapes
  * @phpstan-type Coverage array{have: int, seasons: list<SeasonCoverage>, unmonitored: int, wanted: int}
  * @phpstan-type Part array{number: int, season: int, stage: Stage, title: string}
  * @phpstan-type Searchable array{covers: string, spends: string}
  * @phpstan-type SeasonCoverage array{have: int, outstanding: list<Part>, season: int, unmonitored: int, wanted: int}
  * @phpstan-type TraceConfidence 'certain'|'uncertain'
- * @phpstan-type TraceMoment array{at?: int|null, outcome: TraceOutcome}
+ * @phpstan-type TraceMoment array{at?: Instant|null, outcome: TraceOutcome}
  * @phpstan-type TraceOutcome 'grabbed'|'download-failed'|'imported'|'removed'
  * @phpstan-type TraceReport array{confidence: TraceConfidence, coverage?: Coverage|null, findings: list<string>, furthest: Stage, history: list<TraceMoment>, item: string, matched: bool, searchable?: Searchable|null, stages: list<TraceStage>, stall?: string|null}
- * @phpstan-type TraceStage array{at?: int|null, service: string, stage: Stage}
+ * @phpstan-type TraceStage array{at?: Instant|null, service: string, stage: Stage}
  * @phpstan-type Data TraceReport
  */
 final class TraceEnvelope

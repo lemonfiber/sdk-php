@@ -1,7 +1,7 @@
 <?php
 
 // Generated from the contract vendored under contract/. Do not edit.
-// Source: fc07885a2d4c8498362bdcaf6539f91033928867, api_version 1.
+// Source: 6a2d9bbd6d8c0b7a09258f6352d427c89b8bc2b6, api_version 1.
 // Regenerate with `composer contract:generate`.
 
 declare(strict_types=1);
@@ -15,8 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `restore` envelope, shaped as the contract describes it.
  *
+ * @phpstan-import-type Instant from Shapes
  * @phpstan-import-type Scope from Shapes
- * @phpstan-type BackupManifest array{created_at: int, data_root: string, members: list<Member>, product_version: string, schema: int, scope: Scope, sensitive: bool}
+ * @phpstan-type BackupManifest array{created_at: Instant, data_root: string, members: list<Member>, product_version: string, schema: int, scope: Scope, sensitive: bool}
  * @phpstan-type Member array{archive_path: string, label: string}
  * @phpstan-type Preview array{agreement: string, downgrade: bool, manifest: BackupManifest, relocation?: Relocation|null}
  * @phpstan-type Relocation array{now: string, was: string}
