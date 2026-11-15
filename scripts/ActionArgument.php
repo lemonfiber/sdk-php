@@ -71,6 +71,7 @@ final readonly class ActionArgument
      */
     public function read(array $schema): array
     {
+        $schema = $this->orNull($schema);
         $beyond = array_diff(array_keys($schema), self::UNDERSTOOD);
 
         if ($beyond !== []) {
@@ -94,6 +95,31 @@ final readonly class ActionArgument
             'description' => $this->described($schema['description'] ?? null),
             'map' => $base === self::OBJECT,
         ];
+    }
+
+    /**
+     * A schema that is one schema or null, written as that schema with null among its types.
+     *
+     * @param  array<mixed, mixed>  $schema
+     * @return array<mixed, mixed>
+     */
+    private function orNull(array $schema): array
+    {
+        $either = $schema['anyOf'] ?? null;
+
+        if (! is_array($either) || ! array_is_list($either) || count($either) !== 2) {
+            return $schema;
+        }
+
+        $rest = array_values(array_filter($either, static fn(mixed $one): bool => $one !== ['type' => self::NULL]));
+
+        if (count($rest) !== 1 || ! is_array($rest[0]) || ! is_string($rest[0]['type'] ?? null)) {
+            return $schema;
+        }
+
+        unset($schema['anyOf']);
+
+        return [...$rest[0], ...$schema, 'type' => [$rest[0]['type'], self::NULL]];
     }
 
     /**
