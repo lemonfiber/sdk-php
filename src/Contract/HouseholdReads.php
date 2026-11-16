@@ -149,6 +149,17 @@ interface HouseholdReads
     public const string CHANNELS_ENDPOINT = '/api/channels';
 
     /**
+     * The endpoint answering with the live TV guide one member may read: each
+     * channel they may watch now, with its programmes across the window the
+     * operator sets.
+     *
+     * It answers with the `guide` envelope. It takes `member`, naming whose, and
+     * is read as that member: a programme outside their limits is left out, a gap,
+     * and each channel says where the media server's guide ends inside the window.
+     */
+    public const string GUIDE_ENDPOINT = '/api/guide';
+
+    /**
      * The endpoint answering with what the media server is playing now: who is
      * watching what, on which device, and whether it is paused.
      *

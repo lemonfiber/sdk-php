@@ -123,6 +123,22 @@ it('generates from the directory the same bytes the single file generates', func
     ContractTree::remove($file);
 });
 
+it('writes the revision into Contract alone, so the same content from another revision is the same bytes elsewhere', function (): void {
+    $tree = ContractTree::withDirectory(aDirectory());
+
+    expect(ContractTree::generate($tree)['status'])->toBe(0);
+    $before = generatedIn($tree);
+    file_put_contents($tree . '/contract/VERSION', "v9.9.10\n");
+    expect(ContractTree::generate($tree)['status'])->toBe(0);
+    $after = generatedIn($tree);
+
+    expect(array_diff_key($after, ['Contract.php' => true]))->toBe(array_diff_key($before, ['Contract.php' => true]))
+        ->and($after['Contract.php'])->toContain("SOURCE = 'v9.9.10';")
+        ->and(implode('', array_diff_key($after, ['Contract.php' => true])))->not->toContain('v9.9.10');
+
+    ContractTree::remove($tree);
+});
+
 it('reads the directory into the single file\'s shape', function (): void {
     $tree = ContractTree::withDirectory(aDirectory());
 

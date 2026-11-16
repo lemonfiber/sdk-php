@@ -14,9 +14,10 @@ use UnexpectedValueException;
  * The PHP source a contract's kinds are written as.
  *
  * Every file opens with the same header naming where it came from, so a reader
- * who finds one of these knows the artefact and the revision behind it. The
- * header names the vendored copy without its layout, so the same content in
- * either layout is written as the same bytes.
+ * who finds one of these knows the artefact behind it. The header names the
+ * vendored copy without its layout or its revision, so the same content is
+ * written as the same bytes whichever layout or revision it was taken from;
+ * the revision and the wire version are stated once, in `Contract`.
  *
  * @phpstan-import-type Action from Actions
  */
@@ -377,7 +378,7 @@ final readonly class GeneratedSource
                 <?php
 
                 // Generated from the contract vendored under contract/. Do not edit.
-                // Source: %s, api_version %d.
+                // Contract::SOURCE names its revision and Contract::API_VERSION its wire version.
                 // Regenerate with `composer contract:generate`.
 
                 declare(strict_types=1);
@@ -385,8 +386,6 @@ final readonly class GeneratedSource
                 namespace %s;
 
                 PHP,
-            $this->stamp,
-            $this->version,
             self::NAMESPACE,
         );
     }
