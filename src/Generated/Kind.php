@@ -93,6 +93,7 @@ enum Kind: string
     case Settings = 'settings';
     case Settled = 'settled';
     case Setup = 'setup';
+    case SignInCode = 'sign-in-code';
     case Space = 'space';
     case Stack = 'stack';
     case Start = 'start';

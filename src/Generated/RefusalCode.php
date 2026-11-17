@@ -28,6 +28,10 @@ enum RefusalCode: string
     case NotForAKey = 'ADMIT-12';
     case NotOpen = 'ADMIT-13';
     case ShortChoice = 'ADMIT-14';
+    case CodeNotWaiting = 'ADMIT-15';
+    case TooManyCodes = 'ADMIT-16';
+    case SignsInByPassword = 'ADMIT-17';
+    case NotACodeRequest = 'ADMIT-18';
     case NoSuchAction = 'ASK-1';
     case MissingArgument = 'ASK-2';
     case UnrecognisedArgument = 'ASK-3';
