@@ -21,7 +21,7 @@ final class HouseholdDeclineAction extends ActionRequest
     public const string ACTION = 'household-decline';
 
     /**
-     * @param  string|null  $request  The request being ruled on, by the reference the household list names it with: the request service's own number (`42`), or `music-<n>` or `books-<n>` for an ask the core keeps.
+     * @param  string|null  $request  The request being ruled on, by the reference the household list names it with: the request service's own number (`42`), or `tv-<n>`, `movies-<n>`, `music-<n>` or `books-<n>` for an ask the core keeps.
      * @param  string|null  $reason  Why a request is being turned down, or why a service was chosen to fill a capability.
      */
     public function __construct(

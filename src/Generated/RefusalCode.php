@@ -247,7 +247,6 @@ enum RefusalCode: string
     case NobodyAsking = 'WISH-11';
     case NotAMember = 'WISH-12';
     case NoPicture = 'WISH-13';
-    case ThroughTheHouse = 'WISH-14';
     case Unrecognised = 'WORD-1';
 
     /**
