@@ -8,6 +8,7 @@ require_once __DIR__ . '/ActionArgument.php';
 require_once __DIR__ . '/Actions.php';
 require_once __DIR__ . '/ActionSource.php';
 require_once __DIR__ . '/GeneratedSource.php';
+require_once __DIR__ . '/HouseholdWords.php';
 require_once __DIR__ . '/KeyCallable.php';
 require_once __DIR__ . '/LineCap.php';
 require_once __DIR__ . '/References.php';
@@ -58,7 +59,8 @@ use function unlink;
  *
  * @phpstan-import-type Action from Actions
  *
- * @phpstan-type Listed array{refusals: array<string, array{code: string, status: int, description: string}>, keyCallable: array<string, array{action: string, disturbs: bool, rehearsal: bool}>, actions: array<string, Action>}
+ * @phpstan-import-type Words from HouseholdWords
+ * @phpstan-type Listed array{refusals: array<string, array{code: string, status: int, description: string}>, keyCallable: array<string, array{action: string, disturbs: bool, rehearsal: bool}>, actions: array<string, Action>, householdWords: Words}
  * @phpstan-type Planned array{named: array<string, string>, refusals: int, actions: int, files: array<string, string>}
  */
 final readonly class ContractGenerator
@@ -71,7 +73,7 @@ final readonly class ContractGenerator
     private const string OUTPUT = 'src/Generated';
 
     /** The classes generated beside the envelopes, whose names no definition may take. */
-    private const array CLASSES = ['Kind', 'RefusalCode', 'RefusalStatus', 'RefusalDescription', 'KeyCallableAction', 'Contract'];
+    private const array CLASSES = ['Kind', 'RefusalCode', 'RefusalStatus', 'RefusalDescription', 'KeyCallableAction', 'HouseholdWords', 'Contract'];
 
     private VendoredContract $vendored;
 
@@ -112,6 +114,7 @@ final readonly class ContractGenerator
                 'refusals' => new Refusals()->listed($artefact),
                 'keyCallable' => new KeyCallable()->listed($artefact),
                 'actions' => new Actions()->listed($artefact),
+                'householdWords' => new HouseholdWords()->listed($artefact),
             ];
         } catch (UnexpectedValueException $malformed) {
             return $this->refuse($malformed->getMessage() . ' Nothing was generated.');
@@ -288,6 +291,7 @@ final readonly class ContractGenerator
         $files[self::OUTPUT . '/RefusalStatus.php'] = $source->refusalStatusClass($listed['refusals']);
         $files[self::OUTPUT . '/RefusalDescription.php'] = $source->refusalDescriptionClass($listed['refusals']);
         $files[self::OUTPUT . '/KeyCallableAction.php'] = $source->keyCallableEnum($listed['keyCallable']);
+        $files[self::OUTPUT . '/HouseholdWords.php'] = $source->householdWordsClass($listed['householdWords']);
 
         foreach ($listed['actions'] as $class => $action) {
             $files[self::OUTPUT . '/' . $class . '.php'] = $source->actionClass($class, $action);
