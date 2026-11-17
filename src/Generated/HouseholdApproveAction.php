@@ -21,7 +21,7 @@ final class HouseholdApproveAction extends ActionRequest
     public const string ACTION = 'household-approve';
 
     /**
-     * @param  string|null  $request  The request being ruled on, by the reference the household list names it with: the request service's own number (`42`), or `music-<n>` or `books-<n>` for an ask the core keeps.
+     * @param  string|null  $request  The request being ruled on, by the reference the household list names it with: the request service's own number (`42`), or `tv-<n>`, `movies-<n>`, `music-<n>` or `books-<n>` for an ask the core keeps.
      */
     public function __construct(
         public readonly ?string $request = null,

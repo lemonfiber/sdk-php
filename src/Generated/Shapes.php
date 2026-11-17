@@ -53,7 +53,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Medium 'film'|'series'|'episode'|'other'
  * @phpstan-type MemberAccess array{administrator: bool, age_limit?: int|null, disabled: bool, every_library: bool, libraries: list<string>, rated?: Rated|null, restriction: Restriction, unrated: Unrated}
  * @phpstan-type MemberAsking array{films: Counted, frees_up?: Instant|null, policy: Policy, standing: AskingStanding, television: Counted}
- * @phpstan-type MemberRequest array{arrived?: Instant|null, asked?: Instant|null, estimate?: Estimate|null, id: string, kind?: TitleKind|null, media?: string|null, refused?: Refused|null, shelf_id?: string|null, state?: RequestState|null, title?: string|null, unit?: TitleUnit|null, waiting_days?: int|null, year?: int|null}
+ * @phpstan-type MemberRequest array{also_asked?: list<string>, arrived?: Instant|null, asked?: Instant|null, estimate?: Estimate|null, id: string, kind?: TitleKind|null, media?: string|null, refused?: Refused|null, shelf_id?: string|null, state?: RequestState|null, title?: string|null, unit?: TitleUnit|null, waiting_days?: int|null, year?: int|null}
  * @phpstan-type MemberStanding 'invited'|'expired'|'declined'|'active'|'suspended'
  * @phpstan-type Moment 'onset'|'resolved'
  * @phpstan-type MoveOffered array{configured_by?: string|null, plugin: string, service: string}
