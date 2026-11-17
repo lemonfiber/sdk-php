@@ -82,6 +82,7 @@ enum Kind: string
     case PushEndpoints = 'push-endpoints';
     case Quality = 'quality';
     case Queue = 'queue';
+    case Ran = 'ran';
     case Removal = 'removal';
     case Repair = 'repair';
     case Replacement = 'replacement';

@@ -59,6 +59,7 @@ final class RefusalStatus
             RefusalCode::NoSuchForm => 404,
             RefusalCode::FormsConflict => 400,
             RefusalCode::AnotherReading => 400,
+            RefusalCode::NotScheduled => 404,
             RefusalCode::BadName => 400,
             RefusalCode::NotAScope => 400,
             RefusalCode::NotAPurpose => 400,

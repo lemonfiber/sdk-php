@@ -20,6 +20,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type HouseholdReport from Shapes
  * @phpstan-import-type Instant from Shapes
  * @phpstan-import-type ProblemSeverity from Shapes
+ * @phpstan-import-type ScheduledService from Shapes
  * @phpstan-import-type Service from Shapes
  * @phpstan-type Affected array{acknowledged?: bool, check: string, downstream: list<string>, exit?: int|null, meaning: string, onset: Instant, remedies: list<string>, severity: ProblemSeverity, summary: string}
  * @phpstan-type DashboardProtocol 'usenet'|'torrent'
@@ -39,7 +40,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PanelStorage array{data: Storage, panel: 'ready'}|array{data: array{reason: string}, panel: 'unavailable'}|array{panel: 'pending'}
  * @phpstan-type PanelVpn array{data: Vpn, panel: 'ready'}|array{data: array{reason: string}, panel: 'unavailable'}|array{panel: 'pending'}
  * @phpstan-type Queue array{depth: int, service: string, stuck: int}
- * @phpstan-type Snapshot array{alerts: list<Alert>, door: PanelFrontDoorReport, downloaders: PanelArray_of_Downloader, health: HealthSummary, household: PanelHouseholdReport, queue: PanelArray_of_Queue, services: PanelArray_of_Service, storage: PanelStorage, stuck: list<Stuck>, telemetry: Telemetry, transfers: PanelArray_of_Transfer, vpn?: PanelVpn|null}
+ * @phpstan-type Snapshot array{alerts: list<Alert>, door: PanelFrontDoorReport, downloaders: PanelArray_of_Downloader, health: HealthSummary, household: PanelHouseholdReport, queue: PanelArray_of_Queue, scheduled: list<ScheduledService>, services: PanelArray_of_Service, storage: PanelStorage, stuck: list<Stuck>, telemetry: Telemetry, transfers: PanelArray_of_Transfer, vpn?: PanelVpn|null}
  * @phpstan-type Stall 'redownload-loop'|'repeated-import-failure'|'completed-not-imported'|'orphaned'|'stalled-download'|'waiting-indefinitely'|'slow'
  * @phpstan-type Storage array{config_free: DashboardReading, exhaustion?: Duration|null, free: DashboardReading, hardlink: Hardlink}
  * @phpstan-type Stuck array{blocking?: string|null, held_for: int, items: int, name: string, stall: Stall}

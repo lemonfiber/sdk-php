@@ -19,7 +19,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type HostedCommand array{command: string, definition?: string|null, guarantees: string, missing?: string|null, name: string, output?: string|null, runs?: string|null, standing: Hosting}
  * @phpstan-type Hosting 'not-hosted'|'hosted'|'installed-unverified'|'stopped'|'orphaned'|'unsupported'
  * @phpstan-type HostingReport array{caveat?: string|null, changed?: Changed|null, commands: list<HostedCommand>, instruction?: string|null, manager: Manager, rehearsed: bool}
- * @phpstan-type Manager 'launchd'|'systemd'|'unsupported'
+ * @phpstan-type Manager 'launchd'|'systemd'|'task-scheduler'|'unsupported'
  * @phpstan-type Data HostingReport
  */
 final class HostingEnvelope
