@@ -17,12 +17,13 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  *
  * @phpstan-import-type Condition from Shapes
  * @phpstan-import-type Filtered from Shapes
+ * @phpstan-import-type ScheduledService from Shapes
  * @phpstan-import-type Service from Shapes
  * @phpstan-import-type ServiceState from Shapes
  * @phpstan-import-type Waiting from Shapes
  * @phpstan-type Awaiting 'downloads'|'images'
  * @phpstan-type Disturbances array{fetching: TakesAway, restarting: TakesAway, starting: TakesAway, stopping: TakesAway, stopping_after_downloads: TakesAway, switching: TakesAway}
- * @phpstan-type StatusReport array{active_forms: list<string>, condition: Condition, disturbs: Disturbances, filtered: list<Filtered>, forms: list<string>, services: list<Service>, undeclared: list<Undeclared>, waiting: list<Waiting>}
+ * @phpstan-type StatusReport array{active_forms: list<string>, condition: Condition, disturbs: Disturbances, filtered: list<Filtered>, forms: list<string>, scheduled: list<ScheduledService>, services: list<Service>, undeclared: list<Undeclared>, waiting: list<Waiting>}
  * @phpstan-type TakesAway array{bound: 'bounded', seconds: int}|array{bound: 'open-ended', until: Awaiting}
  * @phpstan-type Undeclared array{describes: string, id: string, state: ServiceState}
  * @phpstan-type Data StatusReport

@@ -60,6 +60,7 @@ enum RefusalCode: string
     case NoSuchForm = 'FORM-2';
     case FormsConflict = 'FORM-3';
     case AnotherReading = 'GONE-2';
+    case NotScheduled = 'HOST-7';
     case BadName = 'KEY-1';
     case NotAScope = 'KEY-2';
     case NotAPurpose = 'KEY-3';

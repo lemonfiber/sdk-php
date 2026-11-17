@@ -89,6 +89,9 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type RequestState 'waiting-for-approval'|'declined'|'failed'|'getting'|'partly-here'|'here'|'gone'
  * @phpstan-type Requirement array{feature: string, shipped_in: list<string>, url?: string|null, withdrawn?: bool}
  * @phpstan-type Restriction 'unrestricted'|'rating-limited'|'library-limited'|'both'|'inconsistent'
+ * @phpstan-type RunHealth 'not-run'|'succeeded'|'failed'
+ * @phpstan-type ScheduledRun array{ended: Instant, exit?: int|null, log: list<string>, started: Instant}
+ * @phpstan-type ScheduledService array{fired: bool, health: RunHealth, id: string, last?: ScheduledRun|null, name: string, running: bool, skipped: int}
  * @phpstan-type Scope array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project: string, scope: 'existing', trees: list<Tree>}
  * @phpstan-type SeedingStanding array{standing: 'never_imported'}|array{ratio: int, standing: 'seeding'}|array{standing: 'left_alone'}
  * @phpstan-type Service array{criticality: Criticality, depends_on: list<string>, describes: string, exit?: int|null, forms: list<string>, id: string, name: string, profile: string, state: ServiceState}

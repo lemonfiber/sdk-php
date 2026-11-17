@@ -80,9 +80,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginUpdate array{from: string, install: PluginInstall, interrupts: list<string>, plugin: string, reshipped: list<PluginReshipped>, restored?: PluginRestored|null, stopped?: string|null, to: string, went_back: UndoReversal}
  * @phpstan-type PluginVerification array{broke: list<PluginChangedCheck>, unsettled: list<PluginChangedCheck>}
  * @phpstan-type RecordedWith string|int|bool
+ * @phpstan-type Schedule array{default: string, setting: string}
  * @phpstan-type ServiceCertificate array{certificate: string, key: string, names: list<string>}
  * @phpstan-type ServiceConstant string|int|bool
- * @phpstan-type ServiceFields array{args?: list<string>, certificate?: ServiceCertificate|null, config_ro?: bool, container_hostname?: string|null, env?: array<string, ServiceValue>, mem_limit_mib?: int|null, mount?: list<ServiceMount>, network?: ServiceNetwork|null, posture?: ServicePosture, publish?: list<ServicePublish>, rebuilt?: list<string>, shares_config?: string|null, tmpfs?: list<string>, user_mode?: ServiceUserModeWritten|null}
+ * @phpstan-type ServiceFields array{args?: list<string>, certificate?: ServiceCertificate|null, config_ro?: bool, container_hostname?: string|null, env?: array<string, ServiceValue>, mem_limit_mib?: int|null, mount?: list<ServiceMount>, network?: ServiceNetwork|null, posture?: ServicePosture, publish?: list<ServicePublish>, rebuilt?: list<string>, schedule?: Schedule|null, shares_config?: string|null, tmpfs?: list<string>, user_mode?: ServiceUserModeWritten|null}
  * @phpstan-type ServiceIdVariables array{gid_env: string, uid_env: string}
  * @phpstan-type ServiceMount array{from: string, ro?: bool, to: string}
  * @phpstan-type ServiceNetwork array{egress_for?: string|null, fenced?: bool, via?: string|null}

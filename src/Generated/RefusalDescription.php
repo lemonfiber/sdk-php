@@ -59,6 +59,7 @@ final class RefusalDescription
             RefusalCode::NoSuchForm => 'Raised when a named form is not declared by the stack.',
             RefusalCode::FormsConflict => 'Raised when forms that cannot be combined are named together.',
             RefusalCode::AnotherReading => 'Raised when an agreement names a reading of this machine that is not the one standing now.',
+            RefusalCode::NotScheduled => 'Raised when the service named to run on its schedule is no run-and-exit service.',
             RefusalCode::BadName => 'Raised when a key is asked for under a word that cannot name one.',
             RefusalCode::NotAScope => 'Raised when a key is asked for with a scope that is none of the three.',
             RefusalCode::NotAPurpose => 'Raised when a key is asked for with a purpose that is none of the three.',
