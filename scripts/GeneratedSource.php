@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Scripts;
 
+use function array_keys;
+use function array_map;
 use function array_values;
+use function implode;
 use function is_array;
 use function sprintf;
 
@@ -20,6 +23,7 @@ use UnexpectedValueException;
  * the revision and the wire version are stated once, in `Contract`.
  *
  * @phpstan-import-type Action from Actions
+ * @phpstan-import-type Words from HouseholdWords
  */
 final readonly class GeneratedSource
 {
@@ -294,6 +298,78 @@ final readonly class GeneratedSource
         return $this->header() . new ActionSource($this->types)->written($class, $action);
     }
 
+    /**
+     * @param  Words  $words
+     */
+    public function householdWordsClass(array $words): string
+    {
+        $examples = [];
+
+        foreach ($words['examples'] as $example) {
+            $examples[] = sprintf("['text' => %s, 'names' => %s]", $this->types->quoted($example['text']), $this->types->quoted($example['names']));
+        }
+
+        return $this->header() . sprintf(
+            <<<'PHP'
+
+                /**
+                 * What a member's surface may not show, as the contract publishes it.
+                 */
+                final class HouseholdWords
+                {
+                    /**
+                     * Every service, engine and tunnel named, the bundle's parts with hyphens read as spaces.
+                     *
+                     * @var list<string>
+                     */
+                    public const array NAMES = %s;
+
+                    /**
+                     * Every term for how the stack is built and run.
+                     *
+                     * @var list<string>
+                     */
+                    public const array TERMS = %s;
+
+                    /**
+                     * Every unit a size or a rate is written in.
+                     *
+                     * @var list<string>
+                     */
+                    public const array SIZES = %s;
+
+                    /**
+                     * Every mark that shows an address or a rate wherever it is written.
+                     *
+                     * @var list<string>
+                     */
+                    public const array MARKS = %s;
+
+                    /**
+                     * Every name lemonfiber gives its own things, each with what it names, rendered in every locale as declared.
+                     *
+                     * @var array<string, string>
+                     */
+                    public const array DECLARED = %s;
+
+                    /**
+                     * Texts a version, an address, a size or a rate makes unfit, each with what in it a member may not be shown.
+                     *
+                     * @var list<array{text: string, names: string}>
+                     */
+                    public const array EXAMPLES = %s;
+                }
+
+                PHP,
+            $this->wordsOf($words['names']),
+            $this->wordsOf($words['terms']),
+            $this->wordsOf($words['sizes']),
+            $this->wordsOf($words['marks']),
+            $this->listOf(array_map(fn(string $name, string $names): string => $this->types->quoted($name) . ' => ' . $this->types->quoted($names), array_keys($words['declared']), $words['declared'])),
+            $this->listOf($examples),
+        );
+    }
+
     public function contractClass(): string
     {
         return $this->header() . sprintf(
@@ -319,6 +395,30 @@ final readonly class GeneratedSource
             $this->version,
             $this->types->quoted($this->stamp),
         );
+    }
+
+    /**
+     * `$words` as an array literal of one quoted word to a line inside a constant.
+     *
+     * @param  list<string>  $words
+     */
+    private function wordsOf(array $words): string
+    {
+        return $this->listOf(array_map($this->types->quoted(...), $words));
+    }
+
+    /**
+     * `$entries`, each already PHP source, as an array literal of one entry to a line inside a constant.
+     *
+     * @param  list<string>  $entries
+     */
+    private function listOf(array $entries): string
+    {
+        if ($entries === []) {
+            return '[]';
+        }
+
+        return "[\n" . implode('', array_map(static fn(string $entry): string => '        ' . $entry . ",\n", $entries)) . '    ]';
     }
 
     /**

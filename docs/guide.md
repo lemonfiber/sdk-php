@@ -133,6 +133,12 @@ integration key call, in the contract's order. `disturbs()` says whether calling
 disturbs the running system and `rehearsal()` whether it takes `dry_run`;
 `KeyCallableAction::of()` is null for an action a key may not call.
 
+`Generated\HouseholdWords` holds what a member's surface may not show, as the
+contract publishes it: `NAMES`, `TERMS`, `SIZES` and `MARKS` are lists of words,
+`DECLARED` maps each name lemonfiber gives its own things to what it names, and
+`EXAMPLES` holds texts each with what in it a member may not be shown. A surface
+drawing a member's screens holds its words to these lists, so they are written once.
+
 ### Repairs
 
 `repair` has a method of its own, because the offer and the agreement are the same

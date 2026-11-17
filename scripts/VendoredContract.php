@@ -64,7 +64,7 @@ final readonly class VendoredContract
      *
      * @var list<string>
      */
-    public const array LISTS = ['key_callable', 'reads', 'refusals'];
+    public const array LISTS = ['household_words', 'key_callable', 'reads', 'refusals'];
 
     /**
      * The map the index gives from each action to the file describing it, read into the artefact under the same key.
