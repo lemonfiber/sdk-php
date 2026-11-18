@@ -168,12 +168,13 @@ use Lemonfiber\Sdk\Envelope\Envelope;
 $client->whatBecameOf($job)->answering(
     stillRunning: fn() => 'ask again in a moment',
     finished: fn(Envelope $outcome) => $outcome,
-    ended: fn() => 'it stopped before it got there',
+    ended: fn(string $why) => "it stopped before it got there: {$why}",
 );
 ```
 
-Pass the three arms by name: two of them take nothing, and position is an easy
-way to mix them up. A job name only lives as long as the lemonfiber run that made
+Pass the three arms by name. The ended arm is given why the work ended:
+`released` (its name was let go of), `let-go` (nothing asked about it for a whole
+lease) or `quiet` (the services it followed stopped saying anything). A job name only lives as long as the lemonfiber run that made
 it; asking about one that run never made raises `NoSuchJob`. A job that stopped
 on a problem raises `RequestFailed` with lemonfiber's own sentence.
 
