@@ -16,12 +16,14 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `wizard` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type Choosable from Shapes
+ * @phpstan-import-type SetUp from Shapes
  * @phpstan-import-type SettingReport from Shapes
  * @phpstan-import-type Validation from Shapes
  * @phpstan-type GuardQuestion array{asks: 'choice', choices: list<Choosable>, default?: string|null, setting: string}|array{asks: 'value', needs: array<string, list<string>>, setting: string}|array{asks: 'secret', needs: array<string, list<string>>, secret: string, why: string}
  * @phpstan-type Phase 'in-progress'|'reviewing'|'applying'|'applied'
  * @phpstan-type Ran bool
- * @phpstan-type WizardReport array{asks: bool, at: WizardStep, guard: list<GuardQuestion>, offered: bool, phase: Phase, plan: list<SettingReport>, proof?: Validation|null, ready_for_review: bool, rehearsed: Ran, unanswered: list<WizardStep>, written: list<string>}
+ * @phpstan-type StorageFinding array{found: 'links', inferred_from?: string|null}|array{found: 'copy-only', limitation?: string|null}|array{found: 'untested', reason: string}
+ * @phpstan-type WizardReport array{asks: bool, at: WizardStep, guard: list<GuardQuestion>, offered: bool, phase: Phase, plan: list<SettingReport>, proof?: Validation|null, ready_for_review: bool, rehearsed: Ran, setup: SetUp, storage?: StorageFinding|null, unanswered: list<WizardStep>, written: list<string>}
  * @phpstan-type WizardStep 'welcome'|'preflight'|'prerequisites'|'protocols'|'vpn'|'data-location'|'credentials'|'provider'|'service-user'|'library'|'household'|'notifications'|'autostart'|'review'
  * @phpstan-type Data WizardReport
  */

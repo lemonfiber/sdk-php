@@ -51,12 +51,14 @@ enum Kind: string
     case Hosting = 'hosting';
     case Household = 'household';
     case Import = 'import';
+    case InFlight = 'in-flight';
     case Invitation = 'invitation';
     case Job = 'job';
     case KeyClaim = 'key-claim';
     case Keys = 'keys';
     case Lifecycle = 'lifecycle';
     case Log = 'log';
+    case Logs = 'logs';
     case Migration = 'migration';
     case MintedKey = 'minted-key';
     case Music = 'music';
@@ -67,6 +69,7 @@ enum Kind: string
     case Outbound = 'outbound';
     case Pairing = 'pairing';
     case PartWay = 'part-way';
+    case Password = 'password';
     case Pausing = 'pausing';
     case Play = 'play';
     case Playing = 'playing';
@@ -90,6 +93,7 @@ enum Kind: string
     case Restore = 'restore';
     case Seed = 'seed';
     case SelfUpdate = 'self-update';
+    case Served = 'served';
     case Settings = 'settings';
     case Settled = 'settled';
     case Setup = 'setup';
@@ -112,6 +116,7 @@ enum Kind: string
     case Upgrade = 'upgrade';
     case Version = 'version';
     case Walkthrough = 'walkthrough';
+    case WalkthroughOffer = 'walkthrough-offer';
     case Watch = 'watch';
     case Watched = 'watched';
     case Watcher = 'watcher';

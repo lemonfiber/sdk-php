@@ -16,8 +16,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `settled` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type Protocols from Shapes
+ * @phpstan-import-type SetUp from Shapes
  * @phpstan-type ServiceUser array{from: UserFrom, gid: int, uid: int}
- * @phpstan-type SetUp 'none'|'part-way'|'done'
  * @phpstan-type SettledReport array{data_root?: string|null, protocols: Protocols, service_user: ServiceUser, setup: SetUp}
  * @phpstan-type UserFrom 'set'|'part-set'|'stack-owner'
  * @phpstan-type Data SettledReport
