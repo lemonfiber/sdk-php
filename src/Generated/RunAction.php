@@ -22,9 +22,11 @@ final class RunAction extends ActionRequest
 
     /**
      * @param  string|null  $service  The one service to act on instead of the whole stack.
+     * @param  bool  $now  Whether a run-and-exit service runs at once, whether or not one of its times fell due.
      */
     public function __construct(
         public readonly ?string $service = null,
+        public readonly bool $now = false,
     ) {}
 
     public function action(): string
@@ -55,6 +57,7 @@ final class RunAction extends ActionRequest
     {
         return [
             'service' => $this->service,
+            'now' => $this->now,
         ];
     }
 }
