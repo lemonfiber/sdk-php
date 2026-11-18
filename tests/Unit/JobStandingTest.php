@@ -64,6 +64,16 @@ it('refuses a name answered at any status but the one work still going is answer
         ->toThrow(UnreadableResponse::class, 'named the work at ' . $status);
 })->with([200, 201, 203]);
 
+it('refuses work that ended for a reason it does not know', function (mixed $data): void {
+    expect(static fn(): JobStanding => JobStanding::of(A_NAME, 200, new Envelope(Api::VERSION, 'ended', $data)))
+        ->toThrow(UnreadableResponse::class, 'ended and not why');
+})->with([
+    'no reason' => [['job' => A_NAME, 'action' => 'repair']],
+    'a reason it does not know' => [['job' => A_NAME, 'action' => 'repair', 'ended' => 'stopped']],
+    'a reason that is not a word' => [['job' => A_NAME, 'action' => 'repair', 'ended' => 1]],
+    'no payload' => ['ended'],
+]);
+
 it('reads finished work apart from work that ended, on the same status', function (): void {
     expect(wordFor(JobStanding::of(A_NAME, 200, whatItCameTo())))->toBe('finished as repair');
 });

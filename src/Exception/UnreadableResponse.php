@@ -61,6 +61,13 @@ final class UnreadableResponse extends RuntimeException implements AnswerUnusabl
         ));
     }
 
+    public static function endingUnknown(): self
+    {
+        return new self(
+            'The answer says the work ended and not why, in a word this client knows.',
+        );
+    }
+
     public static function hostUnreadable(): self
     {
         return new self(

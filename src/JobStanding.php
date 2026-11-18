@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk;
 
+use function in_array;
+use function is_array;
+
 use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Generated\EndedEnvelope;
@@ -49,6 +52,11 @@ final readonly class JobStanding
     private const int STILL_GOING = 202;
 
     /**
+     * Every reason work ends before it finished for.
+     */
+    private const array ENDINGS = ['released', 'let-go', 'quiet'];
+
+    /**
      * @param Envelope<mixed>|null $outcome
      * @param JobEnding|null $ending
      */
@@ -68,7 +76,7 @@ final readonly class JobStanding
     public static function of(string $job, int $status, Envelope $envelope): self
     {
         if ($envelope->kind === Kind::Ended->value) {
-            return new self($job, null, EndedEnvelope::in($envelope)->data['ended']);
+            return new self($job, null, self::endingIn($envelope->data));
         }
 
         if ($envelope->kind !== Kind::Job->value) {
@@ -102,5 +110,23 @@ final readonly class JobStanding
         }
 
         return $this->ending === null ? $stillRunning() : $ended($this->ending);
+    }
+
+    /**
+     * Why the work ended, read from the `ended` envelope's payload.
+     *
+     * @return JobEnding
+     *
+     * @throws UnreadableResponse
+     */
+    private static function endingIn(mixed $data): string
+    {
+        $ending = is_array($data) ? $data['ended'] ?? null : null;
+
+        if (! in_array($ending, self::ENDINGS, true)) {
+            throw UnreadableResponse::endingUnknown();
+        }
+
+        return $ending;
     }
 }
