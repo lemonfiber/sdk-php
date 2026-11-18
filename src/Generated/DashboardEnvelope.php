@@ -16,6 +16,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `dashboard` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type Alert from Shapes
+ * @phpstan-import-type DashboardProtocol from Shapes
  * @phpstan-import-type FrontDoorReport from Shapes
  * @phpstan-import-type HouseholdReport from Shapes
  * @phpstan-import-type Instant from Shapes
@@ -23,7 +24,6 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type ScheduledService from Shapes
  * @phpstan-import-type Service from Shapes
  * @phpstan-type Affected array{acknowledged?: bool, check: string, downstream: list<string>, exit?: int|null, meaning: string, onset: Instant, remedies: list<string>, severity: ProblemSeverity, summary: string}
- * @phpstan-type DashboardProtocol 'usenet'|'torrent'
  * @phpstan-type DashboardReading array{reading: 'known', value: int}|array{reading: 'stale', value: int}|array{reading: 'unknown'}
  * @phpstan-type Downloader array{client: string, state: DownloaderState}
  * @phpstan-type DownloaderState 'paused'|'fetching'|'unknown'

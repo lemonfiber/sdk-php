@@ -27,6 +27,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type ConflictReport array{held_by: string, port: int, wanted_by: string}
  * @phpstan-type Counted array{limit?: int|null, period?: string|null, remaining?: int|null, used: int}
  * @phpstan-type Criticality 'critical'|'core'|'important'|'enhancing'|'optional'
+ * @phpstan-type DashboardProtocol 'usenet'|'torrent'
  * @phpstan-type DeviceKeyBacking 'strongbox'|'enclave'|'tee'
  * @phpstan-type Disposition 'shown'|'recorded'|'rehearsed'|'held'|'reapplied'|'would-reapply'
  * @phpstan-type Disruptive array{bounded?: int|null, disturbs: string, only: string}
@@ -66,7 +67,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Obstacle array{code: Code, remedy: string, said: string}
  * @phpstan-type Passed array{at?: Instant|null, to: list<string>}
  * @phpstan-type Pinned array{fingerprint: string}
- * @phpstan-type Plan array{dropped: list<Dropped>, filtered: list<Filtered>, footprint: Footprint, forms: list<string>, profiles: list<string>, running?: list<string>|null, services: list<string>, vanished?: list<Vanished>}
+ * @phpstan-type Plan array{dropped: list<Dropped>, filtered: list<Filtered>, footprint: Footprint, forms: list<string>, installing?: list<UpInstallOffered>, offer?: string|null, profiles: list<string>, running?: list<string>|null, services: list<string>, vanished?: list<Vanished>}
  * @phpstan-type PluginConstraint 'status'|'json'|'json_has_keys'|'json_types'|'json_at_least'|'json_array_min'|'json_is_absent'|'content_type'|'body_starts_with'|'exit'|'stdout_starts_with'
  * @phpstan-type PluginEvidence 'recordings'|'service'
  * @phpstan-type PluginFailingAsDeclared array{constraint: PluginConstraint, fixture: string, held: string, place?: string|null, reason: string}
@@ -81,6 +82,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Pulling 'fetching'|'stopped'
  * @phpstan-type Rated array{allows: list<string>, fell_back: bool, holds_back: list<string>}
  * @phpstan-type Reaches array{capability: string, files?: string|null, how: 'asked', media_types?: list<string>, native?: Apis|null, origins: array<string, ValueOrigin>, services: list<string>, settled: WiringSettled}|array{how: 'by-name', service: string, why: string}
+ * @phpstan-type Reason 'no-indexers'|'indexers-failed'|'nothing-matched'|'none-met-the-preset'|'tunnel-down'|'not-grabbed'|'stalled'|'import-failed'|'no-media-server'|'not-visible'
  * @phpstan-type Refusal array{because: string, named: string}
  * @phpstan-type Refused array{at?: Instant|null, expired?: bool, reason: string, told?: Passed|null}
  * @phpstan-type Release array{carried?: string|null, delivers?: string|null, groups: list<Group>, patches?: string|null, released_on?: string|null, tag: string, user_facing: bool, version: string, withdrawn?: string|null}
@@ -96,7 +98,9 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type SeedingStanding array{standing: 'never_imported'}|array{ratio: int, standing: 'seeding'}|array{standing: 'left_alone'}
  * @phpstan-type Service array{criticality: Criticality, depends_on: list<string>, describes: string, exit?: int|null, forms: list<string>, id: string, name: string, profile: string, state: ServiceState}
  * @phpstan-type ServiceState 'failed'|'crash-looping'|'unhealthy'|'absent'|'stopped'|'starting'|'running'|'healthy'|'host-managed'
+ * @phpstan-type SetUp 'none'|'part-way'|'done'
  * @phpstan-type SettingReport array{key: string, origin: ValueOrigin, secret: bool, value: string}
+ * @phpstan-type Shape 'pipeline'|'library-only'
  * @phpstan-type StackEdit array{diff: string, path: string}
  * @phpstan-type StackMoveTaken array{plugin: string, service: string, taken: bool, why?: string|null}
  * @phpstan-type StackProtocol 'usenet'|'torrent'
@@ -117,6 +121,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Unrated 'held-back'|'let-through'
  * @phpstan-type UnsupportedReport array{because: string, what: string}
  * @phpstan-type Unvetted array{overlay: string, services: list<string>}
+ * @phpstan-type UpInstallOffered array{offer?: string|null, plugin: string, why?: string|null}
  * @phpstan-type Validation array{observed: string, outcome: 'valid'}|array{detail: string, outcome: 'rejected'}|array{detail: string, outcome: 'unreachable'}|array{detail: string, outcome: 'degraded'}
  * @phpstan-type ValueOrigin array{origin: 'bundled'}|array{origin: 'operator'}|array{named: string, origin: 'plugin'}|array{origin: 'unknown', why: string}|array{named: string, origin: 'overridden', replaced: mixed}|array{named: string, origin: 'orphaned'}
  * @phpstan-type ValueReplaced array{from: mixed, value?: string|null, withheld: bool}
