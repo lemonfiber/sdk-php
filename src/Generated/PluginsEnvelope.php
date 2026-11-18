@@ -86,7 +86,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type ServiceFields array{args?: list<string>, certificate?: ServiceCertificate|null, config_ro?: bool, container_hostname?: string|null, env?: array<string, ServiceValue>, mem_limit_mib?: int|null, mount?: list<ServiceMount>, network?: ServiceNetwork|null, posture?: ServicePosture, publish?: list<ServicePublish>, rebuilt?: list<string>, schedule?: Schedule|null, shares_config?: string|null, tmpfs?: list<string>, user_mode?: ServiceUserModeWritten|null}
  * @phpstan-type ServiceIdVariables array{gid_env: string, uid_env: string}
  * @phpstan-type ServiceMount array{from: string, ro?: bool, to: string}
- * @phpstan-type ServiceNetwork array{egress_for?: string|null, fenced?: bool, via?: string|null}
+ * @phpstan-type ServiceNetwork array{egress_for?: string|null, fenced?: bool, internal?: bool, via?: string|null}
  * @phpstan-type ServicePosture 'standard'|'confined'
  * @phpstan-type ServicePublish array{listens?: int|null, port: int}
  * @phpstan-type ServiceSecretOf array{secret: string}
