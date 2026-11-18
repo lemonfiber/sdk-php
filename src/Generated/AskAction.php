@@ -26,6 +26,7 @@ final class AskAction extends ActionRequest
      * @param  string|null  $kind  Whether the title asked for is a series, a film, music or books, as a page of a member's search names it: `tv`, `movies`, `music` or `books`.
      * @param  list<int<0, max>>  $seasons  The seasons of a series asked for. None names every season not already here or on its way.
      * @param  string|null  $unit  What is asked for within music or books, as a page of a member's search names it: `album` or `artist`, `book`, `author` or `series`. Absent asks for an album or a book.
+     * @param  string|null  $found  The token a page of a member's search vouched for the title asked for with, handed back as the page gave it.
      */
     public function __construct(
         public readonly ?string $name = null,
@@ -33,6 +34,7 @@ final class AskAction extends ActionRequest
         public readonly ?string $kind = null,
         public readonly array $seasons = [],
         public readonly ?string $unit = null,
+        public readonly ?string $found = null,
     ) {}
 
     public function action(): string
@@ -67,6 +69,7 @@ final class AskAction extends ActionRequest
             'kind' => $this->kind,
             'seasons' => $this->seasons,
             'unit' => $this->unit,
+            'found' => $this->found,
         ];
     }
 }

@@ -18,7 +18,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type MemberAsking from Shapes
  * @phpstan-import-type TitleKind from Shapes
  * @phpstan-import-type TitleUnit from Shapes
- * @phpstan-type Askable array{by?: string|null, cover?: string|null, id: string, kind: TitleKind, stands: Stands, title: string, unit?: TitleUnit|null, year?: int|null}
+ * @phpstan-type Askable array{by?: string|null, cover?: string|null, found?: string|null, id: string, kind: TitleKind, stands: Stands, title: string, unit?: TitleUnit|null, year?: int|null}
  * @phpstan-type AskableReport array{approval: string, asking: MemberAsking, kinds: list<TitleKind>, member: string, next?: string|null, term: string, titles: list<Askable>}
  * @phpstan-type Stands 'here'|'partly-here'|'on-its-way'|'askable'
  * @phpstan-type Data AskableReport

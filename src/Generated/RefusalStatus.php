@@ -246,6 +246,7 @@ final class RefusalStatus
             RefusalCode::NobodyAsking => 400,
             RefusalCode::NotAMember => 404,
             RefusalCode::NoPicture => 404,
+            RefusalCode::NotChecked => 503,
             RefusalCode::Unrecognised => 404,
         };
     }
