@@ -25,15 +25,15 @@ function aClientAnsweringEach(string $request, MockResponse $answer): Client
 
 it('takes a release answered below 400 for where the work stands, and one at 400 for a refusal', function (): void {
     $named = static fn(int $status): MockResponse => MockResponse::make(
-        '{"api_version":1,"kind":"job","data":{"job":"k3n9v2xq","action":"repair"}}',
+        '{"api_version":1,"kind":"ended","data":{"job":"k3n9v2xq","action":"repair","ended":"released"}}',
         $status,
         ['Content-Type' => 'application/json'],
     );
     $standing = aClientAnsweringEach(ReleaseRequest::class, $named(399))->letGoOf('k3n9v2xq');
     $refused = aClientAnsweringEach(ReleaseRequest::class, $named(400));
 
-    expect($standing->answering(static fn(): string => 'still going', static fn(Envelope $outcome): string => 'finished', static fn(): string => 'ended'))
-        ->toBe('ended')
+    expect($standing->answering(static fn(): string => 'still going', static fn(Envelope $outcome): string => 'finished', static fn(string $why): string => $why))
+        ->toBe('released')
         ->and(static fn(): JobStanding => $refused->letGoOf('k3n9v2xq'))->toThrow(RequestFailed::class);
 });
 

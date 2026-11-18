@@ -53,6 +53,21 @@ final class UnreadableResponse extends RuntimeException implements AnswerUnusabl
         ));
     }
 
+    public static function namedAt(int $status): self
+    {
+        return new self(sprintf(
+            'The answer named the work at %d, and a name is answered only while the work is still going, at 202.',
+            $status,
+        ));
+    }
+
+    public static function endingUnknown(): self
+    {
+        return new self(
+            'The answer says the work ended and not why, in a word this client knows.',
+        );
+    }
+
     public static function hostUnreadable(): self
     {
         return new self(
