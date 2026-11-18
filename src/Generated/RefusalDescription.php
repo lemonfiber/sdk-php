@@ -246,6 +246,7 @@ final class RefusalDescription
             RefusalCode::NobodyAsking => 'Said where nobody is named for something only a member can do.',
             RefusalCode::NotAMember => 'Said where the member named is not somebody in the household.',
             RefusalCode::NoPicture => 'Said where a title a member may ask for has no picture to show them.',
+            RefusalCode::NotChecked => 'Said where a title the member\'s own search just found could not be looked up again for their ask, so it was neither asked for nor called unknown.',
             RefusalCode::Unrecognised => 'A word this product does not explain, as a refusal that says what it does. Through the error model rather than a bare line, so it carries a code and a way forward like every other refusal — and the way forward is the list itself, which is short enough to be the answer rather than a pointer at one. It lies in the naming: the word is the whole of what was asked for, and there is no entry for it. A surface that reported this as its own failure would be telling a caller to try again at something that will never work.',
         };
     }
