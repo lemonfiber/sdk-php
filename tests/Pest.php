@@ -26,6 +26,22 @@ GeneratedRefusals::loadWith(A_CODE_THE_LIST_NAMES, [
     'description' => 'Raised by nothing; listed so these tests have a code the list names.',
 ]);
 
+const A_RUN_TOKEN = 'a-run-token';
+
+/**
+ * A client on the loopback port whose requests these mocks answer.
+ *
+ * @param  array<class-string, MockResponse>  $answers
+ * @return array{0: Client, 1: MockClient}
+ */
+function clientAnswering(array $answers): array
+{
+    $mock = new MockClient($answers);
+    $client = Client::onPort(9000, A_RUN_TOKEN, aWait())->withMockClient($mock);
+
+    return [$client, $mock];
+}
+
 /**
  * A wait long enough that no test's call runs out of it, so only a test about the wait meets one.
  */

@@ -17,22 +17,7 @@ use Lemonfiber\Sdk\Logs;
 use Lemonfiber\Sdk\LogWindow;
 use Lemonfiber\Sdk\Repair;
 use Lemonfiber\Sdk\Time\Duration;
-use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
-
-const A_RUN_TOKEN = 'a-run-token';
-
-/**
- * @param  array<class-string, MockResponse>  $answers
- * @return array{0: Client, 1: MockClient}
- */
-function clientAnswering(array $answers): array
-{
-    $mock = new MockClient($answers);
-    $client = Client::onPort(9000, A_RUN_TOKEN, aWait())->withMockClient($mock);
-
-    return [$client, $mock];
-}
 
 it('reads an endpoint and hands back the envelope', function (): void {
     [$client] = clientAnswering([
