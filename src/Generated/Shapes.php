@@ -32,7 +32,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Disposition 'shown'|'recorded'|'rehearsed'|'held'|'reapplied'|'would-reapply'
  * @phpstan-type Disruptive array{bounded?: int|null, disturbs: string, only: string}
  * @phpstan-type DoctorCategory 'environment'|'storage'|'network'|'vpn'|'credentials'|'services'|'providers'|'queue'|'config'
- * @phpstan-type DoctorVerdict array{note?: string|null, outcome: 'pass'}|array{cause?: Problem|null, code: Code, detail?: string|null, meaning: string, outcome: 'warn', remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}|array{cause?: Problem|null, code: Code, detail?: string|null, meaning: string, outcome: 'fail', remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}|array{outcome: 'unverified', reason: string, remedy: Remedy}|array{outcome: 'skipped', reason: string}
+ * @phpstan-type DoctorVerdict array{note?: string|null, outcome: 'pass'}|array{cause?: Problem|null, code: Code, detail?: string|null, meaning: string, outcome: 'warn', remedies: list<Remedy>, retry_after?: int|null, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}|array{cause?: Problem|null, code: Code, detail?: string|null, meaning: string, outcome: 'fail', remedies: list<Remedy>, retry_after?: int|null, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}|array{outcome: 'unverified', reason: string, remedy: Remedy}|array{outcome: 'skipped', reason: string}
  * @phpstan-type Dropped array{needs: StackProtocol, profile: string}
  * @phpstan-type Entry array{reference?: string|null, requirements: list<string>, summary: string}
  * @phpstan-type Estimate array{bytes: int, measured: bool}
@@ -74,7 +74,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type PluginGrant array{at?: Instant|null, credential: string, for: string, of: string}
  * @phpstan-type PluginVerdict array{outcome: 'passed'}|array{faults: list<string>, outcome: 'failed'}|array{outcome: 'unproven', why: string}|array{declared: list<PluginFailingAsDeclared>, outcome: 'failing-as-declared'}|array{outcome: 'open', why: string}
  * @phpstan-type Policy 'trusted'|'within-a-limit'|'everything-waits'
- * @phpstan-type Problem array{cause?: mixed, code: Code, detail?: string|null, meaning: string, remedies: list<Remedy>, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}
+ * @phpstan-type Problem array{cause?: mixed, code: Code, detail?: string|null, meaning: string, remedies: list<Remedy>, retry_after?: int|null, severity: ProblemSeverity, state: ProblemState, steps?: list<ProblemStep>, summary: string}
  * @phpstan-type ProblemSeverity 'advisory'|'warning'|'error'|'critical'
  * @phpstan-type ProblemState 'actionable'|'guided'|'remediable'|'unknown'|'suppressed'
  * @phpstan-type ProblemStep array{came: StepCame, landed: bool, recipe: string, step: string}

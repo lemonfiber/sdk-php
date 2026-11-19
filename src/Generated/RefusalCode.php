@@ -32,6 +32,7 @@ enum RefusalCode: string
     case TooManyCodes = 'ADMIT-16';
     case SignsInByPassword = 'ADMIT-17';
     case NotACodeRequest = 'ADMIT-18';
+    case NoSession = 'ADMIT-19';
     case NoSuchAction = 'ASK-1';
     case MissingArgument = 'ASK-2';
     case UnrecognisedArgument = 'ASK-3';
