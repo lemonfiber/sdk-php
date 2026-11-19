@@ -34,6 +34,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type Expected bool|int|string
  * @phpstan-type ExpectedKind 'bool'|'int'|'str'|'list'|'dict'
  * @phpstan-type PluginAsking array{capability: string, each?: bool, files?: string|null, media_types?: list<string>, native?: Apis|null}
+ * @phpstan-type PluginBuiltOn array{image: string, release: string}
  * @phpstan-type PluginChange array{path: string, placeholders: list<PluginPlaceholder>, puts: PluginPuts}
  * @phpstan-type PluginChangedCheck array{before?: DoctorVerdict|null, now: Finding}
  * @phpstan-type PluginDeclaration array{claims?: list<string>, license?: string, overrides?: list<PluginOverriding>, reaches?: list<string>, reviewed?: bool, secrets?: list<PluginSecret>, stops?: list<PluginStopping>, upstream?: string}
@@ -47,7 +48,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginNonconforming array{at: Instant, capability: string, operation: string, plugin: string, why: string}
  * @phpstan-type PluginOverriding array{setting: string, why: string}
  * @phpstan-type PluginPair array{approval?: string, from?: string, origin: string, release?: string, to: string, value: string}
- * @phpstan-type PluginPlaced array{asks?: list<PluginAsking>, asks_for?: string|null, config_path: string, contract?: int|null, description?: string, digest: string, fields?: ServiceFields, fronts?: string|null, health?: string|null, hidden?: bool, icon?: string|null, image: string, listens?: int|null, media_types?: list<string>, name?: string, native?: string|null, networks?: list<string>, provides?: list<string>, reached?: PluginReached|null, reaches?: string|null, replaces?: string|null, service: string, shape?: PluginShape|null, speaks?: list<string>, starting?: string|null, tag: string, takes_data: bool, upstream?: array<string, string>}
+ * @phpstan-type PluginPlaced array{asks?: list<PluginAsking>, asks_for?: string|null, built_on?: PluginBuiltOn|null, config_path: string, contract?: int|null, description?: string, digest: string, fields?: ServiceFields, fronts?: string|null, health?: string|null, hidden?: bool, icon?: string|null, image: string, listens?: int|null, media_types?: list<string>, name?: string, native?: string|null, networks?: list<string>, provides?: list<string>, reached?: PluginReached|null, reaches?: string|null, replaces?: string|null, service: string, shape?: PluginShape|null, speaks?: list<string>, starting?: string|null, tag: string, takes_data: bool, upstream?: array<string, string>}
  * @phpstan-type PluginPlaceholder array{form: PluginPlaceholderForm, secret: string}
  * @phpstan-type PluginPlaceholderForm 'plain'|'pbkdf2'|'bcrypt'
  * @phpstan-type PluginProving array{asks: string, came_to?: PluginVerdict|null, establishes: string, of?: string|null, proof: string, why: string}
