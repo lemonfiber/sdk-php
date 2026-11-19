@@ -26,6 +26,7 @@ enum Kind: string
     case Beside = 'beside';
     case Boot = 'boot';
     case Bundle = 'bundle';
+    case Caller = 'caller';
     case Capabilities = 'capabilities';
     case Catalogue = 'catalogue';
     case Certificate = 'certificate';
@@ -100,6 +101,7 @@ enum Kind: string
     case SignInCode = 'sign-in-code';
     case Space = 'space';
     case Stack = 'stack';
+    case Standing = 'standing';
     case Start = 'start';
     case Status = 'status';
     case Step = 'step';

@@ -31,6 +31,7 @@ final class RefusalStatus
             RefusalCode::TooManyCodes => 429,
             RefusalCode::SignsInByPassword => 409,
             RefusalCode::NotACodeRequest => 400,
+            RefusalCode::NoSession => 500,
             RefusalCode::NoSuchAction => 404,
             RefusalCode::MissingArgument => 400,
             RefusalCode::UnrecognisedArgument => 400,

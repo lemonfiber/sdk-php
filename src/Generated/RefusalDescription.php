@@ -31,6 +31,7 @@ final class RefusalDescription
             RefusalCode::TooManyCodes => 'Raised when one source has asked for as many codes to sign in by as it may.',
             RefusalCode::SignsInByPassword => 'Raised when a code to sign in by is asked of a household whose members sign in with a password.',
             RefusalCode::NotACodeRequest => 'Raised when what was sent to ask for or finish a sign-in by a code cannot be read.',
+            RefusalCode::NoSession => 'Raised when this machine would not supply the bytes a session\'s secret is made of.',
             RefusalCode::NoSuchAction => 'Raised where no action goes by the name that was asked for.',
             RefusalCode::MissingArgument => 'Raised where an action was not given an argument it needs.',
             RefusalCode::UnrecognisedArgument => 'Raised where an argument was given a value that names nothing.',
