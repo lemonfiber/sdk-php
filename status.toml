@@ -38,5 +38,6 @@ requirement = [
   { id = "ARCH-R261", state = "partial", evidence = ["src/Keys.php", "src/KeyMint.php", "src/MintProof.php", "tests/Feature/DeviceKeysTest.php::mints with a device key's signature over the text the stack verifies, and no password", "tests/Unit/KeyMintTest.php::spells the text a device key signs as the contract publishes it"] },
   { id = "ARCH-R282", state = "partial", evidence = ["src/PushEndpoints.php", "tests/Feature/PushEndpointsTest.php::registers a push endpoint with its name, its address and its keys in base64url", "tests/Feature/PushEndpointsTest.php::removes a push endpoint by its name, as one path segment"] },
   { id = "ARCH-R293", state = "partial", evidence = ["src/Generated/KeysEnvelope.php"] },
+  { id = "ARCH-R441", state = "done", evidence = ["src/Admission.php", "src/Http/CodeAskRequest.php", "src/Http/CodeFinishRequest.php", "tests/Feature/SigningInByCodeTest.php"] },
   { id = "OPS-R95", state = "partial", evidence = [".github/workflows/contract-bump.yml", "scripts/bc-added.sh"] },
 ]

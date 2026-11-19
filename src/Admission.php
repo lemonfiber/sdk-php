@@ -17,9 +17,12 @@ use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Http\AdmissionRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
+use Lemonfiber\Sdk\Http\CodeAskRequest;
+use Lemonfiber\Sdk\Http\CodeFinishRequest;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Time\Duration;
 use Saloon\Http\Faking\MockClient;
+use Saloon\Http\Response;
 
 /**
  * The door: a password exchanged, once, for a session.
@@ -58,6 +61,9 @@ final readonly class Admission
      * somewhere else.
      */
     public const string ENDPOINT = '/api/session';
+
+    /** Where a member signs in by a code an outside service approves. */
+    public const string CODE_ENDPOINT = '/api/session/code';
 
     /** What the answer says, in its own header, when it will listen again. */
     private const string RETRY_AFTER = 'Retry-After';
@@ -150,6 +156,44 @@ final readonly class Admission
     }
 
     /**
+     * Ask for a code a member approves at the service that holds the household's accounts.
+     *
+     * A household that holds its own accounts refuses under `ADMIT-17`, and a
+     * source that asked for too many codes is answered as {@see TooManyAttempts}.
+     *
+     * @throws ApiVersionMismatch
+     * @throws RequestFailed
+     * @throws TooManyAttempts
+     * @throws Unreachable
+     * @throws UnreadableResponse
+     */
+    public function askForACode(): CodeIssued
+    {
+        $request = new CodeAskRequest();
+
+        return $request->createDtoFromResponse($this->sent($request));
+    }
+
+    /**
+     * Finish the sign-in the code under `$waiting` began: the member's session once it was approved, or that it still waits.
+     *
+     * A handle that is unknown, lapsed or spent is refused under `ADMIT-15`,
+     * which is never a wrong password.
+     *
+     * @throws ApiVersionMismatch
+     * @throws RequestFailed
+     * @throws TooManyAttempts
+     * @throws Unreachable
+     * @throws UnreadableResponse
+     */
+    public function finishByCode(string $waiting): Admitted|CodeStillWaiting
+    {
+        $request = new CodeFinishRequest($waiting);
+
+        return $request->createDtoFromResponse($this->sent($request));
+    }
+
+    /**
      * Where this door is, and the certificate it holds that address to.
      */
     public function baseUrl(): BaseUrl
@@ -180,20 +224,42 @@ final readonly class Admission
     private function offered(AdmissionRequest $offer): Admitted
     {
         $response = $this->connector->send($offer);
-        $status = $response->status();
 
-        if ($status === self::NOT_THE_PASSWORD && ! $offer->claims()) {
+        if ($response->status() === self::NOT_THE_PASSWORD && ! $offer->claims()) {
             throw PasswordWasRefused::atTheDoor();
         }
 
+        return $offer->createDtoFromResponse($this->answered($response, self::ENDPOINT));
+    }
+
+    /**
+     * Send a request to sign in by a code, and hand back what came back where nothing refused it.
+     *
+     * @throws RequestFailed
+     * @throws TooManyAttempts
+     * @throws Unreachable
+     */
+    private function sent(CodeAskRequest|CodeFinishRequest $request): Response
+    {
+        return $this->answered($this->connector->send($request), self::CODE_ENDPOINT);
+    }
+
+    /**
+     * What came back, or the refusal it carries.
+     *
+     * @throws RequestFailed
+     * @throws TooManyAttempts
+     */
+    private function answered(Response $response, string $endpoint): Response
+    {
         if ($response->failed()) {
             /** @var array<mixed>|string|null $said */
             $said = $response->header(self::RETRY_AFTER);
 
-            throw RequestFailed::from(self::ENDPOINT, $status, $response->body(), $this->waitOf(is_string($said) ? $said : null));
+            throw RequestFailed::from($endpoint, $response->status(), $response->body(), $this->waitOf(is_string($said) ? $said : null));
         }
 
-        return $offer->createDtoFromResponse($response);
+        return $response;
     }
 
     /**

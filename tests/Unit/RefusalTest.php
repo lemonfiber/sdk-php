@@ -24,6 +24,7 @@ function aProblemDocument(array $changed = []): array
             ['action' => 'Send a diagnostic bundle', 'detail' => 'lemonfiber support'],
         ],
         'detail' => 'services.txt line 3 — nothing was written',
+        'retry_after' => 30,
         ...$changed,
     ];
 }
@@ -48,6 +49,7 @@ it('reads every field of the problem document', function (): void {
         ->and($refusal?->meaning())->toBe('Nothing has been written.')
         ->and($refusal?->detail())->toBe('services.txt line 3 — nothing was written')
         ->and($refusal?->cause())->toBeNull()
+        ->and($refusal?->retryAfter())->toBe(30)
         ->and($refusal instanceof Refusal ? whatARefusalSaysToDo($refusal) : [])->toBe([
             ['Report which file this names', null],
             ['Send a diagnostic bundle', 'lemonfiber support'],
@@ -59,10 +61,11 @@ it('leaves absent what lemonfiber left out, given as null or not given at all', 
 
     expect($refusal)->toBeInstanceOf(Refusal::class)
         ->and($refusal?->detail())->toBeNull()
-        ->and($refusal?->cause())->toBeNull();
+        ->and($refusal?->cause())->toBeNull()
+        ->and($refusal?->retryAfter())->toBeNull();
 })->with([
-    'null' => [aProblemDocument(['detail' => null, 'cause' => null])],
-    'not given' => [array_diff_key(aProblemDocument(), ['detail' => true])],
+    'null' => [aProblemDocument(['detail' => null, 'cause' => null, 'retry_after' => null])],
+    'not given' => [array_diff_key(aProblemDocument(), ['detail' => true, 'retry_after' => true])],
 ]);
 
 it('reads the problem beneath this one, as a problem of its own', function (): void {
@@ -93,6 +96,12 @@ it('reads nothing from a document the contract does not describe', function (mix
     'a remedy with no action' => [aProblemDocument(['remedies' => [['detail' => 'soon']]])],
     'a remedy whose detail is not text' => [aProblemDocument(['remedies' => [['action' => 'Wait', 'detail' => 5]]])],
     'a detail that is not text' => [aProblemDocument(['detail' => ['services.txt']])],
+    'a wait that is not a count' => [aProblemDocument(['retry_after' => '30'])],
+    'a wait below nothing' => [aProblemDocument(['retry_after' => -1])],
     'a cause that is not a problem' => [aProblemDocument(['cause' => 'the disk'])],
     'a cause missing its code' => [aProblemDocument(['cause' => array_diff_key(aProblemDocument(), ['code' => true])])],
 ]);
+
+it('reads a wait of nothing as no wait left, not as none named', function (): void {
+    expect(Refusal::from(aProblemDocument(['retry_after' => 0]))?->retryAfter())->toBe(0);
+});

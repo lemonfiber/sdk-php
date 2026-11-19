@@ -53,6 +53,13 @@ final class UnreadableResponse extends RuntimeException implements AnswerUnusabl
         ));
     }
 
+    public static function codeUnissued(): self
+    {
+        return new self(
+            'Asking for a sign-in code came back without the code or the place to approve it.',
+        );
+    }
+
     public static function namedAt(int $status): self
     {
         return new self(sprintf(

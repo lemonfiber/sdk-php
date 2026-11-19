@@ -51,7 +51,8 @@ final class TooManyAttempts extends RequestFailed
     /**
      * How many seconds the answer said were left, where it said.
      *
-     * Null where the header was absent or unreadable, which a caller has to
+     * Read from `Retry-After`, and from the problem's `retry_after` where the
+     * header named none. Null where neither said, which a caller has to
      * handle rather than being handed a zero — zero means *try now*, and this
      * is the one state where that is exactly wrong.
      */

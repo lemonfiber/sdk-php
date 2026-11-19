@@ -229,6 +229,24 @@ it('reads too many attempts with the wait the answer named', function (): void {
         ->and($waiting->endpoint())->toBe('/api/session');
 });
 
+it('reads the wait the problem named where no header named one, and the header\'s where both did', function (?int $header, int $waited): void {
+    $body = wentWrong([
+        'code' => RefusalCode::TooManyCodes->value,
+        'severity' => 'error',
+        'state' => 'actionable',
+        'summary' => 'Too many sign-in codes asked for.',
+        'meaning' => 'Nothing was issued.',
+        'remedies' => [],
+        'retry_after' => 30,
+    ]);
+    $waiting = RequestFailed::from('/api/session/code', 429, $body, $header);
+
+    expect($waiting instanceof TooManyAttempts ? $waiting->seconds() : 0)->toBe($waited);
+})->with([
+    'no header' => [null, 30],
+    'a header' => [45, 45],
+]);
+
 it('reads too many attempts with no wait as no wait, not as a guessed one', function (): void {
     $waiting = RequestFailed::from('/api/session', 429, '');
 

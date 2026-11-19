@@ -56,6 +56,25 @@ A wrong password raises `PasswordWasRefused`, and too many of them
 `TooManyAttempts`. `Admission::onPort($port, $wait)` is the same door on this
 machine.
 
+A household whose accounts an outside service keeps, such as plex.tv, signs a
+member in by a code that service approves instead:
+
+```php
+$issued = $door->askForACode();   // CodeIssued
+$issued->code;                    // what the member approves
+$issued->approveAt;               // where they approve it: show it as a link and a QR code
+$issued->lapsesAtEpochSeconds;    // when the code lapses
+$issued->waiting;                 // the handle that finishes it: keep it in memory only
+
+$finished = $door->finishByCode($issued->waiting);   // Admitted, or CodeStillWaiting
+```
+
+Asking again while the code waits answers `CodeStillWaiting`, and the member's
+`Admitted` session once it was approved. A handle the door no longer waits on is
+refused under `ADMIT-15`, never as a wrong password. Too many codes asked for
+raises `TooManyAttempts`, and a household that signs in with a password
+refuses the ask under `ADMIT-17`.
+
 The token travels in the `X-Lemonfiber-Token` header and never in an address. A
 request only ever goes to the scheme, host and port the client was built for: a
 redirect is not followed, and raises `Unreachable`.
