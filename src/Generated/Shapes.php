@@ -133,6 +133,6 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Wanted array{choices?: list<string>|null, kind: 'setting', setting: string}|array{kind: 'secret', secret: string}|array{kind: 'service', service: string}
  * @phpstan-type Whose 'stack'|'operator'
  * @phpstan-type Wired array{by: string, origin: ValueOrigin, reaches: Reaches}
- * @phpstan-type WiringSettled array{settled: 'outright'}|array{settled: 'each'}|array{claimants: list<string>, settled: 'contested'}|array{over: list<string>, settled: 'chosen', whose: Whose, why?: string|null}|array{settled: 'unfilled'}
+ * @phpstan-type WiringSettled array{settled: 'outright'}|array{settled: 'each'}|array{claimants: list<string>, settled: 'contested'}|array{over: list<string>, settled: 'chosen', whose: Whose, why?: string|null}|array{settled: 'unfilled'}|array{over: list<string>, settled: 'declined'}
  */
 final class Shapes {}

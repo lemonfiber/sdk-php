@@ -234,6 +234,7 @@ final class RefusalStatus
             RefusalCode::WiringMoved => 400,
             RefusalCode::Unreasonable => 400,
             RefusalCode::AlreadyFills => 400,
+            RefusalCode::VpnDeclined => 409,
             RefusalCode::NotASearch => 400,
             RefusalCode::NotAPlace => 400,
             RefusalCode::NotAskable => 404,
