@@ -235,6 +235,7 @@ enum RefusalCode: string
     case WiringMoved = 'WIRE-5';
     case Unreasonable = 'WIRE-6';
     case AlreadyFills = 'WIRE-7';
+    case VpnDeclined = 'WIRE-8';
     case NotASearch = 'WISH-1';
     case NotAPlace = 'WISH-2';
     case NotAskable = 'WISH-3';

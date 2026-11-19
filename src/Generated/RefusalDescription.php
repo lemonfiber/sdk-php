@@ -234,6 +234,7 @@ final class RefusalDescription
             RefusalCode::WiringMoved => 'Raised when a choice answers an offer that was read against a wiring that has since moved.',
             RefusalCode::Unreasonable => 'Raised when the reason given for a choice is longer than a reason may be, or holds a line break or another control character.',
             RefusalCode::AlreadyFills => 'Raised where the service chosen already fills the capability, so there is nothing to change.',
+            RefusalCode::VpnDeclined => 'Raised where a choice names what fills the egress guard while torrents run without a VPN.',
             RefusalCode::NotASearch => 'Said where the words searched for are too few or too many to search with.',
             RefusalCode::NotAPlace => 'Said where the place a search was asked to go on from is not one a page answered.',
             RefusalCode::NotAskable => 'Said where no title this member may ask for goes by the id and kind named.',

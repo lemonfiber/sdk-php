@@ -18,7 +18,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type Assessment 'assessed'|'unassessable'
  * @phpstan-type SeedReport array{assessment: Assessment, rehearsed: bool, wirings: list<Wiring>}
  * @phpstan-type SeedSeverity array{severity: 'informational'}|array{breakage: string, remediation: string, severity: 'warning'}
- * @phpstan-type SeedState array{state: 'wired'}|array{service: string, state: 'restarted'}|array{state: 'already-wired'}|array{state: 'drifted'}|array{path: string, state: 'kept'}|array{state: 'stale'}|array{ours: string, state: 'conflicted', yours?: string|null}|array{state: 'adopted'}|array{state: 'unmanaged'}|array{ours?: string|null, state: 'would-wire', yours?: string|null}|array{state: 'would-adopt'}|array{reason: string, state: 'observed'}|array{reason: string, state: 'unmatched'}|array{reason: string, state: 'skipped'}|array{detail: string, state: 'failed'}|array{reason: string, state: 'refused'}
+ * @phpstan-type SeedState array{state: 'wired'}|array{service: string, state: 'restarted'}|array{state: 'already-wired'}|array{state: 'drifted'}|array{path: string, state: 'kept'}|array{state: 'stale'}|array{ours: string, state: 'conflicted', yours?: string|null}|array{state: 'adopted'}|array{state: 'unmanaged'}|array{ours?: string|null, state: 'would-wire', yours?: string|null}|array{state: 'would-adopt'}|array{state: 'taken-back'}|array{state: 'would-take-back'}|array{reason: string, state: 'observed'}|array{reason: string, state: 'unmatched'}|array{reason: string, state: 'skipped'}|array{detail: string, state: 'failed'}|array{reason: string, state: 'refused'}
  * @phpstan-type Wiring array{connection: string, severity: SeedSeverity, state: SeedState}
  * @phpstan-type Data SeedReport
  */
