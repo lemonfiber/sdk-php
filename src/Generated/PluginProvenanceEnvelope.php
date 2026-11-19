@@ -15,6 +15,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `plugin-provenance` envelope, shaped as the contract describes it.
  *
+ * @phpstan-type Based array{basis: 'recorded', digests: list<string>}|array{basis: 'unproven', why: string}|array{basis: 'refused', why: string}
  * @phpstan-type Vouch array{by: string, provenance: 'signed'}|array{provenance: 'unproven', why: string}|array{provenance: 'refused', why: string}
  * @phpstan-type Vouched array{id: string, images: list<Vouch>, installable: bool}
  * @phpstan-type Data Vouched
