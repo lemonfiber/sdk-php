@@ -194,6 +194,7 @@ final class RefusalStatus
             RefusalCode::Unrenderable => 500,
             RefusalCode::NoJobName => 500,
             RefusalCode::Unanswered => 500,
+            RefusalCode::NotServing => 500,
             RefusalCode::NoSuchSetting => 404,
             RefusalCode::ASecret => 400,
             RefusalCode::TakenElsewhere => 400,

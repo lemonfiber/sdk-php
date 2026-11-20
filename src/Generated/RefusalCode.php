@@ -195,6 +195,7 @@ enum RefusalCode: string
     case Unrenderable = 'SERVE-6';
     case NoJobName = 'SERVE-7';
     case Unanswered = 'SERVE-8';
+    case NotServing = 'SERVE-9';
     case NoSuchSetting = 'SETTING-1';
     case ASecret = 'SETTING-2';
     case TakenElsewhere = 'SETTING-3';

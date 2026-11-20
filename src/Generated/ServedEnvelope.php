@@ -15,7 +15,9 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `served` envelope, shaped as the contract describes it.
  *
- * @phpstan-type ServedReport array{fingerprint?: string|null, named?: string|null, unrecorded?: string|null}
+ * @phpstan-import-type Instant from Shapes
+ * @phpstan-type Described array{fingerprint: string, issuer: string, issuer_cut: bool, names: list<string>, names_more: int, self_signed: bool, subject: string, subject_cut: bool, valid_from: Instant, valid_until: Instant}
+ * @phpstan-type ServedReport array{certificate?: Described|null, encrypted: bool, named?: string|null, network: bool, port: int, unrecorded?: string|null}
  * @phpstan-type Data ServedReport
  */
 final class ServedEnvelope
