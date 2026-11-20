@@ -1,7 +1,7 @@
 {
     "format": 1,
-    "commit": "daf251ab08adde94f6b7ff46c5c9f78d534e84f0",
-    "time": "2026-11-20T12:47:59Z",
+    "commit": "a3ebdc15104e97d4869196a8cbc9a9f84bfe484e",
+    "time": "2026-11-20T16:23:50Z",
     "verdict": "passed",
     "score": 100.0,
     "trees": [
@@ -93,7 +93,6 @@
         {
             "path": "src/ActionRequest.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
@@ -111,31 +110,26 @@
         {
             "path": "src/Base64Url.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/BundleFile.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/Client.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/Contract/Api.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/DeviceAttestation.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
