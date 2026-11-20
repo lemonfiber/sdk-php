@@ -1,7 +1,7 @@
 {
     "format": 1,
-    "commit": "a3ebdc15104e97d4869196a8cbc9a9f84bfe484e",
-    "time": "2026-11-20T16:23:50Z",
+    "commit": "e92ced776341c5347af852292f21d45b0d0ee10e",
+    "time": "2026-11-20T21:34:17Z",
     "verdict": "passed",
     "score": 100.0,
     "trees": [
@@ -21,70 +21,70 @@
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Removal\\RemoveArrayItem",
-            "seconds": 877.5001731796677,
+            "seconds": 908.7781664847301,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Number\\DecrementInteger",
-            "seconds": 678.6321703149007,
+            "seconds": 698.518679127389,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Number\\IncrementInteger",
-            "seconds": 470.193531340538,
+            "seconds": 477.8473442282122,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Arithmetic\\PlusToMinus",
-            "seconds": 210.93762959887692,
+            "seconds": 223.89107450966586,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\ControlStructures\\IfNegated",
-            "seconds": 205.23239271539785,
+            "seconds": 210.6910416486618,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Equality\\IdenticalToNotIdentical",
-            "seconds": 175.3919781616506,
+            "seconds": 179.23726868048078,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Removal\\RemoveEarlyReturn",
-            "seconds": 151.04838017864094,
+            "seconds": 159.0103804200477,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\Logical\\BooleanAndToBooleanOr",
-            "seconds": 135.5051614967113,
+            "seconds": 142.23106654890822,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
             "mutator": "Pest\\Mutate\\Mutators\\ControlStructures\\ForeachEmptyIterable",
-            "seconds": 121.45886972292277,
+            "seconds": 128.7934643471341,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
-            "mutator": "Pest\\Mutate\\Mutators\\Logical\\TrueToFalse",
-            "seconds": 112.24966234915044,
+            "mutator": "Pest\\Mutate\\Mutators\\Removal\\RemoveFunctionCall",
+            "seconds": 117.60422573838945,
             "survived": 0,
             "killRate": 100.0
         }
@@ -93,6 +93,7 @@
         {
             "path": "src/ActionRequest.php",
             "score": 100.0,
+            "base": 100.0,
             "notKilled": 0
         },
         {
@@ -110,26 +111,31 @@
         {
             "path": "src/Base64Url.php",
             "score": 100.0,
+            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/BundleFile.php",
             "score": 100.0,
+            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/Client.php",
             "score": 100.0,
+            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/Contract/Api.php",
             "score": 100.0,
+            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/DeviceAttestation.php",
             "score": 100.0,
+            "base": 100.0,
             "notKilled": 0
         },
         {
