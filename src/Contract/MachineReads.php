@@ -263,6 +263,26 @@ interface MachineReads
     public const string SETTLED_ENDPOINT = '/api/settled';
 
     /**
+     * The endpoint answering with what a stop would interrupt.
+     *
+     * Each download still coming down inside what stopping the forms and services
+     * named would stop, the whole stack where neither is named. It answers with the
+     * `in-flight` envelope ({@see \Lemonfiber\Sdk\Generated\InFlightEnvelope}) and
+     * takes `forms` and `services`, each repeatable.
+     */
+    public const string IN_FLIGHT_ENDPOINT = '/api/in-flight';
+
+    /**
+     * The endpoint answering with how the web surface is served.
+     *
+     * The port, whether it is encrypted and offered to the network, the name it
+     * answers to, and the certificate it presents as that certificate describes
+     * itself. It answers with the `served` envelope
+     * ({@see \Lemonfiber\Sdk\Generated\ServedEnvelope}) and takes nothing.
+     */
+    public const string SERVED_ENDPOINT = '/api/served';
+
+    /**
      * What a surface can mark as new: releases, requests and checks found wrong, newest first.
      * It answers with the `news-items` envelope
      * ({@see \Lemonfiber\Sdk\Generated\NewsItemsEnvelope}) and takes nothing; the stream

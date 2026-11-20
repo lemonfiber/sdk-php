@@ -63,6 +63,8 @@ it('names the reads it holds a path for, and holds no path it has no caller for'
         ->and(Api::HOSTING_ENDPOINT)->toBe('/api/hosting')
         ->and(Api::MIGRATION_ENDPOINT)->toBe('/api/migration')
         ->and(Api::SETTLED_ENDPOINT)->toBe('/api/settled')
+        ->and(Api::IN_FLIGHT_ENDPOINT)->toBe('/api/in-flight')
+        ->and(Api::SERVED_ENDPOINT)->toBe('/api/served')
         ->and(Api::FRONT_DOOR_ENDPOINT)->toBe('/api/front-door')
         ->and(Api::NEWS_ENDPOINT)->toBe('/api/news')
         ->and(Api::EXPLAIN_ENDPOINT)->toBe('/api/explain')
