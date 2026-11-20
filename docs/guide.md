@@ -61,13 +61,17 @@ member in by a code that service approves instead:
 
 ```php
 $issued = $door->askForACode();   // CodeIssued
-$issued->code;                    // what the member approves
+$issued->code;                    // what the member approves: shown to them, it finishes nothing alone
 $issued->approveAt;               // where they approve it: show it as a link and a QR code
 $issued->lapsesAtEpochSeconds;    // when the code lapses
-$issued->waiting;                 // the handle that finishes it: keep it in memory only
+$issued->waiting;                 // the WaitingCode that finishes it: keep it in memory only
 
 $finished = $door->finishByCode($issued->waiting);   // Admitted, or CodeStillWaiting
 ```
+
+The handle opens a member's session, so a `WaitingCode` prints as hidden in a
+dump, an export, JSON and a trace, and refuses to be serialised; `reveal()` hands
+it to the one request that finishes the sign-in.
 
 Asking again while the code waits answers `CodeStillWaiting`, and the member's
 `Admitted` session once it was approved. A handle the door no longer waits on is

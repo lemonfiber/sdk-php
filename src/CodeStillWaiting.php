@@ -10,11 +10,11 @@ namespace Lemonfiber\Sdk;
 final readonly class CodeStillWaiting
 {
     /**
-     * @param string $waiting              the handle that finishes it
+     * @param WaitingCode $waiting        the handle that finishes it
      * @param int    $lapsesAtEpochSeconds when it lapses
      */
     public function __construct(
-        public string $waiting,
+        public WaitingCode $waiting,
         public int $lapsesAtEpochSeconds,
     ) {}
 }

@@ -13,12 +13,14 @@ use Lemonfiber\Sdk\Exception\ApiVersionMismatch;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Generated\SignInCodeEnvelope;
+use Lemonfiber\Sdk\WaitingCode;
 use Override;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\Traits\Body\HasStringBody;
+use SensitiveParameter;
 
 /**
  * Asking the door for a code to sign a member in by.
@@ -40,7 +42,7 @@ final class CodeAskRequest extends Request implements HasBody, ReadsItsAnswer
      * @throws UnreadableResponse
      */
     #[Override]
-    public function createDtoFromResponse(Response $response): CodeIssued
+    public function createDtoFromResponse(#[SensitiveParameter] Response $response): CodeIssued
     {
         $data = SignInCodeEnvelope::in(new EnvelopeReader()->read($response->body()))->data;
         $code = $data['code'] ?? null;
@@ -50,7 +52,7 @@ final class CodeAskRequest extends Request implements HasBody, ReadsItsAnswer
             throw UnreadableResponse::codeUnissued();
         }
 
-        return new CodeIssued($code, $approveAt, $data['lapses_at'], $data['waiting']);
+        return new CodeIssued($code, $approveAt, $data['lapses_at'], WaitingCode::of($data['waiting']));
     }
 
     public function resolveEndpoint(): string

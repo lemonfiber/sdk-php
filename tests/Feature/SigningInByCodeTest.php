@@ -14,6 +14,7 @@ use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Generated\RefusalCode;
 use Lemonfiber\Sdk\Http\CodeAskRequest;
 use Lemonfiber\Sdk\Http\CodeFinishRequest;
+use Lemonfiber\Sdk\WaitingCode;
 use Saloon\Contracts\Body\BodyRepository;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Faking\MockResponse;
@@ -87,7 +88,10 @@ it('asks for a code with an empty object, in JSON, at its own endpoint', functio
 it('reads the code, where it is approved, when it lapses and the handle that finishes it', function (): void {
     [$door] = aCodeDoorAnswering(aSignInCode('"code":"ABCD","approve_at":"https://plex.tv/link","lapses_at":1789380000,"waiting":"' . A_HANDLE . '"'));
 
-    expect($door->askForACode())->toEqual(new CodeIssued('ABCD', 'https://plex.tv/link', 1789380000, A_HANDLE));
+    $issued = $door->askForACode();
+
+    expect([$issued->code, $issued->approveAt, $issued->lapsesAtEpochSeconds, $issued->waiting->reveal()])
+        ->toBe(['ABCD', 'https://plex.tv/link', 1789380000, A_HANDLE]);
 });
 
 it('does not read an ask answered without the code or the place to approve it as a code issued', function (string $data): void {
@@ -104,7 +108,7 @@ it('does not read an ask answered without the code or the place to approve it as
 it('finishes with the handle in the body, never in the address', function (): void {
     [$door, $mock] = aCodeDoorAnswering(aSignInCode('"lapses_at":1789380000,"waiting":"' . A_HANDLE . '"'));
 
-    $door->finishByCode(A_HANDLE);
+    $door->finishByCode(WaitingCode::of(A_HANDLE));
 
     $pending = $mock->getLastPendingRequest();
 
@@ -116,26 +120,29 @@ it('finishes with the handle in the body, never in the address', function (): vo
 it('says a code the member has not approved yet still waits, and when it lapses', function (): void {
     [$door] = aCodeDoorAnswering(aSignInCode('"lapses_at":1789380000,"waiting":"' . A_HANDLE . '"'));
 
-    expect($door->finishByCode(A_HANDLE))->toEqual(new CodeStillWaiting(A_HANDLE, 1789380000));
+    $waiting = $door->finishByCode(WaitingCode::of(A_HANDLE));
+
+    expect($waiting)->toBeInstanceOf(CodeStillWaiting::class)
+        ->and($waiting instanceof CodeStillWaiting ? [$waiting->waiting->reveal(), $waiting->lapsesAtEpochSeconds] : null)->toBe([A_HANDLE, 1789380000]);
 });
 
 it('comes away with the member\'s session once the code was approved', function (): void {
     [$door] = aCodeDoorAnswering(MockResponse::make('{"api_version":1,"kind":"admission","data":{"token":"a-session","until":1789380000,"member":"robin"}}'));
 
-    expect($door->finishByCode(A_HANDLE))->toEqual(Admitted::of('a-session', 1789380000, 'robin'));
+    expect($door->finishByCode(WaitingCode::of(A_HANDLE)))->toEqual(Admitted::of('a-session', 1789380000, 'robin'));
 });
 
 it('does not read any other kind as a code or a session', function (): void {
     [$door] = aCodeDoorAnswering(MockResponse::make('{"api_version":1,"kind":"job","data":{}}'));
 
-    expect(whatTheCodeMet(fn(): mixed => $door->finishByCode(A_HANDLE)))->toBeInstanceOf(UnexpectedKind::class)
+    expect(whatTheCodeMet(fn(): mixed => $door->finishByCode(WaitingCode::of(A_HANDLE))))->toBeInstanceOf(UnexpectedKind::class)
         ->and(whatTheCodeMet(fn(): mixed => $door->askForACode()))->toBeInstanceOf(UnexpectedKind::class);
 });
 
 it('reads a handle the door no longer waits on by its code, never as a wrong password', function (): void {
     [$door] = aCodeDoorAnswering(aCodeRefusal('ADMIT-15', 401));
 
-    $met = whatTheCodeMet(fn(): mixed => $door->finishByCode(A_HANDLE));
+    $met = whatTheCodeMet(fn(): mixed => $door->finishByCode(WaitingCode::of(A_HANDLE)));
 
     expect($met)->toBeInstanceOf(RequestFailed::class)
         ->and($met)->not->toBeInstanceOf(PasswordWasRefused::class)

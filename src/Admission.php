@@ -23,6 +23,7 @@ use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Time\Duration;
 use Saloon\Http\Faking\MockClient;
 use Saloon\Http\Response;
+use SensitiveParameter;
 
 /**
  * The door: a password exchanged, once, for a session.
@@ -186,7 +187,7 @@ final readonly class Admission
      * @throws Unreachable
      * @throws UnreadableResponse
      */
-    public function finishByCode(string $waiting): Admitted|CodeStillWaiting
+    public function finishByCode(#[SensitiveParameter] WaitingCode $waiting): Admitted|CodeStillWaiting
     {
         $request = new CodeFinishRequest($waiting);
 
@@ -221,7 +222,7 @@ final readonly class Admission
      * @throws Unreachable
      * @throws UnreadableResponse
      */
-    private function offered(AdmissionRequest $offer): Admitted
+    private function offered(#[SensitiveParameter] AdmissionRequest $offer): Admitted
     {
         $response = $this->connector->send($offer);
 
@@ -239,7 +240,7 @@ final readonly class Admission
      * @throws TooManyAttempts
      * @throws Unreachable
      */
-    private function sent(CodeAskRequest|CodeFinishRequest $request): Response
+    private function sent(#[SensitiveParameter] CodeAskRequest|CodeFinishRequest $request): Response
     {
         return $this->answered($this->connector->send($request), self::CODE_ENDPOINT);
     }
@@ -250,7 +251,7 @@ final readonly class Admission
      * @throws RequestFailed
      * @throws TooManyAttempts
      */
-    private function answered(Response $response, string $endpoint): Response
+    private function answered(#[SensitiveParameter] Response $response, string $endpoint): Response
     {
         if ($response->failed()) {
             /** @var array<mixed>|string|null $said */

@@ -18,12 +18,14 @@ use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Generated\AdmissionEnvelope;
 use Lemonfiber\Sdk\Generated\Kind;
 use Lemonfiber\Sdk\Generated\SignInCodeEnvelope;
+use Lemonfiber\Sdk\WaitingCode;
 use Override;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\Traits\Body\HasStringBody;
+use SensitiveParameter;
 
 /**
  * Finishing the sign-in a code began, by the handle the door answered with it.
@@ -37,7 +39,7 @@ final class CodeFinishRequest extends Request implements HasBody, ReadsItsAnswer
     #[Override]
     protected Method $method = Method::POST;
 
-    public function __construct(private readonly string $waiting) {}
+    public function __construct(#[SensitiveParameter] private readonly WaitingCode $waiting) {}
 
     /**
      * The member's session once the code was approved, or that it still waits.
@@ -47,7 +49,7 @@ final class CodeFinishRequest extends Request implements HasBody, ReadsItsAnswer
      * @throws UnreadableResponse
      */
     #[Override]
-    public function createDtoFromResponse(Response $response): Admitted|CodeStillWaiting
+    public function createDtoFromResponse(#[SensitiveParameter] Response $response): Admitted|CodeStillWaiting
     {
         $envelope = new EnvelopeReader()->read($response->body());
 
@@ -59,7 +61,7 @@ final class CodeFinishRequest extends Request implements HasBody, ReadsItsAnswer
 
         $data = SignInCodeEnvelope::in($envelope)->data;
 
-        return new CodeStillWaiting($data['waiting'], $data['lapses_at']);
+        return new CodeStillWaiting(WaitingCode::of($data['waiting']), $data['lapses_at']);
     }
 
     public function resolveEndpoint(): string
@@ -69,7 +71,7 @@ final class CodeFinishRequest extends Request implements HasBody, ReadsItsAnswer
 
     protected function defaultBody(): string
     {
-        return json_encode(['waiting' => $this->waiting], JSON_THROW_ON_ERROR);
+        return json_encode(['waiting' => $this->waiting->reveal()], JSON_THROW_ON_ERROR);
     }
 
     /** @return array<string, string> */
