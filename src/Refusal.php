@@ -6,6 +6,7 @@ namespace Lemonfiber\Sdk;
 
 use function array_is_list;
 use function is_array;
+use function is_int;
 use function is_string;
 
 use UnexpectedValueException;
@@ -36,6 +37,7 @@ final readonly class Refusal
         private array $remedies,
         private ?string $detail,
         private ?self $cause,
+        private ?int $retryAfter,
     ) {}
 
     /**
@@ -123,6 +125,14 @@ final readonly class Refusal
     }
 
     /**
+     * How many whole seconds to wait before asking again, where the refusal says.
+     */
+    public function retryAfter(): ?int
+    {
+        return $this->retryAfter;
+    }
+
+    /**
      * @throws UnexpectedValueException
      */
     private static function read(mixed $data): self
@@ -142,6 +152,7 @@ final readonly class Refusal
             self::remediesIn($data),
             self::optionalText($data, 'detail'),
             $cause === null ? null : self::read($cause),
+            self::optionalSeconds($data, 'retry_after'),
         );
     }
 
@@ -203,6 +214,24 @@ final readonly class Refusal
 
         if ($value !== null && ! is_string($value)) {
             throw new UnexpectedValueException('An optional field is not text.');
+        }
+
+        return $value;
+    }
+
+    /**
+     * A field that is a count of seconds where it is given, and absent where it is not.
+     *
+     * @param array<mixed> $data
+     *
+     * @throws UnexpectedValueException
+     */
+    private static function optionalSeconds(array $data, string $field): ?int
+    {
+        $value = self::optional($data, $field);
+
+        if ($value !== null && (! is_int($value) || $value < 0)) {
+            throw new UnexpectedValueException('An optional field is not a count of seconds.');
         }
 
         return $value;

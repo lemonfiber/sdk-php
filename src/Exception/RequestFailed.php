@@ -67,8 +67,9 @@ abstract class RequestFailed extends RuntimeException implements Problem
      * A request turned away is {@see NotAdmitted} where the credential itself
      * was refused: its code says so, it carries no code this client knows, or
      * it carries no sentence. Turned away with any other code is
-     * {@see Declined}. `$retryAfter` is the wait a `Retry-After` header named,
-     * which only {@see TooManyAttempts} carries.
+     * {@see Declined}. `$retryAfter` is the wait a `Retry-After` header named;
+     * where it named none, the problem's `retry_after` stands in. Only
+     * {@see TooManyAttempts} carries it.
      */
     final public static function from(string $endpoint, int $status, string $body, ?int $retryAfter = null): self
     {
@@ -83,7 +84,7 @@ abstract class RequestFailed extends RuntimeException implements Problem
         );
 
         return match (true) {
-            $status === self::TOO_MANY => new TooManyAttempts($endpoint, $status, $said, $refusal, $retryAfter),
+            $status === self::TOO_MANY => new TooManyAttempts($endpoint, $status, $said, $refusal, $retryAfter ?? $refusal?->retryAfter()),
             in_array($status, self::TURNED_AWAY, true) => self::turnedAway($endpoint, $status, $said, $refusal, $message),
             $status === self::MISASKED => new Misasked($endpoint, $status, $said, $refusal, $message),
             $status === self::MISSING => new Missing($endpoint, $status, $said, $refusal, $message),

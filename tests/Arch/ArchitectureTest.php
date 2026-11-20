@@ -16,6 +16,7 @@ use Lemonfiber\Sdk\Http\CertificatePin;
 use Lemonfiber\Sdk\Http\IdempotencyKey;
 use Lemonfiber\Sdk\Http\RunToken;
 use Lemonfiber\Sdk\Time\Duration;
+use Lemonfiber\Sdk\WaitingCode;
 
 arch('every file declares strict types')
     ->expect('Lemonfiber\Sdk')
@@ -48,6 +49,7 @@ arch('values are readonly')
         CertificatePin::class,
         IdempotencyKey::class,
         RunToken::class,
+        WaitingCode::class,
         Duration::class,
     ])
     ->toBeReadonly();

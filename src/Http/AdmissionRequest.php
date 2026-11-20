@@ -17,6 +17,7 @@ use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
+use SensitiveParameter;
 
 /**
  * The one request that carries a password rather than a token.
@@ -71,7 +72,7 @@ final class AdmissionRequest extends Request implements HasBody, ReadsItsAnswer
      * @throws UnreadableResponse
      */
     #[Override]
-    public function createDtoFromResponse(Response $response): Admitted
+    public function createDtoFromResponse(#[SensitiveParameter] Response $response): Admitted
     {
         $data = AdmissionEnvelope::in(new EnvelopeReader()->read($response->body()))->data;
 
