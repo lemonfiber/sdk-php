@@ -194,6 +194,7 @@ final class RefusalDescription
             RefusalCode::Unrenderable => 'Raised when an answer could not be rendered.',
             RefusalCode::NoJobName => 'Raised when this machine will not supply the randomness a job is named with.',
             RefusalCode::Unanswered => 'Raised when an action\'s work ended before it had an answer to give.',
+            RefusalCode::NotServing => 'Raised when how the web surface is served is asked of a run that is not serving it.',
             RefusalCode::NoSuchSetting => 'Raised where nothing in this stack reads a setting by the name given.',
             RefusalCode::ASecret => 'Raised where the name given is a secret\'s, which this command never writes.',
             RefusalCode::TakenElsewhere => 'Raised where the name given belongs to the other of the two commands that write settings.',
