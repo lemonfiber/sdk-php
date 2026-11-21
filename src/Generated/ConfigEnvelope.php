@@ -20,8 +20,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type Validation from Shapes
  * @phpstan-type Active array{name: string, progress: int, protocol: string}
  * @phpstan-type ConfigChange array{cost: Cost, from?: string|null, key: string, to: string}
- * @phpstan-type ConfigReport array{changed: bool, consequence?: string|null, rehearsed: bool, review?: Review|null, settings: list<SettingReport>}
+ * @phpstan-type ConfigReport array{changed: bool, consequence?: string|null, decisions: list<DecisionReport>, rehearsed: bool, review?: Review|null, settings: list<SettingReport>}
  * @phpstan-type Cost 'cheap'|'consequential'
+ * @phpstan-type DecisionKey 'DATA_ROOT'|'MEDIA_SERVER_MODE'|'LEMONFIBER_USENET'|'LEMONFIBER_TORRENT'|'LEMONFIBER_VPN'|'PUID'|'PGID'|'VPN_PROVIDER'|'INDEXER_URL'|'INDEXER_APIKEY'|'USENET_HOST'|'USENET_PORT'|'USENET_USER'|'USENET_PASS'|'USENET_TLS'|'LEMONFIBER_FRONT_DOOR'|'TZ'|'LEMONFIBER_LOCALE'
+ * @phpstan-type DecisionReport array{affects: string, cost: Cost, credential: bool, held: bool, key: DecisionKey, setting?: string|null}
  * @phpstan-type Edited array{found: string, secret: bool, wrote: string}
  * @phpstan-type Findings array{active: list<Active>, edited?: Edited|null, keeps: list<string>, library: list<LibraryPath>, opens: list<Opening>, stops: list<string>}
  * @phpstan-type LibraryPath array{because: string, carried: bool, host?: string|null, path: string, service: string}
