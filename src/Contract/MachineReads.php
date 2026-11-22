@@ -358,6 +358,16 @@ interface MachineReads
     public const string PLUGINS_ENDPOINT = '/api/plugins';
 
     /**
+     * The endpoint answering with what the plugin catalogue offers to install, as the
+     * `plugin-catalogue` envelope ({@see \Lemonfiber\Sdk\Generated\PluginCatalogueEnvelope}):
+     * each plugin the verified index lists, with what is installed of it and whether the
+     * catalogue holds a newer version, or that reaching the catalogue is switched off and the
+     * setting that turns it on, or why its index could not be read. It takes nothing, and
+     * answers the operator alone: a member and a key of any scope are refused.
+     */
+    public const string PLUGIN_CATALOGUE_ENDPOINT = '/api/plugins/catalogue';
+
+    /**
      * The endpoint answering with what the stack wires to what, as the `wiring`
      * envelope ({@see \Lemonfiber\Sdk\Generated\WiringEnvelope}). It takes
      * nothing, and a wiring that cannot be read is refused with a code of its
