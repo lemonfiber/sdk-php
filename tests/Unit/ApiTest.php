@@ -78,6 +78,7 @@ it('names the reads it holds a path for, and holds no path it has no caller for'
         ->and(Api::REQUEST_POSTER_ENDPOINT)->toBe('/api/requests/{reference}/poster')
         ->and(Api::UNINSTALL_ENDPOINT)->toBe('/api/uninstall')
         ->and(Api::PLUGINS_ENDPOINT)->toBe('/api/plugins')
+        ->and(Api::PLUGIN_CATALOGUE_ENDPOINT)->toBe('/api/plugins/catalogue')
         ->and(Api::WIRING_ENDPOINT)->toBe('/api/wiring')
         ->and(Api::SETTINGS_ENDPOINT)->toBe('/api/settings')
         ->and(Api::BOOT_ENDPOINT)->toBe('/api/boot')
