@@ -74,6 +74,7 @@ enum Kind: string
     case Pausing = 'pausing';
     case Play = 'play';
     case Playing = 'playing';
+    case PluginCatalogue = 'plugin-catalogue';
     case PluginClaims = 'plugin-claims';
     case PluginConformance = 'plugin-conformance';
     case PluginProvenance = 'plugin-provenance';
