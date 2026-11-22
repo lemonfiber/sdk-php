@@ -1,7 +1,7 @@
 {
     "format": 1,
-    "commit": "41000c2952c2dcb162e1b38ad667ab47effc9f92",
-    "time": "2026-11-22T11:08:40Z",
+    "commit": "01426991f9098e09eda2ea84e1bf4f2fb54254a0",
+    "time": "2026-11-22T20:48:29Z",
     "verdict": "passed",
     "score": 100.0,
     "trees": [
@@ -99,13 +99,11 @@
         {
             "path": "src/Admission.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/Admitted.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
@@ -141,13 +139,11 @@
         {
             "path": "src/Envelope/EnvelopeReader.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         },
         {
             "path": "src/Envelope/Payload.php",
             "score": 100.0,
-            "base": 100.0,
             "notKilled": 0
         }
     ]
