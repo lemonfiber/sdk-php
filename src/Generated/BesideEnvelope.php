@@ -40,6 +40,6 @@ final class BesideEnvelope
         /** @var Data $data */
         $data = Payload::under(self::KIND, $envelope);
 
-        return new Envelope($envelope->apiVersion, $envelope->kind, $data, $envelope->host);
+        return new Envelope($envelope->apiVersion, $envelope->kind, $data, $envelope->host, $envelope->job);
     }
 }

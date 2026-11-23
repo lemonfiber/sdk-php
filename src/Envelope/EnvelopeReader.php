@@ -76,7 +76,13 @@ final readonly class EnvelopeReader
             throw UnreadableResponse::hostUnreadable();
         }
 
-        return new Envelope($version, $kind, $decoded['data'], $host);
+        $job = $decoded['job'] ?? null;
+
+        if ($job !== null && ! is_string($job)) {
+            throw UnreadableResponse::jobUnreadable();
+        }
+
+        return new Envelope($version, $kind, $decoded['data'], $host, $job);
     }
 
     /**
