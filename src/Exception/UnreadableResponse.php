@@ -82,6 +82,13 @@ final class UnreadableResponse extends RuntimeException implements AnswerUnusabl
         );
     }
 
+    public static function jobUnreadable(): self
+    {
+        return new self(
+            'The answer names the work that said it with something other than a name.',
+        );
+    }
+
     public static function dataMissing(): self
     {
         return new self(

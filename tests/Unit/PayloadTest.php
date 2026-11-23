@@ -56,6 +56,17 @@ it('keeps the machine an answer is about when the payload is typed by its kind',
     expect($beside->host)->toBe('nas.local');
 });
 
+it('keeps the work that said an answer when the payload is typed by its kind', function (): void {
+    $said = WordEnvelope::in(new Envelope(Api::VERSION, 'word', [
+        'word' => 'hardlink',
+        'short' => 'Two names for one set of bytes.',
+        'deep' => null,
+        'also_called' => [],
+    ], null, '9f2c1a7e04b3d815'));
+
+    expect($said->job)->toBe('9f2c1a7e04b3d815');
+});
+
 it('refuses to read an envelope as a kind it does not carry', function (): void {
     $envelope = new Envelope(Api::VERSION, 'log', 'pelican');
 

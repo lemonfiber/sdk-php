@@ -98,7 +98,9 @@ $client->read(Api::REQUESTS_ENDPOINT, ['member' => 'ada']);
 ```
 
 Every envelope also carries `host`: the machine the answer is about, where it is
-not the one lemonfiber runs on, and null where it is.
+not the one lemonfiber runs on, and null where it is. An event said by work an
+accepting reply named carries that name as `job`, so a line on the stream is tied
+to the work you started; it is null on anything no job said.
 
 Each read is documented where it is declared, with the parameters it takes and the
 kind it answers with: the machine's reads in

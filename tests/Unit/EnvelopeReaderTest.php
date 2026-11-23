@@ -32,6 +32,21 @@ it('refuses an answer naming its machine with something other than a name', func
         ->toThrow(UnreadableResponse::class, 'names the machine it is about with something other than a name');
 });
 
+it('reads the work that said an answer, where it names one', function (): void {
+    $said = new EnvelopeReader()->read('{"api_version":1,"kind":"step","job":"9f2c1a7e04b3d815","data":{}}');
+    $unsaid = new EnvelopeReader()->read('{"api_version":1,"kind":"step","data":{}}');
+    $named = new EnvelopeReader()->read('{"api_version":1,"kind":"step","job":null,"data":{}}');
+
+    expect($said->job)->toBe('9f2c1a7e04b3d815')
+        ->and($unsaid->job)->toBeNull()
+        ->and($named->job)->toBeNull();
+});
+
+it('refuses an answer naming the work that said it with something other than a name', function (): void {
+    expect(fn(): Envelope => new EnvelopeReader()->read('{"api_version":1,"kind":"step","job":7,"data":{}}'))
+        ->toThrow(UnreadableResponse::class, 'names the work that said it with something other than a name');
+});
+
 it('reads a payload that is not an object', function (): void {
     $envelope = new EnvelopeReader()->read('{"api_version":1,"kind":"version","data":7}');
 
