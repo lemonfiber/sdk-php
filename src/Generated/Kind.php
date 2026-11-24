@@ -91,6 +91,7 @@ enum Kind: string
     case Removal = 'removal';
     case Repair = 'repair';
     case Replacement = 'replacement';
+    case Replay = 'replay';
     case Reset = 'reset';
     case Restore = 'restore';
     case Seed = 'seed';
