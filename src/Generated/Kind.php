@@ -67,6 +67,7 @@ enum Kind: string
     case News = 'news';
     case NewsItems = 'news-items';
     case Notify = 'notify';
+    case NotifyHeard = 'notify-heard';
     case NotifyMine = 'notify-mine';
     case Outbound = 'outbound';
     case Pairing = 'pairing';
@@ -90,6 +91,7 @@ enum Kind: string
     case Queue = 'queue';
     case Ran = 'ran';
     case Removal = 'removal';
+    case Renewed = 'renewed';
     case Repair = 'repair';
     case Replacement = 'replacement';
     case Replay = 'replay';
@@ -117,6 +119,7 @@ enum Kind: string
     case Tuned = 'tuned';
     case Undo = 'undo';
     case Uninstall = 'uninstall';
+    case Untuned = 'untuned';
     case Update = 'update';
     case Upgrade = 'upgrade';
     case Version = 'version';
