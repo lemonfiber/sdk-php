@@ -17,9 +17,10 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  *
  * @phpstan-import-type Instant from Shapes
  * @phpstan-import-type Tree from Shapes
+ * @phpstan-type CopiedScope array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project?: string|null, scope: 'existing', trees?: list<Tree>|null}
  * @phpstan-type CopyWhat 'backup'|'restore'
  * @phpstan-type CopyingReport array{running?: RunningCopy|null}
- * @phpstan-type RunningCopy array{job?: string|null, part: string, started: Instant, what: CopyWhat, whole: int, written: int}
+ * @phpstan-type RunningCopy array{state: 'working'}|array{limit: int, state: 'paced'}|array{state: 'stalled', wrote: Instant}
  * @phpstan-type Data CopyingReport
  */
 final class CopyingEnvelope
