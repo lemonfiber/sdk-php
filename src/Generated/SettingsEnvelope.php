@@ -25,7 +25,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type SecretRead array{from?: SecretFrom|null, held: bool, name: string, readers: list<Reader>, whose: Owner}
  * @phpstan-type SettingChange array{agreement: string, applied: bool, regenerates: list<string>, restarts: list<string>, settings: list<SettingMove>, starts: list<string>, unrestarted?: string|null, waiting: list<Waiting>}
  * @phpstan-type SettingMove array{consequence?: string|null, setting: string, value?: string|null, was?: string|null}
- * @phpstan-type SettingRead array{choices?: list<Choosable>|null, environment?: string|null, name: string, readers: list<Reader>, value?: string|null, whose: Owner}
+ * @phpstan-type SettingRead array{choices?: list<Choosable>|null, default?: string|null, environment?: string|null, name: string, readers: list<Reader>, value?: string|null, whose: Owner}
  * @phpstan-type SettingsReport array{change?: SettingChange|null, guards?: list<StackMoveTaken>, rehearsed: bool, secrets: list<SecretRead>, settings: list<SettingRead>, unvetted?: Unvetted|null, waiting: list<Waiting>}
  * @phpstan-type Data SettingsReport
  */
