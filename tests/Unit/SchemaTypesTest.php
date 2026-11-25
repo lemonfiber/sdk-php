@@ -31,3 +31,34 @@ it('refuses rather than types as mixed a reference it cannot resolve', function 
 it('types a reference to a definition it carries as that definition\'s alias', function (): void {
     expect(typesCarrying(['Word' => ['type' => 'string']])->typeOf(['$ref' => '#/$defs/Word']))->toBe('Word');
 });
+
+it('refuses rather than drops a keyword it does not read, wherever it is nested', function (array $schema, string $unread): void {
+    expect(fn(): string => typesCarrying([])->typeOf($schema, 'RunningCopy'))
+        ->toThrow(UnexpectedValueException::class, "A schema in RunningCopy uses {$unread}, which this generator does not read.");
+})->with([
+    'two structures flattened into one' => [['type' => 'object', 'allOf' => [['type' => 'object'], ['type' => 'object']]], 'allOf'],
+    'a field of a field' => [['type' => 'object', 'properties' => ['state' => ['not' => ['const' => 'working']]]], 'not'],
+]);
+
+it('types each branch with the fields the schema holds beside the branches', function (): void {
+    expect(typesCarrying([])->typeOf([
+        'type' => 'object',
+        'properties' => ['part' => ['type' => 'string']],
+        'required' => ['part'],
+        'oneOf' => [
+            ['type' => 'object', 'properties' => ['state' => ['const' => 'working']], 'required' => ['state']],
+            ['type' => 'object', 'properties' => ['state' => ['const' => 'paced'], 'limit' => ['type' => 'integer']], 'required' => ['state', 'limit']],
+        ],
+    ]))->toBe("array{part: string, state: 'working'}|array{part: string, state: 'paced', limit: int}");
+});
+
+it('refuses fields beside a branch they cannot join', function (mixed $branch): void {
+    expect(fn(): string => typesCarrying(['Word' => ['type' => 'string']])->typeOf([
+        'properties' => ['part' => ['type' => 'string']],
+        'oneOf' => [$branch],
+    ], 'RunningCopy'))->toThrow(UnexpectedValueException::class, 'A schema in RunningCopy holds fields beside a branch they cannot join.');
+})->with([
+    'a reference' => [['$ref' => '#/$defs/Word']],
+    'no schema' => ['working'],
+    'fields that are not fields' => [['properties' => 'state']],
+]);
