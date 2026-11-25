@@ -15,7 +15,8 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 /**
  * The `standing` envelope, shaped as the contract describes it.
  *
- * @phpstan-type StackStanding array{members_mint: bool, stack?: string|null, switched_off: list<string>, told: bool, waiting: bool}
+ * @phpstan-type PlayOrigin string
+ * @phpstan-type StackStanding array{members_mint: bool, plays_from?: PlayOrigin|null, stack?: string|null, switched_off: list<string>, told: bool, waiting: bool}
  * @phpstan-type Data StackStanding
  */
 final class StandingEnvelope
