@@ -61,6 +61,7 @@ enum Kind: string
     case Lifecycle = 'lifecycle';
     case Log = 'log';
     case Logs = 'logs';
+    case LogsExported = 'logs-exported';
     case Migration = 'migration';
     case MintedKey = 'minted-key';
     case Music = 'music';
