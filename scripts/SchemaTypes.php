@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Lemonfiber\Sdk\Scripts;
 
+use function array_diff;
 use function array_key_exists;
+use function array_keys;
 use function array_map;
 use function array_unique;
 use function array_values;
-use function count;
 use function implode;
 use function in_array;
 use function is_array;
@@ -19,6 +20,7 @@ use function is_string;
 use function preg_match;
 use function sprintf;
 use function str_replace;
+use function strval;
 
 use UnexpectedValueException;
 
@@ -41,6 +43,14 @@ final readonly class SchemaTypes
     /** Every PHPStan keyword a type this writes may spell. */
     public const array KEYWORDS = [self::UNKNOWN, 'list', 'array', 'int', 'float', 'string', 'bool', 'null', 'true', 'false'];
 
+    /** Every JSON Schema keyword this reads. Any other is refused rather than dropped. */
+    public const array READ = [
+        '$comment', '$defs', '$ref', '$schema', 'additionalProperties', 'anyOf', 'const', 'default', 'description',
+        'enum', 'examples', 'exclusiveMaximum', 'exclusiveMinimum', 'format', 'items', 'maxItems', 'maxLength',
+        'maximum', 'minItems', 'minLength', 'minimum', 'oneOf', 'pattern', 'prefixItems', 'properties', 'required',
+        'title', 'type', 'uniqueItems',
+    ];
+
     /**
      * @param  ShapePlan  $plan  where each definition the payloads reach is named
      */
@@ -52,10 +62,21 @@ final readonly class SchemaTypes
      * @param  array<mixed, mixed>  $schema
      * @param  string|null  $within  the definition whose alias this schema is part of, if any
      *
-     * @throws UnexpectedValueException naming the reference, where one resolves to no definition the plan names
+     * @throws UnexpectedValueException naming the reference, where one resolves to no definition the plan names,
+     *                                   and naming the keyword, where the schema uses one this does not read
      */
     public function typeOf(array $schema, ?string $within = null): string
     {
+        $unread = array_diff(array_map(strval(...), array_keys($schema)), self::READ);
+
+        if ($unread !== []) {
+            throw new UnexpectedValueException(sprintf(
+                'A schema in %s uses %s, which this generator does not read.',
+                $within ?? 'a payload',
+                implode(', ', $unread),
+            ));
+        }
+
         $enum = $schema['enum'] ?? null;
         $combined = $this->combined($schema);
 
@@ -63,7 +84,7 @@ final readonly class SchemaTypes
             array_key_exists('$ref', $schema) => $this->typeOfReference($schema['$ref'], $within),
             array_key_exists('const', $schema) => $this->literal($schema['const']),
             is_array($enum) && $enum !== [] => $this->union(array_map($this->literal(...), array_values($enum))),
-            $combined !== null => $this->union($this->typesOf($combined, $within)),
+            $combined !== null => $this->union($this->typesOf($this->beside($combined, $schema, $within), $within)),
             default => $this->typeOfNamed($schema['type'] ?? null, $schema, $within),
         };
     }
@@ -83,13 +104,39 @@ final readonly class SchemaTypes
     {
         $branches = $schema['oneOf'] ?? $schema['anyOf'] ?? null;
 
-        if (is_array($branches) && $branches !== []) {
+        return is_array($branches) && $branches !== [] ? $branches : null;
+    }
+
+    /**
+     * Each branch with the fields the schema holds beside the branches, as one object.
+     *
+     * @param  array<mixed, mixed>  $branches
+     * @param  array<mixed, mixed>  $schema
+     * @return array<mixed, mixed>
+     *
+     * @throws UnexpectedValueException where a branch is not an object those fields can join
+     */
+    private function beside(array $branches, array $schema, ?string $within): array
+    {
+        $properties = $schema['properties'] ?? null;
+
+        if (! is_array($properties) || $properties === []) {
             return $branches;
         }
 
-        $all = $schema['allOf'] ?? null;
+        $joined = [];
 
-        return is_array($all) && count($all) === 1 ? $all : null;
+        foreach ($branches as $branch) {
+            $own = is_array($branch) && ! array_key_exists('$ref', $branch) ? ($branch['properties'] ?? []) : null;
+
+            if (! is_array($branch) || ! is_array($own)) {
+                throw new UnexpectedValueException(sprintf('A schema in %s holds fields beside a branch they cannot join.', $within ?? 'a payload'));
+            }
+
+            $joined[] = [...$branch, 'type' => 'object', 'properties' => [...$properties, ...$own], 'required' => [...$this->requiredIn($schema), ...$this->requiredIn($branch)]];
+        }
+
+        return $joined;
     }
 
     /**
