@@ -410,6 +410,18 @@ interface MachineReads
     public const string WATCHER_ENDPOINT = '/api/watcher';
 
     /**
+     * The endpoint answering with the backup or restore running on this machine now, as the
+     * `copying` envelope ({@see \Lemonfiber\Sdk\Generated\CopyingEnvelope}): whichever process
+     * runs it and whoever started it, what it is and its scope, the job an accepting reply named
+     * it, when it started, the bytes written of the bytes it will write, the part being written
+     * now, and whether it is working, paced to the operator's limit or stalled since it last
+     * wrote; or none. It is answered whole to the operator and to a `read` or `act` key without
+     * the job or an existing setup's project, trees and host paths, and refused to a member, a key
+     * scoped to one and a client that proves no credential. It takes nothing.
+     */
+    public const string COPYING_ENDPOINT = '/api/copying';
+
+    /**
      * The endpoint answering with what the download queue holds, as the `queue` envelope
      * ({@see \Lemonfiber\Sdk\Generated\QueueEnvelope}): whether healing acts, the strikes and
      * grace window in force, every unhealthy download with its curator, release, classification

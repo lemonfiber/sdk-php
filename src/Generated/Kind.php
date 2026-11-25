@@ -33,6 +33,7 @@ enum Kind: string
     case Channels = 'channels';
     case Clients = 'clients';
     case Config = 'config';
+    case Copying = 'copying';
     case Credentials = 'credentials';
     case Dashboard = 'dashboard';
     case DeviceChallenge = 'device-challenge';
