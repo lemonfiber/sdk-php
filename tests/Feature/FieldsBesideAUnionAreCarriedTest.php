@@ -3,26 +3,31 @@
 declare(strict_types=1);
 
 /**
- * The type the generated source declares under a name, as its `@phpstan-type` line spells it.
+ * The branches of the union the generated source declares under a name, as its `@phpstan-type` line spells it.
+ *
+ * @return list<string>
  */
-function declaredType(string $file, string $name): string
+function branchesDeclared(string $file, string $name): array
 {
     $source = (string) file_get_contents(__DIR__ . '/../../src/Generated/' . $file);
 
-    return preg_match('/@phpstan-type ' . $name . ' (.+)$/m', $source, $found) === 1 ? $found[1] : '';
+    return preg_match('/@phpstan-type ' . $name . ' (.+)$/m', $source, $found) === 1 ? explode('}|array{', $found[1]) : [];
 }
 
-it('carries the running copy\'s scope beside each state it can be in', function (): void {
-    $branches = explode('}|array{', declaredType('CopyingEnvelope.php', 'RunningCopy'));
+it('carries the fields beside a union in every branch of it, and every branch', function (string $file, string $name, array $beside, array $branches): void {
+    $declared = branchesDeclared($file, $name);
 
-    expect($branches)->toHaveCount(3);
+    expect($declared)->toHaveCount(count($branches));
 
-    foreach (['working', 'paced', 'stalled'] as $at => $state) {
-        expect($branches[$at])->toContain('scope: CopiedScope')
-            ->and($branches[$at])->toContain("state: '{$state}'")
-            ->and($branches[$at])->toContain('what: CopyWhat');
+    foreach ($branches as $at => $branch) {
+        expect($declared[$at])->toContain($branch);
+
+        foreach ($beside as $field) {
+            expect($declared[$at])->toContain($field);
+        }
     }
-
-    expect($branches[1])->toContain('limit: int')
-        ->and($branches[2])->toContain('wrote: Instant');
-});
+})->with([
+    'the running copy' => ['CopyingEnvelope.php', 'RunningCopy', ['scope: CopiedScope', 'what: CopyWhat', 'part: string'], ["state: 'working'", "limit: int, state: 'paced'", "state: 'stalled', wrote: Instant"]],
+    'a plugin image vouched for' => ['PluginProvenanceEnvelope.php', 'Vouch', ['digest: string', 'image: string', 'service: string'], ["by: string, provenance: 'signed'", "provenance: 'unproven', why: string", "provenance: 'refused', why: string"]],
+    'what an image is built on' => ['PluginProvenanceEnvelope.php', 'Based', ['image: string', 'release: string'], ["basis: 'recorded', digests: list<string>", "basis: 'unproven', why: string", "basis: 'refused', why: string"]],
+]);

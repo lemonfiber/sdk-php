@@ -20,7 +20,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type CopiedScope array{scope: 'whole_stack'}|array{name: string, scope: 'service'}|array{project?: string|null, scope: 'existing', trees?: list<Tree>|null}
  * @phpstan-type CopyWhat 'backup'|'restore'
  * @phpstan-type CopyingReport array{running?: RunningCopy|null}
- * @phpstan-type RunningCopy array{state: 'working'}|array{limit: int, state: 'paced'}|array{state: 'stalled', wrote: Instant}
+ * @phpstan-type RunningCopy array{job?: string|null, part: string, scope: CopiedScope, started: Instant, what: CopyWhat, whole: int, written: int, state: 'working'}|array{job?: string|null, part: string, scope: CopiedScope, started: Instant, what: CopyWhat, whole: int, written: int, limit: int, state: 'paced'}|array{job?: string|null, part: string, scope: CopiedScope, started: Instant, what: CopyWhat, whole: int, written: int, state: 'stalled', wrote: Instant}
  * @phpstan-type Data CopyingReport
  */
 final class CopyingEnvelope
