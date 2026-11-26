@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\DeviceAttestation;
 use Lemonfiber\Sdk\Exception\Missing;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Http\DeviceKeyRequest;
 use Lemonfiber\Sdk\Http\MintKeyRequest;
+use Lemonfiber\Sdk\Http\ReadRequest;
 use Lemonfiber\Sdk\KeyMint;
 use Lemonfiber\Sdk\MintProof;
 use Saloon\Enums\Method;
@@ -58,6 +60,17 @@ it('asks a challenge for one device key by its name, as one path segment', funct
     expect($answer->kind)->toBe('device-challenge')
         ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/device-keys/pixel%2F8/challenge')
         ->and($pending?->getMethod())->toBe(Method::POST);
+});
+
+it('lists the device keys at their endpoint', function (): void {
+    [$client, $mock] = aClientAnswering(ReadRequest::class, anEnvelopeOf('device-keys'));
+
+    $answer = $client->read(Api::DEVICE_KEYS_ENDPOINT);
+    $pending = $mock->getLastPendingRequest();
+
+    expect($answer->kind)->toBe('device-keys')
+        ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/device-keys')
+        ->and($pending?->getMethod())->toBe(Method::GET);
 });
 
 it('revokes a device key by its name', function (): void {

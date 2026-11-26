@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Exception\Busy;
 use Lemonfiber\Sdk\Exception\Misasked;
 use Lemonfiber\Sdk\Exception\Missing;
@@ -10,6 +11,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
 use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Generated\RefusalCode;
 use Lemonfiber\Sdk\Http\PushEndpointRequest;
+use Lemonfiber\Sdk\Http\ReadRequest;
 use Lemonfiber\Sdk\PushEndpointRegistering;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockResponse;
@@ -41,6 +43,17 @@ it('registers a push endpoint with its name, its address and its keys in base64u
             'p256dh' => 'BP_-',
             'auth' => '-_8B',
         ]);
+});
+
+it('lists the push endpoints at their endpoint', function (): void {
+    [$client, $mock] = aClientAnswering(ReadRequest::class, anEnvelopeOf('push-endpoints'));
+
+    $answer = $client->read(Api::PUSH_ENDPOINTS_ENDPOINT);
+    $pending = $mock->getLastPendingRequest();
+
+    expect($answer->kind)->toBe('push-endpoints')
+        ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/push-endpoints')
+        ->and($pending?->getMethod())->toBe(Method::GET);
 });
 
 it('removes a push endpoint by its name, as one path segment', function (): void {

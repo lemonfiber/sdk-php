@@ -1,44 +1,42 @@
 # What this repository implements, one row per requirement (OPS-R74).
 #
-# `done` means the requirement is met in full by what is here, `partial` that this
-# repository holds its part and the rest lives elsewhere, `open` that nothing here
-# meets it yet. The release gate and the no-stubs gate read this file; a pull
-# request that changes whether a requirement is met changes its row.
-#
-# These are the client's requirements of the web API contract. Where a requirement
-# also binds the server or the artefact the core publishes (the heartbeat, event
-# ids, publishing the artefact, listing refusal codes, the names a definition may
-# take), this client's half is here and the row is partial.
+# Each row records this client's own share of the requirement: `done` where that
+# share is built and tested here, `partial` where part of it is, `open` where none
+# of it is yet. Where a requirement also binds the server or the artefact the core
+# publishes, the core's tracker records that share. The release gate and the
+# no-stubs gate read this file, and a `partial` or `open` row here holds the
+# requirement open; a pull request that changes whether this share is met changes
+# its row.
 
 requirement = [
   { id = "ARCH-R51", state = "done", evidence = ["src/Events/HeldValues.php", "tests/Unit/EventFeedTest.php::marks everything held before a break as out of date"] },
-  { id = "ARCH-R52", state = "partial", evidence = ["src/Http/RunToken.php", "tests/Feature/ClientTest.php::sends the token as a header and never in the address"] },
+  { id = "ARCH-R52", state = "done", evidence = ["src/Http/RunToken.php", "tests/Feature/ClientTest.php::sends the token as a header and never in the address"] },
   { id = "ARCH-R55", state = "done", evidence = ["src/Envelope/EnvelopeReader.php", "tests/Unit/EnvelopeReaderTest.php::refuses an answer speaking another version, naming both"] },
   { id = "ARCH-R58", state = "done", evidence = ["src/Generated", "tests/Unit/PayloadTest.php::generates from the vendored artefact, and from the revision it came from"] },
   { id = "ARCH-R59", state = "done", evidence = ["src/Http/RunToken.php", "tests/Unit/RunTokenTest.php::puts the token in the agreed header"] },
   { id = "ARCH-R60", state = "done", evidence = ["src/Http/BaseUrl.php", "tests/Unit/BaseUrlTest.php::accepts a name that resolves to loopback", "tests/Unit/BaseUrlTest.php::refuses an address off this machine when no pin vouches for it"] },
-  { id = "ARCH-R61", state = "partial", evidence = ["src/Events/EventStream.php", "tests/Unit/EventStreamTest.php::reports a silence longer than twice the agreed sign of life"] },
-  { id = "ARCH-R62", state = "partial", evidence = ["src/Events/EventFeed.php", "tests/Unit/EventFeedTest.php::asks to resume from the last event it saw"] },
+  { id = "ARCH-R61", state = "done", evidence = ["src/Events/EventStream.php", "tests/Unit/EventStreamTest.php::reports a silence longer than twice the agreed sign of life"] },
+  { id = "ARCH-R62", state = "done", evidence = ["src/Events/EventFeed.php", "tests/Unit/EventFeedTest.php::asks to resume from the last event it saw"] },
   { id = "ARCH-R63", state = "done", evidence = ["src/Envelope/Payload.php", "tests/Unit/PayloadTest.php::reaches a payload typed by its kind"] },
-  { id = "ARCH-R64", state = "partial", evidence = ["contract/VERSION", "scripts/contract-sync.php"] },
+  { id = "ARCH-R64", state = "done", evidence = ["contract/VERSION", "scripts/contract-sync.php", "tests/Feature/ContractVendorTest.php::vendors the directory where the revision holds one, and only it"] },
   { id = "ARCH-R65", state = "done", evidence = ["scripts/contract-generate.php", "tests/Unit/PayloadTest.php::generates from the vendored artefact, and from the revision it came from"] },
   { id = "ARCH-R66", state = "done", evidence = ["composer.json::contract:check", "scripts/contract-generate.php"] },
   { id = "ARCH-R67", state = "done", evidence = ["scripts/contract-generate.php", "tests/Feature/ContractGeneratorTest.php::refuses a version it does not implement, and names both", "tests/Feature/ContractGeneratorTest.php::writes nothing when it refuses"] },
-  { id = "ARCH-R73", state = "partial", evidence = ["scripts/contract-generate.php", "tests/Feature/ContractGeneratorTest.php::refuses a reference with a constraint beside it, and names where"] },
+  { id = "ARCH-R73", state = "done", evidence = ["scripts/contract-generate.php", "tests/Feature/ContractGeneratorTest.php::refuses a reference with a constraint beside it, and names where"] },
   { id = "ARCH-R99", state = "done", evidence = ["src/Http/CertificatePin.php", "tests/Feature/TheTokenStaysWithItsStackTest.php::writes nothing to a peer the pin does not name", "tests/Feature/PinRefusalTest.php::refuses a peer presenting a certificate the pin does not name"] },
   { id = "ARCH-R129", state = "done", evidence = ["scripts/ShapePlan.php", "tests/Feature/ContractGeneratorTest.php::refuses a definition named like a generated class, names it, and writes nothing", "tests/Feature/ContractReservedNamesTest.php::refuses a definition taking a name a generated file imports or a type it writes spells, naming it and its kind", "tests/Feature/ContractReservedNamesTest.php::reserves every class a committed generated file imports"] },
-  { id = "ARCH-R134", state = "partial", evidence = ["scripts/Actions.php", "tests/Feature/ContractActionsTest.php::writes a class per action, taking each argument by name with its type and default"] },
-  { id = "ARCH-R138", state = "partial", evidence = ["src/Exception/RequestFailed.php", "tests/Unit/RequestFailedTest.php::reads the code a refusal carries into the generated list"] },
-  { id = "ARCH-R139", state = "partial", evidence = ["scripts/Refusals.php", "tests/Feature/ContractGeneratorTest.php::writes a case per refusal the contract lists, in the order of its code"] },
+  { id = "ARCH-R134", state = "done", evidence = ["scripts/Actions.php", "tests/Feature/ContractActionsTest.php::writes a class per action, taking each argument by name with its type and default"] },
+  { id = "ARCH-R138", state = "done", evidence = ["src/Exception/RequestFailed.php", "tests/Unit/RequestFailedTest.php::reads the code a refusal carries into the generated list", "tests/Unit/RequestFailedTest.php::reads a code the generated list does not name as no code, and keeps it on the problem", "tests/Unit/RequestFailedTest.php::reads a request turned away with any other code as declined"] },
+  { id = "ARCH-R139", state = "done", evidence = ["scripts/Refusals.php", "tests/Feature/ContractGeneratorTest.php::writes a case per refusal the contract lists, in the order of its code"] },
   { id = "ARCH-R170", state = "done", evidence = ["scripts/contract-generate.php", "tests/Feature/ContractGeneratorTest.php::refuses a reference to a definition the kind does not carry, and names it"] },
   { id = "ARCH-R454", state = "done", evidence = ["src/Envelope/Envelope.php", "src/Envelope/EnvelopeReader.php", "scripts/GeneratedSource.php", "tests/Feature/EveryEnvelopeFieldIsCarriedTest.php::carries every field the vendored contract gives the envelope", "tests/Feature/EveryEnvelopeFieldIsCarriedTest.php::names a field a kind gives the envelope that the envelope does not carry", "tests/Unit/EnvelopeReaderTest.php::reads the work that said an answer, where it names one"] },
-  { id = "ARCH-R219", state = "partial", evidence = ["src/Admission.php", "tests/Feature/AdmissionTest.php::claims an invitation with the name, the chosen password and the claim, in the body, to the one endpoint", "tests/Feature/AdmissionTest.php::reads an invitation that is not open from the code it was refused under, never as a wrong password"] },
-  { id = "ARCH-R258", state = "partial", evidence = ["src/Keys.php", "src/Http/DeviceKeyRequest.php", "src/DeviceAttestation.php", "tests/Feature/DeviceKeysTest.php::registers a device key with its public half, its attestation and the password, in base64url"] },
-  { id = "ARCH-R259", state = "partial", evidence = ["src/Contract/Api.php", "tests/Feature/DeviceKeysTest.php::revokes a device key by its name"] },
-  { id = "ARCH-R260", state = "partial", evidence = ["src/Http/DeviceKeyRequest.php", "tests/Feature/DeviceKeysTest.php::asks a challenge for one device key by its name, as one path segment"] },
-  { id = "ARCH-R261", state = "partial", evidence = ["src/Keys.php", "src/KeyMint.php", "src/MintProof.php", "tests/Feature/DeviceKeysTest.php::mints with a device key's signature over the text the stack verifies, and no password", "tests/Unit/KeyMintTest.php::spells the text a device key signs as the contract publishes it"] },
-  { id = "ARCH-R282", state = "partial", evidence = ["src/PushEndpoints.php", "tests/Feature/PushEndpointsTest.php::registers a push endpoint with its name, its address and its keys in base64url", "tests/Feature/PushEndpointsTest.php::removes a push endpoint by its name, as one path segment"] },
-  { id = "ARCH-R293", state = "partial", evidence = ["src/Generated/KeysEnvelope.php"] },
+  { id = "ARCH-R219", state = "done", evidence = ["src/Admission.php", "tests/Feature/AdmissionTest.php::claims an invitation with the name, the chosen password and the claim, in the body, to the one endpoint", "tests/Feature/AdmissionTest.php::reads an invitation that is not open from the code it was refused under, never as a wrong password"] },
+  { id = "ARCH-R258", state = "done", evidence = ["src/Keys.php", "src/Http/DeviceKeyRequest.php", "src/DeviceAttestation.php", "tests/Feature/DeviceKeysTest.php::registers a device key with its public half, its attestation and the password, in base64url"] },
+  { id = "ARCH-R259", state = "done", evidence = ["src/Contract/Api.php", "tests/Feature/DeviceKeysTest.php::lists the device keys at their endpoint", "tests/Feature/DeviceKeysTest.php::revokes a device key by its name"] },
+  { id = "ARCH-R260", state = "done", evidence = ["src/Http/DeviceKeyRequest.php", "tests/Feature/DeviceKeysTest.php::asks a challenge for one device key by its name, as one path segment"] },
+  { id = "ARCH-R261", state = "done", evidence = ["src/Keys.php", "src/KeyMint.php", "src/MintProof.php", "tests/Feature/DeviceKeysTest.php::mints with a device key's signature over the text the stack verifies, and no password", "tests/Unit/KeyMintTest.php::spells the text a device key signs as the contract publishes it"] },
+  { id = "ARCH-R282", state = "done", evidence = ["src/PushEndpoints.php", "tests/Feature/PushEndpointsTest.php::lists the push endpoints at their endpoint", "tests/Feature/PushEndpointsTest.php::registers a push endpoint with its name, its address and its keys in base64url", "tests/Feature/PushEndpointsTest.php::removes a push endpoint by its name, as one path segment"] },
+  { id = "ARCH-R293", state = "done", evidence = ["src/Generated/KeysEnvelope.php", "tests/Feature/RevokingAKeyTest.php::reads the device key that proved each key, and none for a key minted with the password"] },
   { id = "ARCH-R441", state = "done", evidence = ["src/Admission.php", "src/Http/CodeAskRequest.php", "src/Http/CodeFinishRequest.php", "tests/Feature/SigningInByCodeTest.php"] },
   { id = "OPS-R95", state = "partial", evidence = [".github/workflows/contract-bump.yml", "scripts/bc-added.sh"] },
 ]
