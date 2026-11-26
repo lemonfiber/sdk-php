@@ -21,10 +21,12 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-import-type Waiting from Shapes
  * @phpstan-type Owner array{of: 'core'}|array{namespace: string, of: 'namespace'}
  * @phpstan-type Reader array{default?: string|null, met: bool, needs: array<string, list<string>>, service: string, variable: string}
+ * @phpstan-type ReaderDefault array{default?: string|null, met: bool, service: string, variable: string}
  * @phpstan-type SecretFrom 'operator'|'recipe'|'granted'|'minted'
  * @phpstan-type SecretRead array{from?: SecretFrom|null, held: bool, name: string, readers: list<Reader>, whose: Owner}
  * @phpstan-type SettingChange array{agreement: string, applied: bool, regenerates: list<string>, restarts: list<string>, settings: list<SettingMove>, starts: list<string>, unrestarted?: string|null, waiting: list<Waiting>}
- * @phpstan-type SettingMove array{consequence?: string|null, setting: string, value?: string|null, was?: string|null}
+ * @phpstan-type SettingDefault array{of: 'core', value: string}|array{of: 'declared', value: string}|array{of: 'per-reader', readers: list<ReaderDefault>}|array{of: 'none'}
+ * @phpstan-type SettingMove array{consequence?: string|null, default: SettingDefault, setting: string, value?: string|null, was?: string|null}
  * @phpstan-type SettingRead array{choices?: list<Choosable>|null, default?: string|null, environment?: string|null, name: string, readers: list<Reader>, value?: string|null, whose: Owner}
  * @phpstan-type SettingsReport array{change?: SettingChange|null, guards?: list<StackMoveTaken>, rehearsed: bool, secrets: list<SecretRead>, settings: list<SettingRead>, unvetted?: Unvetted|null, waiting: list<Waiting>}
  * @phpstan-type Data SettingsReport
