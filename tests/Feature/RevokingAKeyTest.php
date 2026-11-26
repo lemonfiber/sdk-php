@@ -6,6 +6,7 @@ use Lemonfiber\Sdk\Client;
 use Lemonfiber\Sdk\Exception\Missing;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\Unreachable;
+use Lemonfiber\Sdk\Generated\KeysEnvelope;
 use Lemonfiber\Sdk\Http\RevokeKeyRequest;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockClient;
@@ -43,6 +44,16 @@ it('revokes a key by its name and reads the keys as the stack lists them after',
     expect($answer->kind)->toBe('keys')
         ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/keys/home%20assistant%2Fden')
         ->and($pending?->getMethod())->toBe(Method::DELETE);
+});
+
+it('reads the device key that proved each key, and none for a key minted with the password', function (): void {
+    $home = ['name' => 'home', 'scope' => 'read', 'purpose' => 'home-assistant', 'state' => 'active', 'minted' => 1790000000, 'member_minted' => false];
+    $listing = ['keys' => [[...$home, 'name' => 'phone', 'proved_by' => 'pixel'], $home], 'purposes' => 'What each key is for is the minter\'s own word.', 'rehearsed' => false];
+    [$client] = aClientRevokingWith(MockResponse::make(['api_version' => 1, 'kind' => 'keys', 'data' => $listing]));
+
+    $keys = KeysEnvelope::in($client->keys()->revoke('den'))->data['keys'];
+
+    expect(array_map(static fn(array $key): ?string => $key['proved_by'] ?? null, $keys))->toBe(['pixel', null]);
 });
 
 it('raises the stack\'s refusal for a name no key holds, and sends a revoke once', function (): void {
