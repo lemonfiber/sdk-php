@@ -184,8 +184,10 @@ command line's `--yes`.
 ### Work that outlives the request
 
 An action that reaches the services answers with the name of a job rather than
-its outcome. Ask what became of it with `whatBecameOf()`, and stop it with
-`letGoOf()`. Both answer with a `JobStanding`:
+its outcome. Ask what became of it with `whatBecameOf()`, stop it with
+`letGoOf()`, and let its name go while the work runs on with `forget()`. All
+three answer with a `JobStanding`. After `forget()` the name is `NoSuchJob`, as
+a name another credential started is:
 
 ```php
 use Lemonfiber\Sdk\Envelope\Envelope;

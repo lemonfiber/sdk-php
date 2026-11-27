@@ -7,6 +7,7 @@ use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Exception\NoSuchJob;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
+use Lemonfiber\Sdk\Http\ForgetRequest;
 use Lemonfiber\Sdk\Http\ReadRequest;
 use Lemonfiber\Sdk\Http\ReleaseRequest;
 use Lemonfiber\Sdk\JobStanding;
@@ -157,6 +158,31 @@ it('lets go of a name, and says where the work it stood for now stands', functio
         ->and($pending?->getMethod())->toBe(Method::DELETE)
         ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/jobs/k3n9v2xq')
         ->and($pending?->headers()->get(Api::TOKEN_HEADER))->toBe(A_RUN_TOKEN);
+});
+
+it('forgets a name, leaving its work running, and says where the work stood', function (): void {
+    [$client, $mock] = clientAnswering([ForgetRequest::class => stillNamed(202)]);
+
+    $standing = $client->forget('k3n9v2xq');
+
+    $pending = $mock->getLastPendingRequest();
+
+    expect(standingWord($standing))->toBe('still going')
+        ->and($pending?->getMethod())->toBe(Method::POST)
+        ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/jobs/k3n9v2xq/forget')
+        ->and($pending?->headers()->get(Api::TOKEN_HEADER))->toBe(A_RUN_TOKEN);
+});
+
+it('says a name forgotten, or another credential\'s, is no such job', function (): void {
+    [$client] = clientAnswering([
+        ForgetRequest::class => MockResponse::make(
+            '{"api_version":1,"kind":"error","data":{"code":"ASK-7","summary":"No work in this run goes by that name.","meaning":"A job was asked about that this run did not start.","remedies":[],"severity":"error","state":"actionable"}}',
+            404,
+            ['Content-Type' => 'application/json'],
+        ),
+    ]);
+
+    expect(fn(): JobStanding => $client->forget('k3n9v2xq'))->toThrow(NoSuchJob::class);
 });
 
 it('answers a release of work that had already finished with what it finished as', function (): void {

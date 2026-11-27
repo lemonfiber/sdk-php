@@ -19,6 +19,7 @@ use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Http\ActRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
+use Lemonfiber\Sdk\Http\ForgetRequest;
 use Lemonfiber\Sdk\Http\IdempotencyKey;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\ReadRequest;
@@ -218,6 +219,25 @@ final readonly class Client
     public function letGoOf(string $job): JobStanding
     {
         return $this->connector->answer(new ReleaseRequest($job));
+    }
+
+    /**
+     * Let go of a name, leaving the work it stands for running.
+     *
+     * For a screen that stops watching work it did not mean to end. The answer
+     * is where the work stood, as asking would have said; from then on the name
+     * is one this run never issued, and what the work ends with is kept for
+     * nobody.
+     *
+     * @throws ApiVersionMismatch
+     * @throws NoSuchJob
+     * @throws RequestFailed
+     * @throws Unreachable
+     * @throws UnreadableResponse
+     */
+    public function forget(string $job): JobStanding
+    {
+        return $this->connector->answer(new ForgetRequest($job));
     }
 
     /**

@@ -164,6 +164,14 @@ final class Api implements HouseholdReads, MachineReads
     }
 
     /**
+     * Where the name of that work is let go of with the work left running.
+     */
+    public static function forgotten(string $name): string
+    {
+        return self::job($name) . '/forget';
+    }
+
+    /**
      * Where the integration key of that name is revoked.
      *
      * Composed from the name the keys read lists it under, encoded so a name is always one segment
