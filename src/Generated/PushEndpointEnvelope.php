@@ -16,7 +16,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * The `push-endpoint` envelope, shaped as the contract describes it.
  *
  * @phpstan-import-type Instant from Shapes
- * @phpstan-type RegisteredPushEndpoint array{endpoint: string, name: string, registered: Instant, rehearsed: bool}
+ * @phpstan-type RegisteredPushEndpoint array{fingerprint: string, host: string, name: string, registered: Instant, rehearsed: bool}
  * @phpstan-type Data RegisteredPushEndpoint
  */
 final class PushEndpointEnvelope

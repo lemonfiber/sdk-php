@@ -81,7 +81,8 @@ it('revokes a device key by its name', function (): void {
 
     expect($answer->kind)->toBe('device-keys')
         ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/device-keys/pixel%208')
-        ->and($pending?->getMethod())->toBe(Method::DELETE);
+        ->and($pending?->getMethod())->toBe(Method::DELETE)
+        ->and(theBodySent($mock))->toBe(['dry_run' => false]);
 });
 
 it("raises the stack's refusal for a device key no longer registered, and sends it once", function (): void {

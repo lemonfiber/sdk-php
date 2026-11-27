@@ -27,7 +27,7 @@ function aRefusal(string $code, int $status): MockResponse
 }
 
 it('registers a push endpoint with its name, its address and its keys in base64url', function (): void {
-    $registered = ['name' => 'pixel', 'endpoint' => 'https://push.example/up/a1b2', 'registered' => '1762500000', 'rehearsed' => false];
+    $registered = ['name' => 'pixel', 'host' => 'push.example', 'fingerprint' => '8a7bf4facf78da66', 'registered' => '1762500000', 'rehearsed' => false];
     [$client, $mock] = aClientAnswering(PushEndpointRequest::class, MockResponse::make(['api_version' => 1, 'kind' => 'push-endpoint', 'data' => $registered]));
 
     $answer = $client->pushEndpoints()->register(aPhoneToWake());
@@ -66,7 +66,8 @@ it('removes a push endpoint by its name, as one path segment', function (): void
     expect($answer->kind)->toBe('push-endpoints')
         ->and($answer->data)->toBe($listing)
         ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/push-endpoints/pixel%2F8')
-        ->and($pending?->getMethod())->toBe(Method::DELETE);
+        ->and($pending?->getMethod())->toBe(Method::DELETE)
+        ->and(theBodySent($mock))->toBe(['dry_run' => false]);
 });
 
 it('refuses a registration answered with another kind', function (): void {
