@@ -55,7 +55,8 @@ final readonly class PushEndpoints
      * Remove the push endpoint `$name`, so the stack wakes that phone no more.
      *
      * The answer is every push endpoint as the stack lists them once it is removed, naming the
-     * one removed. A name no endpoint holds is {@see Exception\Missing}. Sent once.
+     * one removed. A name no endpoint holds is {@see Exception\Missing}. Sent once. With
+     * `$dryRun` nothing is removed, and the answer is the endpoints as they would then stand.
      *
      * @return Envelope<Listing>
      *
@@ -66,8 +67,8 @@ final readonly class PushEndpoints
      * @throws Unreachable
      * @throws UnreadableResponse
      */
-    public function remove(string $name): Envelope
+    public function remove(string $name, bool $dryRun = false): Envelope
     {
-        return PushEndpointsEnvelope::in($this->connector->answer(PushEndpointRequest::removing(PathSegment::ofAName($name))));
+        return PushEndpointsEnvelope::in($this->connector->answer(PushEndpointRequest::removing(PathSegment::ofAName($name), $dryRun)));
     }
 }

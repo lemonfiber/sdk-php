@@ -264,6 +264,10 @@ An endpoint's address lets whoever holds it wake the phone, so once registered i
 is never answered again: the registration and every listed endpoint carry its
 `host` and a `fingerprint`, the first sixteen hexadecimal digits of the SHA-256
 of the whole address, instead.
+
+`keys()->revoke()`, `keys()->revokeDevice()` and `pushEndpoints()->remove()`
+each take `dryRun: true` to rehearse: nothing is removed, and the answer is the
+listing as it would then stand, its `rehearsed` true.
 The operator keeps every one, and a member session its own alone. A key of any
 scope is refused with `ADMIT-12`, and what is wrong with an endpoint itself
 carries a `PUSH-` code of its own.

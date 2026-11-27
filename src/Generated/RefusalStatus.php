@@ -45,6 +45,7 @@ final class RefusalStatus
             RefusalCode::NotAKeyRequest => 400,
             RefusalCode::NotAnIdempotencyKey => 400,
             RefusalCode::IdempotencyKeyReused => 400,
+            RefusalCode::NotARevocation => 400,
             RefusalCode::BundleNotHeld => 404,
             RefusalCode::ReplacementMoved => 400,
             RefusalCode::NotADeviceName => 400,

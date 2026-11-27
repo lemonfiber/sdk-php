@@ -59,12 +59,12 @@ final class PushEndpointRequest extends Request implements HasBody, ReadsItsAnsw
     }
 
     /**
-     * Remove the push endpoint `$name`, saying in the body that it is no rehearsal: the stack
-     * reads a removal's body as `dry_run` alone, and an empty list is no such body.
+     * Remove the push endpoint `$name`, or rehearse removing it where `$dryRun` asks: the
+     * stack reads a removal's body as `dry_run` alone.
      */
-    public static function removing(string $name): self
+    public static function removing(string $name, bool $dryRun = false): self
     {
-        return new self(Method::DELETE, Api::pushEndpoint($name), ['dry_run' => false]);
+        return new self(Method::DELETE, Api::pushEndpoint($name), ['dry_run' => $dryRun]);
     }
 
     public function resolveEndpoint(): string

@@ -46,6 +46,7 @@ enum RefusalCode: string
     case NotAKeyRequest = 'ASK-11';
     case NotAnIdempotencyKey = 'ASK-12';
     case IdempotencyKeyReused = 'ASK-13';
+    case NotARevocation = 'ASK-14';
     case BundleNotHeld = 'BUNDLE-8';
     case ReplacementMoved = 'CRED-4';
     case NotADeviceName = 'DEVICE-1';

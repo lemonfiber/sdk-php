@@ -45,6 +45,7 @@ final class RefusalDescription
             RefusalCode::NotAKeyRequest => 'Raised where the body of a mint is not a key\'s name, scope, purpose and the password, or the body of a collection is not a claim alone.',
             RefusalCode::NotAnIdempotencyKey => 'Raised where an action\'s `Idempotency-Key` is not one to 255 visible characters, or is given more than once.',
             RefusalCode::IdempotencyKeyReused => 'Raised where an `Idempotency-Key` already sent with one action and its arguments is sent with another.',
+            RefusalCode::NotARevocation => 'Raised where the body of a revocation is not `dry_run` alone.',
             RefusalCode::BundleNotHeld => 'Raised when a name does not name one of the bundles this run kept.',
             RefusalCode::ReplacementMoved => 'Raised where a replacement of the media server\'s internal certificate answers an offer that is not the one a fresh reading builds.',
             RefusalCode::NotADeviceName => 'Raised when a device key is asked for under a word that cannot name one.',

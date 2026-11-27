@@ -22,6 +22,7 @@ shape this parses would otherwise agree with a client holding no paths at all.
 from __future__ import annotations
 
 import argparse
+import json
 import pathlib
 import re
 import sys
@@ -50,19 +51,10 @@ FENCE = re.compile(r"```[a-z]*\n(.*?)```", re.DOTALL)
 # `Api::bundle()`, so the segment is stripped before the two are compared.
 TEMPLATED = re.compile(r"/\{[^}]+\}$")
 
-# Doors this client holds a path for that the reading block does not name, each
-# with what it is instead. Each is its own section of the same page: three are not
-# reads at all, and four are the read half of a section that also writes.
-NOT_A_READ = {
-    "/api/events": "the live stream, which has its own section",
-    "/api/actions": "the one door every action is asked for through",
-    "/api/jobs": "where work already begun is asked about and released",
-    "/api/capabilities": "what a stack says it can do, which has its own section",
-    "/api/keys": "the listing of integration keys, under its own section beside minting and revoking",
-    "/api/setup": "where the first-run walk stands, under its own section beside the walk's writes",
-    "/api/device-keys": "the operator's device keys, under the keys section beside registering and revoking them",
-    "/api/push-endpoints": "the phones asking to be woken, under the live-state section beside registering and removing them",
-}
+# Every route the vendored contract serves, relative to the repository root. A
+# path this client holds that the reading block does not name is one of these,
+# served at another method or as the base a `{…}` segment is composed onto.
+ROUTES = pathlib.Path("contract/web-api/routes.json")
 
 # Below this a reading has found the wrong text rather than a smaller surface.
 # A floor under the *reading* rather than a count of the doors, so it trails the
@@ -110,6 +102,19 @@ def named(spec: pathlib.Path) -> tuple[set[str], list[str]]:
     }, []
 
 
+def served(root: pathlib.Path) -> tuple[set[str], list[str]]:
+    """Every path the vendored contract serves a route at, and each one's base before a `{…}`."""
+    listing = root / ROUTES
+    try:
+        routes = json.loads(listing.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        routes = None
+    if not isinstance(routes, list):
+        return set(), [f"no list of routes at {listing} — vendor the contract first"]
+    paths = {route["path"] for route in routes if isinstance(route, dict) and "path" in route}
+    return paths | {TEMPLATED.sub("", path) for path in paths}, []
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -121,6 +126,8 @@ def main() -> int:
     constants, problems = held(args.repo)
     entries, unreadable = named(args.spec)
     problems.extend(unreadable)
+    routes, unlisted = served(args.repo)
+    problems.extend(unlisted)
 
     paths = set(constants.values())
 
@@ -142,14 +149,11 @@ def main() -> int:
             f"them, so nothing can reach them: {', '.join(unreachable)}"
         )
 
-    unnamed = sorted(
-        path for path in paths - entries if path not in NOT_A_READ
-    )
+    unnamed = sorted(paths - entries - routes)
     if unnamed:
         problems.append(
-            "this client holds these paths and the contract page does not name "
-            f"them — add them to `{HEADING}` in {PAGE}, or say here what they are "
-            f"instead of a read: {', '.join(unnamed)}"
+            f"this client holds these paths, and neither `{HEADING}` in {PAGE} names "
+            f"them nor {ROUTES} serves a route at them: {', '.join(unnamed)}"
         )
 
     if problems:
