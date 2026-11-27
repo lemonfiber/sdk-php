@@ -21,5 +21,5 @@ final class Contract
     /**
      * The lemonfiber revision the artefact was vendored from.
      */
-    public const string SOURCE = 'cea723ebe8dbe1c4accd07be9b6a1bfb4a57122e';
+    public const string SOURCE = 'a50946378c099dafd315eb3d72f31df64fe33459';
 }

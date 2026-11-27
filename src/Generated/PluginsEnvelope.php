@@ -56,7 +56,7 @@ use Lemonfiber\Sdk\Exception\UnexpectedKind;
  * @phpstan-type PluginReached array{group?: string|null, port: int, tier: 'loopback'}|array{group?: string|null, hostname: string, port: int, tier: 'proxied'}|array{group?: string|null, hostname: string, port: int, tier: 'household'}
  * @phpstan-type PluginRecipe array{id: string, inputs?: list<PluginRecipeInput>, on?: PluginRecipeOn, pairs: list<PluginPair>, steps: list<PluginStep>, title: string, why: string}
  * @phpstan-type PluginRecipeInput array{ask: string, name: string, secret: bool}
- * @phpstan-type PluginRecipeOn 'install'|'demand'
+ * @phpstan-type PluginRecipeOn 'install'|'demand'|'claim'
  * @phpstan-type PluginRecipeRan array{held: bool, recipe: string, steps: list<PluginStepRan>, why?: string|null}
  * @phpstan-type PluginRemoval array{interrupts: list<string>, leaves: list<PluginUnfilled>, plugin: string, removed: bool, went_back: UndoReversal}
  * @phpstan-type PluginReproof array{asked: bool, cleared: bool, kept: list<PluginNonconforming>, plugin: string, proofs: list<PluginProving>}
