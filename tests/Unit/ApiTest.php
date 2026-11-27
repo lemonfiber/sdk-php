@@ -110,6 +110,23 @@ it('composes the path one piece of running work is asked about under', function 
         ->and(Api::job('b7p1'))->toBe('/api/jobs/b7p1');
 });
 
+it('holds a name a caller hands over to the one path segment its route names it by', function (string $name, string $segment): void {
+    expect(Api::job($name))->toBe('/api/jobs/' . $segment)
+        ->and(Api::forgotten($name))->toBe('/api/jobs/' . $segment . '/forget')
+        ->and(Api::key($name))->toBe('/api/keys/' . $segment)
+        ->and(Api::deviceKey($name))->toBe('/api/device-keys/' . $segment)
+        ->and(Api::deviceKeyChallenge($name))->toBe('/api/device-keys/' . $segment . '/challenge')
+        ->and(Api::pushEndpoint($name))->toBe('/api/push-endpoints/' . $segment)
+        ->and(Api::bundle($name))->toBe('/api/bundle/' . $segment)
+        ->and(Api::action($name))->toBe('/api/actions/' . $segment);
+})->with([
+    'a slash' => ['a/b', 'a%2Fb'],
+    'a dot segment inside it' => ['../keys', '..%2Fkeys'],
+    'a percent' => ['50%', '50%25'],
+    'a question mark' => ['a?b=c', 'a%3Fb%3Dc'],
+    'a hash' => ['a#b', 'a%23b'],
+]);
+
 it('composes the path one support bundle is asked for under', function (): void {
     // A bundle is a name under one path rather than an endpoint of its own, so
     // the join lives here for the reason the two above it do. Two names again,

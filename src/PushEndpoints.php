@@ -6,6 +6,7 @@ namespace Lemonfiber\Sdk;
 
 use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Exception\ApiVersionMismatch;
+use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 use Lemonfiber\Sdk\Exception\Unreachable;
@@ -59,6 +60,7 @@ final readonly class PushEndpoints
      * @return Envelope<Listing>
      *
      * @throws ApiVersionMismatch
+     * @throws ConfigurationProblem
      * @throws RequestFailed
      * @throws UnexpectedKind
      * @throws Unreachable
@@ -66,6 +68,6 @@ final readonly class PushEndpoints
      */
     public function remove(string $name): Envelope
     {
-        return PushEndpointsEnvelope::in($this->connector->answer(PushEndpointRequest::removing($name)));
+        return PushEndpointsEnvelope::in($this->connector->answer(PushEndpointRequest::removing(PathSegment::ofAName($name))));
     }
 }

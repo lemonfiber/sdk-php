@@ -148,7 +148,7 @@ final class Api implements HouseholdReads, MachineReads
      */
     public static function action(string $name): string
     {
-        return self::ACTIONS_ENDPOINT . '/' . $name;
+        return self::ACTIONS_ENDPOINT . '/' . rawurlencode($name);
     }
 
     /**
@@ -156,11 +156,19 @@ final class Api implements HouseholdReads, MachineReads
      *
      * One path for both, since asking what became of a name and letting it go are one question and
      * one answer: releasing ends the work and reports where it now stands, which is what asking
-     * would have said. The method separates them.
+     * would have said. The method separates them. The name is encoded as one segment.
      */
     public static function job(string $name): string
     {
-        return self::JOBS_ENDPOINT . '/' . $name;
+        return self::JOBS_ENDPOINT . '/' . rawurlencode($name);
+    }
+
+    /**
+     * Where the name of that work is let go of with the work left running.
+     */
+    public static function forgotten(string $name): string
+    {
+        return self::job($name) . '/forget';
     }
 
     /**
@@ -209,7 +217,7 @@ final class Api implements HouseholdReads, MachineReads
      */
     public static function bundle(string $name): string
     {
-        return self::BUNDLE_ENDPOINT . '/' . $name;
+        return self::BUNDLE_ENDPOINT . '/' . rawurlencode($name);
     }
 
     /**

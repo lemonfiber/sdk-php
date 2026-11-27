@@ -184,8 +184,10 @@ command line's `--yes`.
 ### Work that outlives the request
 
 An action that reaches the services answers with the name of a job rather than
-its outcome. Ask what became of it with `whatBecameOf()`, and stop it with
-`letGoOf()`. Both answer with a `JobStanding`:
+its outcome. Ask what became of it with `whatBecameOf()`, stop it with
+`letGoOf()`, and let its name go while the work runs on with `forget()`. All
+three answer with a `JobStanding`. After `forget()` the name is `NoSuchJob`, as
+a name another credential started is:
 
 ```php
 use Lemonfiber\Sdk\Envelope\Envelope;
@@ -258,6 +260,10 @@ $client->pushEndpoints()->remove('pixel');
 secret, both as bytes; the client sends them in base64url. A registration answers
 with the `push-endpoint` envelope and a removal with the `push-endpoints` listing,
 each already typed by its kind. `read(Api::PUSH_ENDPOINTS_ENDPOINT)` lists them.
+An endpoint's address lets whoever holds it wake the phone, so once registered it
+is never answered again: the registration and every listed endpoint carry its
+`host` and a `fingerprint`, the first sixteen hexadecimal digits of the SHA-256
+of the whole address, instead.
 The operator keeps every one, and a member session its own alone. A key of any
 scope is refused with `ADMIT-12`, and what is wrong with an endpoint itself
 carries a `PUSH-` code of its own.

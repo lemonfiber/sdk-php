@@ -29,7 +29,7 @@ final class PushEndpointRequest extends Request implements HasBody, ReadsItsAnsw
     use HasJsonBody;
 
     /**
-     * @param array<string, string> $fields
+     * @param array<string, string|bool> $fields
      */
     private function __construct(
         Method $method,
@@ -59,11 +59,12 @@ final class PushEndpointRequest extends Request implements HasBody, ReadsItsAnsw
     }
 
     /**
-     * Remove the push endpoint `$name`.
+     * Remove the push endpoint `$name`, saying in the body that it is no rehearsal: the stack
+     * reads a removal's body as `dry_run` alone, and an empty list is no such body.
      */
     public static function removing(string $name): self
     {
-        return new self(Method::DELETE, Api::pushEndpoint($name));
+        return new self(Method::DELETE, Api::pushEndpoint($name), ['dry_run' => false]);
     }
 
     public function resolveEndpoint(): string
@@ -81,7 +82,7 @@ final class PushEndpointRequest extends Request implements HasBody, ReadsItsAnsw
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, string|bool>
      */
     protected function defaultBody(): array
     {

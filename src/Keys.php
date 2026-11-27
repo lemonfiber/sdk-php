@@ -6,6 +6,7 @@ namespace Lemonfiber\Sdk;
 
 use Lemonfiber\Sdk\Envelope\Envelope;
 use Lemonfiber\Sdk\Exception\ApiVersionMismatch;
+use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
@@ -32,13 +33,14 @@ final readonly class Keys
      * @return Envelope<mixed>
      *
      * @throws ApiVersionMismatch
+     * @throws ConfigurationProblem
      * @throws RequestFailed
      * @throws Unreachable
      * @throws UnreadableResponse
      */
     public function revoke(string $name): Envelope
     {
-        return $this->connector->answer(new RevokeKeyRequest($name));
+        return $this->connector->answer(new RevokeKeyRequest(PathSegment::ofAName($name)));
     }
 
     /**
@@ -97,13 +99,14 @@ final readonly class Keys
      * @return Envelope<mixed>
      *
      * @throws ApiVersionMismatch
+     * @throws ConfigurationProblem
      * @throws RequestFailed
      * @throws Unreachable
      * @throws UnreadableResponse
      */
     public function deviceChallenge(string $name): Envelope
     {
-        return $this->connector->answer(DeviceKeyRequest::challenging($name));
+        return $this->connector->answer(DeviceKeyRequest::challenging(PathSegment::ofAName($name)));
     }
 
     /**
@@ -116,12 +119,13 @@ final readonly class Keys
      * @return Envelope<mixed>
      *
      * @throws ApiVersionMismatch
+     * @throws ConfigurationProblem
      * @throws RequestFailed
      * @throws Unreachable
      * @throws UnreadableResponse
      */
     public function revokeDevice(string $name): Envelope
     {
-        return $this->connector->answer(DeviceKeyRequest::revoking($name));
+        return $this->connector->answer(DeviceKeyRequest::revoking(PathSegment::ofAName($name)));
     }
 }

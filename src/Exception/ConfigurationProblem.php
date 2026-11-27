@@ -149,19 +149,15 @@ final class ConfigurationProblem extends InvalidArgumentException implements Pro
         );
     }
 
-    public static function idNamesNoTitle(string $id): self
+    /**
+     * A name that is no path segment, said with what names the thing it was meant to name.
+     */
+    public static function namesNoPathSegment(string $namedBy, string $named): self
     {
         return new self(sprintf(
-            'A title is named by the id it was listed under. "%s" is not one: it names no path segment, so nothing was sent.',
-            $id,
-        ));
-    }
-
-    public static function referenceNamesNoAsk(string $reference): self
-    {
-        return new self(sprintf(
-            'A kept ask is named by the reference the household list gave it. "%s" is not one: it names no path segment, so nothing was sent.',
-            $reference,
+            '%s "%s" is not one: it names no path segment, so nothing was sent.',
+            $namedBy,
+            $named,
         ));
     }
 }

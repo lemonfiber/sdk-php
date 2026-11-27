@@ -19,6 +19,7 @@ use Lemonfiber\Sdk\Exception\UnreadableResponse;
 use Lemonfiber\Sdk\Http\ActRequest;
 use Lemonfiber\Sdk\Http\BaseUrl;
 use Lemonfiber\Sdk\Http\CertificatePin;
+use Lemonfiber\Sdk\Http\ForgetRequest;
 use Lemonfiber\Sdk\Http\IdempotencyKey;
 use Lemonfiber\Sdk\Http\LemonfiberConnector;
 use Lemonfiber\Sdk\Http\ReadRequest;
@@ -187,6 +188,7 @@ final readonly class Client
      * start a second one.
      *
      * @throws ApiVersionMismatch
+     * @throws ConfigurationProblem
      * @throws NoSuchJob
      * @throws RequestFailed
      * @throws Unreachable
@@ -194,7 +196,7 @@ final readonly class Client
      */
     public function whatBecameOf(string $job): JobStanding
     {
-        return $this->connector->answer(ReadRequest::job($job));
+        return $this->connector->answer(ReadRequest::job(PathSegment::ofAJob($job)));
     }
 
     /**
@@ -210,6 +212,7 @@ final readonly class Client
      * what it finished as.
      *
      * @throws ApiVersionMismatch
+     * @throws ConfigurationProblem
      * @throws NoSuchJob
      * @throws RequestFailed
      * @throws Unreachable
@@ -217,7 +220,27 @@ final readonly class Client
      */
     public function letGoOf(string $job): JobStanding
     {
-        return $this->connector->answer(new ReleaseRequest($job));
+        return $this->connector->answer(new ReleaseRequest(PathSegment::ofAJob($job)));
+    }
+
+    /**
+     * Let go of a name, leaving the work it stands for running.
+     *
+     * For a screen that stops watching work it did not mean to end. The answer
+     * is where the work stood, as asking would have said; from then on the name
+     * is one this run never issued, and what the work ends with is kept for
+     * nobody.
+     *
+     * @throws ApiVersionMismatch
+     * @throws ConfigurationProblem
+     * @throws NoSuchJob
+     * @throws RequestFailed
+     * @throws Unreachable
+     * @throws UnreadableResponse
+     */
+    public function forget(string $job): JobStanding
+    {
+        return $this->connector->answer(new ForgetRequest(PathSegment::ofAJob($job)));
     }
 
     /**
@@ -251,12 +274,13 @@ final readonly class Client
      * here opens it. The name is the last segment of the `path` the `support`
      * action answered with once the bundle was written.
      *
+     * @throws ConfigurationProblem
      * @throws RequestFailed
      * @throws Unreachable
      */
     public function bundle(string $name): BundleFile
     {
-        return $this->connector->answer(ReadRequest::bundle($name));
+        return $this->connector->answer(ReadRequest::bundle(PathSegment::ofAName($name)));
     }
 
     /**

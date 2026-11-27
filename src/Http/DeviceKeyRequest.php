@@ -80,11 +80,12 @@ final class DeviceKeyRequest extends Request implements HasBody, ReadsItsAnswer
     }
 
     /**
-     * Revoke the device key `$name`.
+     * Revoke the device key `$name`, saying in the body that it is no rehearsal: the stack
+     * reads a revocation's body as `dry_run` alone, and an empty list is no such body.
      */
     public static function revoking(string $name): self
     {
-        return new self(Method::DELETE, Api::deviceKey($name));
+        return new self(Method::DELETE, Api::deviceKey($name), ['dry_run' => false]);
     }
 
     public function resolveEndpoint(): string
