@@ -1,7 +1,7 @@
 {
     "format": 1,
-    "commit": "dbeb750e338991c21b21aacc1d8be7f29b9aedfb",
-    "time": "2026-11-26T23:13:16Z",
+    "commit": "b41b9aae191aecfc15002c5081ca60f16b9eaf62",
+    "time": "2026-11-27T01:45:04Z",
     "verdict": "passed",
     "score": 100.0,
     "trees": [
@@ -41,15 +41,15 @@
         },
         {
             "runner": "pest",
-            "mutator": "Pest\\Mutate\\Mutators\\Arithmetic\\PlusToMinus",
-            "seconds": 283.72900430864,
+            "mutator": "Pest\\Mutate\\Mutators\\ControlStructures\\IfNegated",
+            "seconds": 289.73018187494523,
             "survived": 0,
             "killRate": 100.0
         },
         {
             "runner": "pest",
-            "mutator": "Pest\\Mutate\\Mutators\\ControlStructures\\IfNegated",
-            "seconds": 280.9731217840212,
+            "mutator": "Pest\\Mutate\\Mutators\\Arithmetic\\PlusToMinus",
+            "seconds": 283.72900430864,
             "survived": 0,
             "killRate": 100.0
         },
