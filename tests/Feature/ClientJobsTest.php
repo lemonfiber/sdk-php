@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Envelope\Envelope;
+use Lemonfiber\Sdk\Exception\Failed;
 use Lemonfiber\Sdk\Exception\NoSuchJob;
 use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\UnreadableResponse;
@@ -111,6 +112,14 @@ it('says a name answered with no media type at all is not work that failed', fun
     ]);
 
     expect(fn(): JobStanding => $client->whatBecameOf('k3n9v2xq'))->toThrow(NoSuchJob::class);
+});
+
+it('says an answer with no media type at another status is not a name nobody minted', function (): void {
+    [$client] = clientAnswering([
+        ReadRequest::class => MockResponse::make('Bad gateway', 502),
+    ]);
+
+    expect(fn(): JobStanding => $client->whatBecameOf('k3n9v2xq'))->toThrow(Failed::class);
 });
 
 it('tells work that failed apart from a name nobody minted, on the same status', function (): void {
