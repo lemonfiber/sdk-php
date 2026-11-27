@@ -9,7 +9,12 @@ use function in_array;
 use Lemonfiber\Sdk\Exception\ConfigurationProblem;
 
 /**
- * A title's id or an ask's reference, held to the one path segment a picture is read under.
+ * A name a caller hands over, held to the one path segment a route names it by.
+ *
+ * Refused where it is empty or a dot segment, which a client or a proxy normalising
+ * the path would take to a different route. {@see Contract\Api}
+ * encodes what is held, so whatever else it holds, a `/`, a `?`, a `#` or a `%`
+ * among it, names one segment and never another route.
  *
  * @internal
  */
@@ -21,28 +26,53 @@ final class PathSegment
     private const array NO_SEGMENT = ['', '.', '..'];
 
     /**
-     * The id a title was listed under, where it is one path segment. An empty id and the two dot
-     * segments are not: a client or a proxy normalising the path would take each to a different read.
+     * The id a title was listed under, where it is one path segment.
      *
      * @throws ConfigurationProblem
      */
     public static function ofATitle(string $id): string
     {
-        return self::isOne($id) ? $id : throw ConfigurationProblem::idNamesNoTitle($id);
+        return self::held($id, 'A title is named by the id it was listed under.');
     }
 
     /**
-     * The reference a kept ask goes by, where it is one path segment, refused as an id is.
+     * The reference a kept ask goes by, where it is one path segment.
      *
      * @throws ConfigurationProblem
      */
     public static function ofAnAsk(string $reference): string
     {
-        return self::isOne($reference) ? $reference : throw ConfigurationProblem::referenceNamesNoAsk($reference);
+        return self::held($reference, 'A kept ask is named by the reference the household list gave it.');
     }
 
-    private static function isOne(string $named): bool
+    /**
+     * The name an accepting reply gave work, where it is one path segment.
+     *
+     * @throws ConfigurationProblem
+     */
+    public static function ofAJob(string $job): string
     {
-        return ! in_array($named, self::NO_SEGMENT, true);
+        return self::held($job, 'Work is named by the name its accepting reply gave it.');
+    }
+
+    /**
+     * The name a listing gave an integration key, a device key or a push endpoint, or a support
+     * bundle's, where it is one path segment.
+     *
+     * @throws ConfigurationProblem
+     */
+    public static function ofAName(string $name): string
+    {
+        return self::held($name, 'What a listing names is named by the name it gave.');
+    }
+
+    /**
+     * @throws ConfigurationProblem
+     */
+    private static function held(string $named, string $namedBy): string
+    {
+        return in_array($named, self::NO_SEGMENT, true)
+            ? throw ConfigurationProblem::namesNoPathSegment($namedBy, $named)
+            : $named;
     }
 }
