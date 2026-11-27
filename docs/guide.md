@@ -258,7 +258,9 @@ $client->pushEndpoints()->remove('pixel');
 secret, both as bytes; the client sends them in base64url. A registration answers
 with the `push-endpoint` envelope and a removal with the `push-endpoints` listing,
 each already typed by its kind. `read(Api::PUSH_ENDPOINTS_ENDPOINT)` lists them.
-They are the operator's alone, and every refusal carries a `PUSH-` code of its own.
+The operator keeps every one, and a member session its own alone. A key of any
+scope is refused with `ADMIT-12`, and what is wrong with an endpoint itself
+carries a `PUSH-` code of its own.
 
 ## Logs
 

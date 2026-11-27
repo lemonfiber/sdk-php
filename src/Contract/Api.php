@@ -100,7 +100,7 @@ final class Api implements HouseholdReads, MachineReads
      * ({@see \Lemonfiber\Sdk\Generated\PushEndpointsEnvelope}) through
      * {@see \Lemonfiber\Sdk\Client::read()}, and registered at.
      *
-     * An operator session's alone: a household member and a key are refused here.
+     * Every one to the operator, and a member session's own to that member; a key is refused here.
      */
     public const string PUSH_ENDPOINTS_ENDPOINT = '/api/push-endpoints';
 

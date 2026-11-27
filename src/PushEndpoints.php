@@ -18,9 +18,9 @@ use Lemonfiber\Sdk\Http\PushEndpointRequest;
 /**
  * The phones that asked one running lemonfiber to wake them, registered and removed.
  *
- * The operator's alone: a member session and a key of any scope are refused. They are listed
- * by reading {@see Contract\Api::PUSH_ENDPOINTS_ENDPOINT}, which answers the `push-endpoints`
- * envelope.
+ * The operator keeps every one, and a member session its own alone; a key of any scope is
+ * refused. They are listed by reading {@see Contract\Api::PUSH_ENDPOINTS_ENDPOINT}, which
+ * answers the `push-endpoints` envelope.
  *
  * @phpstan-import-type Data from PushEndpointEnvelope as Registered
  * @phpstan-import-type Data from PushEndpointsEnvelope as Listing
