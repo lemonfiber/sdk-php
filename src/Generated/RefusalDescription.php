@@ -84,6 +84,7 @@ final class RefusalDescription
             RefusalCode::OfflineInstallUnanswered => 'Raised where a start would install a part this build carries and nobody said yes.',
             RefusalCode::OfflineInstallUnheld => 'Raised where an install a start was agreed to did not hold.',
             RefusalCode::OfflineInstallUnread => 'Raised where a start would install a part whose install could not be read.',
+            RefusalCode::PullThrottled => 'Raised when a registry went on refusing an image for its rate limit after every run again of the start, fetch or run that pulls it.',
             RefusalCode::OfferMoved => 'Raised when a replacement was agreed to for an offer that is not the one standing now.',
             RefusalCode::NotABackendName => 'Raised when a back-end is added under a word that cannot name one.',
             RefusalCode::BackendNameTaken => 'Raised when a back-end is added under a name another holds.',

@@ -84,6 +84,7 @@ final class RefusalStatus
             RefusalCode::OfflineInstallUnanswered => 409,
             RefusalCode::OfflineInstallUnheld => 409,
             RefusalCode::OfflineInstallUnread => 409,
+            RefusalCode::PullThrottled => 503,
             RefusalCode::OfferMoved => 400,
             RefusalCode::NotABackendName => 400,
             RefusalCode::BackendNameTaken => 409,
