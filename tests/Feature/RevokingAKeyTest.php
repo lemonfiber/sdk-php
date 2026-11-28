@@ -43,7 +43,8 @@ it('revokes a key by its name and reads the keys as the stack lists them after',
 
     expect($answer->kind)->toBe('keys')
         ->and((string) $pending?->getUri())->toBe('http://127.0.0.1:9000/api/keys/home%20assistant%2Fden')
-        ->and($pending?->getMethod())->toBe(Method::DELETE);
+        ->and($pending?->getMethod())->toBe(Method::DELETE)
+        ->and(theBodySent($mock))->toBe(['dry_run' => false]);
 });
 
 it('reads the device key that proved each key, and none for a key minted with the password', function (): void {

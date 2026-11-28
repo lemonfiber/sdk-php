@@ -28,7 +28,8 @@ final readonly class Keys
      *
      * The answer is the `keys` envelope as the stack lists them once the key is
      * revoked ({@see Generated\KeysEnvelope}). A name no key holds, or one
-     * that is not the caller's to revoke, is {@see Exception\Missing}. Sent once.
+     * that is not the caller's to revoke, is {@see Exception\Missing}. Sent once. With
+     * `$dryRun` nothing is revoked, and the answer is the keys as they would then stand.
      *
      * @return Envelope<mixed>
      *
@@ -38,9 +39,9 @@ final readonly class Keys
      * @throws Unreachable
      * @throws UnreadableResponse
      */
-    public function revoke(string $name): Envelope
+    public function revoke(string $name, bool $dryRun = false): Envelope
     {
-        return $this->connector->answer(new RevokeKeyRequest(PathSegment::ofAName($name)));
+        return $this->connector->answer(new RevokeKeyRequest(PathSegment::ofAName($name), $dryRun));
     }
 
     /**
@@ -114,7 +115,8 @@ final readonly class Keys
      * proved stay.
      *
      * The answer is the `device-keys` envelope as the stack lists them once it is revoked
-     * ({@see Generated\DeviceKeysEnvelope}). Sent once.
+     * ({@see Generated\DeviceKeysEnvelope}). Sent once. With `$dryRun` nothing is revoked, and
+     * the answer is the device keys as they would then stand.
      *
      * @return Envelope<mixed>
      *
@@ -124,8 +126,8 @@ final readonly class Keys
      * @throws Unreachable
      * @throws UnreadableResponse
      */
-    public function revokeDevice(string $name): Envelope
+    public function revokeDevice(string $name, bool $dryRun = false): Envelope
     {
-        return $this->connector->answer(DeviceKeyRequest::revoking(PathSegment::ofAName($name)));
+        return $this->connector->answer(DeviceKeyRequest::revoking(PathSegment::ofAName($name), $dryRun));
     }
 }

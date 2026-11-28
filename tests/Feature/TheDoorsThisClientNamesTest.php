@@ -7,8 +7,8 @@ declare(strict_types=1);
  *
  * A gate nobody has watched fail is a gate nobody knows the shape of. Both
  * defects it exists to catch are staged here against fixtures: a read the page
- * names that no constant reaches, and a constant naming a door the page does
- * not. The real tree passing is asserted last, so a fixture that stopped
+ * names that no constant reaches, and a constant naming a door neither the page
+ * nor the vendored routes do. The real tree passing is asserted last, so a fixture that stopped
  * resembling the real one would not read as agreement.
  */
 const GATE = __DIR__ . '/../../scripts/the_doors_this_client_names.py';
@@ -24,7 +24,7 @@ function aPageNaming(string $root, string ...$reads): string
     return $root;
 }
 
-/** A client tree carrying nothing but the contract class, holding the given paths. */
+/** A client tree carrying nothing but the contract class, holding the given paths, and a vendored contract serving no route. */
 function aClientHolding(string $root, string ...$paths): string
 {
     $class = $root . '/src/Contract/Api.php';
@@ -34,6 +34,19 @@ function aClientHolding(string $root, string ...$paths): string
         $held .= "    public const string E{$index}_ENDPOINT = '{$path}';\n";
     }
     file_put_contents($class, "<?php\n\nfinal class Api\n{\n{$held}}\n");
+
+    return servingRoutes($root);
+}
+
+/** The client tree at `$root` with its vendored contract serving a DELETE at each of the given paths. */
+function servingRoutes(string $root, string ...$paths): string
+{
+    $routes = $root . '/contract/web-api/routes.json';
+    if (! is_dir(dirname($routes))) {
+        mkdir(dirname($routes), 0o755, true);
+    }
+    $listed = array_map(static fn(string $path): array => ['method' => 'DELETE', 'path' => $path, 'body' => true, 'kinds' => []], $paths);
+    file_put_contents($routes, json_encode($listed, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES));
 
     return $root;
 }
@@ -104,7 +117,7 @@ it('Q-R66 — refuses a read the contract names that this client cannot reach', 
         ->and($said)->toContain('/api/r30');
 });
 
-it('Q-R66 — refuses a door this client holds that the contract page does not name', function (): void {
+it('Q-R66 — refuses a door this client holds that neither the contract page nor its routes name', function (): void {
     $reads = enoughReads();
     $spec = aPageNaming(sys_get_temp_dir() . '/' . uniqid('spec', true), ...$reads);
     $repo = aClientHolding(sys_get_temp_dir() . '/' . uniqid('repo', true), ...$reads, ...['/api/invented']);
@@ -112,8 +125,31 @@ it('Q-R66 — refuses a door this client holds that the contract page does not n
     [$code, $said] = theGateOn($repo, $spec);
 
     expect($code)->toBe(1)
-        ->and($said)->toContain('the contract page does not name')
-        ->and($said)->toContain('/api/invented');
+        ->and($said)->toContain('nor contract/web-api/routes.json serves a route at them: /api/invented');
+});
+
+it('takes a door the page does not name where the routes serve it, or serve a name composed onto it', function (): void {
+    $reads = enoughReads();
+    $spec = aPageNaming(sys_get_temp_dir() . '/' . uniqid('spec', true), ...$reads);
+    $repo = aClientHolding(sys_get_temp_dir() . '/' . uniqid('repo', true), ...$reads, ...['/api/keys', '/api/jobs']);
+    servingRoutes($repo, '/api/keys', '/api/jobs/{job}');
+
+    [$code, $said] = theGateOn($repo, $spec);
+
+    expect($said)->toContain('holds a path for each')
+        ->and($code)->toBe(0);
+});
+
+it('refuses a client tree with no vendored list of routes', function (): void {
+    $reads = enoughReads();
+    $spec = aPageNaming(sys_get_temp_dir() . '/' . uniqid('spec', true), ...$reads);
+    $repo = aClientHolding(sys_get_temp_dir() . '/' . uniqid('repo', true), ...$reads);
+    file_put_contents($repo . '/contract/web-api/routes.json', '{}');
+
+    [$code, $said] = theGateOn($repo, $spec);
+
+    expect($code)->toBe(1)
+        ->and($said)->toContain('no list of routes at');
 });
 
 it('reads the paths held on every file of the contract folder, not only on Api', function (): void {

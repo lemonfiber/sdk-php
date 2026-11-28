@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Lemonfiber\Sdk\Client;
 use Lemonfiber\Sdk\Contract\Api;
 use Lemonfiber\Sdk\Exception\Busy;
 use Lemonfiber\Sdk\Exception\Misasked;
@@ -10,8 +11,10 @@ use Lemonfiber\Sdk\Exception\RequestFailed;
 use Lemonfiber\Sdk\Exception\UnexpectedKind;
 use Lemonfiber\Sdk\Exception\Unreachable;
 use Lemonfiber\Sdk\Generated\RefusalCode;
+use Lemonfiber\Sdk\Http\DeviceKeyRequest;
 use Lemonfiber\Sdk\Http\PushEndpointRequest;
 use Lemonfiber\Sdk\Http\ReadRequest;
+use Lemonfiber\Sdk\Http\RevokeKeyRequest;
 use Lemonfiber\Sdk\PushEndpointRegistering;
 use Saloon\Enums\Method;
 use Saloon\Http\Faking\MockResponse;
@@ -142,4 +145,31 @@ it('says where a push-endpoint request goes and nothing it carries', function ()
     expect($said)->toContain('/api/push-endpoints')
         ->and($said)->not->toContain('-_8B')
         ->and($said)->not->toContain('push.example/up');
+});
+
+it('rehearses each revocation with dry_run alone, and carries one out with dry_run false', function (): void {
+    $listing = static fn(string $kind): MockResponse => MockResponse::make(['api_version' => 1, 'kind' => $kind, 'data' => ['endpoints' => [], 'keys' => [], 'rehearsed' => true]]);
+    $asked = [
+        [PushEndpointRequest::class, 'push-endpoints', static fn(Client $client, bool $dryRun): mixed => $client->pushEndpoints()->remove('pixel', $dryRun), '/api/push-endpoints/pixel'],
+        [DeviceKeyRequest::class, 'device-keys', static fn(Client $client, bool $dryRun): mixed => $client->keys()->revokeDevice('pixel', $dryRun), '/api/device-keys/pixel'],
+        [RevokeKeyRequest::class, 'keys', static fn(Client $client, bool $dryRun): mixed => $client->keys()->revoke('ha', $dryRun), '/api/keys/ha'],
+    ];
+    foreach ($asked as [$request, $kind, $revoke, $path]) {
+        foreach ([true, false] as $dryRun) {
+            [$client, $mock] = aClientAnswering($request, $listing($kind));
+            $revoke($client, $dryRun);
+            $pending = $mock->getLastPendingRequest();
+
+            expect((string) $pending?->getUri())->toBe('http://127.0.0.1:9000' . $path)
+                ->and($pending?->getMethod())->toBe(Method::DELETE)
+                ->and(theBodySent($mock))->toBe(['dry_run' => $dryRun]);
+        }
+    }
+});
+
+it('builds each revocation for a name alone as carried out, not rehearsed', function (): void {
+    $built = [DeviceKeyRequest::revoking('pixel'), PushEndpointRequest::removing('pixel'), new RevokeKeyRequest('ha')];
+
+    expect(array_map(static fn(DeviceKeyRequest|PushEndpointRequest|RevokeKeyRequest $request): mixed => $request->body()->all(), $built))
+        ->toBe([['dry_run' => false], ['dry_run' => false], ['dry_run' => false]]);
 });
