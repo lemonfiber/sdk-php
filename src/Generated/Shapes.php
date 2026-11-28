@@ -108,7 +108,7 @@ namespace Lemonfiber\Sdk\Generated;
  * @phpstan-type Stance 'unchanged'|'pending'|'blocked'|'applied'
  * @phpstan-type StepCame 'answered'|'skipped'|'not-reached'|'unreachable'|'refused'|'withheld'|'declined'|'unexpected'|'uncaptured'|'oversized'
  * @phpstan-type Term array{also_called: list<string>, deep?: string|null, forms: list<string>, short: string, word: string}
- * @phpstan-type TitleKind 'tv'|'movies'|'music'|'books'|'audiobooks'|'podcasts'
+ * @phpstan-type TitleKind 'tv'|'movies'|'music'|'books'|'comics'|'audiobooks'|'podcasts'
  * @phpstan-type TitleUnit 'album'|'artist'|'book'|'author'|'series'
  * @phpstan-type Tree array{archive_path: string, host_path: string}
  * @phpstan-type Triggered array{state: 'started'}|array{state: 'not-started'}|array{detail: string, state: 'failed'}
