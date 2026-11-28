@@ -85,6 +85,7 @@ enum RefusalCode: string
     case OfflineInstallUnanswered = 'LIFE-13';
     case OfflineInstallUnheld = 'LIFE-14';
     case OfflineInstallUnread = 'LIFE-15';
+    case PullThrottled = 'LIFE-16';
     case OfferMoved = 'MIGRATE-1';
     case NotABackendName = 'NOTIFY-1';
     case BackendNameTaken = 'NOTIFY-2';
