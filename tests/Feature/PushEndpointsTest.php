@@ -166,3 +166,10 @@ it('rehearses each revocation with dry_run alone, and carries one out with dry_r
         }
     }
 });
+
+it('builds each revocation for a name alone as carried out, not rehearsed', function (): void {
+    $built = [DeviceKeyRequest::revoking('pixel'), PushEndpointRequest::removing('pixel'), new RevokeKeyRequest('ha')];
+
+    expect(array_map(static fn(DeviceKeyRequest|PushEndpointRequest|RevokeKeyRequest $request): mixed => $request->body()->all(), $built))
+        ->toBe([['dry_run' => false], ['dry_run' => false], ['dry_run' => false]]);
+});
