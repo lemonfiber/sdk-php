@@ -155,6 +155,7 @@ final class RefusalDescription
             RefusalCode::Unconforming => 'Raised when a case of a contract a plugin\'s adapter speaks fails, or no recording the plugin ships answers it.',
             RefusalCode::KeyUnreadable => 'Raised when a key an author names to verify a plugin\'s images against cannot be read, or is not a PEM public key on the P-256 curve.',
             RefusalCode::UndeclaredForm => 'Raised when a plugin\'s manifest names a form the stack does not declare.',
+            RefusalCode::UnclaimedRecipe => 'Raised when a recipe runs on claim in a plugin none of whose services speaks `owner.claim@1`; the manifest\'s every other fault is listed beside it.',
             RefusalCode::NotAPushName => 'Raised when a push endpoint is registered under a word that cannot name one.',
             RefusalCode::PushNameTaken => 'Raised when a push endpoint is registered under a name another holds.',
             RefusalCode::PushNotHttps => 'Raised when a push endpoint\'s address is not an `https` address.',

@@ -156,6 +156,7 @@ enum RefusalCode: string
     case Unconforming = 'PLUGIN-50';
     case KeyUnreadable = 'PLUGIN-51';
     case UndeclaredForm = 'PLUGIN-52';
+    case UnclaimedRecipe = 'PLUGIN-53';
     case NotAPushName = 'PUSH-1';
     case PushNameTaken = 'PUSH-2';
     case PushNotHttps = 'PUSH-3';

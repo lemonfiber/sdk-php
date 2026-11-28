@@ -155,6 +155,7 @@ final class RefusalStatus
             RefusalCode::Unconforming => 400,
             RefusalCode::KeyUnreadable => 400,
             RefusalCode::UndeclaredForm => 400,
+            RefusalCode::UnclaimedRecipe => 400,
             RefusalCode::NotAPushName => 400,
             RefusalCode::PushNameTaken => 409,
             RefusalCode::PushNotHttps => 400,
